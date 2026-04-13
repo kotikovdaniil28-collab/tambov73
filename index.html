@@ -50,7 +50,7 @@
 
     html[data-site-theme="support"] body, html[data-site-theme="ap_admin"] body { background: radial-gradient(circle at top left, rgba(255, 184, 222, 0.3), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 120, 180, 0.3), transparent 55%), linear-gradient(160deg, #2b0714, #250512 45%, #180212 100%); }
     html[data-site-theme="about"] body { background: radial-gradient(circle at top left, rgba(255, 220, 120, 0.16), transparent 55%), radial-gradient(circle at bottom right, rgba(108, 140, 255, 0.18), transparent 55%), linear-gradient(160deg, #0c0a05, #0c0a05 45%, #12100a 100%); }
-    html[data-site-theme="shop"] body, html[data-site-theme="leadership"] body, html[data-site-theme="admin_stats"] body { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 191, 71, 0.14), transparent 55%), linear-gradient(160deg, #061008, #07110a 45%, #0a1116 100%); }
+    html[data-site-theme="shop"] body, html[data-site-theme="leadership"] body { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 191, 71, 0.14), transparent 55%), linear-gradient(160deg, #061008, #07110a 45%, #0a1116 100%); }
     html[data-site-theme="ap_shop"] body { background: radial-gradient(circle at top left, rgba(255, 143, 196, 0.3), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1f0512, #120208 45%, #0a0105 100%); }
     html[data-site-theme="report"] body { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 50%), radial-gradient(circle at bottom right, rgba(108, 204, 255, 0.18), transparent 55%), linear-gradient(160deg, #090510, #0a0512 45%, #050411 100%); }
     html[data-site-theme="guide"] body { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(0, 180, 216, 0.15), transparent 55%), linear-gradient(160deg, #020a10, #041018 45%, #02080d 100%); }
@@ -60,11 +60,11 @@
     html[data-site-theme="quests"] body { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); }
     html[data-site-theme="timeattack"] body { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); }
     html[data-site-theme="creator"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
-    html[data-site-theme="profile"] body { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(108, 140, 255, 0.2), transparent 55%), linear-gradient(160deg, #0a0512, #100a1a 45%, #050411 100%); }
-    html[data-site-theme="cosmetics"] body { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 107, 136, 0.15), transparent 55%), linear-gradient(160deg, #051014, #0a1218 45%, #05080a 100%); }
 
     /* Анимация переходов режимов */
-    .fade-in { animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .fade-in {
+        animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
     @keyframes modeFade {
         from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
@@ -83,7 +83,7 @@
     .logo { width: 48px; height: 48px; display: grid; place-items: center; color: var(--color-text); background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.16), transparent 55%), linear-gradient(135deg, rgba(108, 140, 255, 0.32), rgba(255, 107, 136, 0.22)); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(255, 255, 255, 0.25); flex: 0 0 auto; }
     html[data-site-theme="support"] .logo, html[data-site-theme="ap_admin"] .logo { background: linear-gradient(135deg, rgba(255, 160, 210, 0.65), rgba(255, 120, 180, 0.6)); border-color: rgba(255, 210, 240, 0.7); }
     html[data-site-theme="about"] .logo { background: linear-gradient(135deg, rgba(255, 191, 71, 0.55), rgba(108, 140, 255, 0.38)); border-color: rgba(255, 230, 180, 0.45); }
-    html[data-site-theme="shop"] .logo, html[data-site-theme="leadership"] .logo, html[data-site-theme="admin_stats"] .logo { background: linear-gradient(135deg, rgba(82, 199, 123, 0.45), rgba(255, 191, 71, 0.28)); border-color: rgba(162, 241, 188, 0.42); }
+    html[data-site-theme="shop"] .logo, html[data-site-theme="leadership"] .logo { background: linear-gradient(135deg, rgba(82, 199, 123, 0.45), rgba(255, 191, 71, 0.28)); border-color: rgba(162, 241, 188, 0.42); }
     html[data-site-theme="ap_shop"] .logo { background: linear-gradient(135deg, rgba(255, 143, 196, 0.65), rgba(162, 108, 255, 0.6)); border-color: rgba(255, 190, 230, 0.7); }
     html[data-site-theme="report"] .logo { background: linear-gradient(135deg, rgba(162, 108, 255, 0.55), rgba(108, 204, 255, 0.38)); border-color: rgba(200, 180, 255, 0.45); }
     html[data-site-theme="guide"] .logo { background: linear-gradient(135deg, rgba(0, 229, 255, 0.45), rgba(0, 180, 216, 0.35)); border-color: rgba(180, 240, 255, 0.4); }
@@ -93,8 +93,6 @@
     html[data-site-theme="quests"] .logo { background: linear-gradient(135deg, rgba(162, 108, 255, 0.65), rgba(196, 161, 255, 0.6)); border-color: rgba(180, 150, 255, 0.5); }
     html[data-site-theme="timeattack"] .logo { background: linear-gradient(135deg, rgba(255, 191, 71, 0.65), rgba(255, 61, 0, 0.6)); border-color: rgba(255, 191, 71, 0.7); }
     html[data-site-theme="creator"] .logo { background: linear-gradient(135deg, rgba(255, 107, 136, 0.65), rgba(162, 108, 255, 0.6)); border-color: rgba(255, 107, 136, 0.5); }
-    html[data-site-theme="profile"] .logo { background: linear-gradient(135deg, rgba(162, 108, 255, 0.55), rgba(108, 140, 255, 0.38)); border-color: rgba(200, 180, 255, 0.45); }
-    html[data-site-theme="cosmetics"] .logo { background: linear-gradient(135deg, rgba(0, 229, 255, 0.45), rgba(255, 107, 136, 0.35)); border-color: rgba(180, 240, 255, 0.4); }
 
     .brand-title { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: 0.08em; text-transform: uppercase; }
     .brand-sub { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 42ch; }
@@ -106,7 +104,7 @@
     .panel { border-radius: 22px; border: 1px solid rgba(191, 198, 255, 0.28); box-shadow: var(--shadow-lg); backdrop-filter: blur(18px); background: radial-gradient(circle at top left, rgba(108, 140, 255, 0.23), transparent 55%), linear-gradient(155deg, rgba(18, 22, 38, 0.98), rgba(6, 7, 16, 1)); min-width: 0; }
     html[data-site-theme="support"] .panel, html[data-site-theme="ap_admin"] .panel { background: radial-gradient(circle at top left, rgba(255, 160, 210, 0.3), transparent 55%), linear-gradient(155deg, rgba(35, 10, 26, 0.98), rgba(16, 4, 20, 1)); border-color: rgba(255, 190, 230, 0.45); }
     html[data-site-theme="about"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 19, 8, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(255, 214, 122, 0.28); }
-    html[data-site-theme="shop"] .panel, html[data-site-theme="leadership"] .panel, html[data-site-theme="admin_stats"] .panel { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), linear-gradient(155deg, rgba(10, 23, 14, 0.98), rgba(8, 10, 15, 1)); border-color: rgba(162, 241, 188, 0.22); }
+    html[data-site-theme="shop"] .panel, html[data-site-theme="leadership"] .panel { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), linear-gradient(155deg, rgba(10, 23, 14, 0.98), rgba(8, 10, 15, 1)); border-color: rgba(162, 241, 188, 0.22); }
     html[data-site-theme="ap_shop"] .panel { background: radial-gradient(circle at top left, rgba(255, 143, 196, 0.2), transparent 55%), linear-gradient(155deg, rgba(28, 10, 18, 0.98), rgba(12, 4, 8, 1)); border-color: rgba(255, 143, 196, 0.5); }
     html[data-site-theme="report"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.16), transparent 55%), linear-gradient(155deg, rgba(16, 9, 25, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(180, 150, 255, 0.28); }
     html[data-site-theme="guide"] .panel { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.12), transparent 55%), linear-gradient(155deg, rgba(4, 14, 22, 0.98), rgba(2, 8, 12, 1)); border-color: rgba(0, 229, 255, 0.25); }
@@ -116,8 +114,6 @@
     html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(155deg, rgba(18, 12, 28, 0.98), rgba(10, 6, 16, 1)); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
     html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), linear-gradient(155deg, rgba(28, 10, 20, 0.98), rgba(16, 4, 10, 1)); border-color: rgba(255, 107, 136, 0.4); }
-    html[data-site-theme="profile"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.16), transparent 55%), linear-gradient(155deg, rgba(16, 9, 25, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(180, 150, 255, 0.28); }
-    html[data-site-theme="cosmetics"] .panel { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.12), transparent 55%), linear-gradient(155deg, rgba(4, 14, 22, 0.98), rgba(2, 8, 12, 1)); border-color: rgba(0, 229, 255, 0.25); }
 
     .hero-card, .rules, .game-card, .side { padding: 1.2rem; display: grid; gap: 1rem; min-width: 0; align-content: start; }
     .section-head { display: grid; gap: 0.35rem; min-width: 0; }
@@ -131,8 +127,8 @@
     html[data-site-theme="support"] .badge, html[data-site-theme="ap_admin"] .badge { background: rgba(34, 7, 24, 0.96); border-color: rgba(255, 190, 230, 0.5); }
     html[data-site-theme="support"] .badge.xp, html[data-site-theme="ap_shop"] .badge.xp, html[data-site-theme="ap_admin"] .badge.xp { background: #ff8fc4; color: #250512; }
     html[data-site-theme="about"] .badge { background: rgba(25, 19, 8, 0.96); border-color: rgba(255, 214, 122, 0.35); }
-    html[data-site-theme="shop"] .badge, html[data-site-theme="leadership"] .badge, html[data-site-theme="admin_stats"] .badge { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.25); }
-    html[data-site-theme="shop"] .badge.xp, html[data-site-theme="leadership"] .badge.xp, html[data-site-theme="admin_stats"] .badge.xp { background: #52c77b; color: #08110b; }
+    html[data-site-theme="shop"] .badge, html[data-site-theme="leadership"] .badge { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.25); }
+    html[data-site-theme="shop"] .badge.xp, html[data-site-theme="leadership"] .badge.xp { background: #52c77b; color: #08110b; }
     html[data-site-theme="report"] .badge { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="report"] .badge.xp { background: #a26cff; color: #fff; }
     html[data-site-theme="guide"] .badge { background: rgba(4, 18, 28, 0.96); border-color: rgba(0, 229, 255, 0.3); }
@@ -145,7 +141,7 @@
 
     html[data-site-theme="support"] .hero h1 span, html[data-site-theme="ap_admin"] .hero h1 span, html[data-site-theme="ap_shop"] .hero h1 span { color: #ff8fc4; text-shadow: 0 0 26px rgba(255, 143, 196, 0.9); }
     html[data-site-theme="about"] .hero h1 span { color: #ffbf47; text-shadow: 0 0 22px rgba(255, 191, 71, 0.72); }
-    html[data-site-theme="shop"] .hero h1 span, html[data-site-theme="leadership"] .hero h1 span, html[data-site-theme="admin_stats"] .hero h1 span { color: #7fe8a0; text-shadow: 0 0 22px rgba(127, 232, 160, 0.62); }
+    html[data-site-theme="shop"] .hero h1 span, html[data-site-theme="leadership"] .hero h1 span { color: #7fe8a0; text-shadow: 0 0 22px rgba(127, 232, 160, 0.62); }
     html[data-site-theme="report"] .hero h1 span { color: #a26cff; text-shadow: 0 0 22px rgba(162, 108, 255, 0.72); }
     html[data-site-theme="guide"] .hero h1 span { color: #00e5ff; text-shadow: 0 0 22px rgba(0, 229, 255, 0.65); }
     html[data-site-theme="leaderboard"] .hero h1 span { color: #ff5419; text-shadow: 0 0 22px rgba(255, 61, 0, 0.65); }
@@ -166,7 +162,7 @@
 
     html[data-site-theme="support"] .btn-primary, html[data-site-theme="ap_admin"] .btn-primary, html[data-site-theme="ap_shop"] .btn-primary { background: linear-gradient(135deg, #ff78b4, #ffb0dd); box-shadow: 0 15px 35px rgba(255, 144, 196, 0.5); color: #1a0510; }
     html[data-site-theme="about"] .btn-primary { background: linear-gradient(135deg, #ffbf47, #ffd979); box-shadow: 0 15px 35px rgba(255, 191, 71, 0.4); color: #18171c; }
-    html[data-site-theme="shop"] .btn-primary, html[data-site-theme="leadership"] .btn-primary, html[data-site-theme="admin_stats"] .btn-primary { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 15px 35px rgba(82, 199, 123, 0.4); color: #08110b; }
+    html[data-site-theme="shop"] .btn-primary, html[data-site-theme="leadership"] .btn-primary { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 15px 35px rgba(82, 199, 123, 0.4); color: #08110b; }
     html[data-site-theme="report"] .btn-primary { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 15px 35px rgba(162, 108, 255, 0.4); color: #fff; }
     html[data-site-theme="guide"] .btn-primary { background: linear-gradient(135deg, #00b4d8, #00e5ff); box-shadow: 0 15px 35px rgba(0, 229, 255, 0.4); color: #001a22; }
     html[data-site-theme="leaderboard"] .btn-primary { background: linear-gradient(135deg, #ff3d00, #ff9e00); box-shadow: 0 15px 35px rgba(255, 61, 0, 0.4); color: #fff; }
@@ -197,7 +193,7 @@
     html[data-site-theme="support"] .mode-btn.active, html[data-site-theme="ap_admin"] .mode-btn.active, html[data-site-theme="ap_shop"] .mode-btn.active { background: linear-gradient(135deg, #ff78b4, #ffb0dd); box-shadow: 0 8px 20px rgba(255, 144, 196, 0.6); }
     html[data-site-theme="complaints"] .mode-btn.active { background: linear-gradient(135deg, #ff6b88, #ff3b60); box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); color: #fff; }
     html[data-site-theme="quests"] .mode-btn.active { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 8px 20px rgba(162, 108, 255, 0.45); color: #fff; }
-    html[data-site-theme="shop"] .mode-btn.active, html[data-site-theme="leadership"] .mode-btn.active, html[data-site-theme="admin_stats"] .mode-btn.active { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 8px 20px rgba(82, 199, 123, 0.35); color: #08110b; }
+    html[data-site-theme="shop"] .mode-btn.active, html[data-site-theme="leadership"] .mode-btn.active { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 8px 20px rgba(82, 199, 123, 0.35); color: #08110b; }
     html[data-site-theme="report"] .mode-btn.active { background: linear-gradient(135deg, #a26cff, #c4a1ff); color: #fff; box-shadow: 0 8px 20px rgba(162, 108, 255, 0.35); }
     html[data-site-theme="guide"] .mode-btn.active { background: linear-gradient(135deg, #00b4d8, #00e5ff); color: #001a22; box-shadow: 0 8px 20px rgba(0, 229, 255, 0.35); }
     html[data-site-theme="leaderboard"] .mode-btn.active { background: linear-gradient(135deg, #ff3d00, #ff9e00); color: #fff; box-shadow: 0 8px 20px rgba(255, 61, 0, 0.35); }
@@ -213,7 +209,7 @@
 
     html[data-site-theme="support"] .rule-item, html[data-site-theme="support"] .log-item, html[data-site-theme="support"] .stat { background: rgba(35, 10, 26, 0.96); border-color: rgba(255, 190, 230, 0.36); }
     html[data-site-theme="about"] .rule-item, html[data-site-theme="about"] .log-item, html[data-site-theme="about"] .stat { background: rgba(25, 19, 8, 0.96); border-color: rgba(255, 214, 122, 0.24); }
-    html[data-site-theme="shop"] .rule-item, html[data-site-theme="shop"] .log-item, html[data-site-theme="shop"] .stat, html[data-site-theme="admin_stats"] .rule-item, html[data-site-theme="admin_stats"] .log-item, html[data-site-theme="admin_stats"] .stat { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.22); }
+    html[data-site-theme="shop"] .rule-item, html[data-site-theme="shop"] .log-item, html[data-site-theme="shop"] .stat { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.22); }
     html[data-site-theme="report"] .rule-item, html[data-site-theme="report"] .log-item, html[data-site-theme="report"] .stat { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.24); }
     html[data-site-theme="guide"] .rule-item, html[data-site-theme="guide"] .log-item, html[data-site-theme="guide"] .stat { background: rgba(4, 14, 22, 0.96); border-color: rgba(0, 229, 255, 0.22); }
     html[data-site-theme="leaderboard"] .rule-item, html[data-site-theme="leaderboard"] .log-item, html[data-site-theme="leaderboard"] .stat { background: rgba(22, 8, 4, 0.96); border-color: rgba(255, 61, 0, 0.22); }
@@ -527,7 +523,6 @@
         <button class="mode-btn" data-mode="shop" type="button">Магазин</button>
         <button class="mode-btn" data-mode="report" type="button">Отчетность</button>
         <button class="mode-btn" data-mode="leadership" type="button" id="leadershipTabBtn" style="display:none; color: #52c77b;">Руководство</button>
-        <button class="mode-btn" data-mode="admin_stats" type="button" id="adminStatsTabBtn" style="display:none; color: #52c77b;">Статистика</button>
         <button class="mode-btn" data-mode="admin_log" type="button" id="adminLogTabBtn" style="display:none; color: #ffbf47;">Логи (Мод)</button>
         <button class="mode-btn" data-mode="creator" type="button" id="creatorTabBtn" style="display:none; color: #ff6b88;">Панель Создателя</button>
       </div>
@@ -544,8 +539,6 @@
         <button class="mode-btn" data-mode="leaderboard" type="button">Лидерборд</button>
         <button class="mode-btn" data-mode="guide" type="button">Руководство</button>
         <button class="mode-btn" data-mode="about" type="button">О команде</button>
-        <button class="mode-btn" data-mode="profile" type="button">Профиль</button>
-        <button class="mode-btn" data-mode="cosmetics" type="button">Косметика 🎨</button>
       </div>
     </div>
 
@@ -873,48 +866,6 @@
         </div>
       </section>
 
-      <section class="panel game-card fade-in" id="mode-profile" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #a26cff;">Личный Профиль</h2>
-          <p>Ваша статистика и достижения.</p>
-        </div>
-        <div style="display: flex; gap: 1.5rem; align-items: center; padding: 2rem; background: rgba(13, 16, 32, 0.6); border-radius: 16px; border: 1px solid rgba(162, 108, 255, 0.3); margin-bottom: 1.5rem;">
-          <div class="avatar" id="profileAvatar" style="width: 80px; height: 80px; font-size: 2.5rem; background: conic-gradient(from 210deg, #a26cff, #c4a1ff, #a26cff);">?</div>
-          <div>
-            <h3 id="profileNickname" style="font-size: 1.8rem; margin-bottom: 0.2rem; color: #fff;">Гость</h3>
-            <p id="profileEmail" style="color: var(--color-text-faint); font-size: var(--text-sm);">Войдите в аккаунт</p>
-          </div>
-        </div>
-        <div class="stats-grid">
-          <div class="stat"><span class="stat-label">Баланс XP</span><div class="stat-value" id="profileXp" style="color: #a26cff;">0</div></div>
-          <div class="stat"><span class="stat-label">Ответов (Мод)</span><div class="stat-value" id="profileModTotal">0</div></div>
-          <div class="stat"><span class="stat-label">Ответов (АП)</span><div class="stat-value" id="profileSupTotal">0</div></div>
-          <div class="stat"><span class="stat-label">Решено жалоб</span><div class="stat-value" id="profileCompTotal">0</div></div>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-cosmetics" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #00e5ff;">Магазин Косметики 🎨</h2>
-          <p>Выделяйся из толпы! (В разработке)</p>
-        </div>
-        <div class="stats-grid" style="margin-bottom: 1.5rem;">
-          <div class="stat"><span class="stat-label">Доступно XP</span><div class="stat-value" id="cosmeticsXp" style="color:#00e5ff;">0</div></div>
-        </div>
-        <div class="shop-grid" id="cosmeticsItemsContainer"></div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-admin_stats" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #52c77b;">Статистика сотрудников</h2>
-          <p>Просмотр достижений каждого пользователя.</p>
-        </div>
-        <button class="btn btn-secondary" type="button" id="loadAllStatsBtn" style="width:100%; margin-bottom:1.5rem; border-color: #52c77b; color: #52c77b;">Обновить статистику</button>
-        <div class="feed" id="adminStatsArea" style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div class="message-text">Нажмите «Обновить статистику»</div>
-        </div>
-      </section>
-
       <section class="panel game-card fade-in" id="mode-shop" style="display:none;">
         <div class="section-head">
           <h2>Магазин & Игры (Модерация)</h2>
@@ -998,11 +949,10 @@
       
     </section>
   </main>
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         
-        // === 1. АУДИО (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
+        // === 1. АУДИО ===
         let isMusicEnabled = false, isSfxEnabled = true;    
         const uiSoundConfig = { volume: 0.15, pitch: 600, type: 'sine', duration: 0.04 };
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1021,9 +971,11 @@
         }
 
         const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3');
-        bgMusic.loop = true; bgMusic.volume = 0.3;
+        bgMusic.loop = true; 
+        bgMusic.volume = 0.3;
         const sndOk = new Audio('https://actions.google.com/sounds/v1/ui/pop.ogg'); sndOk.volume = 0.4;
-        const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); sndFail.volume = 0.2;
+        const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+        sndFail.volume = 0.2;
         const sndWin = new Audio('https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'); sndWin.volume = 0.3;
 
         function playSound(type) {
@@ -1042,14 +994,23 @@
             isMusicEnabled = !isMusicEnabled;
             if (isMusicEnabled) { 
                 e.target.textContent = '⏳'; 
-                bgMusic.play().then(() => { e.target.textContent = '🎵'; }).catch((err) => { 
-                    isMusicEnabled = false; e.target.textContent = '🔇'; 
+                bgMusic.play().then(() => {
+                    e.target.textContent = '🎵';
+                }).catch((err) => { 
+                    console.error("Ошибка музыки:", err);
+                    isMusicEnabled = false; 
+                    e.target.textContent = '🔇'; 
+                    alert('Браузер заблокировал аудио или ссылка недоступна. Кликни еще раз!');
                 }); 
-            } else { e.target.textContent = '🔇'; bgMusic.pause(); }
+            } 
+            else { 
+                e.target.textContent = '🔇'; 
+                bgMusic.pause(); 
+            }
         });
         document.getElementById('sfxToggleBtn').addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
 
-        // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
+        // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
         const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
         const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -1071,26 +1032,27 @@
         const creatorEmail = 'daniiltimosin72@gmail.com';
         const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
         const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+
         let state = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false, log: [], reportXp: 0 };
         let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
         let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
         let shopState = { spent: 0, apSpent: 0 };
         let modQueue = [], supQueue = [], compQueue = [];
 
-        // === 3. МАССИВЫ МАГАЗИНА (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
+        // === 3. МАССИВЫ МАГАЗИНА И КВЕСТОВ ===
         const shopItems = [
-            { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение (ММ → М).", price: 200, icon: "⏳" },
-            { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение (М → СМ).", price: 250, icon: "⏳" },
-            { id: 'sm_1', title: "СМ: Скидка -1 день", desc: "Ускоряет повышение (СМ → ЗГМ).", price: 300, icon: "⏳" },
+            { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
+            { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
+            { id: 'sm_1', title: "СМ: Скидка -1 день", desc: "Ускоряет повышение Старшего Модератора (СМ → ЗГМ).", price: 300, icon: "⏳" },
             { id: 'bonus_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 200, icon: "🛡️" },
             { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" },
-            { id: 'bonus_3', title: "Иммунитет на пред", desc: "Защищает от 1 предупреждения.", price: 300, icon: "🛡️" },
-            { id: 'bonus_4', title: "Иммунитет на выговор", desc: "Защищает от 1 выговора.", price: 500, icon: "👑" },
+            { id: 'bonus_3', title: "Иммунитет на предупреждение", desc: "Защищает от 1 предупреждения в будущем.", price: 300, icon: "🛡️" },
+            { id: 'bonus_4', title: "Иммунитет на выговор", desc: "Защищает от 1 выговора в будущем.", price: 500, icon: "👑" },
             { id: 'bonus_5', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 150, icon: "🛌" },
-            { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
+            { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
             { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' },
             { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
-            { id: 'jw_quiz', title: "Викторина JW", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' }
+            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' }
         ];
 
         const apShopItems = [
@@ -1098,34 +1060,91 @@
             { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" },
             { id: 'ap_3', title: "Иммунитет на выговор", desc: "Защищает от получения 1 выговора.", price: 40, icon: "👑" },
             { id: 'ap_4', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 10, icon: "🛌" },
-            { id: 'ap_roulette', title: "Рулетка АП", desc: "Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
-        ];
-
-        // ДОБАВЛЕННЫЙ МАССИВ: КОСМЕТИКА
-        const cosmeticsItems = [
-            { id: 'cosm_1', title: "Золотой ник", desc: "Ваш ник станет золотым в лидерборде.", price: 1500, icon: "✨" },
-            { id: 'cosm_2', title: "Неоновый ник", desc: "Яркий голубой цвет ника.", price: 1500, icon: "⚡" },
-            { id: 'cosm_3', title: "Рамка 'Ветеран'", desc: "Особая рамка вокруг аватарки.", price: 3000, icon: "🖼️" }
+            { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
         ];
 
         const questsData = [
-            { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений', max: 50, getProgress: () => state.resolved, reward: 150 },
-            { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов', max: 25, getProgress: () => supportState.resolved, reward: 100 },
-            { id: 'q3', title: 'Детектив', desc: 'Рассмотреть 15 жалоб', max: 15, getProgress: () => complaintState.resolved, reward: 120 },
-            { id: 'q4', title: 'Мастер', desc: 'Рассмотреть 200 сообщений', max: 200, getProgress: () => state.resolved, reward: 500 }
+            { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 },
+            { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 },
+            { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 },
+            { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 }
         ];
 
-        // === 4-5. МАССИВЫ КОНТЕНТА И ПРАВАЯ ПАНЕЛЬ (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
-        // ... (Тут твои огромные массивы allModMessages, allSupQuestions, allComplaints) ...
-        const allModMessages = [{type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},{type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},{type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"}];
-        const allSupQuestions = [{ title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }];
-        const allComplaints = [{ text: 'Жалоба на капс...', evidence: 'Скрин...', type: 'reject' }];
+        // === 4. МАССИВЫ СООБЩЕНИЙ И ЖАЛОБ ===
+        const allModMessages = [
+            {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},{type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},{type:"warn",text:"ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"},{type:"warn",text:"ООООООООООООООООООООООООООООООООООООООО"},{type:"warn",text:"УУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУ"},{type:"warn",text:"Как дела ????????????????????????"},{type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"},{type:"warn",text:"Эй,,,,,,,,,, кто тут главный????????"},{type:"warn",text:"Продам аксы+++++++++++++++++++++"},{type:"warn",text:"Кто в казик $$$$$$$$$$$$$$$$$$$$$$$"},{type:"warn",text:"Кто в патруль? Кто в патруль? Кто в патруль?"},{type:"warn",text:"1 2 3 4 5 Проверка чата"},{type:"warn",text:"фвлыофдвлофыдвло (сори клаву проверяю)"},{type:"warn",text:"куплю машину быстро"},{type:"warn",text:"spam spam spam spam spam"},{type:"warn",text:"@everyone зайдите в игру пж"},{type:"warn",text:"@here кто продаст ремку?"},{type:"warn",text:"@Lexa_Mackenzie @Lexa_Mackenzie @Lexa_Mackenzie"},{type:"warn",text:"@John Wick ответь в лс"},{type:"warn",text:"Дайте 10к на развитие пожалуйста, я новичок"},{type:"warn",text:"Пацаны, скиньтесь по 100 рублей на фаму пж"},{type:"warn",text:"Админы, дайте админку или виртов хоть чуть-чуть"},{type:"warn",text:"Кто может задонатить мне на блек пасс? Умоляю"},{type:"warn",text:"Подарите машину, мне не на чем ездить"},{type:"warn",text:"Да ваш президент вообще ничего не понимает в экономике"},{type:"warn",text:"Моя религия самая правильная, а вы все не правы"},{type:"warn",text:"Слава [название страны]! Все остальные — мусор"},{type:"warn",text:"Кто за какую партию голосовал? Давайте обсудим"},{type:"warn",text:"Политики вообще оборзели в край"},{type:"warn",text:"Ты вообще к****, иди откисай на спавне"},{type:"warn",text:"Да вы вы тут нули, я вас один раскидаю"},{type:"warn",text:"Плачь больше, форумная крыса"},{type:"warn",text:"Чел, у тебя iq как у хлебушка, не пиши сюда"},{type:"warn",text:"Боже, какие же криворукие сидят в этой фракции"},{type:"warn",text:"Слышь, герой, пошли в войс, я тебе объясню кто ты"},{type:"warn",text:"Что ты там вякнул? Иди уроки делай, ш*****а"},{type:"warn",text:"Твоя фама - сборище н***их, лови аптечку"},{type:"warn",text:"Все бабы в этой игре играть не умеют"},{type:"warn",text:"Ненавижу [национальность], вечно они всё руинят"},{type:"warn",text:"Твое место на кухне, а не в ОПГ"},{type:"warn",text:"Играешь как девчонка, иди в куклы играй"},{type:"warn",text:"Админ, я тебе в лс флудить буду пока не ответишь"},{type:"warn",text:"Давайте все вместе репорт админам заспамим"},{type:"warn",text:"Эй, модер, ты вообще работать собираешься?"},{type:"warn",text:"Давай, забань меня, тебе же хуже будет"},{type:"warn",text:"Я тебя по IP вычислю, жди гостей вечером"},{type:"warn",text:"Напиши еще слово и я тебе интернет отключу"},{type:"warn",text:"Жди докс, к****, я тебя найду"},{type:"warn",text:"Админы вообще не работают, только и умеют муты давать"},{type:"warn",text:"Слышь, я тебя сейчас в чс закину, понял?"},{type:"warn",text:"Да я твой дом труба шатал"},{type:"warn",text:"Сколько стоит випка? Хочу купить"},{type:"warn",text:"Как стать админом? Я всё знаю про игру"},{type:"warn",text:"Кто со мной в казино на миллион?"},{type:"warn",text:"Как работает эта рулетка? Я ничего не понял"},{type:"warn",text:"Где можно купить наркотики в игре?"},{type:"warn",text:"Пойду ограблю банк, кто со мной?"},{type:"warn",text:"Я сейчас буду всех ДМить, берегитесь!"},{type:"warn",text:"Как взломать аккаунт? Друг попросил узнать"},{type:"warn",text:"Где скачать читы на бессмертие?"},{type:"warn",text:"Продам свой аккаунт, кому нужен?"},{type:"warn",text:"ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ"},{type:"warn",text:"Ты щас рот закроешь и пойдешь отсюда, понял?"},
+            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Продаю симку блатную, оплата криптой"},{type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Перекину вирты с Тамбова на другой сервер"},{type:"ban",text:"Есть имущка на 3 серве, меняю на Тамбов 73"},{type:"ban",text:"Трансфер виртов, комиссия 5%. Пишите в лс."},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Надоел этот сервер, пошлите играть на другой"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жесть просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Удвою ваши вирты, кидайте на банк счет 12345"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Я с читами играю уже месяц и меня не банят"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Куплю бизнес за рубли, кто продает?"},{type:"ban",text:"Ищу людей для ДМ состава, будем всех разносить"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
+        ];
 
+        const allSupQuestions = [
+            { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где находится здание ФСБ?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Как доехать до автосалона низкого класса?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Не могу найти автосервис (СТО), подскажите команду.", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Как найти ближайшую заправку?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где находится работа водолаза?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Как найти автошколу?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где находится больница?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где находится тюрьма (ФСИН)?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] },
+            { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] },
+            { title: "Команды", text: "Какая команда для передачи денег другому?", keywords: ["pay", "пей"] },
+            { title: "Команды", text: "Как использовать ремкомплект для починки?", keywords: ["repair", "репайр", "инвентар", "меню"] },
+            { title: "Команды", text: "Подскажите команду, чтобы завести машину.", keywords: ["engine", "енжин"] },
+            { title: "Команды", text: "Как выкинуть пассажира из моего авто?", keywords: ["eject", "еджект"] },
+            { title: "Команды", text: "Как показать медкарту врачу?", keywords: ["med", "мед"] },
+            { title: "Команды", text: "Как показать лицензии?", keywords: ["lic", "лиценз"] },
+            { title: "Команды", text: "Какая команда открывает багажник?", keywords: ["trunk", "транк", "багажник", "carpass"] },
+            { title: "Команды", text: "Как заправить машину на АЗС?", keywords: ["fill", "филл"] },
+            { title: "Команды", text: "Как посмотреть свою статистику и уровень?", keywords: ["/mm", "/stat", "статистик"] },
+            { title: "Команды", text: "Как открыть двери машины?", keywords: ["lock", "лок"] },
+            { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] },
+            { title: "Уровни", text: "С какого уровня доступна работа водолазом?", keywords: ["18", "восемнадцат"] },
+            { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] },
+            { title: "Уровни", text: "С какого лвл я могу работать кладоискателем?", keywords: ["3", "трет"] },
+            { title: "Уровни", text: "С какого уровня доступна работа в МЧС?", keywords: ["3", "трет"] },
+            { title: "Вопросы", text: "Где можно купить ремкомплект?", keywords: ["24", "магазин", "азс"] },
+            { title: "Вопросы", text: "Где взять лицензию на оружие?", keywords: ["лицензер", "правительств", "донат"] },
+            { title: "Вопросы", text: "Как устроиться в ОПГ?", keywords: ["собеседован", "форум", "заявк"] },
+            { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] },
+            { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] },
+            { title: "Вопросы", text: "Как оплатить штрафы?", keywords: ["банк", "банкомат", "штраф"] },
+            { title: "Не вижу каналов", meta: "Дискорд", text: "Я зашел на сервер, но вижу только приветствие. Что нужно сделать?", keywords: ['вериф', 'роль', 'правил'] },
+            { title: "Не приходит код", meta: "Проблема", text: "Мне не приходит код подтверждения на почту. Что делать?", keywords: ['спам', 'подожд', 'повтор'] },
+            { title: "Куда жаловаться", meta: "Жалобы", text: "Хочу подать жалобу на модератора. Куда писать?", keywords: ['жалоб', 'форум'] },
+            { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] }
+        ];
+
+        const allComplaints = [
+            { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' },
+            { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' },
+            { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' },
+            { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' },
+            { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' },
+            { text: 'Жалоба на то, что хелпер не ответил в течение 3 минут ночью.', evidence: 'Только время отправки.', type: 'reject' },
+            { text: 'Игрок сообщает, что модератор угрожал ему баном без причины в ЛС.', evidence: 'Полная переписка и ник модератора.', type: 'approve' },
+            { text: 'Жалоба касается возможной продажи доната сотрудником.', evidence: 'Скрины перевода, переписки.', type: 'pass' }
+        ];
+
+        // === 5. ПРАВАЯ ПАНЕЛЬ И НАВИГАЦИЯ ===
         const rightContent = {
-            moderation: { title: "Материалы модератора", lead: "Подсказки по модерации.", cards: [["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс."], ["Бан / Перма", "Реклама, РМТ."]] },
-            profile: { title: "Ваш профиль", lead: "Личная статистика и баланс.", cards: [["Никнейм", "Виден всем."], ["XP", "Ваш чистый заработок."]] },
-            cosmetics: { title: "Магазин косметики", lead: "Кастомизация аккаунта.", cards: [["Статус", "В разработке."], ["Выдача", "Автоматически."]] },
-            admin_stats: { title: "Статистика", lead: "Данные всех сотрудников.", cards: [["Просмотр", "Только для руководства."]] }
+            moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] },
+            timeattack: { title: "Спидран", lead: "Правила режима на время.", cards: [ ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."], ["Опыт", "XP не зачисляется на баланс."] ] },
+            support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] },
+            complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] },
+            quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] },
+            guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
+            leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Никнейм", "Отображаются только сотрудники с установленным никнеймом."] ] },
+            about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
+            shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Рулетка", "Призы могут выдать XP или штраф."] ] },
+            ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
+            report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Сдавать отчеты могут все авторизованные модераторы."], ["Проверка", "Только администрация может проверять и начислять XP."] ] },
+            admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
+            ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
+            creator: { title: "Управление доступом", lead: "Только для Создателя (John Wick).", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Троллинг", "Сброс XP ставит долг 99999. Смена ника моментально меняет имя в базе."], ["Ключи", "Все ключи сохраняются в базе. Модератор вводит их для доступа."] ] },
+            leadership: { title: "Управление пользователями", lead: "Только для Руководства.", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] },
+            ap_admin: { title: "Управление пользователями (АП)", lead: "Только для Руководства АП.", cards: [ ["Баллы", "Выдача или снятие баллов обновляет ap_spent пользователя."], ["Ключи", "Генерация ключей для доступа в магазин АП."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] }
         };
 
         function renderRight(mode) {
@@ -1133,11 +1152,10 @@
             if(!rt || !rl || !rc) return;
             const data = rightContent[mode] || rightContent['moderation'];
             rt.innerHTML = data.title; rl.innerHTML = data.lead;
-            rc.innerHTML = (data.cards || []).map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
+            rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
         }
 
-        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","shop","ap_shop","report","admin_log","ap_admin_log","quests","creator","leadership","ap_admin", "profile", "cosmetics", "admin_stats"];
-
+        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","shop","ap_shop","report","admin_log","ap_admin_log","quests","creator","leadership","ap_admin"];
         function switchMode(mode, btn) {
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
             if(btn) btn.classList.add("active");
@@ -1145,21 +1163,71 @@
                 const panel = document.getElementById("mode-" + m); 
                 if(panel) { if(m===mode){ panel.style.display=""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } else panel.style.display="none"; }
             });
-
             let currentTheme = "mod";
             if(["support","ap_admin","ap_admin_log","ap_shop"].includes(mode)) currentTheme = "support";
-            else if(["about","shop","leadership","report","guide","leaderboard","admin_log","complaints","quests","timeattack","creator", "profile", "cosmetics", "admin_stats"].includes(mode)) currentTheme = mode;
+            else if(["about","shop","leadership","report","guide","leaderboard","admin_log","complaints","quests","timeattack","creator"].includes(mode)) currentTheme = mode;
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
 
             if(mode === 'leaderboard') loadLeaderboard();
-            if(mode === 'shop' || mode === 'ap_shop' || mode === 'profile' || mode === 'cosmetics') updateShopStats();
+            if(mode === 'shop' || mode === 'ap_shop') updateShopStats();
             if(mode === 'report') checkReportAccess(); 
             if(mode === 'admin_log') renderAdminLogs(false); 
             if(mode === 'ap_admin_log') renderAdminLogs(true);
             if(mode === 'quests') renderQuests(); 
             if(mode === 'creator') loadCreatorPanelData();
-            if(mode === 'leadership' || mode === 'ap_admin' || mode === 'admin_stats') loadUsersForAdmin();
+            if(mode === 'leadership' || mode === 'ap_admin') loadUsersForAdmin();
+
+            const brandSub = document.getElementById("brandSubtitle");
+            const hTitle = document.getElementById("heroTitle"); const hText = document.getElementById("heroText"); const hBadge = document.getElementById("heroBadge2");
+            if (mode === "moderation") {
+                if(brandSub) brandSub.textContent = "Симулятор смены модераторов";
+                if(hTitle) hTitle.innerHTML = 'Следи за <span>порядком</span> на сервере.'; if(hText) hText.textContent = "Проверяй сообщения, принимай решения и поддерживай порядок в чате.";
+                if(hBadge) hBadge.textContent = "Режим: модераторы";
+            } else if (mode === "timeattack") {
+                if(brandSub) brandSub.textContent = "Симулятор смены: На время";
+                if(hTitle) hTitle.innerHTML = 'Успей за <span>минуту</span>.'; if(hText) hText.textContent = "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!";
+                if(hBadge) hBadge.textContent = "Режим: спидран";
+            } else if (mode === "complaints") {
+                if(brandSub) brandSub.textContent = "Симулятор смены: Жалобы";
+                if(hTitle) hTitle.innerHTML = 'Рассматривай <span>репорты</span>.'; if(hText) hText.textContent = "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.";
+                if(hBadge) hBadge.textContent = "Режим: жалобы";
+            } else if (mode === "support") {
+                if(brandSub) brandSub.textContent = "Симулятор смены агентов поддержки";
+                if(hTitle) hTitle.innerHTML = 'Создавай <span>уют</span> и помогай игрокам.'; if(hText) hText.textContent = "Отвечай на вопросы игроков, ориентируйся в материалах.";
+                if(hBadge) hBadge.textContent = "Режим: агенты поддержки";
+            } else if (mode === "quests") {
+                if(brandSub) brandSub.textContent = "Квесты сотрудников";
+                if(hTitle) hTitle.innerHTML = 'Выполняй <span>задания</span>.'; if(hText) hText.textContent = "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.";
+                if(hBadge) hBadge.textContent = "Режим: квесты";
+            } else if (mode === "guide") {
+                if(brandSub) brandSub.textContent = "Руководство Сервера";
+                if(hTitle) hTitle.innerHTML = 'Контакты <span>руководства</span>.'; if(hText) hText.textContent = "Основная информация и контактные данные."; if(hBadge) hBadge.textContent = "Режим: руководство";
+            } else if (mode === "leaderboard") {
+                if(brandSub) brandSub.textContent = "Таблица лидеров";
+                if(hTitle) hTitle.innerHTML = 'Топ <span>лучших</span>.'; if(hText) hText.textContent = "Отображаются активные сотрудники с наибольшим количеством XP."; if(hBadge) hBadge.textContent = "Режим: лидерборд";
+            } else if (mode === "about") {
+                if(brandSub) brandSub.textContent = "Люди, которые сделали этот проект";
+                if(hTitle) hTitle.innerHTML = 'Узнай, кто <span>стоит за идеей</span>.'; if(hText) hText.textContent = "Этот раздел посвящён авторам и тем, кто помогал собрать тренажёр.";
+                if(hBadge) hBadge.textContent = "Режим: о команде";
+            } else if (mode === "shop" || mode === "ap_shop") {
+                if(brandSub) brandSub.textContent = "Магазин за XP/Баллы";
+                if(hTitle) hTitle.innerHTML = 'Трать <span>Опыт</span> на бонусы.'; if(hText) hText.textContent = "Покупайте скидки для ускорения повышения или испытай удачу в играх.";
+                if(hBadge) hBadge.textContent = "Режим: магазин";
+            } else if (mode === "report") {
+                if(brandSub) brandSub.textContent = "Симулятор смены: Отчетность";
+                if(hTitle) hTitle.innerHTML = 'Сдавай <span>отчеты</span> вовремя.'; if(hText) hText.textContent = "Отправляй скриншоты своего онлайна в Discord для проверки руководством.";
+                if(hBadge) hBadge.textContent = "Режим: отчетность";
+            } else if (mode === "admin_log" || mode === "ap_admin_log") {
+                if(brandSub) brandSub.textContent = "Админ-Панель";
+                if(hTitle) hTitle.innerHTML = 'Логи <span>выдач</span>.'; if(hText) hText.textContent = "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.";
+                if(hBadge) hBadge.textContent = "Режим: руководство";
+            } else if (mode === "creator" || mode === "leadership" || mode === "ap_admin") {
+                if(brandSub) brandSub.textContent = "Панель Руководства";
+                if(hTitle) hTitle.innerHTML = 'Управление <span>Пользователями</span>.'; if(hText) hText.textContent = "Управление базой данных, выдача опыта и создание ключей доступа.";
+                if(hBadge) hBadge.textContent = "Режим: Руководство";
+            }
+
         }
 
         document.querySelectorAll('.main-cat-btn').forEach(btn => {
@@ -1170,7 +1238,6 @@
                 const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
             });
         });
-
         document.querySelectorAll(".mode-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const mode = btn.dataset.mode;
@@ -1180,80 +1247,177 @@
                 switchMode(mode, btn);
             });
         });
-
-        // === 6-7. ЛОГИКА ИГРЫ И СТАТИСТИКИ (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
-        function randomFunnyNick() { return "Игрок_" + Math.floor(Math.random()*1000); }
+        
+        // === 6. ЛОГИКА ИГРЫ И АНТИ-СПАМ ===
+        function randomFunnyNick() { 
+            const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"];
+            const funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
+            return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
+        }
         function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
-        function initials(name) { return name ? name[0].toUpperCase() : "?"; }
+        function initials(name) { return name.split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
         function calcXP(value) { return Math.floor(Number(value) / 10) * 15; }
         function availableXp() { return Math.max(0, calcXP(state.correct) + Number(state.reportXp || 0) - Number(shopState.spent || 0)); }
         function availablePts() { return Math.max(0, calcXP(supportState.correct) - Number(shopState.apSpent || 0)); }
 
+        let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
+        function isSpamming() {
+            const now = Date.now();
+            const blockUntil = localStorage.getItem('spam_block_until');
+            if (blockUntil && now < blockUntil) return true;
+            if (now - lastActionTime < 1000) {
+                spamWarnings++;
+                if (spamWarnings >= 3) {
+                    const penaltyTime = now + 60000;
+                    localStorage.setItem('spam_block_until', penaltyTime);
+                    showSpamModalWithTimer(); spamWarnings = 0; return true;
+                }
+            } else { spamWarnings = Math.max(0, spamWarnings - 1); }
+            lastActionTime = now; return false;
+        }
+
+        function showSpamModalWithTimer() {
+            const blockUntil = localStorage.getItem('spam_block_until');
+            if (!blockUntil) return;
+            const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
+            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
+            let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
+            closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
+            spamTimerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) { clearInterval(spamTimerInterval); localStorage.removeItem('spam_block_until'); closeBtn.disabled = false; closeBtn.style.opacity = '1'; closeBtn.style.cursor = 'pointer'; closeBtn.textContent = 'Я понял, больше не буду'; } 
+                else closeBtn.textContent = `Блокировка: ${timeLeft} сек...`;
+            }, 1000);
+        }
+        document.getElementById('closeSpamModal').addEventListener('click', (e) => { if (!e.target.disabled) document.getElementById('spamModal').style.display = 'none'; });
+        function pushLog(text) { state.log.unshift(text); state.log = state.log.slice(0, 50); renderLogs(); }
+        function renderLogs() {
+            const logList = document.getElementById("logList");
+            if (!logList) return;
+            logList.innerHTML = state.log.length > 0 ? state.log.map(item => `<div class="log-item">${item}</div>`).join("") : '<div class="log-item">Пока пусто. Нажми «Начать смену».</div>';
+        }
+
+        function startGame() {
+            state.started = true;
+            supportState.started = true; complaintState.started = true; document.getElementById('startBtn').disabled = true;
+            randomMessage(); randomComplaint();
+            if (allSupQuestions.length) {
+                if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
+                supportState.currentIndex = supQueue.pop();
+                const q = allSupQuestions[supportState.currentIndex];
+                document.getElementById("supportQuestionTitle").textContent = q.title || "Вопрос"; document.getElementById("supportMeta").textContent = q.meta || "Вопрос игрока"; document.getElementById("supportQuestionText").textContent = q.text || "Без текста"; document.getElementById("supportResultText").textContent = "";
+            }
+            updateModStats(); updateSupportStats(); updateComplaintStats();
+            document.getElementById("game").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function resetGame() {
+            state.started = false;
+            supportState.started = false; complaintState.started = false; document.getElementById('startBtn').disabled = false;
+            document.getElementById("messageText").textContent = "Пока сообщений нет. Нажми «Начать смену».";
+            document.getElementById("compText").textContent = "Нажми «Начать смену»."; document.getElementById("supportQuestionText").textContent = "Нажми «Начать смену».";
+            pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
+        }
+
+        function randomMessage() {
+            if (modQueue.length === 0) { modQueue = allModMessages.map((_, i) => i); shuffleArray(modQueue); }
+            const item = allModMessages[modQueue.pop()];
+            const user = randomFunnyNick(); state.current = { ...item, user };
+            document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Ожидает проверки"; document.getElementById("messageText").textContent = item.text;
+            document.getElementById("avatarBox").textContent = initials(user);
+        }
+
+        function randomComplaint() {
+            if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
+            const item = allComplaints[compQueue.pop()]; complaintState.current = item;
+            document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
+        }
+
+        window.judge = function(action) {
+            if (!state.started || !state.current) { startGame(); return; }
+            if (isSpamming()) return;
+            const isCorrect = action === state.current.type; state.resolved++;
+            if (isCorrect) { state.correct++; playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
+            else { state.mistakes++; playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
+            updateModStats(); saveProgress(); randomMessage();
+        };
+
+        window.judgeComplaint = function(action) {
+            if (!complaintState.started || !complaintState.current) { startGame(); return; }
+            if (isSpamming()) return;
+            const isCorrect = action === complaintState.current.type; complaintState.resolved++;
+            if (isCorrect) { complaintState.correct++; playSound('ok'); pushLog(`✅ Жалобы: верное решение (${action})`); } 
+            else { complaintState.mistakes++; playSound('fail'); pushLog(`❌ Жалобы: ошибка (${action})`); }
+            updateComplaintStats(); saveProgress(); randomComplaint();
+        };
+
+        document.getElementById('supportCheckBtn')?.addEventListener('click', () => {
+            if (!supportState.started || supportState.currentIndex < 0) return;
+            const q = allSupQuestions[supportState.currentIndex]; const answer = document.getElementById("supportAnswerInput").value.trim().toLowerCase();
+            const resEl = document.getElementById("supportResultText");
+            if (!answer) { resEl.textContent = "Напиши ответ игроку."; return; }
+            supportState.resolved++; 
+            const ok = q.keywords.some(k => answer.includes(k));
+            if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
+            else { supportState.mistakes++; resEl.textContent = "Ответ не засчитан: не хватает ключевых слов или команды."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
+            updateSupportStats(); saveProgress();
+        });
+
+        document.getElementById('supportNextBtn')?.addEventListener('click', () => {
+            if (!supportState.started) return;
+            if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
+            supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
+            document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
+        });
+
+        // === 7. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
         function updateModStats() {
-            document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = availableXp();
+            const xp = availableXp();
+            document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = xp;
             document.getElementById("xpFill").style.width = (Math.min(1, (state.correct % 10 || (state.correct ? 10 : 0)) / 10) * 100) + "%";
+            document.getElementById("resultBanner").firstElementChild.innerHTML = `<strong>${!state.started ? "Результат: смена ещё не начата" : "Результат: смена в процессе"}</strong>`;
+            document.getElementById("resultHint").textContent = !state.started ? "Нажми «Начать смену», чтобы получить сообщение." : `Сейчас доступно ${xp} XP.`;
             updateShopStats(); renderQuests();
         }
         function updateSupportStats() {
-            document.getElementById("supportResolvedValue").textContent = supportState.resolved; document.getElementById("supportCorrectValue").textContent = supportState.correct; document.getElementById("supportMistakeValue").textContent = supportState.mistakes; document.getElementById("supportXpValue").textContent = availablePts();
+            const pts = availablePts();
+            document.getElementById("supportResolvedValue").textContent = supportState.resolved; document.getElementById("supportCorrectValue").textContent = supportState.correct; document.getElementById("supportMistakeValue").textContent = supportState.mistakes; document.getElementById("supportXpValue").textContent = pts;
             document.getElementById("supportXpFill").style.width = (Math.min(1, (supportState.correct % 10 || (supportState.correct ? 10 : 0)) / 10) * 100) + "%";
+            document.getElementById("supportBannerHint").textContent = !state.started ? "Нажми «Начать смену», чтобы открыть вопрос." : `Общий баланс: ${pts} Баллов.`;
             updateShopStats(); renderQuests();
         }
         function updateComplaintStats() {
-            document.getElementById("compResolvedValue").textContent = complaintState.resolved; document.getElementById("compCorrectValue").textContent = complaintState.correct; document.getElementById("compMistakeValue").textContent = complaintState.mistakes; document.getElementById("compXpValue").textContent = availableXp(); renderQuests();
+            document.getElementById("compResolvedValue").textContent = complaintState.resolved;
+            document.getElementById("compCorrectValue").textContent = complaintState.correct; document.getElementById("compMistakeValue").textContent = complaintState.mistakes; document.getElementById("compXpValue").textContent = availableXp(); renderQuests();
         }
-        
         function updateShopStats() {
             if(document.getElementById('shopTotalXp')) document.getElementById('shopTotalXp').textContent = availableXp();
             if(document.getElementById('shopSpentXp')) document.getElementById('shopSpentXp').textContent = Number(shopState.spent) || 0;
             if(document.getElementById('apShopTotalPts')) document.getElementById('apShopTotalPts').textContent = availablePts();
             if(document.getElementById('apShopSpentPts')) document.getElementById('apShopSpentPts').textContent = Number(shopState.apSpent) || 0;
-            renderShopItems(); renderApShopItems(); renderCosmeticsItems(); updateProfileStats();
+            renderShopItems(); renderApShopItems();
         }
 
-        // НОВЫЕ ФУНКЦИИ JS: ПРОФИЛЬ И КОСМЕТИКА
-        function updateProfileStats() {
-            if (!currentUser) return;
-            if (document.getElementById('profileNickname')) document.getElementById('profileNickname').textContent = currentNickname || currentUser.email.split('@')[0];
-            if (document.getElementById('profileEmail')) document.getElementById('profileEmail').textContent = currentUser.email;
-            if (document.getElementById('profileAvatar')) document.getElementById('profileAvatar').textContent = initials(currentNickname || currentUser.email);
-            if (document.getElementById('profileXp')) document.getElementById('profileXp').textContent = availableXp();
-            if (document.getElementById('profileModTotal')) document.getElementById('profileModTotal').textContent = state.resolved;
-            if (document.getElementById('profileSupTotal')) document.getElementById('profileSupTotal').textContent = supportState.resolved;
-            if (document.getElementById('profileCompTotal')) document.getElementById('profileCompTotal').textContent = complaintState.resolved;
-        }
-
-        function renderCosmeticsItems() {
-            const container = document.getElementById('cosmeticsItemsContainer');
-            if(!container) return; container.innerHTML = ''; const currentXp = availableXp();
-            if(document.getElementById('cosmeticsXp')) document.getElementById('cosmeticsXp').textContent = currentXp;
-            cosmeticsItems.forEach(item => {
+        // === 8. МАГАЗИН И МИНИ-ИГРЫ ===
+        function renderShopItems() {
+            const container = document.getElementById('shopItemsContainer');
+            if(!container) return;
+            container.innerHTML = ''; const currentXp = availableXp();
+            shopItems.forEach(item => {
                 const canAfford = currentXp >= item.price;
-                container.innerHTML += `<div class="shop-card" style="border-color: rgba(0, 229, 255, 0.4);"> <div style="display:flex; justify-content:space-between;"><h3>${item.icon} ${item.title}</h3><div class="shop-price">${item.price} XP</div></div> <p>${item.desc}</p> <button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyItem('${item.id}', ${item.price}, 'cosmetics')">${canAfford ? 'Купить' : 'Не хватает XP'}</button> </div>`;
+                container.innerHTML += `<div class="shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price">${item.price} XP</div></div> <p>${item.desc}</p> <button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить / Играть' : 'Не хватает XP'}</button> </div>`;
+            });
+        }
+        function renderApShopItems() {
+            const container = document.getElementById('apShopItemsContainer');
+            if(!container) return;
+            container.innerHTML = ''; const currentPts = availablePts();
+            apShopItems.forEach(item => {
+                const canAfford = currentPts >= item.price;
+                container.innerHTML += `<div class="shop-card ap-shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price ap-shop-price">${item.price} Баллов</div></div> <p>${item.desc}</p> <button class="shop-buy-btn ap-shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyApItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button> </div>`;
             });
         }
 
-        // НОВАЯ ФУНКЦИЯ: СТАТИСТИКА ВСЕХ ДЛЯ РУКОВОДСТВА
-        document.getElementById('loadAllStatsBtn')?.addEventListener('click', async () => {
-            const area = document.getElementById('adminStatsArea');
-            area.innerHTML = '<div class="message-text">Загрузка данных из БД...</div>';
-            const { data: users, error } = await supa.from('user_stats').select('*').order('mod_correct', { ascending: false });
-            if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
-            if (users && users.length > 0) {
-                area.innerHTML = users.map(u => `
-                    <div class="rule-item" style="background: rgba(0,0,0,0.4); border: 1px solid rgba(82, 199, 123, 0.2); padding: 1rem; border-radius: 12px; align-items: center;">
-                        <div class="avatar" style="width:40px; height:40px;">${initials(u.nickname || u.email)}</div>
-                        <div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center; width: 100%;">
-                            <div><strong>${u.nickname || u.email}</strong><br><span style="font-size:0.8rem;">Мод: ${u.mod_resolved} | АП: ${u.sup_resolved}</span></div>
-                            <div style="text-align:right;"><span class="badge xp">${u.shop_spent} XP Траты</span></div>
-                        </div>
-                    </div>`).join('');
-            } else { area.innerHTML = '<div class="message-text">Пользователи не найдены.</div>'; }
-        });
-
-        // === 8-13. ВСЯ ОСТАЛЬНАЯ ЛОГИКА (ТВОЙ ОРИГИНАЛЬНЫЙ КОД) ===
-        // ... (Тут твои функции buyItem, openFortune, openCoin, saveProgress, checkAuth и т.д.) ...
-        
         async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0) {
             if (!currentUser) return;
             await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: isAp ? 'ap_shop' : 'mod_shop', status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]);
@@ -1261,40 +1425,605 @@
 
         window.buyItem = async function(id, price, action) {
             if (availableXp() >= price) {
-                shopState.spent += price; playSound('ok'); updateShopStats(); await saveProgress();
+                shopState.spent += price;
+                playSound('ok'); updateShopStats(); await saveProgress();
                 if (action === 'mod_roulette') openFortune(false);
                 else if (action === 'mod_coin') openCoinGame();
                 else if (action === 'mod_safes') openSafesGame();
                 else if (action === 'mod_jw') openJwQuiz();
-                else { const item = shopItems.find(i => i.id === id) || cosmeticsItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price); alert(`Куплено: ${item.title}. Заявка отправлена!`); }
+                else { const item = shopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price);
+                alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); }
             } else playSound('fail');
         };
 
-        // Заглушки для твоих систем (чтобы не было ошибок в консоли, если ты не скопировал их из оригинала)
-        function openFortune() {} function openCoinGame() {} function openSafesGame() {} function openJwQuiz() {}
-        async function saveProgress() { if(!currentUser) return; await supa.from('user_stats').upsert({ user_id: currentUser.id, nickname: currentNickname, email: currentUser.email, mod_resolved: state.resolved, mod_correct: state.correct, mod_mistakes: state.mistakes, sup_resolved: supportState.resolved, sup_correct: supportState.correct, sup_mistakes: supportState.mistakes, shop_spent: shopState.spent, ap_spent: shopState.apSpent }); }
-
-        async function checkAuth() {
-            const { data: { session } } = await supa.auth.getSession();
-            if (session) {
-                currentUser = session.user; document.getElementById('userEmailDisplay').textContent = currentUser.email;
-                document.getElementById('loginBtnUI').style.display = 'none'; document.getElementById('logoutBtnUI').style.display = 'inline-block';
-                const isModLeader = adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail;
-                if (isModLeader) { 
-                    document.getElementById('leadershipTabBtn').style.display = 'inline-block'; 
-                    document.getElementById('adminStatsTabBtn').style.display = 'inline-block';
-                    document.getElementById('adminLogTabBtn').style.display = 'inline-block'; 
+        window.buyApItem = async function(id, price, action) {
+            if (availablePts() >= price) {
+                shopState.apSpent += price;
+                playSound('ok'); updateShopStats(); await saveProgress();
+                if (action === 'ap_roulette') openFortune(true);
+                else { const item = apShopItems.find(i => i.id === id);
+                await logPurchase(`Покупка: ${item.title}`, false, true, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`);
                 }
-                const {data} = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).single();
-                if(data) { currentNickname = data.nickname; state.resolved = data.mod_resolved; state.correct = data.mod_correct; shopState.spent = data.shop_spent; }
-                updateModStats(); updateSupportStats(); updateShopStats();
+            } else playSound('fail');
+        };
+
+        function openFortune(isAp = false) {
+            const modal = document.getElementById('fortuneModal');
+            const track = document.getElementById('rouletteTrack'); const resultText = document.getElementById('fortuneResultText');
+            document.getElementById('fortuneTitle').textContent = isAp ? "Рулетка АП" : "Рулетка Модерации";
+            document.getElementById('fortuneTitle').style.color = isAp ? "#ff8fc4" : "#ffbf47";
+            resultText.textContent = ''; track.style.transition = 'none'; track.style.transform = 'translateX(0)'; track.innerHTML = '';
+            document.getElementById('closeFortuneBtn').style.display = 'none'; modal.style.display = 'flex';
+            
+            const prizes = isAp ?
+            [{ type: 'r-leg', icon: '🏆', text: '50 Баллов', val: -50 }, { type: 'r-rare', icon: '💎', text: '30 Баллов', val: -30 }, { type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }] : [{ type: 'r-leg', icon: '🏆', text: '500 XP', val: -500 }, { type: 'r-rare', icon: '💎', text: '300 XP', val: -300 }, { type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: +100 }];
+            let winningIndex = Math.floor(Math.random() * 10) + 45; let winnerItem = null;
+            for (let i = 0; i < 60; i++) { const p = prizes[Math.floor(Math.random() * prizes.length)];
+            if (i === winningIndex) winnerItem = p; track.innerHTML += `<div class="roulette-item ${p.type}"><i>${p.icon}</i><span>${p.text}</span></div>`;
+            }
+            
+            setTimeout(() => {
+                const offset = (winningIndex * 160) + 80 - (modal.querySelector('.roulette-wrapper').offsetWidth / 2);
+                track.style.transition = 'transform 5s cubic-bezier(0.15, 0.85, 0.2, 1)'; track.style.transform = `translateX(-${offset}px)`;
+                setTimeout(async () => {
+                    if (winnerItem.val !== 0) { if(isAp) shopState.apSpent -= winnerItem.val; else shopState.spent -= winnerItem.val; await logPurchase(`Рулетка: ${winnerItem.text}`, true, isAp, 0); }
+                    updateShopStats(); updateModStats(); updateSupportStats(); await saveProgress(); resultText.textContent = `🎁 ${winnerItem.text} 🎁`; playSound(winnerItem.val <= 0 ? 'win' : 'fail');
+                    document.getElementById('closeFortuneBtn').style.display = 'inline-block';
+                }, 5200);
+            }, 100);
+        }
+        document.getElementById('closeFortuneBtn').addEventListener('click', () => { document.getElementById('fortuneModal').style.display = 'none'; });
+
+        function openCoinGame() {
+            document.getElementById('coinModal').style.display = 'flex'; document.getElementById('coinResult').textContent = '';
+            document.getElementById('coinAnimation').style.display = 'none'; document.getElementById('closeCoinBtn').style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false;
+        }
+        function playCoin(choice) {
+            document.getElementById('btnHeads').disabled = true;
+            document.getElementById('btnTails').disabled = true;
+            const anim = document.getElementById('coinAnimation'); anim.style.display = 'block'; anim.classList.add('flipping');
+            setTimeout(async () => {
+                anim.classList.remove('flipping'); const outcome = Math.random() < 0.5 ? 'heads' : 'tails'; anim.textContent = outcome === 'heads' ? '🦅' : '🪙'; const won = choice === outcome;
+                if (won) { shopState.spent -= 1000; await logPurchase(`Орёл/Решка: Победа (1000 XP)`, true, false, 0); document.getElementById('coinResult').textContent = 'Победа! Выпал ' + (outcome==='heads'?'Орёл':'Решка') + '. +1000 XP'; document.getElementById('coinResult').style.color = 'var(--color-success)'; playSound('win'); }
+                else { document.getElementById('coinResult').textContent = 'Проигрыш. Выпал ' + (outcome==='heads'?'Орёл':'Решка') + '.'; document.getElementById('coinResult').style.color = 'var(--color-error)'; playSound('fail'); }
+                updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeCoinBtn').style.display = 'inline-block';
+            }, 2000);
+        }
+        document.getElementById('btnHeads')?.addEventListener('click', () => playCoin('heads'));
+        document.getElementById('btnTails')?.addEventListener('click', () => playCoin('tails'));
+        document.getElementById('closeCoinBtn')?.addEventListener('click', () => document.getElementById('coinModal').style.display = 'none');
+
+        function openSafesGame() {
+            document.getElementById('safesModal').style.display = 'flex';
+            document.getElementById('safesResult').textContent = ''; document.getElementById('closeSafesBtn').style.display = 'none'; document.querySelectorAll('.safe-btn').forEach(btn => { btn.textContent = '🧰'; btn.disabled = false; });
+        }
+        document.querySelectorAll('.safe-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                document.querySelectorAll('.safe-btn').forEach(b => b.disabled = true);
+                const winIndex = Math.floor(Math.random() * 3); const chosen = parseInt(btn.dataset.index);
+                document.querySelectorAll('.safe-btn').forEach((b, i) => { b.textContent = i === winIndex ? '💰' : '🕷️'; 
+                });
+                if (chosen === winIndex) { shopState.spent -= 1200; await logPurchase(`Три Сейфа: Победа (1200 XP)`, true, false, 0); document.getElementById('safesResult').textContent = 'Бинго! Сейф полон! +1200 XP'; document.getElementById('safesResult').style.color = 'var(--color-success)'; playSound('win'); }
+                else { document.getElementById('safesResult').textContent = 'Пусто... Паутина и пыль.'; document.getElementById('safesResult').style.color = 'var(--color-error)'; playSound('fail'); }
+                updateShopStats(); updateModStats();
+                await saveProgress(); document.getElementById('closeSafesBtn').style.display = 'inline-block';
+            });
+        });
+        document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
+
+        const jwCharacters = [ { name: "John Wick", img: "https://upload.wikimedia.org/wikipedia/en/3/34/John_Wick_Chapter_2_Poster.jpg" }, { name: "Winston Scott", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, { name: "Bowery King", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" } ];
+        function openJwQuiz() {
+            document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none';
+            document.getElementById('jwResult').textContent = '';
+            const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
+            const correctChar = jwCharacters[Math.floor(Math.random() * jwCharacters.length)]; document.getElementById('jwImage').src = correctChar.img;
+            let options = [...jwCharacters]; shuffleArray(options);
+            options.forEach(char => {
+                const btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = char.name;
+                btn.onclick = async () => {
+                    document.querySelectorAll('.jw-option-btn').forEach(b => { b.disabled = true; if(b.textContent === correctChar.name) b.classList.add('correct'); else b.classList.add('wrong'); });
+                    if (char.name === correctChar.name) { shopState.spent -= 1500; await logPurchase(`Викторина JW: Победа (1500 XP)`, true, false, 0); document.getElementById('jwResult').textContent = 'Правильно! +1500 XP'; document.getElementById('jwResult').style.color = 'var(--color-success)'; playSound('win'); }
+                    else { document.getElementById('jwResult').textContent = 'Неверно. Это ' + correctChar.name; document.getElementById('jwResult').style.color = 'var(--color-error)'; playSound('fail'); }
+                    updateShopStats(); updateModStats(); await saveProgress();
+                    document.getElementById('closeJwBtn').style.display = 'inline-block';
+                }; optsContainer.appendChild(btn);
+            });
+        }
+        document.getElementById('closeJwBtn')?.addEventListener('click', () => document.getElementById('jwModal').style.display = 'none');
+
+        // === 9. КВЕСТЫ И ЛИДЕРБОРД ===
+        function renderQuests() {
+            const cont = document.getElementById('questsContainer');
+            if(!cont) return;
+            const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ?
+            JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
+            cont.innerHTML = questsData.map(q => {
+                const isClaimed = claimed.includes(q.id); const prog = Math.min(q.max, q.getProgress()); const isDone = prog >= q.max;
+                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--color-primary); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--color-primary); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ?
+                `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
+            }).join('');
+        }
+        window.claimQuest = function(qId, reward) {
+            if(!currentUser) return;
+            const claimed = localStorage.getItem('quests_' + currentUser.email) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
+            if(claimed.includes(qId)) return; claimed.push(qId); localStorage.setItem('quests_' + currentUser.email, JSON.stringify(claimed));
+            shopState.spent -= reward; updateShopStats(); updateModStats(); updateSupportStats(); saveProgress(); playSound('win'); alert(`✅ Квест выполнен! +${reward} XP.`); renderQuests();
+        };
+
+        window.loadLeaderboard = async function() {
+            const list = document.getElementById('leaderboardList');
+            if(!list) return;
+            list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div>';
+
+            const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
+            const { data: users } = await supa.from('user_stats').select('*');
+            const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+
+            let modLeadersIds = [];
+            let apLeadersIds = [];
+            if(adminRoles) {
+                modLeadersIds = adminRoles.filter(r => r.status === 'leadership').map(r => r.link);
+                apLeadersIds = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link);
+            }
+
+            const modEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+            const apEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+
+            let modArr = [], apArr = [];
+            
+            if(users) {
+                users.forEach(u => {
+                    // Проверка: является ли пользователь руководством
+                    const isModLeader = modEmails.includes(u.email) || modLeadersIds.includes(u.user_id);
+                    const isApLeader = apEmails.includes(u.email) || apLeadersIds.includes(u.user_id);
+
+                    let reportXp = 0; 
+                    if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
+                    
+                    const mXp = Math.max(0, calcXP(u.mod_correct) + reportXp - Number(u.shop_spent||0));
+                    const aXp = Math.max(0, calcXP(u.sup_correct) - Number(u.ap_spent||0));
+                    
+                    if(u.nickname) { 
+                        // Добавляем в топ только если это не лидер, и если есть хотя бы 1 заработанный бал в этой категории (исключает Модераторов из топа АП и наоборот)
+                        if (!isModLeader && mXp > 0) {
+                            modArr.push({ name: u.nickname, score: mXp }); 
+                        }
+                        if (!isApLeader && aXp > 0) {
+                            apArr.push({ name: u.nickname, score: aXp }); 
+                        }
+                    }
+                });
+            }
+
+            modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
+            
+            window.lbModHTML = modArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge xp">${u.score} XP</span></div></div>`).join('');
+            window.lbApHTML = apArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i<3?'#ff8fc4':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i<3?'#ff8fc4':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge" style="background:#ff8fc4; color:#000;">${u.score} Баллов</span></div></div>`).join('');
+            
+            const isApTab = document.getElementById('lbBtnAp')?.classList.contains('btn-primary');
+            list.innerHTML = isApTab ? (window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>') : (window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>');
+        };
+
+        document.getElementById('lbBtnMod')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>'; document.getElementById('lbBtnMod').className="btn btn-primary"; document.getElementById('lbBtnAp').className="btn btn-secondary"; });
+        document.getElementById('lbBtnAp')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>'; document.getElementById('lbBtnAp').className="btn btn-primary"; document.getElementById('lbBtnMod').className="btn btn-secondary"; });
+
+        // === 10. ПАНЕЛИ СОЗДАТЕЛЯ И АДМИНА ===
+        let creatorUsersList = [];
+        async function loadCreatorPanelData() {
+            if (!currentUser || currentUser.email !== creatorEmail) return;
+            const sel = document.getElementById('creatorUserSelect'); if (sel) sel.innerHTML = '<option>Загрузка...</option>';
+            const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent');
+            if (users && users.length > 0) { creatorUsersList = users;
+                if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join('');
+            }
+            
+            const list = document.getElementById('creatorKeysList');
+            if (!list) return; list.innerHTML = 'Загрузка ключей...';
+            const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').order('date', { ascending: false });
+            if (keys && keys.length > 0) {
+                list.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-primary); font-size: 1.1rem;">${k.link}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${k.status})</span></div><button class="badge ban del-key-btn" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
+                list.querySelectorAll('.del-key-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadCreatorPanelData(); }); });
+            } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
+
+            const adminSel = document.getElementById('creatorAdminSelect');
+            if (adminSel && creatorUsersList.length > 0) {
+                adminSel.innerHTML = creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
+            }
+
+            const adminList = document.getElementById('creatorAdminsList');
+            if (adminList) {
+                const { data: admins } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+                if (admins && admins.length > 0) {
+                    adminList.innerHTML = admins.map(a => {
+                        const u = creatorUsersList.find(user => user.user_id === a.link);
+                        const name = u ? (u.nickname || u.email) : 'Неизвестный ID: ' + a.link;
+                        const roleName = a.status === 'leadership' ? 'Модерация' : 'АП';
+                        return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#52c77b;">${name}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${roleName})</span></div></div>`;
+                    }).join('');
+                } else {
+                    adminList.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">В руководстве пока никого нет</div>';
+                }
             }
         }
 
-        checkAuth();
-        switchMode("moderation");
-        updateModStats();
-    });
+        document.getElementById('creatorAddKeyBtn')?.addEventListener('click', async () => {
+            const role = document.getElementById('creatorKeyRole').value; const keyStr = document.getElementById('creatorKeyInput').value.trim();
+            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); document.getElementById('creatorAddKeyBtn').disabled = true;
+            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
+            if (!error) { document.getElementById('creatorKeyInput').value = ''; alert("Ключ успешно создан!"); loadCreatorPanelData(); } document.getElementById('creatorAddKeyBtn').disabled = false;
+        });
+
+        document.getElementById('creatorXpBtn')?.addEventListener('click', async () => {
+             const userId = document.getElementById('creatorUserSelect').value; const amount = Number(document.getElementById('creatorXpAmount').value);
+             if (!userId || isNaN(amount)) return; const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+             const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
+        });
+
+        document.getElementById('trollWipeXpBtn')?.addEventListener('click', async () => {
+            if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
+            await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: targetNick, shop_spent: 99999 }); alert(`🤡 Троллинг: XP обнулен, новый ник: ${targetNick}`); location.reload();
+        });
+
+        document.getElementById('trollRenameBtn')?.addEventListener('click', async () => {
+            if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
+            await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', currentUser.id); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); location.reload();
+        });
+
+        document.getElementById('trollDeleteBtn')?.addEventListener('click', async () => {
+            if (!currentUser || currentUser.email !== creatorEmail) return; 
+            const userId = document.getElementById('creatorUserSelect').value;
+            if(!userId) return;
+            if(confirm("Вы уверены, что хотите удалить этого пользователя?")) {
+                await supa.from('user_stats').delete().eq('user_id', userId);
+                alert('Пользователь удален из базы статистики!');
+                loadCreatorPanelData();
+            }
+        });
+
+        document.getElementById('creatorAddAdminBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('creatorAdminSelect').value;
+            const role = document.getElementById('creatorAdminRole').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            const { data: existing } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role);
+            if(existing && existing.length > 0) return alert("Этот пользователь уже находится в руководстве!");
+            await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ADMIN_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
+            alert("Пользователь успешно добавлен в руководство! Права появятся у него после перезагрузки страницы.");
+            loadCreatorPanelData();
+        });
+
+        document.getElementById('creatorRemoveAdminBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('creatorAdminSelect').value;
+            const role = document.getElementById('creatorAdminRole').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            await supa.from('reports').delete().eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role);
+            alert("Пользователь удален из руководства!");
+            loadCreatorPanelData();
+        });
+
+        let adminUsersList = [];
+        async function loadUsersForAdmin() {
+            if(!currentUser) return;
+            const isModLeader = adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicModLeaders.includes(currentUser.id); 
+            const isApLeader = apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
+            if(!isModLeader && !isApLeader) return;
+            const { data: users } = await supa.from('user_stats').select('*').order('nickname', { ascending: true }); if(users) adminUsersList = users;
+            
+            if (isModLeader) { 
+                const sel = document.getElementById('leadershipUserSelect'); if(sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (XP долг: ${u.shop_spent||0})</option>`).join('');
+                
+                // Загрузка ключей модерации
+                const listModKeys = document.getElementById('leadershipKeysList');
+                if (listModKeys) {
+                    listModKeys.innerHTML = 'Загрузка ключей...';
+                    const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').in('status', ['shop', 'report']).order('date', { ascending: false });
+                    if (keys && keys.length > 0) {
+                        listModKeys.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success); font-size: 1.1rem;">${k.link}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${k.status})</span></div><button class="badge ban del-key-btn-mod" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
+                        listModKeys.querySelectorAll('.del-key-btn-mod').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); }); });
+                    } else listModKeys.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
+                }
+            }
+            if (isApLeader) { 
+                const sel = document.getElementById('apAdminUserSelect');
+                if(sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Баллы долг: ${u.ap_spent||0})</option>`).join('');
+                // Загрузка ключей АП магазина
+                const list = document.getElementById('apAdminKeysList');
+                if (list) {
+                    list.innerHTML = 'Загрузка ключей...';
+                    const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('status', 'ap_shop').order('date', { ascending: false });
+                    if (keys && keys.length > 0) {
+                        list.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#ff8fc4; font-size: 1.1rem;">${k.link}</strong></div><button class="badge ban del-key-btn" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
+                        list.querySelectorAll('.del-key-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); }); });
+                    } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
+                }
+            }
+        }
+        
+        document.getElementById('leadershipXpBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadershipUserSelect').value; const amount = Number(document.getElementById('leadershipXpAmount').value);
+            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (Модерация)!');
+        });
+
+        document.getElementById('leadershipDeleteBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadershipUserSelect').value;
+            if(!userId) return;
+            if(confirm("Удалить пользователя из базы статистики модераторов?")) {
+                await supa.from('user_stats').delete().eq('user_id', userId);
+                alert('Удален!');
+                loadUsersForAdmin();
+            }
+        });
+
+        document.getElementById('leadershipAddKeyBtn')?.addEventListener('click', async () => {
+            const role = document.getElementById('leadershipKeyRole').value;
+            const keyStr = document.getElementById('leadershipKeyInput').value.trim();
+            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); 
+            document.getElementById('leadershipAddKeyBtn').disabled = true;
+            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
+            if (!error) { document.getElementById('leadershipKeyInput').value = ''; alert("Ключ успешно создан!"); loadUsersForAdmin(); }
+            document.getElementById('leadershipAddKeyBtn').disabled = false;
+        });
+
+        document.getElementById('apAdminPointsBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('apAdminUserSelect').value; const amount = Number(document.getElementById('apAdminPointsAmount').value);
+            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            const newSpent = (Number(targetUser.ap_spent) || 0) - amount; await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (АП)!');
+        });
+
+        document.getElementById('apAdminDeleteBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('apAdminUserSelect').value;
+            if(!userId) return;
+            if(confirm("Удалить пользователя из базы статистики АП?")) {
+                await supa.from('user_stats').delete().eq('user_id', userId);
+                alert('Удален!');
+                loadUsersForAdmin();
+            }
+        });
+
+        document.getElementById('apAdminAddKeyBtn')?.addEventListener('click', async () => {
+            const keyStr = document.getElementById('apAdminKeyInput').value.trim();
+            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); document.getElementById('apAdminAddKeyBtn').disabled = true;
+            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: 'ap_shop', xp: 0 }]);
+            if (!error) { document.getElementById('apAdminKeyInput').value = ''; alert("Ключ для магазина АП успешно создан!"); loadUsersForAdmin(); } document.getElementById('apAdminAddKeyBtn').disabled = false;
+        });
+
+        async function renderAdminLogs(isAp = false) {
+            const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea');
+            if(!area) return; area.innerHTML = 'Загрузка...';
+            
+            const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
+            
+            if (error) {
+                area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`;
+                return;
+            }
+
+            if(logs && logs.length > 0) {
+                area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
+            } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
+        }
+
+        window.markLogIssued = async function(id, isAp) { 
+            await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id);
+            renderAdminLogs(isAp); 
+        };
+        
+        document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
+        document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
+
+        // === 11. ОТЧЕТНОСТЬ И АВТОРИЗАЦИЯ ===
+        function checkReportAccess() {
+            const warn = document.getElementById('reportAccessWarning');
+            const formArea = document.getElementById('reportFormArea'); 
+            const adminPanel = document.getElementById('adminPanelArea');
+            if (currentUser) { 
+                if(warn) warn.style.display = 'none'; 
+                if(formArea) formArea.style.display = 'block';
+                if (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id)) { 
+                    if(adminPanel) adminPanel.style.display = 'block'; 
+                } 
+            } 
+            else { 
+                if(warn) warn.style.display = 'block';
+                if(formArea) formArea.style.display = 'none'; 
+            }
+        }
+
+        document.getElementById('submitReportBtn')?.addEventListener('click', async () => {
+            if (!currentUser) return; 
+            const link = document.getElementById('reportLinkInput').value.trim(); 
+            const res = document.getElementById('reportResultText');
+            
+            if (!link.startsWith('http')) { res.textContent = "Укажите корректную ссылку!"; res.style.color = "var(--color-error)"; return; } 
+            res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
+            
+            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: currentUser.email, link: link, date: new Date().toLocaleString('ru-RU'), status: 'На проверке', xp: 0 }]);
+            
+            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
+            res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)"; 
+            document.getElementById('reportLinkInput').value = ''; 
+            playSound('win');
+        });
+
+document.getElementById('viewReportsBtn')?.addEventListener('click', async () => {
+            const listArea = document.getElementById('reportsListArea'); 
+            if(!listArea) return; 
+            if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
+            listArea.style.display = 'flex'; 
+            listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
+            
+            try {
+                // Фильтруем технические записи (ACCESS_KEY и ADMIN_ROLE)
+                const { data: reports, error } = await supa.from('reports')
+                    .select('*')
+                    .neq('email', 'ACCESS_KEY')
+                    .neq('email', 'ADMIN_ROLE')
+                    .order('date', { ascending: false })
+                    .limit(30);
+                
+                if (error) throw error;
+
+                if(reports && reports.length > 0) { 
+                    listArea.innerHTML = reports.map(r => `
+                    <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
+                            <strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">${r.date || ''}</span>
+                        </div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <a href="${r.link || '#'}" target="_blank" style="color: var(--color-primary);">Скриншот онлайна</a>
+                        </div>
+                        <div style="display:flex; flex-direction: column; gap: 0.5rem;">
+                            <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
+                            
+                            ${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `
+                            <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
+                            </div>` : ''}
+                        </div>
+                    </div>`).join(''); 
+                } else {
+                    listArea.innerHTML = '<div class="message-text">Отчетов пока нет</div>';
+                }
+            } catch (err) {
+                listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`;
+                console.error(err);
+            }
+        });
+      
+        window.processReport = async function(id, statusText, xpAmount) { 
+            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); 
+            document.getElementById('viewReportsBtn').click(); 
+            setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
+        };
+
+        async function saveProgress() {
+            if(!currentUser) return;
+            await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) });
+        }
+
+        // Авторизация Модалки
+        document.getElementById('accessSubmitBtn')?.addEventListener('click', async () => {
+            const val = document.getElementById('accessCodeInput').value.trim(); const err = document.getElementById('accessErrorMsg'); const btn = document.getElementById('accessSubmitBtn'); btn.disabled = true; btn.textContent = "Проверка...";
+            if (pendingAction.type === 'switch_tab_shop' && val === 'JohnWickModer') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); return; }
+            if (pendingAction.type === 'switch_tab_report' && val === 'JohnWIckTopModer') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); return; }
+            if (pendingAction.type === 'switch_tab_ap_shop' && val === 'ApMasterKey123') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); return; }
+            
+            const { data } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('link', val);
+            if (data && data.length > 0) { 
+                const keyData = data[0];
+                if (pendingAction.type === 'switch_tab_shop' && keyData.status === 'shop') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); } 
+                else if (pendingAction.type === 'switch_tab_report' && keyData.status === 'report') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); } 
+                else if (pendingAction.type === 'switch_tab_ap_shop' && keyData.status === 'ap_shop') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); } 
+                else finishAccess(false); 
+            } else finishAccess(false);
+
+            function finishAccess(success, roleMode) { 
+                btn.disabled = false; btn.textContent = "Подтвердить";
+                if (success) { document.getElementById('accessModal').style.display = 'none'; switchMode(roleMode, pendingAction.btn); pendingAction = null; } 
+                else err.style.display = 'block';
+            }
+        });
+
+        document.getElementById('accessCloseBtn')?.addEventListener('click', () => { document.getElementById('accessModal').style.display = 'none'; pendingAction = null; });
+        document.getElementById('loginBtnUI').onclick = () => { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authErrorMsg').style.display = 'none'; };
+        document.getElementById('authCloseModal').onclick = () => { document.getElementById('authModal').style.display = 'none'; };
+        document.getElementById('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
+        
+        document.getElementById('authLoginSubmit').onclick = async () => {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
+            if(!email || !password) { err.textContent = "Введите Email и Пароль!"; err.style.display = 'block'; return; }
+            const { error } = await supa.auth.signInWithPassword({ email, password });
+            if(error) { err.textContent = error.message; err.style.display = 'block'; } 
+            else document.getElementById('authModal').style.display = 'none';
+        };
+
+        document.getElementById('authRegisterSubmit').onclick = async () => {
+            const email = document.getElementById('authEmail').value;
+            const nickname = document.getElementById('authNickname').value; const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
+            if(!email || !password || !nickname) { err.textContent = "Заполните все поля, включая Никнейм!"; err.style.display = 'block'; return; }
+            const { error } = await supa.auth.signUp({ email, password, options: { data: { nickname: nickname } } });
+            if(error) { err.textContent = error.message; err.style.display = 'block'; } 
+            else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; err.style.display = 'block'; }
+        };
+
+        document.getElementById('forceNicknameBtn')?.addEventListener('click', async () => {
+            const val = document.getElementById('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
+            await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
+            currentNickname = val; document.getElementById('userEmailDisplay').textContent = val; document.getElementById('nicknameModal').style.display = 'none'; 
+            if(!state.started && document.getElementById("authorName")?.textContent === "System") startGame();
+        });
+
+        // Запуск кнопок симулятора
+        document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => judge(btn.dataset.action); });
+        document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => judgeComplaint(btn.dataset.compAction); });
+        const sb = document.getElementById('startBtn'); if (sb) sb.onclick = startGame;
+        const rb = document.getElementById('resetBtn'); if (rb) rb.onclick = resetGame;
+        
+        const themeBtn = document.querySelector('[data-theme-toggle]');
+        if(themeBtn) { 
+            themeBtn.onclick = () => { 
+                const root = document.documentElement; 
+                if(root.getAttribute('data-theme') === 'dark') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☀️'; } 
+                else { root.setAttribute('data-theme', 'dark'); themeBtn.textContent = '🌙'; } 
+            }; 
+        }
+
+        renderShopItems(); renderApShopItems();
+        renderQuests(); renderRight("moderation");
+
+        supa.auth.getSession().then(async ({ data: { session } }) => { 
+            currentUser = session?.user || null;
+            if (currentUser) {
+                currentNickname = currentUser.user_metadata?.nickname; 
+                document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
+                document.getElementById('loginBtnUI').style.display = 'none'; 
+                document.getElementById('logoutBtnUI').style.display = 'inline-block'; 
+                document.getElementById('authModal').style.display = 'none'; 
+          
+                const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+                if(adminRoles) {
+                    dynamicModLeaders = adminRoles.filter(r => r.status === 'leadership').map(r => r.link);
+                    dynamicApLeaders = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link);
+                }
+
+                const isCreator = currentUser.email === creatorEmail; 
+                const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id); 
+                const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+
+                if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
+                if (isModLeader) { 
+                    document.getElementById('leadershipTabBtn').style.display = 'inline-block'; 
+                    document.getElementById('adminLogTabBtn').style.display = 'inline-block';
+                }
+                if (isApLeader) { 
+                    document.getElementById('apAdminTabBtn').style.display = 'inline-block';
+                    document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; 
+                }
+
+                supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
+                    if(data) { 
+                        state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; 
+                        supportState.resolved = Number(data.sup_resolved) || 0; supportState.correct = Number(data.sup_correct) || 0; supportState.mistakes = Number(data.sup_mistakes) || 0; 
+                        shopState.spent = Number(data.shop_spent) || 0; shopState.apSpent = Number(data.ap_spent) || 0; 
+                    }
+                
+                    supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
+                        state.reportXp = 0; 
+                        if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0); 
+                        updateModStats(); updateSupportStats(); updateShopStats(); checkReportAccess(); 
+                        if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
+                    });
+                });
+                if(isCreator) loadCreatorPanelData();
+            } else { 
+                checkReportAccess(); 
+            }
+        });
+    }); 
 </script>
 </body>
 </html>
