@@ -1151,21 +1151,54 @@
             { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
         ];
 
-        let shopItems = JSON.parse(localStorage.getItem('customModShopItems')) || defaultShopItems;
-        let apShopItems = JSON.parse(localStorage.getItem('customApShopItems')) || defaultApShopItems;
-
-        let modRoulettePrizes = JSON.parse(localStorage.getItem('customModRoulette')) || [
+        let defaultModRoulettePrizes = [
             { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: -500 },
             { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: -300 },
             { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
             { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: +100 }
         ];
 
-        let apRoulettePrizes = JSON.parse(localStorage.getItem('customApRoulette')) || [
+        let defaultApRoulettePrizes = [
             { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: -50 },
             { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: -30 },
             { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }
         ];
+
+        let shopItems = [...defaultShopItems];
+        let apShopItems = [...defaultApShopItems];
+        let customShopItems = [];
+        let customApShopItems = [];
+        let modRoulettePrizes = [...defaultModRoulettePrizes];
+        let apRoulettePrizes = [...defaultApRoulettePrizes];
+
+        async function loadGlobalShopAndRoulette() {
+            const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP']);
+            
+            customShopItems = [];
+            customApShopItems = [];
+            modRoulettePrizes = [...defaultModRoulettePrizes];
+            apRoulettePrizes = [...defaultApRoulettePrizes];
+
+            if (data) {
+                data.forEach(row => {
+                    if (row.email === 'SHOP_MOD') {
+                        customShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
+                    } else if (row.email === 'SHOP_AP') {
+                        customApShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
+                    } else if (row.email === 'ROULETTE_MOD') {
+                        const idx = modRoulettePrizes.findIndex(p => p.id === row.link);
+                        if(idx !== -1) { modRoulettePrizes[idx].text = row.date; modRoulettePrizes[idx].val = Number(row.xp); }
+                    } else if (row.email === 'ROULETTE_AP') {
+                        const idx = apRoulettePrizes.findIndex(p => p.id === row.link);
+                        if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); }
+                    }
+                });
+            }
+            shopItems = [...defaultShopItems, ...customShopItems];
+            apShopItems = [...defaultApShopItems, ...customApShopItems];
+            renderShopItems();
+            renderApShopItems();
+        }
 
         const questsData = [
             { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 },
@@ -1177,7 +1210,7 @@
         // === 4. МАССИВЫ СООБЩЕНИЙ И ЖАЛОБ ===
         const allModMessages = [
             {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},{type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},{type:"warn",text:"ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"},{type:"warn",text:"ООООООООООООООООООООООООООООООООООООООО"},{type:"warn",text:"УУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУ"},{type:"warn",text:"Как дела ????????????????????????"},{type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"},{type:"warn",text:"Эй,,,,,,,,,, кто тут главный????????"},{type:"warn",text:"Продам аксы+++++++++++++++++++++"},{type:"warn",text:"Кто в казик $$$$$$$$$$$$$$$$$$$$$$$"},{type:"warn",text:"Кто в патруль? Кто в патруль? Кто в патруль?"},{type:"warn",text:"1 2 3 4 5 Проверка чата"},{type:"warn",text:"фвлыофдвлофыдвло (сори клаву проверяю)"},{type:"warn",text:"куплю машину быстро"},{type:"warn",text:"spam spam spam spam spam"},{type:"warn",text:"@everyone зайдите в игру пж"},{type:"warn",text:"@here кто продаст ремку?"},{type:"warn",text:"@Lexa_Mackenzie @Lexa_Mackenzie @Lexa_Mackenzie"},{type:"warn",text:"@John Wick ответь в лс"},{type:"warn",text:"Дайте 10к на развитие пожалуйста, я новичок"},{type:"warn",text:"Пацаны, скиньтесь по 100 рублей на фаму пж"},{type:"warn",text:"Админы, дайте админку или виртов хоть чуть-чуть"},{type:"warn",text:"Кто может задонатить мне на блек пасс? Умоляю"},{type:"warn",text:"Подарите машину, мне не на чем ездить"},{type:"warn",text:"Да ваш президент вообще ничего не понимает в экономике"},{type:"warn",text:"Моя религия самая правильная, а вы все не правы"},{type:"warn",text:"Слава [название страны]! Все остальные — мусор"},{type:"warn",text:"Кто за какую партию голосовал? Давайте обсудим"},{type:"warn",text:"Политики вообще оборзели в край"},{type:"warn",text:"Ты вообще к****, иди откисай на спавне"},{type:"warn",text:"Да вы вы тут нули, я вас один раскидаю"},{type:"warn",text:"Плачь больше, форумная крыса"},{type:"warn",text:"Чел, у тебя iq как у хлебушка, не пиши сюда"},{type:"warn",text:"Боже, какие же криворукие сидят в этой фракции"},{type:"warn",text:"Слышь, герой, пошли в войс, я тебе объясню кто ты"},{type:"warn",text:"Что ты там вякнул? Иди уроки делай, ш*****а"},{type:"warn",text:"Твоя фама - сборище н***их, лови аптечку"},{type:"warn",text:"Все бабы в этой игре играть не умеют"},{type:"warn",text:"Ненавижу [национальность], вечно они всё руинят"},{type:"warn",text:"Твое место на кухне, а не в ОПГ"},{type:"warn",text:"Играешь как девчонка, иди в куклы играй"},{type:"warn",text:"Админ, я тебе в лс флудить буду пока не ответишь"},{type:"warn",text:"Давайте все вместе репорт админам заспамим"},{type:"warn",text:"Эй, модер, ты вообще работать собираешься?"},{type:"warn",text:"Давай, забань меня, тебе же хуже будет"},{type:"warn",text:"Я тебя по IP вычислю, жди гостей вечером"},{type:"warn",text:"Напиши еще слово и я тебе интернет отключу"},{type:"warn",text:"Жди докс, к****, я тебя найду"},{type:"warn",text:"Админы вообще не работают, только и умеют муты давать"},{type:"warn",text:"Слышь, я тебя сейчас в чс закину, понял?"},{type:"warn",text:"Да я твой дом труба шатал"},{type:"warn",text:"Сколько стоит випка? Хочу купить"},{type:"warn",text:"Как стать админом? Я всё знаю про игру"},{type:"warn",text:"Кто со мной в казино на миллион?"},{type:"warn",text:"Как работает эта рулетка? Я ничего не понял"},{type:"warn",text:"Где можно купить наркотики в игре?"},{type:"warn",text:"Пойду ограблю банк, кто со мной?"},{type:"warn",text:"Я сейчас буду всех ДМить, берегитесь!"},{type:"warn",text:"Как взломать аккаунт? Друг попросил узнать"},{type:"warn",text:"Где скачать читы на бессмертие?"},{type:"warn",text:"Продам свой аккаунт, кому нужен?"},{type:"warn",text:"ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ"},{type:"warn",text:"Ты щас рот закроешь и пойдешь отсюда, понял?"},
-            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Продаю симку блатную, оплата криптой"},{type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Перекину вирты с Тамбова на другой сервер"},{type:"ban",text:"Есть имущка на 3 серве, меняю на Тамбов 73"},{type:"ban",text:"Трансфер виртов, комиссия 5%. Пишите в лс."},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Надоел этот сервер, пошлите играть на другой"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жестьंपूर्ту просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Удвою ваши вирты, кидайте на банк счет 12345"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Я с читами играю уже месяц и меня не банят"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Куплю бизнес за рубли, кто продает?"},{type:"ban",text:"Ищу людей для ДМ состава, будем всех разносить"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
+            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Продаю симку блатную, оплата криптой"},{type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Перекину вирты с Тамбова на другой сервер"},{type:"ban",text:"Есть имущка на 3 серве, меняю на Тамбов 73"},{type:"ban",text:"Трансфер виртов, комиссия 5%. Пишите в лс."},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Надоел этот сервер, пошлите играть на другой"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жесть просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Удвою ваши вирты, кидайте на банк счет 12345"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Я с читами играю уже месяц и меня не банят"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Куплю бизнес за рубли, кто продает?"},{type:"ban",text:"Ищу людей для ДМ состава, будем всех разносить"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
         ];
 
         const allSupQuestions = [
@@ -1241,7 +1274,7 @@
             guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
             leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Никнейм", "Отображаются только сотрудники с установленным никнеймом."] ] },
             about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
-            profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения (В разработке)."] ] },
+            profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
             shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Рулетка", "Призы могут выдать XP или штраф."] ] },
             ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
             report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Сдавать отчеты могут все авторизованные модераторы."], ["Проверка", "Только администрация может проверять и начислять XP."] ] },
@@ -1546,7 +1579,7 @@
             renderShopItems(); renderApShopItems();
         }
 
-        // === ЛОГИКА КОСМЕТИКИ И УДАЛЕНИЯ ===
+        // === ЛОГИКА КОСМЕТИКИ И УДАЛЕНИЯ (Supabase Sync) ===
         document.getElementById('equipCrownBtn')?.addEventListener('click', () => {
             activeCosmetics.crown = !activeCosmetics.crown;
             localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics));
@@ -1559,26 +1592,24 @@
             renderProfileData();
         });
 
-        document.getElementById('deleteModShopItemBtn')?.addEventListener('click', () => {
+        document.getElementById('deleteModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             if(!title) return alert("Введите точное название товара для удаления!");
-            const index = shopItems.findIndex(i => i.title.toLowerCase() === title.toLowerCase());
-            if(index !== -1) {
-                shopItems.splice(index, 1);
-                localStorage.setItem('customModShopItems', JSON.stringify(shopItems));
-                alert("Товар удален!"); renderShopItems();
-            } else alert("Товар с таким названием не найден!");
+            const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
+            if(item) {
+                await supa.from('reports').delete().eq('id', item.id);
+                alert("Товар удален у всех!"); loadGlobalShopAndRoulette();
+            } else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
         });
 
-        document.getElementById('deleteApShopItemBtn')?.addEventListener('click', () => {
+        document.getElementById('deleteApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             if(!title) return alert("Введите точное название товара для удаления!");
-            const index = apShopItems.findIndex(i => i.title.toLowerCase() === title.toLowerCase());
-            if(index !== -1) {
-                apShopItems.splice(index, 1);
-                localStorage.setItem('customApShopItems', JSON.stringify(apShopItems));
-                alert("Товар АП удален!"); renderApShopItems();
-            } else alert("Товар с таким названием не найден!");
+            const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
+            if(item) {
+                await supa.from('reports').delete().eq('id', item.id);
+                alert("Товар АП удален у всех!"); loadGlobalShopAndRoulette();
+            } else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
         });
 
         // === 8. МАГАЗИН И МИНИ-ИГРЫ ===
@@ -1776,7 +1807,7 @@
         document.getElementById('lbBtnMod')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>'; document.getElementById('lbBtnMod').className="btn btn-primary"; document.getElementById('lbBtnAp').className="btn btn-secondary"; });
         document.getElementById('lbBtnAp')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>'; document.getElementById('lbBtnAp').className="btn btn-primary"; document.getElementById('lbBtnMod').className="btn btn-secondary"; });
 
-        // === 10. ПАНЕЛИ СОЗДАТЕЛЯ И АДМИНА ===
+        // === 10. ПАНЕЛИ СОЗДАТЕЛЯ И АДМИНА (Sync с Supabase) ===
         let creatorUsersList = [];
         async function loadCreatorPanelData() {
             if (!currentUser || currentUser.email !== creatorEmail) return;
@@ -1863,60 +1894,68 @@
             loadCreatorPanelData();
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ
-        document.getElementById('addModShopItemBtn')?.addEventListener('click', () => {
+        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ (GLOBAL SYNC)
+        document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             const desc = document.getElementById('modShopItemDesc').value.trim();
             const price = Number(document.getElementById('modShopItemPrice').value);
             const icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            shopItems.push({ id: 'custom_' + Date.now(), title, desc, price, icon });
-            localStorage.setItem('customModShopItems', JSON.stringify(shopItems));
-            alert("Товар добавлен!"); renderShopItems();
+            const newItemId = 'cmod_' + Date.now();
+            await supa.from('reports').insert([{ id: newItemId, email: 'SHOP_MOD', date: title, status: desc, xp: price, link: icon }]);
+            alert("Товар добавлен для всех!"); loadGlobalShopAndRoulette();
         });
-        document.getElementById('editModShopItemBtn')?.addEventListener('click', () => {
+        document.getElementById('editModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             const price = Number(document.getElementById('modShopItemPrice').value);
             if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
-            const item = shopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { item.price = price; localStorage.setItem('customModShopItems', JSON.stringify(shopItems)); alert("Цена успешно обновлена!"); renderShopItems(); }
-            else alert("Товар с таким названием не найден!");
+            const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
+            if(item) { 
+                await supa.from('reports').update({ xp: price }).eq('id', item.id);
+                alert("Цена успешно обновлена для всех!"); loadGlobalShopAndRoulette(); 
+            } else alert("Пользовательский товар с таким названием не найден! (Базовые изменить нельзя)");
         });
-        document.getElementById('updateModRouletteBtn')?.addEventListener('click', () => {
+        document.getElementById('updateModRouletteBtn')?.addEventListener('click', async () => {
             const slotId = document.getElementById('modRouletteSlot').value;
             const text = document.getElementById('modRouletteText').value.trim();
             const val = Number(document.getElementById('modRouletteVal').value);
             if(!text || isNaN(val)) return alert("Заполните текст приза и значение для баланса!");
-            const prize = modRoulettePrizes.find(p => p.id === slotId);
-            if(prize) { prize.text = text; prize.val = val; localStorage.setItem('customModRoulette', JSON.stringify(modRoulettePrizes)); alert("Рулетка модерации обновлена!"); }
+            const { data: existing } = await supa.from('reports').select('id').eq('email', 'ROULETTE_MOD').eq('link', slotId);
+            if (existing && existing.length > 0) { await supa.from('reports').update({ date: text, xp: val }).eq('id', existing[0].id); } 
+            else { await supa.from('reports').insert([{ id: 'rmod_' + Date.now(), email: 'ROULETTE_MOD', link: slotId, date: text, xp: val, status: 'roulette' }]); }
+            alert("Рулетка модерации обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ
-        document.getElementById('addApShopItemBtn')?.addEventListener('click', () => {
+        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ (GLOBAL SYNC)
+        document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             const desc = document.getElementById('apShopItemDesc').value.trim();
             const price = Number(document.getElementById('apShopItemPrice').value);
             const icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            apShopItems.push({ id: 'custom_ap_' + Date.now(), title, desc, price, icon });
-            localStorage.setItem('customApShopItems', JSON.stringify(apShopItems));
-            alert("Товар АП добавлен!"); renderApShopItems();
+            const newItemId = 'cap_' + Date.now();
+            await supa.from('reports').insert([{ id: newItemId, email: 'SHOP_AP', date: title, status: desc, xp: price, link: icon }]);
+            alert("Товар АП добавлен для всех!"); loadGlobalShopAndRoulette();
         });
-        document.getElementById('editApShopItemBtn')?.addEventListener('click', () => {
+        document.getElementById('editApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             const price = Number(document.getElementById('apShopItemPrice').value);
             if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
-            const item = apShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { item.price = price; localStorage.setItem('customApShopItems', JSON.stringify(apShopItems)); alert("Цена успешно обновлена!"); renderApShopItems(); }
-            else alert("Товар с таким названием не найден!");
+            const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
+            if(item) { 
+                await supa.from('reports').update({ xp: price }).eq('id', item.id);
+                alert("Цена успешно обновлена для всех!"); loadGlobalShopAndRoulette(); 
+            } else alert("Пользовательский товар с таким названием не найден! (Базовые изменить нельзя)");
         });
-        document.getElementById('updateApRouletteBtn')?.addEventListener('click', () => {
+        document.getElementById('updateApRouletteBtn')?.addEventListener('click', async () => {
             const slotId = document.getElementById('apRouletteSlot').value;
             const text = document.getElementById('apRouletteText').value.trim();
             const val = Number(document.getElementById('apRouletteVal').value);
             if(!text || isNaN(val)) return alert("Заполните текст приза и значение для баланса!");
-            const prize = apRoulettePrizes.find(p => p.id === slotId);
-            if(prize) { prize.text = text; prize.val = val; localStorage.setItem('customApRoulette', JSON.stringify(apRoulettePrizes)); alert("Рулетка АП обновлена!"); }
+            const { data: existing } = await supa.from('reports').select('id').eq('email', 'ROULETTE_AP').eq('link', slotId);
+            if (existing && existing.length > 0) { await supa.from('reports').update({ date: text, xp: val }).eq('id', existing[0].id); } 
+            else { await supa.from('reports').insert([{ id: 'rap_' + Date.now(), email: 'ROULETTE_AP', link: slotId, date: text, xp: val, status: 'roulette' }]); }
+            alert("Рулетка АП обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
         let adminUsersList = [];
@@ -2069,6 +2108,10 @@
                     .select('*')
                     .neq('email', 'ACCESS_KEY')
                     .neq('email', 'ADMIN_ROLE')
+                    .neq('email', 'SHOP_MOD')
+                    .neq('email', 'SHOP_AP')
+                    .neq('email', 'ROULETTE_MOD')
+                    .neq('email', 'ROULETTE_AP')
                     .order('date', { ascending: false })
                     .limit(30);
                 
@@ -2184,8 +2227,7 @@
             };
         }
 
-        renderShopItems(); renderApShopItems();
-        renderQuests(); renderRight("moderation");
+        renderRight("moderation");
         
         supa.auth.getSession().then(async ({ data: { session } }) => { 
             currentUser = session?.user || null;
@@ -2215,6 +2257,8 @@
                     document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; 
                 }
 
+                await loadGlobalShopAndRoulette(); // Вызываем глобальную синхронизацию базы данных магазина
+
                 supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
                     if(data) { 
                         state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; 
@@ -2231,6 +2275,7 @@
                 });
                 if(isCreator) loadCreatorPanelData();
             } else { 
+                await loadGlobalShopAndRoulette(); // Загружаем для неавторизованных тоже
                 checkReportAccess();
             }
         });
