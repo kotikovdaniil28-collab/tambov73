@@ -454,7 +454,6 @@
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none;">Закончить игру</button>
     </div>
   </div>
-
   <main class="page">
     <header class="topbar">
       <div class="brand">
@@ -567,12 +566,12 @@
                 <div style="padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">👑</div>
                     <div style="font-weight: bold; margin-bottom: 0.5rem;">Корона Лидера</div>
-                    <button class="btn btn-secondary" style="width: 100%; padding: 0.5rem;">Надеть</button>
+                    <button id="equipCrownBtn" class="btn btn-secondary" style="width: 100%; padding: 0.5rem;">Надеть</button>
                 </div>
                 <div style="padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌈</div>
                     <div style="font-weight: bold; margin-bottom: 0.5rem;">Цветной Ник</div>
-                    <button class="btn btn-secondary" style="width: 100%; padding: 0.5rem;">Надеть</button>
+                    <button id="equipColorBtn" class="btn btn-secondary" style="width: 100%; padding: 0.5rem;">Надеть</button>
                 </div>
             </div>
         </div>
@@ -651,9 +650,10 @@
              <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)">
              <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить товар</button>
-            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить цену</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
+            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
           </div>
           
           <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: var(--color-warning);">Конструктор Рулетки (Модерация)</h3>
@@ -704,9 +704,10 @@
              <input type="number" id="apShopItemPrice" class="support-input" placeholder="Цена (Баллы)">
              <input type="text" id="apShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="addApShopItemBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить товар</button>
-            <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить цену</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addApShopItemBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить</button>
+            <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
           </div>
           
           <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: #ff8fc4;">Конструктор Рулетки (АП)</h3>
@@ -1036,7 +1037,7 @@
       
     </section>
   </main>
-<script>
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
         
         // === 1. АУДИО ===
@@ -1107,6 +1108,7 @@
         let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
         let dynamicModLeaders = [];
         let dynamicApLeaders = [];
+        let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
         
         function requestAccess(actionType, btnElement) {
             pendingAction = { type: actionType, btn: btnElement };
@@ -1175,7 +1177,7 @@
         // === 4. МАССИВЫ СООБЩЕНИЙ И ЖАЛОБ ===
         const allModMessages = [
             {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},{type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},{type:"warn",text:"ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"},{type:"warn",text:"ООООООООООООООООООООООООООООООООООООООО"},{type:"warn",text:"УУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУ"},{type:"warn",text:"Как дела ????????????????????????"},{type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"},{type:"warn",text:"Эй,,,,,,,,,, кто тут главный????????"},{type:"warn",text:"Продам аксы+++++++++++++++++++++"},{type:"warn",text:"Кто в казик $$$$$$$$$$$$$$$$$$$$$$$"},{type:"warn",text:"Кто в патруль? Кто в патруль? Кто в патруль?"},{type:"warn",text:"1 2 3 4 5 Проверка чата"},{type:"warn",text:"фвлыофдвлофыдвло (сори клаву проверяю)"},{type:"warn",text:"куплю машину быстро"},{type:"warn",text:"spam spam spam spam spam"},{type:"warn",text:"@everyone зайдите в игру пж"},{type:"warn",text:"@here кто продаст ремку?"},{type:"warn",text:"@Lexa_Mackenzie @Lexa_Mackenzie @Lexa_Mackenzie"},{type:"warn",text:"@John Wick ответь в лс"},{type:"warn",text:"Дайте 10к на развитие пожалуйста, я новичок"},{type:"warn",text:"Пацаны, скиньтесь по 100 рублей на фаму пж"},{type:"warn",text:"Админы, дайте админку или виртов хоть чуть-чуть"},{type:"warn",text:"Кто может задонатить мне на блек пасс? Умоляю"},{type:"warn",text:"Подарите машину, мне не на чем ездить"},{type:"warn",text:"Да ваш президент вообще ничего не понимает в экономике"},{type:"warn",text:"Моя религия самая правильная, а вы все не правы"},{type:"warn",text:"Слава [название страны]! Все остальные — мусор"},{type:"warn",text:"Кто за какую партию голосовал? Давайте обсудим"},{type:"warn",text:"Политики вообще оборзели в край"},{type:"warn",text:"Ты вообще к****, иди откисай на спавне"},{type:"warn",text:"Да вы вы тут нули, я вас один раскидаю"},{type:"warn",text:"Плачь больше, форумная крыса"},{type:"warn",text:"Чел, у тебя iq как у хлебушка, не пиши сюда"},{type:"warn",text:"Боже, какие же криворукие сидят в этой фракции"},{type:"warn",text:"Слышь, герой, пошли в войс, я тебе объясню кто ты"},{type:"warn",text:"Что ты там вякнул? Иди уроки делай, ш*****а"},{type:"warn",text:"Твоя фама - сборище н***их, лови аптечку"},{type:"warn",text:"Все бабы в этой игре играть не умеют"},{type:"warn",text:"Ненавижу [национальность], вечно они всё руинят"},{type:"warn",text:"Твое место на кухне, а не в ОПГ"},{type:"warn",text:"Играешь как девчонка, иди в куклы играй"},{type:"warn",text:"Админ, я тебе в лс флудить буду пока не ответишь"},{type:"warn",text:"Давайте все вместе репорт админам заспамим"},{type:"warn",text:"Эй, модер, ты вообще работать собираешься?"},{type:"warn",text:"Давай, забань меня, тебе же хуже будет"},{type:"warn",text:"Я тебя по IP вычислю, жди гостей вечером"},{type:"warn",text:"Напиши еще слово и я тебе интернет отключу"},{type:"warn",text:"Жди докс, к****, я тебя найду"},{type:"warn",text:"Админы вообще не работают, только и умеют муты давать"},{type:"warn",text:"Слышь, я тебя сейчас в чс закину, понял?"},{type:"warn",text:"Да я твой дом труба шатал"},{type:"warn",text:"Сколько стоит випка? Хочу купить"},{type:"warn",text:"Как стать админом? Я всё знаю про игру"},{type:"warn",text:"Кто со мной в казино на миллион?"},{type:"warn",text:"Как работает эта рулетка? Я ничего не понял"},{type:"warn",text:"Где можно купить наркотики в игре?"},{type:"warn",text:"Пойду ограблю банк, кто со мной?"},{type:"warn",text:"Я сейчас буду всех ДМить, берегитесь!"},{type:"warn",text:"Как взломать аккаунт? Друг попросил узнать"},{type:"warn",text:"Где скачать читы на бессмертие?"},{type:"warn",text:"Продам свой аккаунт, кому нужен?"},{type:"warn",text:"ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ"},{type:"warn",text:"Ты щас рот закроешь и пойдешь отсюда, понял?"},
-            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Продаю симку блатную, оплата криптой"},{type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Перекину вирты с Тамбова на другой сервер"},{type:"ban",text:"Есть имущка на 3 серве, меняю на Тамбов 73"},{type:"ban",text:"Трансфер виртов, комиссия 5%. Пишите в лс."},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Надоел этот сервер, пошлите играть на другой"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жесть просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Удвою ваши вирты, кидайте на банк счет 12345"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Я с читами играю уже месяц и меня не банят"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Куплю бизнес за рубли, кто продает?"},{type:"ban",text:"Ищу людей для ДМ состава, будем всех разносить"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
+            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Продаю симку блатную, оплата криптой"},{type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Перекину вирты с Тамбова на другой сервер"},{type:"ban",text:"Есть имущка на 3 серве, меняю на Тамбов 73"},{type:"ban",text:"Трансфер виртов, комиссия 5%. Пишите в лс."},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Надоел этот сервер, пошлите играть на другой"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жестьंपूर्ту просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Удвою ваши вирты, кидайте на банк счет 12345"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Я с читами играю уже месяц и меня не банят"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Куплю бизнес за рубли, кто продает?"},{type:"ban",text:"Ищу людей для ДМ состава, будем всех разносить"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
         ];
 
         const allSupQuestions = [
@@ -1485,7 +1487,31 @@
 
         // === 7. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА И ПРОФИЛЬ ===
         function renderProfileData() {
-            document.getElementById('profileName').textContent = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
+            const nameEl = document.getElementById('profileName');
+            let baseName = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
+
+            if (activeCosmetics.crown) {
+                baseName = "👑 " + baseName;
+            }
+            nameEl.textContent = baseName;
+
+            if (activeCosmetics.color) {
+                nameEl.style.background = "linear-gradient(90deg, #ff6b88, #ffbf47, #52c77b, #6c8cff, #a26cff)";
+                nameEl.style.webkitBackgroundClip = "text";
+                nameEl.style.webkitTextFillColor = "transparent";
+                nameEl.style.display = "inline-block";
+            } else {
+                nameEl.style.background = "none";
+                nameEl.style.webkitTextFillColor = "initial";
+                nameEl.style.color = "#fff";
+            }
+
+            const btnCrown = document.getElementById('equipCrownBtn');
+            if (btnCrown) btnCrown.textContent = activeCosmetics.crown ? "Снять" : "Надеть";
+            
+            const btnColor = document.getElementById('equipColorBtn');
+            if (btnColor) btnColor.textContent = activeCosmetics.color ? "Снять" : "Надеть";
+
             if(currentUser && currentNickname) {
                 document.getElementById('profileAvatar').textContent = initials(currentNickname);
             }
@@ -1519,6 +1545,41 @@
             if(document.getElementById('apShopSpentPts')) document.getElementById('apShopSpentPts').textContent = Number(shopState.apSpent) || 0;
             renderShopItems(); renderApShopItems();
         }
+
+        // === ЛОГИКА КОСМЕТИКИ И УДАЛЕНИЯ ===
+        document.getElementById('equipCrownBtn')?.addEventListener('click', () => {
+            activeCosmetics.crown = !activeCosmetics.crown;
+            localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics));
+            renderProfileData();
+        });
+
+        document.getElementById('equipColorBtn')?.addEventListener('click', () => {
+            activeCosmetics.color = !activeCosmetics.color;
+            localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics));
+            renderProfileData();
+        });
+
+        document.getElementById('deleteModShopItemBtn')?.addEventListener('click', () => {
+            const title = document.getElementById('modShopItemTitle').value.trim();
+            if(!title) return alert("Введите точное название товара для удаления!");
+            const index = shopItems.findIndex(i => i.title.toLowerCase() === title.toLowerCase());
+            if(index !== -1) {
+                shopItems.splice(index, 1);
+                localStorage.setItem('customModShopItems', JSON.stringify(shopItems));
+                alert("Товар удален!"); renderShopItems();
+            } else alert("Товар с таким названием не найден!");
+        });
+
+        document.getElementById('deleteApShopItemBtn')?.addEventListener('click', () => {
+            const title = document.getElementById('apShopItemTitle').value.trim();
+            if(!title) return alert("Введите точное название товара для удаления!");
+            const index = apShopItems.findIndex(i => i.title.toLowerCase() === title.toLowerCase());
+            if(index !== -1) {
+                apShopItems.splice(index, 1);
+                localStorage.setItem('customApShopItems', JSON.stringify(apShopItems));
+                alert("Товар АП удален!"); renderApShopItems();
+            } else alert("Товар с таким названием не найден!");
+        });
 
         // === 8. МАГАЗИН И МИНИ-ИГРЫ ===
         function renderShopItems() {
