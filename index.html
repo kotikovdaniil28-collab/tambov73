@@ -63,7 +63,6 @@
     html[data-site-theme="exam"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(108, 140, 255, 0.2), transparent 55%), linear-gradient(160deg, #180508, #120205 45%, #0d0208 100%); }
     html[data-site-theme="creator"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
 
-    /* Анимация переходов режимов */
     .fade-in { animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modeFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -77,7 +76,6 @@
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
     .brand { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
 
-    /* ДОСКА ПОЧЕТА (БЕГУЩАЯ СТРОКА) */
     .ticker-wrap { width: 100%; overflow: hidden; background: rgba(13, 16, 32, 0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 191, 71, 0.3); border-bottom: 1px solid rgba(255, 191, 71, 0.3); padding: 0.6rem 0; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: inset 0 0 20px rgba(255, 191, 71, 0.05); position: relative; }
     .ticker-wrap::before, .ticker-wrap::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40px; z-index: 2; pointer-events: none; }
     .ticker-wrap::before { left: 0; background: linear-gradient(to right, rgba(5,6,10,1), transparent); }
@@ -88,7 +86,6 @@
     .ticker__item span { color: #fff; text-shadow: none; font-weight: 500; }
     @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    /* ПРОФИЛЬ: СЕТКА */
     .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start; }
 
     .logo { width: 48px; height: 48px; display: grid; place-items: center; color: var(--color-text); background: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.16), transparent 55%), linear-gradient(135deg, rgba(108, 140, 255, 0.32), rgba(255, 107, 136, 0.22)); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(255, 255, 255, 0.25); flex: 0 0 auto; }
@@ -187,7 +184,7 @@
     html[data-site-theme="exam"] .btn-primary { background: linear-gradient(135deg, #ff3b60, #ff6b88); box-shadow: 0 15px 35px rgba(255, 107, 136, 0.5); color: #fff; }
     html[data-site-theme="creator"] .btn-primary { background: linear-gradient(135deg, #ff3b60, #ff6b88); box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); color: #fff; }
 
-    .nav-container { display: flex; flex-direction: column; gap: 0.75rem; margin: 0 0 1rem; }
+    .nav-container { display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0 1rem; }
     .main-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; background: rgba(13, 16, 32, 0.8); padding: 0.4rem; border-radius: 18px; border: 1px solid rgba(191, 198, 255, 0.2); width: fit-content; }
     .main-cat-btn { padding: 0.6rem 1.2rem; border-radius: 14px; font-size: var(--text-sm); font-weight: 800; color: var(--color-text-muted); background: transparent; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; border: none; cursor: pointer; }
     .main-cat-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
@@ -367,7 +364,18 @@
     .support-answer-row { display: flex; flex-direction: column; gap: 0.5rem; }
     .support-answer-row-inner { display: flex; gap: 0.75rem; align-items: stretch; }
 
-    /* APPROVAL PENDING STYLE */
+    /* ДОСКА ПОЧЕТА (БЕГУЩАЯ СТРОКА) */
+    .ticker-wrap { width: 100%; overflow: hidden; background: rgba(13, 16, 32, 0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 191, 71, 0.3); border-bottom: 1px solid rgba(255, 191, 71, 0.3); padding: 0.6rem 0; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: inset 0 0 20px rgba(255, 191, 71, 0.05); position: relative; }
+    .ticker-wrap::before, .ticker-wrap::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40px; z-index: 2; pointer-events: none; }
+    .ticker-wrap::before { left: 0; background: linear-gradient(to right, rgba(5,6,10,1), transparent); }
+    .ticker-wrap::after { right: 0; background: linear-gradient(to left, rgba(5,6,10,1), transparent); }
+    .ticker { display: flex; white-space: nowrap; animation: ticker 25s linear infinite; gap: 3rem; width: max-content; }
+    .ticker:hover { animation-play-state: paused; }
+    .ticker__item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 700; color: var(--color-warning); text-transform: uppercase; letter-spacing: 0.05em; text-shadow: 0 0 10px rgba(255,191,71,0.3); }
+    .ticker__item span { color: #fff; text-shadow: none; font-weight: 500; }
+    @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start; }
     .pending-card { background: rgba(255,191,71,0.05); border: 1px dashed rgba(255,191,71,0.5); padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; }
 
     @media (max-width: 900px) {
@@ -434,6 +442,63 @@
       <h2 style="margin: 0; font-family: var(--font-display); color: var(--color-error); font-size: var(--text-xl); text-transform: uppercase;">Слишком быстро!</h2>
       <p style="color: var(--color-text-muted); font-size: var(--text-base); margin: 0;">Тренажёр создан для вдумчивой работы, а не для кликера.<br><br>В качестве штрафа <strong>выдача вердиктов заблокирована на 1 минуту</strong>.</p>
       <button id="closeSpamModal" class="btn" style="background: transparent; border: 1px solid rgba(191,198,255,0.3); color: var(--color-text-muted);">Блокировка...</button>
+    </div>
+  </div>
+
+  <div id="fortuneModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="panel" style="padding: 2.5rem; width: 95%; max-width: 600px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
+      <h2 id="fortuneTitle" style="margin: 0; font-family: var(--font-display); font-size: var(--text-xl); color: #ffbf47;">Колесо Фортуны</h2>
+      <p id="fortuneDesc" style="color: var(--color-text-muted); font-size: var(--text-base); margin: 0;">Испытай удачу! Призы будут добавлены на баланс или отправлены Руководству.</p>
+      <div class="roulette-wrapper">
+          <div class="roulette-pointer"></div>
+          <div class="roulette-track" id="rouletteTrack"></div>
+      </div>
+      <div id="fortuneResultText" style="min-height: 2.5em; font-size: var(--text-lg); font-weight: bold; color: var(--color-success); margin-top: 0.5rem;"></div>
+      <button id="closeFortuneBtn" class="btn btn-secondary" type="button" style="margin-top: 1rem; display: none;">Закрыть и забрать</button>
+    </div>
+  </div>
+
+  <div id="coinModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
+      <h2 style="margin: 0; font-family: var(--font-display); color: #ffbf47;">Орёл или Решка</h2>
+      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Ставка: 500 XP. Выбери сторону!</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;">
+          <button id="btnHeads" class="btn btn-primary" style="flex: 1;">Орёл</button>
+          <button id="btnTails" class="btn btn-secondary" style="flex: 1;">Решка</button>
+      </div>
+      <div id="coinAnimation" style="font-size: 5rem; display: none; text-shadow: 0 0 20px rgba(255, 191, 71, 0.5);">🪙</div>
+      <div id="coinResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2rem;"></div>
+      <button id="closeCoinBtn" class="btn" style="background: transparent; border: 1px solid rgba(191,198,255,0.3); color: var(--color-text-muted); display: none;">Забрать результат</button>
+    </div>
+  </div>
+
+  <div id="safesModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
+      <h2 style="margin: 0; font-family: var(--font-display); color: #a26cff;">Три Сейфа</h2>
+      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Ставка: 400 XP. В одном из сейфов лежит 1200 XP (х3)! Угадай, в каком.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 1rem;" id="safesContainer">
+          <button class="safe-btn" data-index="0" style="font-size: 3.5rem; background: transparent; border: 2px solid #a26cff; border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: 0.3s; flex: 1;">🧰</button>
+          <button class="safe-btn" data-index="1" style="font-size: 3.5rem; background: transparent; border: 2px solid #a26cff; border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: 0.3s; flex: 1;">🧰</button>
+          <button class="safe-btn" data-index="2" style="font-size: 3.5rem; background: transparent; border: 2px solid #a26cff; border-radius: 16px; padding: 1.5rem; cursor: pointer; transition: 0.3s; flex: 1;">🧰</button>
+      </div>
+      <div id="safesResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2rem;"></div>
+      <button id="closeSafesBtn" class="btn" style="background: transparent; border: 1px solid rgba(191,198,255,0.3); color: var(--color-text-muted); display: none;">Забрать результат</button>
+    </div>
+  </div>
+
+  <div id="jwModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
+      <h2 style="margin: 0; font-family: var(--font-display); color: #ff6b88; text-transform: uppercase;">Кто это?</h2>
+      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Ставка: 600 XP. Угадай персонажа из вселенной «Джон Уик» и забери 1500 XP (х2.5).</p>
+      
+      <div style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 2px solid #ff6b88; box-shadow: 0 0 20px rgba(255,107,136,0.3); position: relative; background: #000;">
+          <img id="jwImage" src="" alt="Character" onerror="this.src='https://ui-avatars.com/api/?name=Secret+Character&background=random&size=250'" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+      </div>
+      
+      <div id="jwOptions" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 0.5rem;"></div>
+      
+      <div id="jwResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2rem;"></div>
+      <button id="closeJwBtn" class="btn btn-secondary" style="display: none;">Закончить игру</button>
     </div>
   </div>
 
@@ -714,19 +779,18 @@
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Заявка: Добавить товар в Магазин</h3>
-          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Товар будет добавлен после одобрения Создателем.</p>
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Добавить товар в Магазин</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара">
              <input type="text" id="modShopItemDesc" class="support-input" placeholder="Описание">
              <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)">
              <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <button id="addModShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить заявку</button>
+          <button id="addModShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить</button>
         </div>
         
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Заявка: Добавить сообщение в Тренажер</h3>
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Добавить сообщение в Тренажер</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <textarea id="modSimItemText" class="support-input" placeholder="Текст сообщения..." style="resize: vertical; min-height: 60px;"></textarea>
              <select id="modSimItemType" class="support-input">
@@ -735,7 +799,7 @@
                 <option value="ban">Бан</option>
              </select>
           </div>
-          <button id="addModSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить заявку</button>
+          <button id="addModSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить</button>
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
@@ -783,24 +847,24 @@
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Заявка: Добавить товар в Магазин АП</h3>
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Добавить товар в Магазин АП</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="apShopItemTitle" class="support-input" placeholder="Название товара">
              <input type="text" id="apShopItemDesc" class="support-input" placeholder="Описание">
              <input type="number" id="apShopItemPrice" class="support-input" placeholder="Цена (Баллы)">
              <input type="text" id="apShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <button id="addApShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить заявку</button>
+          <button id="addApShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить</button>
         </div>
         
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Заявка: Добавить вопрос в Тренажер АП</h3>
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Добавить вопрос в Тренажер АП</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="apSimItemTitle" class="support-input" placeholder="Категория (Например: Навигация)">
              <textarea id="apSimItemText" class="support-input" placeholder="Текст вопроса..." style="resize: vertical; min-height: 60px;"></textarea>
              <input type="text" id="apSimItemKeywords" class="support-input" placeholder="Ключи (через запятую: gps, гпс)">
           </div>
-          <button id="addApSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить заявку</button>
+          <button id="addApSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить</button>
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3);">
@@ -830,7 +894,7 @@
         </div>
         <div>
           <div class="xp-bar"><div class="xp-fill" id="supportXpFill"></div></div>
-          <div id="supportBanner" class="banner-line">
+          <div id="supportBanner" class="banner-line" style="display:flex; justify-content:space-between; margin-top:0.5rem; font-size:var(--text-sm); color:var(--color-text-muted);">
             <span><strong>Результат:</strong> смена ещё не начата</span>
             <span id="supportBannerHint">Нажми «Начать смену», чтобы открыть первый вопрос.</span>
           </div>
@@ -860,19 +924,16 @@
           <h2 style="color: #ff6b88;">Аттестация (Экзамен) 🎓</h2>
           <p>20 сложных вопросов. Строго 10 секунд на ответ. Никаких подсказок. Проходной балл — 18/20.</p>
         </div>
-        
         <div id="examStartScreen" style="text-align: center; padding: 4rem 0;">
           <div style="font-size: 5rem; margin-bottom: 1rem;">📝</div>
           <button id="examStartBtn" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.5rem 4rem; background: linear-gradient(135deg, #ff3b60, #ff6b88);">Начать Экзамен</button>
         </div>
-        
         <div id="examGameScreen" style="display:none;">
           <div class="exam-progress" id="examProgress"></div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
              <span style="font-weight: bold; color: var(--color-text-muted);">Вопрос <span id="examQNum">1</span>/20</span>
              <div class="timer-display" id="examTimer" style="font-size: 2.5rem; color: #ff6b88; margin: 0; text-shadow: 0 0 10px rgba(255,107,136,0.5);">10</div>
           </div>
-          
           <div class="feed">
              <article class="message-card" style="border-color: #ff6b88;">
                <div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># аттестация / live</div>
@@ -889,12 +950,11 @@
              </div>
           </div>
         </div>
-
         <div id="examResultScreen" style="display:none; text-align: center; padding: 3rem 0;">
            <div id="examResultIcon" style="font-size: 5rem; margin-bottom: 1rem;">🏆</div>
            <h2 id="examFinalScore" style="font-size: 4rem; margin-bottom: 0.5rem; font-family: var(--font-display);">18 / 20</h2>
            <p id="examFinalVerdict" style="font-size: 1.1rem; color: var(--color-text-muted); margin-bottom: 2rem;">Вердикт системы</p>
-           <button class="btn btn-secondary" onclick="switchMode('moderation')">Вернуться к работе</button>
+           <button class="btn btn-secondary" onclick="document.querySelector('[data-mode=moderation]').click()">Вернуться к работе</button>
         </div>
       </section>
 
@@ -907,7 +967,7 @@
            <div style="font-size: 1.8rem; color: #a7afcf; margin-bottom: 1.5rem; font-weight: bold; user-select: none;" id="apSpeedTarget">Нажми Старт</div>
            <input type="text" id="apSpeedInput" class="support-input" placeholder="Печатать сюда..." style="font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem; padding: 1rem;" disabled autocomplete="off" spellcheck="false">
            <div id="apSpeedTimer" style="font-size: 2.5rem; font-family: var(--font-display); color: var(--color-success); margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(82, 199, 123, 0.3);">0.000 сек</div>
-           <button id="apSpeedStartBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #52c77b, #3da860); color: #000; padding: 1rem 3rem; font-size: 1.2rem;">Начать тренировку (5 раундов)</button>
+           <button id="apSpeedStartBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #52c77b, #3da860); color: #000; padding: 1rem 3rem; font-size: 1.2rem;">Начать тренировку</button>
         </div>
       </section>
 
@@ -950,7 +1010,7 @@
       <section class="panel game-card fade-in" id="mode-timeattack" style="display:none;">
         <div class="section-head">
           <h2 style="color: #ffbf47;">Спидран (На время) ⏱️</h2>
-          <p>У вас есть ровно 60 секунд. Каждая ошибка отнимает 3 секунды. Сколько сообщений вы успеете разобрать?</p>
+          <p>У вас есть ровно 60 секунд. Каждая ошибка отнимает 3 секунды.</p>
         </div>
         <div class="timer-display" id="taTimer">01:00</div>
         <div class="stats-grid" style="margin-bottom: 1rem;">
@@ -1007,32 +1067,21 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-quests" style="display:none;">
-        <div class="section-head">
-          <h2>Система Квестов</h2>
-          <p>Выполняй задания в тренажёрах и получай бонусный XP на свой баланс.</p>
-        </div>
+        <div class="section-head"><h2>Система Квестов</h2><p>Выполняй задания в тренажёрах и получай бонусный XP.</p></div>
         <div class="feed" id="questsContainer"></div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-leaderboard" style="display:none;">
-        <div class="section-head">
-          <h2>Таблица лидеров (Топ-10)</h2>
-          <p>Самые активные сотрудники по количеству заработанного XP (с учетом трат).</p>
-        </div>
+        <div class="section-head"><h2>Таблица лидеров (Топ-10)</h2><p>Самые активные сотрудники.</p></div>
         <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
           <button id="lbBtnMod" class="btn btn-primary" style="flex:1;">Топ Модерации (XP)</button>
           <button id="lbBtnAp" class="btn btn-secondary" style="flex:1;">Топ АП (Баллы)</button>
         </div>
-        <div class="feed" id="leaderboardList">
-          <div class="message-text" style="text-align: center; padding: 2rem;">⏳ Загрузка данных лидеров...</div>
-        </div>
+        <div class="feed" id="leaderboardList"><div class="message-text" style="text-align: center; padding: 2rem;">⏳ Загрузка...</div></div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-guide" style="display:none;">
-        <div class="section-head">
-          <h2>Руководство Сервера</h2>
-          <p>Контакты руководящего состава и публичные списки команды.</p>
-        </div>
+        <div class="section-head"><h2>Руководство Сервера</h2><p>Контакты и списки команды.</p></div>
         <div class="feed">
           <article class="message-card" style="min-height: auto; gap: 1.5rem; background: rgba(13, 16, 32, 0.6);">
             <div style="position: relative;">
@@ -1073,27 +1122,18 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-about" style="display:none;">
-        <div class="section-head">
-          <h2>О команде</h2>
-          <p>Раздел про создателей.</p>
-        </div>
+        <div class="section-head"><h2>О команде</h2></div>
         <div class="feed">
           <article class="message-card">
             <div class="channel"><span class="channel-dot"></span># project / team</div>
-            <div class="author-row">
-              <div class="avatar">JW</div>
-              <div><div class="author-name">John Wick</div><div class="author-meta">Автор проекта</div></div>
-            </div>
+            <div class="author-row"><div class="avatar">JW</div><div><div class="author-name">John Wick</div><div class="author-meta">Автор проекта</div></div></div>
             <div class="message-text">Сайт создан <strong>John Wick</strong> при поддержке <strong>Леха Матиз</strong>, <strong>Руфатик бурмалдатик</strong> и <strong>Евгения Бабешко</strong>.</div>
           </article>
         </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-shop" style="display:none;">
-        <div class="section-head">
-          <h2>Магазин & Игры (Модерация)</h2>
-          <p>Трать накопленные XP на скидки, бонусы или испытай удачу в азартных играх!</p>
-        </div>
+        <div class="section-head"><h2>Магазин & Игры (Модерация)</h2></div>
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Доступно XP</span><div class="stat-value" id="shopTotalXp" style="color:var(--color-primary);">0</div></div>
           <div class="stat"><span class="stat-label">Потрачено</span><div class="stat-value" id="shopSpentXp">0</div></div>
@@ -1102,7 +1142,7 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-ap_shop" style="display:none;">
-        <div class="section-head"><h2 style="color:#ff8fc4;">Магазин АП</h2><p>Трать накопленные Баллы на снятие наказаний или испытай удачу!</p></div>
+        <div class="section-head"><h2 style="color:#ff8fc4;">Магазин АП</h2></div>
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="apShopTotalPts" style="color:#ff8fc4;">0</div></div>
           <div class="stat"><span class="stat-label">Потрачено</span><div class="stat-value" id="apShopSpentPts">0</div></div>
@@ -1111,21 +1151,14 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-report" style="display:none;">
-        <div class="section-head">
-          <h2>Форма отчетности</h2>
-          <p>Сдайте свой ежедневный отчет онлайна из Discord сюда.</p>
-        </div>
+        <div class="section-head"><h2>Форма отчетности</h2><p>Сдайте свой ежедневный отчет онлайна из Discord сюда.</p></div>
         <div id="reportAccessWarning" class="message-card" style="min-height: auto; align-content: center; text-align: center; color: var(--color-warning);">
           Вы не авторизованы! <br><span style="font-size: var(--text-sm); color: var(--color-text-muted);">Войдите в аккаунт, чтобы сдать отчет.</span>
         </div>
-        
         <div class="feed" id="reportFormArea" style="display:none;">
           <article class="message-card" style="min-height: auto;">
             <div class="channel"><span class="channel-dot" style="background:#a26cff;"></span># tambov-73 / reports</div>
-            <div class="author-row">
-              <div class="avatar" style="background: conic-gradient(from 210deg, #a26cff, #c4a1ff, #a26cff);">R</div>
-              <div><div class="author-name">Отчет Discord (Онлайн)</div><div class="author-meta">Вставьте ссылку на скриншот</div></div>
-            </div>
+            <div class="author-row"><div class="avatar" style="background: conic-gradient(from 210deg, #a26cff, #c4a1ff, #a26cff);">R</div><div><div class="author-name">Отчет Discord (Онлайн)</div><div class="author-meta">Вставьте ссылку на скриншот</div></div></div>
             <div class="support-answer-row">
               <div class="support-answer-row-inner">
                 <input id="reportLinkInput" class="support-input" type="url" placeholder="Ссылка (Imgur, Yapx)...">
@@ -1134,7 +1167,6 @@
               <div class="support-result" id="reportResultText"></div>
             </div>
           </article>
-          
           <div id="adminPanelArea" style="display:none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(191,198,255,0.2);">
             <h3 style="margin-bottom: 1rem; font-size: var(--text-sm); color: var(--color-primary); text-transform: uppercase;">Панель Руководства</h3>
             <button class="btn btn-secondary" type="button" id="viewReportsBtn" style="width:100%;">Проверить сданные отчеты</button>
@@ -1144,14 +1176,9 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-admin_log" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #ffbf47;">Логи выдачи (Модерация)</h2>
-          <p>Покупки из магазина и Рулетки. Нажимайте «Отметить как выданное» после выдачи в Discord.</p>
-        </div>
+        <div class="section-head"><h2 style="color: #ffbf47;">Логи выдачи (Модерация)</h2><p>Покупки из магазина и Рулетки.</p></div>
         <button class="btn btn-secondary" type="button" id="loadAdminLogsBtn" style="width:100%; margin-bottom:1.5rem;">Обновить список</button>
-        <div class="feed" id="adminLogsArea">
-            <div class="message-text">Нажмите «Обновить список»</div>
-        </div>
+        <div class="feed" id="adminLogsArea"><div class="message-text">Нажмите «Обновить список»</div></div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-ap_admin_log" style="display:none;">
@@ -1161,834 +1188,452 @@
       </section>
 
       <aside class="panel side fade-in">
-        <div class="section-head">
-          <h2>Лог смены</h2>
-          <p>Здесь фиксируются ваши решения.</p>
-        </div>
-        <div class="log" id="logList">
-          <div class="log-item">Пока пусто. Нажми «Начать смену», чтобы начать работу.</div>
-        </div>
+        <div class="section-head"><h2>Лог смены</h2><p>Здесь фиксируются ваши решения.</p></div>
+        <div class="log" id="logList"><div class="log-item">Пока пусто. Нажми «Начать смену», чтобы начать работу.</div></div>
       </aside>
       
     </section>
   </main>
 
   <script>
+    // Вспомогательные настройки магазина (Тумблеры)
+    let directModShopAdd = localStorage.getItem('directModShopAdd') === 'true';
+    let directApShopAdd = localStorage.getItem('directApShopAdd') === 'true';
+
     document.addEventListener("DOMContentLoaded", () => {
-        
-        // === 1. АУДИО ===
-        let isMusicEnabled = false, isSfxEnabled = true;    
-        const uiSoundConfig = { volume: 0.15, pitch: 600, type: 'sine', duration: 0.04 };
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        try {
+            // === ИНЖЕКТ ТУМБЛЕРОВ В ПАНЕЛЬ СОЗДАТЕЛЯ ===
+            const creatorPanel = document.getElementById('mode-creator');
+            if (creatorPanel) {
+                const togglesHtml = `
+                <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
+                  <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Настройки добавления в магазин</h3>
+                  <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Если включено, товары из панелей Руководства будут добавляться сразу. Если выключено — будут отправляться вам в заявки (Очередь).</p>
+                  <label style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                      <input type="checkbox" id="toggleDirectMod" style="width: 20px; height: 20px; accent-color: var(--color-primary);" ${directModShopAdd ? 'checked' : ''}>
+                      <span>Мгновенное добавление товаров (Модерация)</span>
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem;">
+                      <input type="checkbox" id="toggleDirectAp" style="width: 20px; height: 20px; accent-color: #ff8fc4;" ${directApShopAdd ? 'checked' : ''}>
+                      <span>Мгновенное добавление товаров (АП)</span>
+                  </label>
+                </div>`;
+                creatorPanel.querySelector('.section-head').insertAdjacentHTML('afterend', togglesHtml);
 
-        function playUIClick() {
-            if (!isSfxEnabled) return;
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
-            osc.type = uiSoundConfig.type;
-            osc.frequency.setValueAtTime(uiSoundConfig.pitch, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(uiSoundConfig.pitch / 2, audioCtx.currentTime + uiSoundConfig.duration);
-            gainNode.gain.setValueAtTime(uiSoundConfig.volume, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + uiSoundConfig.duration);
-            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + uiSoundConfig.duration);
-        }
-
-        const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3'); bgMusic.loop = true; bgMusic.volume = 0.3;
-        const sndOk = new Audio('https://actions.google.com/sounds/v1/ui/pop.ogg'); sndOk.volume = 0.4;
-        const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); sndFail.volume = 0.2;
-        const sndWin = new Audio('https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'); sndWin.volume = 0.3;
-
-        function playSound(type) {
-            if (!isSfxEnabled) return;
-            if (type === 'ok') { sndOk.currentTime = 0; sndOk.play().catch(()=>{}); }
-            if (type === 'fail') { sndFail.currentTime = 0; sndFail.play().catch(()=>{}); }
-            if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
-        }
-
-        document.addEventListener('click', (e) => {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            if (e.target.closest('button') || e.target.closest('a')) playUIClick();
-        });
-        document.getElementById('musicToggleBtn').addEventListener('click', (e) => {
-            isMusicEnabled = !isMusicEnabled;
-            if (isMusicEnabled) { e.target.textContent = '⏳'; bgMusic.play().then(() => { e.target.textContent = '🎵'; }).catch((err) => { isMusicEnabled = false; e.target.textContent = '🔇'; }); } 
-            else { e.target.textContent = '🔇'; bgMusic.pause(); }
-        });
-        document.getElementById('sfxToggleBtn').addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
-
-        // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
-        const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
-        const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        let currentUser = null, currentNickname = null, pendingAction = null;
-        let hasAccessCode = localStorage.getItem('access_shop') === 'true';
-        let hasReportAccessCode = localStorage.getItem('access_report') === 'true';
-        let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
-        let dynamicModLeaders = [], dynamicApLeaders = [], publicModStaff = [], publicApStaff = [];
-        let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
-
-        function requestAccess(actionType, btnElement) {
-            pendingAction = { type: actionType, btn: btnElement };
-            document.getElementById('accessCodeInput').value = ''; document.getElementById('accessErrorMsg').style.display = 'none'; document.getElementById('accessModal').style.display = 'flex'; 
-        }
-
-        const creatorEmail = 'daniiltimosin72@gmail.com';
-        const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
-        const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
-
-        let state = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false, log: [], reportXp: 0 };
-        let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
-        let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
-        let shopState = { spent: 0, apSpent: 0 };
-        let taState = { score: 0, mistakes: 0, time: 60, interval: null, active: false, current: null };
-        
-        let modQueue = [], supQueue = [], compQueue = [], taQueue = [];
-        let modTrap = null, apTrap = null; // Скрытые проверки
-
-        // === 3. МАССИВЫ МАГАЗИНА, РУЛЕТКИ И БАЗЫ ДАННЫХ ===
-        let defaultShopItems = [
-            { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора.", price: 200, icon: "⏳" },
-            { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора.", price: 250, icon: "⏳" },
-            { id: 'sm_1', title: "СМ: Скидка -1 день", desc: "Ускоряет повышение Старшего Модератора.", price: 300, icon: "⏳" },
-            { id: 'bonus_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 200, icon: "🛡️" },
-            { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" },
-            { id: 'bonus_3', title: "Иммунитет на предупреждение", desc: "Защищает от 1 предупреждения в будущем.", price: 300, icon: "🛡️" },
-            { id: 'bonus_4', title: "Иммунитет на выговор", desc: "Защищает от 1 выговора в будущем.", price: 500, icon: "👑" },
-            { id: 'bonus_5', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 150, icon: "🛌" },
-            { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
-            { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' },
-            { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
-            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' }
-        ];
-
-        let defaultApShopItems = [
-            { id: 'ap_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" },
-            { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" },
-            { id: 'ap_3', title: "Иммунитет на выговор", desc: "Защищает от получения 1 выговора.", price: 40, icon: "👑" },
-            { id: 'ap_4', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 10, icon: "🛌" },
-            { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
-        ];
-
-        let defaultModRoulettePrizes = [
-            { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: -500 },
-            { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: -300 },
-            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
-            { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: +100 }
-        ];
-
-        let defaultApRoulettePrizes = [
-            { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: -50 },
-            { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: -30 },
-            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }
-        ];
-
-        let shopItems = [...defaultShopItems], apShopItems = [...defaultApShopItems];
-        let customShopItems = [], customApShopItems = [];
-        let modRoulettePrizes = [...defaultModRoulettePrizes], apRoulettePrizes = [...defaultApRoulettePrizes];
-
-        // БАЗА ВОПРОСОВ И СООБЩЕНИЙ
-        let allModMessages = [
-            {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},{type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},{type:"warn",text:"ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"},{type:"warn",text:"Как дела ????????????????????????"},{type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"},{type:"warn",text:"Продам аксы+++++++++++++++++++++"},{type:"warn",text:"Кто в казик $$$$$$$$$$$$$$$$$$$$$$$"},{type:"warn",text:"Кто в патруль? Кто в патруль? Кто в патруль?"},{type:"warn",text:"spam spam spam spam spam"},{type:"warn",text:"@everyone зайдите в игру пж"},{type:"warn",text:"@here кто продаст ремку?"},{type:"warn",text:"@Lexa_Mackenzie @Lexa_Mackenzie @Lexa_Mackenzie"},{type:"warn",text:"Дайте 10к на развитие пожалуйста, я новичок"},{type:"warn",text:"Пацаны, скиньтесь по 100 рублей на фаму пж"},{type:"warn",text:"Админы, дайте админку или виртов хоть чуть-чуть"},{type:"warn",text:"Кто может задонатить мне на блек пасс? Умоляю"},{type:"warn",text:"Да ваш президент вообще ничего не понимает в экономике"},{type:"warn",text:"Моя религия самая правильная, а вы все не правы"},{type:"warn",text:"Слава [название страны]! Все остальные — мусор"},{type:"warn",text:"Политики вообще оборзели в край"},{type:"warn",text:"Ты вообще к****, иди откисай на спавне"},{type:"warn",text:"Да вы вы тут нули, я вас один раскидаю"},{type:"warn",text:"Плачь больше, форумная крыса"},{type:"warn",text:"Чел, у тебя iq как у хлебушка, не пиши сюда"},{type:"warn",text:"Боже, какие же криворукие сидят в этой фракции"},{type:"warn",text:"Что ты там вякнул? Иди уроки делай, ш*****а"},{type:"warn",text:"Твоя фама - сборище н***их, лови аптечку"},{type:"warn",text:"Все бабы в этой игре играть не умеют"},{type:"warn",text:"Твое место на кухне, а не в ОПГ"},{type:"warn",text:"Админ, я тебе в лс флудить буду пока не ответишь"},{type:"warn",text:"Давайте все вместе репорт админам заспамим"},{type:"warn",text:"Я тебя по IP вычислю, жди гостей вечером"},{type:"warn",text:"Жди докс, к****, я тебя найду"},{type:"warn",text:"Слышь, я тебя сейчас в чс закину, понял?"},{type:"warn",text:"Да я твой дом труба шатал"},{type:"warn",text:"ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ"},
-            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},{type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},{type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},{type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},{type:"ban",text:"Куплю админку за деньги, кому переводить?"},{type:"ban",text:"Обменяю 10кк на 1 сервере на ваши 10кк на 5 сервере"},{type:"ban",text:"Парни, открылся новый топ РП проект discord.gg/fake-rp"},{type:"ban",text:"Заходите на мой проект вместо этого"},{type:"ban",text:"Идет набор в админы на новом сервере 192.168.1.1:7777"},{type:"ban",text:"Смотрите какую жесткую аварию с трупами нашел [ссылка]"},{type:"ban",text:"Зацените р***члененку, жесть просто [ссылка]"},{type:"ban",text:"Кому скинуть ц* в лс? добавляйтесь"},{type:"ban",text:"Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10"},{type:"ban",text:"Слил номер телефона ГА в открытый доступ"},{type:"ban",text:"Его зовут Вася Пупкин, учится в 7Б школе №5, давайте загнобим"},{type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"},{type:"ban",text:"Сливаю приватный аимбот на наш сервер"},{type:"ban",text:"Скрипт на авто-рыбалку (работает 100%): dropmefiles.com/virus"},{type:"ban",text:"Продам мефедрон, гашиш. Доставка по городу"},{type:"ban",text:"Давайте заминируем школу, рецепт бомбы вот тут: [ссылка]"},{type:"ban",text:"Твоя м*** сд***а в канаве, в******к"},{type:"ban",text:"Я твою всю семью р***л, понял меня?"},{type:"ban",text:"Сын ш***и, иди отсюда"},{type:"ban",text:"Чтоб твои родители сг***ли"},{type:"ban",text:"Сливаю пароли от админ панелей, заходите [ссылка]"}
-        ];
-
-        let allSupQuestions = [
-            { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Навигация", text: "Где находится здание ФСБ?", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Навигация", text: "Где находится тюрьма (ФСИН)?", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] },
-            { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] },
-            { title: "Команды", text: "Подскажите команду, чтобы завести машину.", keywords: ["engine", "енжин"] },
-            { title: "Команды", text: "Как показать медкарту врачу?", keywords: ["med", "мед"] },
-            { title: "Команды", text: "Какая команда открывает багажник?", keywords: ["trunk", "транк", "багажник", "carpass"] },
-            { title: "Команды", text: "Как заправить машину на АЗС?", keywords: ["fill", "филл"] },
-            { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] },
-            { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] },
-            { title: "Уровни", text: "С какого лвл я могу работать кладоискателем?", keywords: ["3", "трет"] },
-            { title: "Вопросы", text: "Где можно купить ремкомплект?", keywords: ["24", "магазин", "азс"] },
-            { title: "Вопросы", text: "Где взять лицензию на оружие?", keywords: ["лицензер", "правительств", "донат"] },
-            { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] },
-            { title: "Сложные", text: "где зоправка дай гпс пажалуста", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Сложные", text: "какой лвл на фуру скажите пж", keywords: ["18", "восемнадцат"] },
-            { title: "Сложные", text: "как тачку завести а то не едет?", keywords: ["engine", "енжин"] }
-        ];
-
-        let allComplaints = [
-            { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' },
-            { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' },
-            { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' },
-            { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' },
-            { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' },
-            { text: 'Игрок сообщает, что модератор угрожал ему баном без причины в ЛС.', evidence: 'Полная переписка и ник модератора.', type: 'approve' }
-        ];
-
-        async function loadGlobalShopAndRoulette() {
-            const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'STAFF_MOD', 'STAFF_AP', 'SIM_MOD', 'SIM_AP', 'TRAP_MOD', 'TRAP_AP']);
-            customShopItems = []; customApShopItems = []; publicModStaff = []; publicApStaff = [];
-            modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes];
-
-            if (data) {
-                data.forEach(row => {
-                    if (row.email === 'SHOP_MOD') customShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
-                    else if (row.email === 'SHOP_AP') customApShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
-                    else if (row.email === 'ROULETTE_MOD') { const idx = modRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { modRoulettePrizes[idx].text = row.date; modRoulettePrizes[idx].val = Number(row.xp); } }
-                    else if (row.email === 'ROULETTE_AP') { const idx = apRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); } }
-                    else if (row.email === 'STAFF_MOD') publicModStaff.push({ id: row.link, name: row.status });
-                    else if (row.email === 'STAFF_AP') publicApStaff.push({ id: row.link, name: row.status });
-                    else if (row.email === 'SIM_MOD') { allModMessages.push({ type: row.status, text: row.date }); }
-                    else if (row.email === 'SIM_AP') { allSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s=>s.trim()) }); }
-                    
-                    // Ловушки (Тайные проверки)
-                    else if (row.email === 'TRAP_MOD' && currentUser && row.link === currentUser.id) { modTrap = { id: row.id, type: row.status, text: row.date, isTrap: true }; }
-                    else if (row.email === 'TRAP_AP' && currentUser && row.link === currentUser.id) { apTrap = { id: row.id, title: "Скрытая проверка", text: row.date, keywords: row.status.split(','), isTrap: true, meta: "Проверка от руководства" }; }
+                document.getElementById('toggleDirectMod').addEventListener('change', (e) => {
+                    directModShopAdd = e.target.checked; localStorage.setItem('directModShopAdd', directModShopAdd);
+                });
+                document.getElementById('toggleDirectAp').addEventListener('change', (e) => {
+                    directApShopAdd = e.target.checked; localStorage.setItem('directApShopAdd', directApShopAdd);
                 });
             }
-            shopItems = [...defaultShopItems, ...customShopItems]; apShopItems = [...defaultApShopItems, ...customApShopItems];
-            renderShopItems(); renderApShopItems(); renderPublicStaffLists();
-        }
 
-        // ДОСКА ПОЧЕТА (БЕГУЩАЯ СТРОКА)
-        async function loadWallOfFame() {
-            const ticker = document.getElementById('wallOfFameTicker');
-            if(!ticker) return;
-            
-            const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
-            const { data: users } = await supa.from('user_stats').select('*');
-            const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
-            
-            let modLeadersIds = [], apLeadersIds = [];
-            if(adminRoles) { modLeadersIds = adminRoles.filter(r => r.status === 'leadership').map(r => r.link); apLeadersIds = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link); }
-            
-            let modArr = [], apArr = [];
-            if(users) {
-                users.forEach(u => {
-                    const isModLeader = adminEmails.includes(u.email) || modLeadersIds.includes(u.user_id);
-                    const isApLeader = apLeadershipEmails.includes(u.email) || apLeadersIds.includes(u.user_id);
-                    let reportXp = 0; if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
-                    const mXp = Math.max(0, calcXP(u.mod_correct) + reportXp - Number(u.shop_spent||0));
-                    const aXp = Math.max(0, calcXP(u.sup_correct) - Number(u.ap_spent||0));
-                    if(u.nickname) { if (!isModLeader && mXp > 0) modArr.push({ name: u.nickname, score: mXp }); if (!isApLeader && aXp > 0) apArr.push({ name: u.nickname, score: aXp }); }
-                });
+            // === 1. АУДИО ===
+            let isMusicEnabled = false, isSfxEnabled = true;    
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+            function playUIClick() {
+                if (!isSfxEnabled) return;
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+                osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.04);
             }
-            modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
-            
-            let tickerItems = [];
-            modArr.slice(0,3).forEach((u, i) => tickerItems.push(`🏆 Топ ${i+1} Модер: <span>${u.name} (${u.score} XP)</span>`));
-            apArr.slice(0,3).forEach((u, i) => tickerItems.push(`🌟 Топ ${i+1} АП: <span>${u.name} (${u.score} Баллов)</span>`));
-            
-            if(tickerItems.length > 0) {
-                // Дублируем для плавного бесконечного скролла
-                ticker.innerHTML = tickerItems.join(' • ') + ' • ' + tickerItems.join(' • ');
-            } else {
-                ticker.innerHTML = '<div class="ticker__item">🌟 Доска почета пока пуста</div>';
-            }
-        }
 
-        // === ОЧЕРЕДЬ ЗАЯВОК СОЗДАТЕЛЯ ===
-        async function loadCreatorQueue() {
-            if (!currentUser || currentUser.email !== creatorEmail) return;
-            const list = document.getElementById('approvalQueueList'); if(!list) return;
-            list.innerHTML = 'Загрузка...';
-            const { data: queue } = await supa.from('reports').select('*').in('email', ['PENDING_SHOP_MOD', 'PENDING_SHOP_AP', 'PENDING_SIM_MOD', 'PENDING_SIM_AP']).order('id', { ascending: false });
-            
-            if(queue && queue.length > 0) {
-                list.innerHTML = queue.map(q => {
-                    let typeText = q.email === 'PENDING_SHOP_MOD' ? 'Товар (Модеры)' : q.email === 'PENDING_SHOP_AP' ? 'Товар (АП)' : q.email === 'PENDING_SIM_MOD' ? 'Вопрос (Модеры)' : 'Вопрос (АП)';
-                    let details = `Название/Текст: <strong>${q.date}</strong><br>Описание/Вердикт/Ключи: ${q.status}`;
-                    if(q.xp > 0) details += `<br>Цена: ${q.xp}`;
-                    
-                    return `<div class="pending-card">
-                        <div style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">[Заявка] ${typeText}</div>
-                        <div style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; line-height: 1.4;">${details}</div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn btn-secondary" style="flex:1; border-color: var(--color-success); color: var(--color-success); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', true)">✅ Одобрить</button>
-                            <button class="btn btn-secondary" style="flex:1; border-color: var(--color-error); color: var(--color-error); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', false)">❌ Отказать</button>
-                        </div>
-                    </div>`;
-                }).join('');
-            } else { list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Очередь пуста</div>'; }
-        }
+            const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3'); bgMusic.loop = true; bgMusic.volume = 0.3;
+            const sndOk = new Audio('https://actions.google.com/sounds/v1/ui/pop.ogg'); sndOk.volume = 0.4;
+            const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); sndFail.volume = 0.2;
+            const sndWin = new Audio('https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'); sndWin.volume = 0.3;
 
-        window.processApproval = async function(id, currentEmail, isApproved) {
-            if(isApproved) {
-                const newEmail = currentEmail.replace('PENDING_', '');
-                await supa.from('reports').update({ email: newEmail }).eq('id', id);
-                alert("Заявка одобрена и добавлена в базу!");
-            } else {
-                await supa.from('reports').delete().eq('id', id);
-                alert("Заявка отклонена и удалена.");
-            }
-            loadCreatorQueue(); loadGlobalShopAndRoulette();
-        };
-
-        // Отправка заявок из панелей руководства
-        document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
-            const title = document.getElementById('modShopItemTitle').value.trim(); const desc = document.getElementById('modShopItemDesc').value.trim(); const price = Number(document.getElementById('modShopItemPrice').value); const icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
-            if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: 'PENDING_SHOP_MOD', date: title, status: desc, xp: price, link: icon }]);
-            alert("Заявка на товар отправлена Создателю!"); document.getElementById('modShopItemTitle').value = '';
-        });
-
-        document.getElementById('addModSimItemBtn')?.addEventListener('click', async () => {
-            const text = document.getElementById('modSimItemText').value.trim(); const type = document.getElementById('modSimItemType').value;
-            if(!text) return alert("Введите текст сообщения!");
-            await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: 'PENDING_SIM_MOD', date: text, status: type, xp: 0, link: '' }]);
-            alert("Заявка на сообщение отправлена Создателю!"); document.getElementById('modSimItemText').value = '';
-        });
-
-        document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
-            const title = document.getElementById('apShopItemTitle').value.trim(); const desc = document.getElementById('apShopItemDesc').value.trim(); const price = Number(document.getElementById('apShopItemPrice').value); const icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
-            if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: 'PENDING_SHOP_AP', date: title, status: desc, xp: price, link: icon }]);
-            alert("Заявка на товар АП отправлена Создателю!"); document.getElementById('apShopItemTitle').value = '';
-        });
-
-        document.getElementById('addApSimItemBtn')?.addEventListener('click', async () => {
-            const title = document.getElementById('apSimItemTitle').value.trim(); const text = document.getElementById('apSimItemText').value.trim(); const keywords = document.getElementById('apSimItemKeywords').value.trim();
-            if(!title || !text || !keywords) return alert("Заполните все поля вопроса!");
-            await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: 'PENDING_SIM_AP', date: text, status: keywords, xp: 0, link: title }]);
-            alert("Заявка на вопрос АП отправлена Создателю!"); document.getElementById('apSimItemText').value = '';
-        });
-
-        // ОТПРАВКА СКРЫТЫХ ПРОВЕРОК
-        document.getElementById('sendHiddenCheckModBtn')?.addEventListener('click', async () => {
-            const userId = document.getElementById('hiddenCheckUserSelectMod').value; const text = document.getElementById('hiddenCheckTextMod').value.trim(); const verdict = document.getElementById('hiddenCheckVerdictMod').value;
-            if(!userId || userId.startsWith("Загрузка") || !text) return alert("Выберите пользователя и введите текст ловушки!");
-            await supa.from('reports').insert([{ id: 'trap_' + Date.now(), email: 'TRAP_MOD', link: userId, date: text, status: verdict, xp: 0 }]);
-            alert("Скрытая проверка для Модератора успешно установлена!"); document.getElementById('hiddenCheckTextMod').value = '';
-        });
-
-        document.getElementById('sendHiddenCheckApBtn')?.addEventListener('click', async () => {
-            const userId = document.getElementById('hiddenCheckUserSelectAp').value; const text = document.getElementById('hiddenCheckTextAp').value.trim(); const keywords = document.getElementById('hiddenCheckKeywordsAp').value.trim();
-            if(!userId || userId.startsWith("Загрузка") || !text || !keywords) return alert("Выберите пользователя, введите текст и ключи!");
-            await supa.from('reports').insert([{ id: 'trap_' + Date.now(), email: 'TRAP_AP', link: userId, date: text, status: keywords, xp: 0 }]);
-            alert("Скрытая проверка для Агента Поддержки успешно установлена!"); document.getElementById('hiddenCheckTextAp').value = '';
-        });
-
-        // === 6. ЛОГИКА ИГРЫ, АНТИ-СПАМ, DAILY REWARDS ===
-        function randomFunnyNick() { 
-            const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"];
-            const funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
-            return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
-        }
-        function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
-        function initials(name) { return name.split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
-        function calcXP(value) { return Math.floor(Number(value) / 10) * 15; }
-        function availableXp() { return Math.max(0, calcXP(state.correct) + Number(state.reportXp || 0) - Number(shopState.spent || 0)); }
-        function availablePts() { return Math.max(0, calcXP(supportState.correct) - Number(shopState.apSpent || 0)); }
-
-        function checkDailyReward() {
-            if(!currentUser) return;
-            let lastDate = localStorage.getItem('daily_date_' + currentUser.id);
-            let streak = parseInt(localStorage.getItem('daily_streak_' + currentUser.id) || "0");
-            let today = new Date().toDateString(); let yesterday = new Date(Date.now() - 86400000).toDateString();
-            
-            if(lastDate === today) return; 
-            if(lastDate === yesterday) streak++; else streak = 1;
-            
-            document.getElementById('dailyStreak').textContent = streak;
-            document.getElementById('dailyModal').style.display = 'flex';
-            document.getElementById('claimDailyBtn').onclick = async () => {
-                shopState.spent -= 50; 
-                localStorage.setItem('daily_date_' + currentUser.id, today);
-                localStorage.setItem('daily_streak_' + currentUser.id, streak);
-                document.getElementById('dailyModal').style.display = 'none';
-                playSound('win'); updateModStats(); saveProgress();
+            window.playSound = function(type) {
+                if (!isSfxEnabled) return;
+                if (type === 'ok') { sndOk.currentTime = 0; sndOk.play().catch(()=>{}); }
+                if (type === 'fail') { sndFail.currentTime = 0; sndFail.play().catch(()=>{}); }
+                if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
             };
-        }
 
-        let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
-        function isSpamming() {
-            const now = Date.now(); const blockUntil = localStorage.getItem('spam_block_until');
-            if (blockUntil && now < blockUntil) return true;
-            if (now - lastActionTime < 1000) {
-                spamWarnings++;
-                if (spamWarnings >= 3) {
-                    const penaltyTime = now + 60000; localStorage.setItem('spam_block_until', penaltyTime);
-                    showSpamModalWithTimer(); spamWarnings = 0; return true;
-                }
-            } else { spamWarnings = Math.max(0, spamWarnings - 1); }
-            lastActionTime = now; return false;
-        }
+            document.addEventListener('click', (e) => { if (e.target.closest('button') || e.target.closest('a')) playUIClick(); });
+            document.getElementById('musicToggleBtn')?.addEventListener('click', (e) => {
+                isMusicEnabled = !isMusicEnabled;
+                if (isMusicEnabled) { e.target.textContent = '⏳'; bgMusic.play().then(() => { e.target.textContent = '🎵'; }).catch(() => { isMusicEnabled = false; e.target.textContent = '🔇'; }); } 
+                else { e.target.textContent = '🔇'; bgMusic.pause(); }
+            });
+            document.getElementById('sfxToggleBtn')?.addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
 
-        function showSpamModalWithTimer() {
-            const blockUntil = localStorage.getItem('spam_block_until'); if (!blockUntil) return;
-            const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
-            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
-            let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
-            closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
-            spamTimerInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft <= 0) { clearInterval(spamTimerInterval); localStorage.removeItem('spam_block_until'); closeBtn.disabled = false; closeBtn.style.opacity = '1'; closeBtn.style.cursor = 'pointer'; closeBtn.textContent = 'Я понял, больше не буду'; } 
-                else closeBtn.textContent = `Блокировка: ${timeLeft} сек...`;
-            }, 1000);
-        }
-        document.getElementById('closeSpamModal').addEventListener('click', (e) => { if (!e.target.disabled) document.getElementById('spamModal').style.display = 'none'; });
-
-        function pushLog(text) { state.log.unshift(text); state.log = state.log.slice(0, 50); renderLogs(); }
-        function renderLogs() {
-            const logList = document.getElementById("logList"); if (!logList) return;
-            logList.innerHTML = state.log.length > 0 ? state.log.map(item => `<div class="log-item">${item}</div>`).join("") : '<div class="log-item">Пока пусто. Нажми «Начать смену».</div>';
-        }
-
-        function startGame() {
-            state.started = true; supportState.started = true; complaintState.started = true; document.getElementById('startBtn').disabled = true;
-            randomMessage(); randomComplaint();
+            // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
+            const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+            const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
             
-            if (apTrap) {
-                // Если есть скрытая проверка для АП
-                document.getElementById("supportQuestionTitle").textContent = apTrap.title; document.getElementById("supportMeta").textContent = apTrap.meta; document.getElementById("supportQuestionText").textContent = apTrap.text; document.getElementById("supportResultText").textContent = "";
-            } else if (allSupQuestions.length) {
+            let currentUser = null, currentNickname = null, pendingAction = null;
+            let hasAccessCode = localStorage.getItem('access_shop') === 'true'; let hasReportAccessCode = localStorage.getItem('access_report') === 'true'; let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
+            let dynamicModLeaders = [], dynamicApLeaders = [], publicModStaff = [], publicApStaff = [];
+            let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
+
+            const creatorEmail = 'daniiltimosin72@gmail.com';
+            const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+            const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+
+            let state = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false, log: [], reportXp: 0 };
+            let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
+            let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
+            let shopState = { spent: 0, apSpent: 0 };
+            let taState = { score: 0, mistakes: 0, time: 60, interval: null, active: false, current: null };
+            let modQueue = [], supQueue = [], compQueue = [], taQueue = [];
+            let modTrap = null, apTrap = null;
+
+            // МАГАЗИН И СООБЩЕНИЯ
+            let defaultShopItems = [ { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора.", price: 200, icon: "⏳" }, { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора.", price: 250, icon: "⏳" }, { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" }, { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' }, { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' }, { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' }, { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' } ];
+            let defaultApShopItems = [ { id: 'ap_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" }, { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" }, { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' } ];
+            
+            let defaultModRoulettePrizes = [ { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: -500 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: -300 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: +100 } ];
+            let defaultApRoulettePrizes = [ { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: -50 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: -30 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 } ];
+
+            let shopItems = [...defaultShopItems], apShopItems = [...defaultApShopItems], customShopItems = [], customApShopItems = [];
+            let modRoulettePrizes = [...defaultModRoulettePrizes], apRoulettePrizes = [...defaultApRoulettePrizes];
+
+            let allModMessages = [ {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"}, {type:"warn",text:"Как дела ????????????????????????"}, {type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"}, {type:"warn",text:"spam spam spam spam spam"}, {type:"warn",text:"Да ваш президент вообще ничего не понимает в экономике"}, {type:"warn",text:"Ты вообще к****, иди откисай на спавне"}, {type:"warn",text:"Чел, у тебя iq как у хлебушка, не пиши сюда"}, {type:"warn",text:"Админ, я тебе в лс флудить буду пока не ответишь"}, {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"}, {type:"ban",text:"Заходите на мой проект вместо этого"}, {type:"ban",text:"Работает баг на удвоение денег! Переведите мне 50к"}, {type:"ban",text:"Сливаю приватный аимбот на наш сервер"} ];
+            let allSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Сложные", text: "где зоправка дай гпс пажалуста", keywords: ["gps", "гпс", "навигатор"] } ];
+            let allComplaints = [ { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' }, { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' }, { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' } ];
+
+            async function loadGlobalShopAndRoulette() {
+                const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'STAFF_MOD', 'STAFF_AP', 'SIM_MOD', 'SIM_AP', 'TRAP_MOD', 'TRAP_AP']);
+                customShopItems = []; customApShopItems = []; publicModStaff = []; publicApStaff = [];
+                modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes];
+
+                if (data) {
+                    data.forEach(row => {
+                        if (row.email === 'SHOP_MOD') customShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
+                        else if (row.email === 'SHOP_AP') customApShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
+                        else if (row.email === 'ROULETTE_MOD') { const idx = modRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { modRoulettePrizes[idx].text = row.date; modRoulettePrizes[idx].val = Number(row.xp); } }
+                        else if (row.email === 'ROULETTE_AP') { const idx = apRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); } }
+                        else if (row.email === 'STAFF_MOD') publicModStaff.push({ id: row.link, name: row.status });
+                        else if (row.email === 'STAFF_AP') publicApStaff.push({ id: row.link, name: row.status });
+                        else if (row.email === 'SIM_MOD') allModMessages.push({ type: row.status, text: row.date });
+                        else if (row.email === 'SIM_AP') allSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s=>s.trim()) });
+                        else if (row.email === 'TRAP_MOD' && currentUser && row.link === currentUser.id) modTrap = { id: row.id, type: row.status, text: row.date, isTrap: true };
+                        else if (row.email === 'TRAP_AP' && currentUser && row.link === currentUser.id) apTrap = { id: row.id, title: "Скрытая проверка", text: row.date, keywords: row.status.split(','), isTrap: true, meta: "Проверка от руководства" };
+                    });
+                }
+                shopItems = [...defaultShopItems, ...customShopItems]; apShopItems = [...defaultApShopItems, ...customApShopItems];
+                renderShopItems(); renderApShopItems(); renderPublicStaffLists();
+            }
+
+            // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И ИГРА ===
+            function randomFunnyNick() { 
+                const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "Токсик", "Дед"]; const funnyRight = ["из_Тамбова", "в_муте", "обижен", "ищет_баги"];
+                return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
+            }
+            function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
+            function initials(name) { return name.split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
+            function calcXP(value) { return Math.floor(Number(value) / 10) * 15; }
+            function availableXp() { return Math.max(0, calcXP(state.correct) + Number(state.reportXp || 0) - Number(shopState.spent || 0)); }
+            function availablePts() { return Math.max(0, calcXP(supportState.correct) - Number(shopState.apSpent || 0)); }
+
+            function checkDailyReward() {
+                if(!currentUser) return;
+                let lastDate = localStorage.getItem('daily_date_' + currentUser.id); let streak = parseInt(localStorage.getItem('daily_streak_' + currentUser.id) || "0");
+                let today = new Date().toDateString(); let yesterday = new Date(Date.now() - 86400000).toDateString();
+                if(lastDate === today) return; 
+                if(lastDate === yesterday) streak++; else streak = 1;
+                
+                document.getElementById('dailyStreak').textContent = streak; document.getElementById('dailyModal').style.display = 'flex';
+                document.getElementById('claimDailyBtn').onclick = async () => {
+                    shopState.spent -= 50; 
+                    localStorage.setItem('daily_date_' + currentUser.id, today); localStorage.setItem('daily_streak_' + currentUser.id, streak);
+                    document.getElementById('dailyModal').style.display = 'none';
+                    window.playSound('win'); updateModStats(); await saveProgress();
+                };
+            }
+
+            let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
+            function isSpamming() {
+                const now = Date.now(); const blockUntil = localStorage.getItem('spam_block_until');
+                if (blockUntil && now < blockUntil) return true;
+                if (now - lastActionTime < 1000) {
+                    spamWarnings++;
+                    if (spamWarnings >= 3) {
+                        const penaltyTime = now + 60000; localStorage.setItem('spam_block_until', penaltyTime);
+                        showSpamModalWithTimer(); spamWarnings = 0; return true;
+                    }
+                } else { spamWarnings = Math.max(0, spamWarnings - 1); }
+                lastActionTime = now; return false;
+            }
+
+            function showSpamModalWithTimer() {
+                const blockUntil = localStorage.getItem('spam_block_until'); if (!blockUntil) return;
+                const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
+                modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
+                let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
+                closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
+                spamTimerInterval = setInterval(() => {
+                    timeLeft--;
+                    if (timeLeft <= 0) { clearInterval(spamTimerInterval); localStorage.removeItem('spam_block_until'); closeBtn.disabled = false; closeBtn.style.opacity = '1'; closeBtn.style.cursor = 'pointer'; closeBtn.textContent = 'Я понял, больше не буду'; } 
+                    else closeBtn.textContent = `Блокировка: ${timeLeft} сек...`;
+                }, 1000);
+            }
+            document.getElementById('closeSpamModal')?.addEventListener('click', (e) => { if (!e.target.disabled) document.getElementById('spamModal').style.display = 'none'; });
+
+            function pushLog(text) { state.log.unshift(text); state.log = state.log.slice(0, 50); renderLogs(); }
+            function renderLogs() {
+                const logList = document.getElementById("logList"); if (!logList) return;
+                logList.innerHTML = state.log.length > 0 ? state.log.map(item => `<div class="log-item">${item}</div>`).join("") : '<div class="log-item">Пока пусто. Нажми «Начать смену».</div>';
+            }
+
+            function startGame() {
+                state.started = true; supportState.started = true; complaintState.started = true; 
+                document.getElementById('startBtn').disabled = true;
+                randomMessage(); randomComplaint();
+                
+                if (apTrap) {
+                    document.getElementById("supportQuestionTitle").textContent = apTrap.title; document.getElementById("supportMeta").textContent = apTrap.meta; document.getElementById("supportQuestionText").textContent = apTrap.text; document.getElementById("supportResultText").textContent = "";
+                } else if (allSupQuestions.length) {
+                    if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
+                    supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
+                    document.getElementById("supportQuestionTitle").textContent = q.title || "Вопрос"; document.getElementById("supportMeta").textContent = q.meta || "Вопрос игрока"; document.getElementById("supportQuestionText").textContent = q.text || "Без текста"; document.getElementById("supportResultText").textContent = "";
+                }
+                updateModStats(); updateSupportStats(); updateComplaintStats();
+                document.getElementById("game")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+
+            function resetGame() {
+                state.started = false; supportState.started = false; complaintState.started = false; document.getElementById('startBtn').disabled = false;
+                document.getElementById("messageText").textContent = "Пока сообщений нет. Нажми «Начать смену».";
+                document.getElementById("compText").textContent = "Нажми «Начать смену»."; document.getElementById("supportQuestionText").textContent = "Нажми «Начать смену».";
+                pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
+            }
+
+            function randomMessage() {
+                if (modTrap) {
+                    const user = randomFunnyNick(); state.current = { ...modTrap, user };
+                    document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Скрытая проверка"; document.getElementById("messageText").textContent = modTrap.text; document.getElementById("avatarBox").textContent = initials(user);
+                    return;
+                }
+                if (modQueue.length === 0) { modQueue = allModMessages.map((_, i) => i); shuffleArray(modQueue); }
+                const item = allModMessages[modQueue.pop()]; const user = randomFunnyNick(); state.current = { ...item, user };
+                document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Ожидает проверки"; document.getElementById("messageText").textContent = item.text; document.getElementById("avatarBox").textContent = initials(user);
+            }
+
+            function randomComplaint() {
+                if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
+                const item = allComplaints[compQueue.pop()]; complaintState.current = item;
+                document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
+            }
+
+            // === ГЛОБАЛЬНЫЕ ФУНКЦИИ ВЕРДИКТОВ И КНОПОК ===
+            window.judge = async function(action) {
+                if (!state.started || !state.current) { startGame(); return; }
+                if (isSpamming()) return;
+                const isCorrect = action === state.current.type; state.resolved++;
+                
+                if (state.current.isTrap) {
+                    await supa.from('admin_logs').insert([{ user_email: currentUser?.email || 'N/A', nickname: currentNickname || 'N/A', item_name: 'Тайная проверка', cost: 0, type: 'mod_shop', status: `Вердикт: ${isCorrect ? 'ВЕРНО' : 'ОШИБКА'}` }]);
+                    await supa.from('reports').delete().eq('id', modTrap.id); modTrap = null;
+                }
+                if (isCorrect) { state.correct++; window.playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
+                else { state.mistakes++; window.playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
+                updateModStats(); saveProgress(); randomMessage();
+            };
+
+            window.judgeComplaint = function(action) {
+                if (!complaintState.started || !complaintState.current) { startGame(); return; }
+                if (isSpamming()) return;
+                const isCorrect = action === complaintState.current.type; complaintState.resolved++;
+                if (isCorrect) { complaintState.correct++; window.playSound('ok'); pushLog(`✅ Жалобы: верное решение (${action})`); } 
+                else { complaintState.mistakes++; window.playSound('fail'); pushLog(`❌ Жалобы: ошибка (${action})`); }
+                updateComplaintStats(); saveProgress(); randomComplaint();
+            };
+
+            // Привязка слушателей для вердиктов через делегирование (самый надежный способ)
+            document.body.addEventListener('click', (e) => {
+                const btnMod = e.target.closest('[data-action]');
+                const btnComp = e.target.closest('[data-comp-action]');
+                if (btnMod) window.judge(btnMod.dataset.action);
+                if (btnComp) window.judgeComplaint(btnComp.dataset.compAction);
+            });
+
+            document.getElementById('supportCheckBtn')?.addEventListener('click', async () => {
+                if (!supportState.started) return;
+                const answer = document.getElementById("supportAnswerInput").value.trim().toLowerCase();
+                const resEl = document.getElementById("supportResultText");
+                if (!answer) { resEl.textContent = "Напиши ответ игроку."; return; }
+                supportState.resolved++; 
+
+                let ok = false;
+                if (apTrap) {
+                    ok = apTrap.keywords.some(k => answer.includes(k));
+                    await supa.from('admin_logs').insert([{ user_email: currentUser?.email || 'N/A', nickname: currentNickname || 'N/A', item_name: 'Тайная проверка АП', cost: 0, type: 'ap_shop', status: `Вердикт: ${ok ? 'ВЕРНО' : 'ОШИБКА'}` }]);
+                    await supa.from('reports').delete().eq('id', apTrap.id); apTrap = null;
+                } else {
+                    if (supportState.currentIndex < 0) return;
+                    const q = allSupQuestions[supportState.currentIndex]; ok = q.keywords.some(k => answer.includes(k));
+                }
+                
+                if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; window.playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
+                else { supportState.mistakes++; resEl.textContent = "Ответ не засчитан: не хватает ключевых слов или команды."; resEl.style.color = "var(--color-error)"; window.playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
+                updateSupportStats(); saveProgress();
+            });
+
+            document.getElementById('supportNextBtn')?.addEventListener('click', () => {
+                if (!supportState.started) return;
                 if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
                 supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
-                document.getElementById("supportQuestionTitle").textContent = q.title || "Вопрос"; document.getElementById("supportMeta").textContent = q.meta || "Вопрос игрока"; document.getElementById("supportQuestionText").textContent = q.text || "Без текста"; document.getElementById("supportResultText").textContent = "";
-            }
-            updateModStats(); updateSupportStats(); updateComplaintStats();
-            document.getElementById("game").scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-
-        function resetGame() {
-            state.started = false; supportState.started = false; complaintState.started = false; document.getElementById('startBtn').disabled = false;
-            document.getElementById("messageText").textContent = "Пока сообщений нет. Нажми «Начать смену».";
-            document.getElementById("compText").textContent = "Нажми «Начать смену»."; document.getElementById("supportQuestionText").textContent = "Нажми «Начать смену».";
-            pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
-        }
-
-        function randomMessage() {
-            if (modTrap) {
-                const user = randomFunnyNick(); state.current = { ...modTrap, user };
-                document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Скрытая проверка"; document.getElementById("messageText").textContent = modTrap.text; document.getElementById("avatarBox").textContent = initials(user);
-                return;
-            }
-            if (modQueue.length === 0) { modQueue = allModMessages.map((_, i) => i); shuffleArray(modQueue); }
-            const item = allModMessages[modQueue.pop()]; const user = randomFunnyNick(); state.current = { ...item, user };
-            document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Ожидает проверки"; document.getElementById("messageText").textContent = item.text; document.getElementById("avatarBox").textContent = initials(user);
-        }
-
-        function randomComplaint() {
-            if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
-            const item = allComplaints[compQueue.pop()]; complaintState.current = item;
-            document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
-        }
-
-        window.judge = async function(action) {
-            if (!state.started || !state.current) { startGame(); return; }
-            if (isSpamming()) return;
-            const isCorrect = action === state.current.type; state.resolved++;
-            
-            if (state.current.isTrap) {
-                // Обработка скрытой проверки
-                await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: 'Тайная проверка', cost: 0, type: 'mod_shop', status: `Вердикт: ${isCorrect ? 'ВЕРНО' : 'ОШИБКА'}` }]);
-                await supa.from('reports').delete().eq('id', modTrap.id); modTrap = null;
-            }
-
-            if (isCorrect) { state.correct++; playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
-            else { state.mistakes++; playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
-            updateModStats(); saveProgress(); randomMessage();
-        };
-
-        window.judgeComplaint = function(action) {
-            if (!complaintState.started || !complaintState.current) { startGame(); return; }
-            if (isSpamming()) return;
-            const isCorrect = action === complaintState.current.type; complaintState.resolved++;
-            if (isCorrect) { complaintState.correct++; playSound('ok'); pushLog(`✅ Жалобы: верное решение (${action})`); } 
-            else { complaintState.mistakes++; playSound('fail'); pushLog(`❌ Жалобы: ошибка (${action})`); }
-            updateComplaintStats(); saveProgress(); randomComplaint();
-        };
-
-        document.getElementById('supportCheckBtn')?.addEventListener('click', async () => {
-            if (!supportState.started) return;
-            const answer = document.getElementById("supportAnswerInput").value.trim().toLowerCase();
-            const resEl = document.getElementById("supportResultText");
-            if (!answer) { resEl.textContent = "Напиши ответ игроку."; return; }
-            supportState.resolved++; 
-
-            let ok = false;
-            if (apTrap) {
-                ok = apTrap.keywords.some(k => answer.includes(k));
-                await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: 'Тайная проверка АП', cost: 0, type: 'ap_shop', status: `Вердикт: ${ok ? 'ВЕРНО' : 'ОШИБКА'}` }]);
-                await supa.from('reports').delete().eq('id', apTrap.id); apTrap = null;
-            } else {
-                if (supportState.currentIndex < 0) return;
-                const q = allSupQuestions[supportState.currentIndex];
-                ok = q.keywords.some(k => answer.includes(k));
-            }
-            
-            if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
-            else { supportState.mistakes++; resEl.textContent = "Ответ не засчитан: не хватает ключевых слов или команды."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
-            updateSupportStats(); saveProgress();
-        });
-
-        document.getElementById('supportNextBtn')?.addEventListener('click', () => {
-            if (!supportState.started) return;
-            if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
-            supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
-            document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
-        });
-
-        // Поиск (Шпаргалка АП и Гайд)
-        function setupSearch(inputId, resultsId, dataArray) {
-            const input = document.getElementById(inputId); const results = document.getElementById(resultsId);
-            if(!input || !results) return;
-            input.addEventListener('input', () => {
-                const val = input.value.toLowerCase().trim();
-                if(val.length < 2) { results.style.display = 'none'; return; }
-                const filtered = dataArray.filter(i => (i.text && i.text.toLowerCase().includes(val)) || (i.keywords && i.keywords.some(k => k.includes(val))));
-                if(filtered.length > 0) {
-                    results.innerHTML = filtered.map(i => `<div style="padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);"><strong style="color:var(--color-primary);">${i.title || 'Вопрос'}</strong>: <span style="color:#fff;">${i.text}</span> <br><span style="font-size:0.75rem; color:var(--color-text-faint);">Ключи: ${i.keywords ? i.keywords.join(', ') : ''}</span></div>`).join('');
-                    results.style.display = 'block';
-                } else {
-                    results.innerHTML = '<div style="padding:0.5rem; color:var(--color-text-muted);">Ничего не найдено...</div>'; results.style.display = 'block';
-                }
+                document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
             });
-            document.addEventListener('click', (e) => { if(!input.contains(e.target) && !results.contains(e.target)) results.style.display = 'none'; });
-        }
-        setupSearch('apSearchInput', 'apSearchResults', allSupQuestions); setupSearch('guideSearchInput', 'guideSearchResults', allSupQuestions);
 
-        // === ПРОФИЛЬ (ГРАФИКИ, АЧИВКИ, ПЕРЕВОДЫ) ===
-        let statsChartInst = null;
-        function renderChart() {
-            const ctx = document.getElementById('statsChart'); if(!ctx) return;
-            if(statsChartInst) statsChartInst.destroy();
-            let base = Math.max(5, Math.floor(state.resolved / 5));
-            let data = [base, base*1.2, base*0.8, base*1.5, base*1.1, base*1.8, state.resolved];
-            statsChartInst = new Chart(ctx, { type: 'line', data: { labels: ['День 1','День 2','День 3','День 4','День 5','Вчера','Сегодня'], datasets: [{ label: 'Разобрано репортов', data: data, borderColor: '#6c8cff', backgroundColor: 'rgba(108,140,255,0.15)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } } });
-        }
-
-        const achList = [
-            { id: 'a1', title: 'Новичок', desc: 'Разобрать 10 сообщений', req: () => state.resolved >= 10, icon: '👶' },
-            { id: 'a2', title: 'Опытный Модер', desc: 'Разобрать 100 сообщений', req: () => state.resolved >= 100, icon: '👁️' },
-            { id: 'a3', title: 'Киберспортсмен', desc: 'Набрать 20 очков в Спидране', req: () => taState.score >= 20, icon: '⚡' },
-            { id: 'a4', title: 'Олигарх', desc: 'Накопить 1000 XP баланса', req: () => availableXp() >= 1000, icon: '💰' },
-            { id: 'a5', title: 'Гуру АП', desc: 'Ответить на 50 вопросов АП', req: () => supportState.resolved >= 50, icon: '🧠' }
-        ];
-        function renderAchievements() {
-            const cont = document.getElementById('achievementsContainer'); if(!cont) return;
-            cont.innerHTML = achList.map(a => { const unl = a.req(); return `<div class="achievement-card ${unl?'unlocked':''}"><div class="ach-icon">${a.icon}</div><div><div style="font-weight:bold; color:#fff;">${a.title}</div><div style="font-size:0.8rem; color:var(--color-text-muted);">${a.desc}</div></div></div>`; }).join('');
-        }
-
-        function renderProfileData() {
-            const nameEl = document.getElementById('profileName'); let baseName = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
-            if (activeCosmetics.crown) { baseName = "👑 " + baseName; } nameEl.textContent = baseName;
-            if (activeCosmetics.color) { nameEl.style.background = "linear-gradient(90deg, #ff6b88, #ffbf47, #52c77b, #6c8cff, #a26cff)"; nameEl.style.webkitBackgroundClip = "text"; nameEl.style.webkitTextFillColor = "transparent"; nameEl.style.display = "inline-block"; } 
-            else { nameEl.style.background = "none"; nameEl.style.webkitTextFillColor = "initial"; nameEl.style.color = "#fff"; }
-            const btnCrown = document.getElementById('equipCrownBtn'); if (btnCrown) btnCrown.textContent = activeCosmetics.crown ? "Снять" : "Надеть";
-            const btnColor = document.getElementById('equipColorBtn'); if (btnColor) btnColor.textContent = activeCosmetics.color ? "Снять" : "Надеть";
-            if(currentUser && currentNickname) { document.getElementById('profileAvatar').textContent = initials(currentNickname); }
-            document.getElementById('profileXp').textContent = availableXp(); document.getElementById('profilePts').textContent = availablePts();
-        }
-
-        async function loadUsersForTransfer() {
-            const sel = document.getElementById('transferUserSelect'); if(!sel) return;
-            const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent');
-            if (users && users.length > 0) { window.transferUsersList = users; sel.innerHTML = users.filter(u => u.user_id !== currentUser?.id).map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
-        }
-        document.getElementById('transferBtn')?.addEventListener('click', async () => {
-            const toUser = document.getElementById('transferUserSelect').value; const amount = parseInt(document.getElementById('transferAmount').value);
-            if(!toUser || isNaN(amount) || amount <= 0) return alert("Некорректная сумма!"); if(availableXp() < amount) return alert("Недостаточно XP на балансе!"); if(toUser === currentUser?.id) return alert("Нельзя перевести самому себе!");
-            const targetUser = window.transferUsersList.find(u => u.user_id === toUser); if(!targetUser) return alert("Пользователь не найден.");
-            shopState.spent += amount; const newTargetSpent = (Number(targetUser.shop_spent) || 0) - amount; 
-            await supa.from('user_stats').update({ shop_spent: newTargetSpent }).eq('user_id', toUser); await saveProgress(); updateModStats(); renderProfileData(); alert(`Успешный перевод ${amount} XP пользователю ${targetUser.nickname || targetUser.email}!`);
-        });
-
-        // КОСМЕТИКА И ОСТАЛЬНЫЕ ФУНКЦИИ ИНТЕРФЕЙСА
-        document.getElementById('equipCrownBtn')?.addEventListener('click', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
-        document.getElementById('equipColorBtn')?.addEventListener('click', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
-
-        function updateModStats() {
-            const xp = availableXp(); document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = xp;
-            document.getElementById("xpFill").style.width = (Math.min(1, (state.correct % 10 || (state.correct ? 10 : 0)) / 10) * 100) + "%";
-            document.getElementById("resultBanner").firstElementChild.innerHTML = `<strong>${!state.started ? "Результат: смена ещё не начата" : "Результат: смена в процессе"}</strong>`; document.getElementById("resultHint").textContent = !state.started ? "Нажми «Начать смену», чтобы получить сообщение." : `Сейчас доступно ${xp} XP.`;
-            updateShopStats(); renderQuests(); renderAchievements();
-        }
-        function updateSupportStats() {
-            const pts = availablePts(); document.getElementById("supportResolvedValue").textContent = supportState.resolved; document.getElementById("supportCorrectValue").textContent = supportState.correct; document.getElementById("supportMistakeValue").textContent = supportState.mistakes; document.getElementById("supportXpValue").textContent = pts;
-            document.getElementById("supportXpFill").style.width = (Math.min(1, (supportState.correct % 10 || (supportState.correct ? 10 : 0)) / 10) * 100) + "%"; document.getElementById("supportBannerHint").textContent = !state.started ? "Нажми «Начать смену», чтобы открыть вопрос." : `Общий баланс: ${pts} Баллов.`;
-            updateShopStats(); renderQuests(); renderAchievements();
-        }
-        function updateComplaintStats() { document.getElementById("compResolvedValue").textContent = complaintState.resolved; document.getElementById("compCorrectValue").textContent = complaintState.correct; document.getElementById("compMistakeValue").textContent = complaintState.mistakes; document.getElementById("compXpValue").textContent = availableXp(); renderQuests(); }
-        function updateShopStats() {
-            if(document.getElementById('shopTotalXp')) document.getElementById('shopTotalXp').textContent = availableXp(); if(document.getElementById('shopSpentXp')) document.getElementById('shopSpentXp').textContent = Number(shopState.spent) || 0;
-            if(document.getElementById('apShopTotalPts')) document.getElementById('apShopTotalPts').textContent = availablePts(); if(document.getElementById('apShopSpentPts')) document.getElementById('apShopSpentPts').textContent = Number(shopState.apSpent) || 0;
-            renderShopItems(); renderApShopItems();
-        }
-
-        // === ИГРЫ (МАГАЗИН) ===
-        function renderShopItems() { const container = document.getElementById('shopItemsContainer'); if(!container) return; container.innerHTML = ''; const currentXp = availableXp(); shopItems.forEach(item => { const canAfford = currentXp >= item.price; container.innerHTML += `<div class="shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price">${item.price} XP</div></div> <p>${item.desc}</p> <button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить / Играть' : 'Не хватает XP'}</button> </div>`; }); }
-        function renderApShopItems() { const container = document.getElementById('apShopItemsContainer'); if(!container) return; container.innerHTML = ''; const currentPts = availablePts(); apShopItems.forEach(item => { const canAfford = currentPts >= item.price; container.innerHTML += `<div class="shop-card ap-shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price ap-shop-price">${item.price} Баллов</div></div> <p>${item.desc}</p> <button class="shop-buy-btn ap-shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyApItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button> </div>`; }); }
-
-        async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0) { if (!currentUser) return; await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: isAp ? 'ap_shop' : 'mod_shop', status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]); }
-
-        window.buyItem = async function(id, price, action) {
-            if (availableXp() >= price) {
-                shopState.spent += price; playSound('ok'); updateShopStats(); await saveProgress();
-                if (action === 'mod_roulette') openFortune(false); else if (action === 'mod_coin') openCoinGame(); else if (action === 'mod_safes') openSafesGame(); else if (action === 'mod_jw') openJwQuiz();
-                else { const item = shopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); }
-            } else playSound('fail');
-        };
-
-        window.buyApItem = async function(id, price, action) {
-            if (availablePts() >= price) {
-                shopState.apSpent += price; playSound('ok'); updateShopStats(); await saveProgress();
-                if (action === 'ap_roulette') openFortune(true); else { const item = apShopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, true, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`); }
-            } else playSound('fail');
-        };
-
-        function openFortune(isAp = false) {
-            const modal = document.getElementById('fortuneModal'); const track = document.getElementById('rouletteTrack'); const resultText = document.getElementById('fortuneResultText');
-            document.getElementById('fortuneTitle').textContent = isAp ? "Рулетка АП" : "Рулетка Модерации"; document.getElementById('fortuneTitle').style.color = isAp ? "#ff8fc4" : "#ffbf47";
-            resultText.textContent = ''; track.style.transition = 'none'; track.style.transform = 'translateX(0)'; track.innerHTML = ''; document.getElementById('closeFortuneBtn').style.display = 'none'; modal.style.display = 'flex';
-            const prizes = isAp ? apRoulettePrizes : modRoulettePrizes; let winningIndex = Math.floor(Math.random() * 10) + 45; let winnerItem = null;
-            for (let i = 0; i < 60; i++) { const p = prizes[Math.floor(Math.random() * prizes.length)]; if (i === winningIndex) winnerItem = p; track.innerHTML += `<div class="roulette-item ${p.type}"><i>${p.icon}</i><span>${p.text}</span></div>`; }
-            setTimeout(() => {
-                const offset = (winningIndex * 160) + 80 - (modal.querySelector('.roulette-wrapper').offsetWidth / 2);
-                track.style.transition = 'transform 5s cubic-bezier(0.15, 0.85, 0.2, 1)'; track.style.transform = `translateX(-${offset}px)`;
-                setTimeout(async () => {
-                    if (winnerItem.val !== 0) { if(isAp) shopState.apSpent -= winnerItem.val; else shopState.spent -= winnerItem.val; await logPurchase(`Рулетка: ${winnerItem.text}`, true, isAp, 0); }
-                    updateShopStats(); updateModStats(); updateSupportStats(); await saveProgress(); resultText.textContent = `🎁 ${winnerItem.text} 🎁`; playSound(winnerItem.val <= 0 ? 'win' : 'fail'); document.getElementById('closeFortuneBtn').style.display = 'inline-block';
-                }, 5200);
-            }, 100);
-        }
-        document.getElementById('closeFortuneBtn')?.addEventListener('click', () => { document.getElementById('fortuneModal').style.display = 'none'; });
-
-        function openCoinGame() { document.getElementById('coinModal').style.display = 'flex'; document.getElementById('coinResult').textContent = ''; document.getElementById('coinAnimation').style.display = 'none'; document.getElementById('closeCoinBtn').style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false; }
-        function playCoin(choice) {
-            document.getElementById('btnHeads').disabled = true; document.getElementById('btnTails').disabled = true;
-            const anim = document.getElementById('coinAnimation'); anim.style.display = 'block'; anim.classList.add('flipping');
-            setTimeout(async () => {
-                anim.classList.remove('flipping'); const outcome = Math.random() < 0.5 ? 'heads' : 'tails'; anim.textContent = outcome === 'heads' ? '🦅' : '🪙'; const won = choice === outcome;
-                if (won) { shopState.spent -= 1000; await logPurchase(`Орёл/Решка: Победа (1000 XP)`, true, false, 0); document.getElementById('coinResult').textContent = 'Победа! Выпал ' + (outcome==='heads'?'Орёл':'Решка') + '. +1000 XP'; document.getElementById('coinResult').style.color = 'var(--color-success)'; playSound('win'); }
-                else { document.getElementById('coinResult').textContent = 'Проигрыш. Выпал ' + (outcome==='heads'?'Орёл':'Решка') + '.'; document.getElementById('coinResult').style.color = 'var(--color-error)'; playSound('fail'); }
-                updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeCoinBtn').style.display = 'inline-block';
-            }, 2000);
-        }
-        document.getElementById('btnHeads')?.addEventListener('click', () => playCoin('heads')); document.getElementById('btnTails')?.addEventListener('click', () => playCoin('tails'));
-        document.getElementById('closeCoinBtn')?.addEventListener('click', () => document.getElementById('coinModal').style.display = 'none');
-
-        function openSafesGame() { document.getElementById('safesModal').style.display = 'flex'; document.getElementById('safesResult').textContent = ''; document.getElementById('closeSafesBtn').style.display = 'none'; document.querySelectorAll('.safe-btn').forEach(btn => { btn.textContent = '🧰'; btn.disabled = false; }); }
-        document.querySelectorAll('.safe-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                document.querySelectorAll('.safe-btn').forEach(b => b.disabled = true);
-                const winIndex = Math.floor(Math.random() * 3); const chosen = parseInt(btn.dataset.index);
-                document.querySelectorAll('.safe-btn').forEach((b, i) => { b.textContent = i === winIndex ? '💰' : '🕷️'; });
-                if (chosen === winIndex) { shopState.spent -= 1200; await logPurchase(`Три Сейфа: Победа (1200 XP)`, true, false, 0); document.getElementById('safesResult').textContent = 'Бинго! Сейф полон! +1200 XP'; document.getElementById('safesResult').style.color = 'var(--color-success)'; playSound('win'); }
-                else { document.getElementById('safesResult').textContent = 'Пусто... Паутина и пыль.'; document.getElementById('safesResult').style.color = 'var(--color-error)'; playSound('fail'); }
-                updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeSafesBtn').style.display = 'inline-block';
-            });
-        });
-        document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
-
-        const jwCharacters = [ { name: "John Wick", img: "https://upload.wikimedia.org/wikipedia/en/3/34/John_Wick_Chapter_2_Poster.jpg" }, { name: "Winston Scott", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, { name: "Bowery King", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" } ];
-        function openJwQuiz() {
-            document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none'; document.getElementById('jwResult').textContent = '';
-            const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
-            const correctChar = jwCharacters[Math.floor(Math.random() * jwCharacters.length)]; document.getElementById('jwImage').src = correctChar.img;
-            let options = [...jwCharacters]; shuffleArray(options);
-            options.forEach(char => {
-                const btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = char.name;
-                btn.onclick = async () => {
-                    document.querySelectorAll('.jw-option-btn').forEach(b => { b.disabled = true; if(b.textContent === correctChar.name) b.classList.add('correct'); else b.classList.add('wrong'); });
-                    if (char.name === correctChar.name) { shopState.spent -= 1500; await logPurchase(`Викторина JW: Победа (1500 XP)`, true, false, 0); document.getElementById('jwResult').textContent = 'Правильно! +1500 XP'; document.getElementById('jwResult').style.color = 'var(--color-success)'; playSound('win'); }
-                    else { document.getElementById('jwResult').textContent = 'Неверно. Это ' + correctChar.name; document.getElementById('jwResult').style.color = 'var(--color-error)'; playSound('fail'); }
-                    updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeJwBtn').style.display = 'inline-block';
-                }; optsContainer.appendChild(btn);
-            });
-        }
-        document.getElementById('closeJwBtn')?.addEventListener('click', () => document.getElementById('jwModal').style.display = 'none');
-
-        function renderQuests() {
-            const cont = document.getElementById('questsContainer'); if(!cont) return;
-            const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ? JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
-            cont.innerHTML = questsData.map(q => {
-                const isClaimed = claimed.includes(q.id); const prog = Math.min(q.max, q.getProgress()); const isDone = prog >= q.max;
-                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--color-primary); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--color-primary); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
-            }).join('');
-        }
-        window.claimQuest = function(qId, reward) {
-            if(!currentUser) return; const claimed = localStorage.getItem('quests_' + currentUser.email) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
-            if(claimed.includes(qId)) return; claimed.push(qId); localStorage.setItem('quests_' + currentUser.email, JSON.stringify(claimed));
-            shopState.spent -= reward; updateShopStats(); updateModStats(); updateSupportStats(); saveProgress(); playSound('win'); alert(`✅ Квест выполнен! +${reward} XP.`); renderQuests();
-        };
-
-        window.loadLeaderboard = async function() {
-            const list = document.getElementById('leaderboardList'); if(!list) return;
-            list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div>';
-            const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
-            const { data: users } = await supa.from('user_stats').select('*');
-            const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
-            let modLeadersIds = [], apLeadersIds = [];
-            if(adminRoles) { modLeadersIds = adminRoles.filter(r => r.status === 'leadership').map(r => r.link); apLeadersIds = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link); }
-            let modArr = [], apArr = [];
-            if(users) {
-                users.forEach(u => {
-                    const isModLeader = adminEmails.includes(u.email) || modLeadersIds.includes(u.user_id), isApLeader = apLeadershipEmails.includes(u.email) || apLeadersIds.includes(u.user_id);
-                    let reportXp = 0; if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
-                    const mXp = Math.max(0, calcXP(u.mod_correct) + reportXp - Number(u.shop_spent||0)), aXp = Math.max(0, calcXP(u.sup_correct) - Number(u.ap_spent||0));
-                    if(u.nickname) { if (!isModLeader && mXp > 0) { modArr.push({ name: u.nickname, score: mXp }); } if (!isApLeader && aXp > 0) { apArr.push({ name: u.nickname, score: aXp }); } }
-                });
+            // === 7. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА, ГРАФИКИ, АЧИВКИ ===
+            let statsChartInst = null;
+            function renderChart() {
+                const ctx = document.getElementById('statsChart'); if(!ctx) return;
+                if(statsChartInst) statsChartInst.destroy();
+                let base = Math.max(5, Math.floor(state.resolved / 5));
+                let data = [base, base*1.2, base*0.8, base*1.5, base*1.1, base*1.8, state.resolved];
+                statsChartInst = new Chart(ctx, { type: 'line', data: { labels: ['День 1','День 2','День 3','День 4','День 5','Вчера','Сегодня'], datasets: [{ label: 'Разобрано репортов', data: data, borderColor: '#6c8cff', backgroundColor: 'rgba(108,140,255,0.15)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } } });
             }
-            modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
-            window.lbModHTML = modArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge xp">${u.score} XP</span></div></div>`).join('');
-            window.lbApHTML = apArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i<3?'#ff8fc4':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i<3?'#ff8fc4':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge" style="background:#ff8fc4; color:#000;">${u.score} Баллов</span></div></div>`).join('');
-            const isApTab = document.getElementById('lbBtnAp')?.classList.contains('btn-primary'); list.innerHTML = isApTab ? (window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>') : (window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>');
-        };
-        document.getElementById('lbBtnMod')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>'; document.getElementById('lbBtnMod').className="btn btn-primary"; document.getElementById('lbBtnAp').className="btn btn-secondary"; });
-        document.getElementById('lbBtnAp')?.addEventListener('click', () => { document.getElementById('leaderboardList').innerHTML = window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>'; document.getElementById('lbBtnAp').className="btn btn-primary"; document.getElementById('lbBtnMod').className="btn btn-secondary"; });
 
-        async function renderAdminLogs(isAp = false) {
-            const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea'); if(!area) return; area.innerHTML = 'Загрузка...';
-            const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
-            if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
-            if(logs && logs.length > 0) { area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Лог: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join(''); } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
-        }
-        window.markLogIssued = async function(id, isAp) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); renderAdminLogs(isAp); };
-        document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
+            const achList = [ { id: 'a1', title: 'Новичок', desc: 'Разобрать 10 сообщений', req: () => state.resolved >= 10, icon: '👶' }, { id: 'a2', title: 'Опытный Модер', desc: 'Разобрать 100 сообщений', req: () => state.resolved >= 100, icon: '👁️' }, { id: 'a3', title: 'Киберспортсмен', desc: 'Набрать 20 очков в Спидране', req: () => taState.score >= 20, icon: '⚡' }, { id: 'a4', title: 'Олигарх', desc: 'Накопить 1000 XP баланса', req: () => availableXp() >= 1000, icon: '💰' }, { id: 'a5', title: 'Гуру АП', desc: 'Ответить на 50 вопросов АП', req: () => supportState.resolved >= 50, icon: '🧠' } ];
+            function renderAchievements() {
+                const cont = document.getElementById('achievementsContainer'); if(!cont) return;
+                cont.innerHTML = achList.map(a => { const unl = a.req(); return `<div class="achievement-card ${unl?'unlocked':''}"><div class="ach-icon">${a.icon}</div><div><div style="font-weight:bold; color:#fff;">${a.title}</div><div style="font-size:0.8rem; color:var(--color-text-muted);">${a.desc}</div></div></div>`; }).join('');
+            }
 
-        function checkReportAccess() {
-            const warn = document.getElementById('reportAccessWarning'); const formArea = document.getElementById('reportFormArea'); const adminPanel = document.getElementById('adminPanelArea');
-            if (currentUser) { if(warn) warn.style.display = 'none'; if(formArea) formArea.style.display = 'block'; if (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id)) { if(adminPanel) adminPanel.style.display = 'block'; } } else { if(warn) warn.style.display = 'block'; if(formArea) formArea.style.display = 'none'; }
-        }
+            function renderProfileData() {
+                const nameEl = document.getElementById('profileName'); let baseName = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
+                if (activeCosmetics.crown) { baseName = "👑 " + baseName; } nameEl.textContent = baseName;
+                if (activeCosmetics.color) { nameEl.style.background = "linear-gradient(90deg, #ff6b88, #ffbf47, #52c77b, #6c8cff, #a26cff)"; nameEl.style.webkitBackgroundClip = "text"; nameEl.style.webkitTextFillColor = "transparent"; nameEl.style.display = "inline-block"; } 
+                else { nameEl.style.background = "none"; nameEl.style.webkitTextFillColor = "initial"; nameEl.style.color = "#fff"; }
+                const btnCrown = document.getElementById('equipCrownBtn'); if (btnCrown) btnCrown.textContent = activeCosmetics.crown ? "Снять" : "Надеть";
+                const btnColor = document.getElementById('equipColorBtn'); if (btnColor) btnColor.textContent = activeCosmetics.color ? "Снять" : "Надеть";
+                if(currentUser && currentNickname) { document.getElementById('profileAvatar').textContent = initials(currentNickname); }
+                document.getElementById('profileXp').textContent = availableXp(); document.getElementById('profilePts').textContent = availablePts();
+            }
 
-        document.getElementById('submitReportBtn')?.addEventListener('click', async () => {
-            if (!currentUser) return; const link = document.getElementById('reportLinkInput').value.trim(); const res = document.getElementById('reportResultText');
-            if (!link.startsWith('http')) { res.textContent = "Укажите корректную ссылку!"; res.style.color = "var(--color-error)"; return; } 
-            res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
-            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: currentUser.email, link: link, date: new Date().toLocaleString('ru-RU'), status: 'На проверке', xp: 0 }]);
-            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
-            res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)"; document.getElementById('reportLinkInput').value = ''; playSound('win');
-        });
+            function updateModStats() {
+                const xp = availableXp(); document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = xp;
+                document.getElementById("xpFill").style.width = (Math.min(1, (state.correct % 10 || (state.correct ? 10 : 0)) / 10) * 100) + "%";
+                if(document.getElementById("resultBanner")) { document.getElementById("resultBanner").firstElementChild.innerHTML = `<strong>${!state.started ? "Результат: смена ещё не начата" : "Результат: смена в процессе"}</strong>`; document.getElementById("resultHint").textContent = !state.started ? "Нажми «Начать смену»." : `Сейчас доступно ${xp} XP.`; }
+                updateShopStats(); renderQuests(); renderAchievements(); renderChart();
+            }
+            function updateSupportStats() {
+                const pts = availablePts(); document.getElementById("supportResolvedValue").textContent = supportState.resolved; document.getElementById("supportCorrectValue").textContent = supportState.correct; document.getElementById("supportMistakeValue").textContent = supportState.mistakes; document.getElementById("supportXpValue").textContent = pts;
+                document.getElementById("supportXpFill").style.width = (Math.min(1, (supportState.correct % 10 || (supportState.correct ? 10 : 0)) / 10) * 100) + "%";
+                if(document.getElementById("supportBannerHint")) document.getElementById("supportBannerHint").textContent = !state.started ? "Нажми «Начать смену»." : `Общий баланс: ${pts} Баллов.`;
+                updateShopStats(); renderQuests(); renderAchievements();
+            }
+            function updateComplaintStats() { document.getElementById("compResolvedValue").textContent = complaintState.resolved; document.getElementById("compCorrectValue").textContent = complaintState.correct; document.getElementById("compMistakeValue").textContent = complaintState.mistakes; document.getElementById("compXpValue").textContent = availableXp(); renderQuests(); }
+            function updateShopStats() {
+                if(document.getElementById('shopTotalXp')) document.getElementById('shopTotalXp').textContent = availableXp(); if(document.getElementById('shopSpentXp')) document.getElementById('shopSpentXp').textContent = Number(shopState.spent) || 0;
+                if(document.getElementById('apShopTotalPts')) document.getElementById('apShopTotalPts').textContent = availablePts(); if(document.getElementById('apShopSpentPts')) document.getElementById('apShopSpentPts').textContent = Number(shopState.apSpent) || 0;
+                renderShopItems(); renderApShopItems();
+            }
 
-        document.getElementById('viewReportsBtn')?.addEventListener('click', async () => {
-            const listArea = document.getElementById('reportsListArea'); if(!listArea) return; if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
-            try {
-                const { data: reports, error } = await supa.from('reports').select('*').neq('email', 'ACCESS_KEY').neq('email', 'ADMIN_ROLE').neq('email', 'SHOP_MOD').neq('email', 'SHOP_AP').neq('email', 'ROULETTE_MOD').neq('email', 'ROULETTE_AP').neq('email', 'STAFF_MOD').neq('email', 'STAFF_AP').not('email', 'like', 'PENDING_%').not('email', 'like', 'SIM_%').not('email', 'like', 'TRAP_%').order('date', { ascending: false }).limit(30);
-                if (error) throw error;
-                if(reports && reports.length > 0) { 
-                    listArea.innerHTML = reports.map(r => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);"><div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;"><strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">${r.date || ''}</span></div><div style="margin-bottom: 0.5rem;"><a href="${r.link || '#'}" target="_blank" style="color: var(--color-primary);">Скриншот онлайна</a></div><div style="display:flex; flex-direction: column; gap: 0.5rem;"><span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `<div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;"><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button></div>` : ''}</div></div>`).join('');
-                } else { listArea.innerHTML = '<div class="message-text">Отчетов пока нет</div>'; }
-            } catch (err) { listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`; }
-        });
-        window.processReport = async function(id, statusText, xpAmount) { await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); document.getElementById('viewReportsBtn').click(); setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); };
+            // === 8. ЛОГИ И СИНХРОНИЗАЦИЯ ===
+            async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0) { if (!currentUser) return; await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: isAp ? 'ap_shop' : 'mod_shop', status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]); }
 
-        async function saveProgress() {
-            if(!currentUser) return;
-            await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) });
-        }
-
-        // Авторизация Модалки
-        document.getElementById('accessSubmitBtn')?.addEventListener('click', async () => {
-            const val = document.getElementById('accessCodeInput').value.trim(); const err = document.getElementById('accessErrorMsg'); const btn = document.getElementById('accessSubmitBtn'); btn.disabled = true; btn.textContent = "Проверка...";
-            if (pendingAction.type === 'switch_tab_shop' && val === 'JohnWickModer') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); return; }
-            if (pendingAction.type === 'switch_tab_report' && val === 'JohnWIckTopModer') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); return; }
-            if (pendingAction.type === 'switch_tab_ap_shop' && val === 'ApMasterKey123') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); return; }
+            window.markLogIssued = async function(id, isAp) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); renderAdminLogs(isAp); };
             
-            const { data } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('link', val);
-            if (data && data.length > 0) { 
-                const keyData = data[0];
-                if (pendingAction.type === 'switch_tab_shop' && keyData.status === 'shop') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); } 
-                else if (pendingAction.type === 'switch_tab_report' && keyData.status === 'report') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); } 
-                else if (pendingAction.type === 'switch_tab_ap_shop' && keyData.status === 'ap_shop') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); } 
-                else finishAccess(false);
-            } else finishAccess(false);
+            async function renderAdminLogs(isAp = false) {
+                const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea'); if(!area) return; area.innerHTML = 'Загрузка...';
+                const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
+                if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
+                if(logs && logs.length > 0) {
+                    area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
+                } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
+            }
 
-            function finishAccess(success, roleMode) { btn.disabled = false; btn.textContent = "Подтвердить"; if (success) { document.getElementById('accessModal').style.display = 'none'; switchMode(roleMode, pendingAction.btn); pendingAction = null; } else err.style.display = 'block'; }
-        });
+            document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
+            document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
 
-        document.getElementById('accessCloseBtn')?.addEventListener('click', () => { document.getElementById('accessModal').style.display = 'none'; pendingAction = null; });
-        document.getElementById('loginBtnUI').onclick = () => { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authErrorMsg').style.display = 'none'; };
-        document.getElementById('authCloseModal').onclick = () => { document.getElementById('authModal').style.display = 'none'; };
-        document.getElementById('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
+            // === 9. ОЧЕРЕДЬ ЗАЯВОК СОЗДАТЕЛЯ ===
+            window.processApproval = async function(id, currentEmail, isApproved) {
+                if(isApproved) {
+                    const newEmail = currentEmail.replace('PENDING_', '');
+                    await supa.from('reports').update({ email: newEmail }).eq('id', id); alert("Заявка одобрена и добавлена в базу!");
+                } else { await supa.from('reports').delete().eq('id', id); alert("Заявка отклонена и удалена."); }
+                loadCreatorQueue(); loadGlobalShopAndRoulette();
+            };
 
-        document.getElementById('authLoginSubmit').onclick = async () => {
-            const email = document.getElementById('authEmail').value; const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
-            if(!email || !password) { err.textContent = "Введите Email и Пароль!"; err.style.display = 'block'; return; }
-            const { error } = await supa.auth.signInWithPassword({ email, password });
-            if(error) { err.textContent = error.message; err.style.display = 'block'; } else document.getElementById('authModal').style.display = 'none';
-        };
+            async function loadCreatorQueue() {
+                if (!currentUser || currentUser.email !== creatorEmail) return;
+                const list = document.getElementById('approvalQueueList'); if(!list) return; list.innerHTML = 'Загрузка...';
+                const { data: queue } = await supa.from('reports').select('*').in('email', ['PENDING_SHOP_MOD', 'PENDING_SHOP_AP', 'PENDING_SIM_MOD', 'PENDING_SIM_AP']).order('id', { ascending: false });
+                if(queue && queue.length > 0) {
+                    list.innerHTML = queue.map(q => {
+                        let typeText = q.email === 'PENDING_SHOP_MOD' ? 'Товар (Модеры)' : q.email === 'PENDING_SHOP_AP' ? 'Товар (АП)' : q.email === 'PENDING_SIM_MOD' ? 'Вопрос (Модеры)' : 'Вопрос (АП)';
+                        let details = `Текст: <strong>${q.date}</strong><br>Доп. Инфа: ${q.status}`; if(q.xp > 0) details += `<br>Цена: ${q.xp}`;
+                        return `<div class="pending-card"> <div style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">[Заявка] ${typeText}</div> <div style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; line-height: 1.4;">${details}</div> <div style="display: flex; gap: 0.5rem;"> <button class="btn btn-secondary" style="flex:1; border-color: var(--color-success); color: var(--color-success); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', true)">✅ Одобрить</button> <button class="btn btn-secondary" style="flex:1; border-color: var(--color-error); color: var(--color-error); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', false)">❌ Отказать</button> </div> </div>`;
+                    }).join('');
+                } else { list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Очередь пуста</div>'; }
+            }
 
-        document.getElementById('authRegisterSubmit').onclick = async () => {
-            const email = document.getElementById('authEmail').value; const nickname = document.getElementById('authNickname').value; const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
-            if(!email || !password || !nickname) { err.textContent = "Заполните все поля, включая Никнейм!"; err.style.display = 'block'; return; }
-            const { error } = await supa.auth.signUp({ email, password, options: { data: { nickname: nickname } } });
-            if(error) { err.textContent = error.message; err.style.display = 'block'; } else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; err.style.display = 'block'; }
-        };
+            // Отправка заявок/Товаров в Магазин (с учетом Тумблеров)
+            document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
+                const title = document.getElementById('modShopItemTitle').value.trim(); const desc = document.getElementById('modShopItemDesc').value.trim(); const price = Number(document.getElementById('modShopItemPrice').value); const icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
+                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
+                const targetEmail = directModShopAdd ? 'SHOP_MOD' : 'PENDING_SHOP_MOD';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
+                alert(directModShopAdd ? "Товар добавлен в магазин!" : "Заявка отправлена Создателю!"); document.getElementById('modShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            });
 
-        document.getElementById('forceNicknameBtn')?.addEventListener('click', async () => {
-            const val = document.getElementById('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
-            await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
-            currentNickname = val; document.getElementById('userEmailDisplay').textContent = val; document.getElementById('nicknameModal').style.display = 'none'; 
-            if(!state.started && document.getElementById("authorName")?.textContent === "System") startGame();
-        });
+            document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
+                const title = document.getElementById('apShopItemTitle').value.trim(); const desc = document.getElementById('apShopItemDesc').value.trim(); const price = Number(document.getElementById('apShopItemPrice').value); const icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
+                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
+                const targetEmail = directApShopAdd ? 'SHOP_AP' : 'PENDING_SHOP_AP';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
+                alert(directApShopAdd ? "Товар АП добавлен в магазин!" : "Заявка на товар АП отправлена Создателю!"); document.getElementById('apShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            });
 
-        document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => judge(btn.dataset.action); });
-        document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => judgeComplaint(btn.dataset.compAction); });
-        const sb = document.getElementById('startBtn'); if (sb) sb.onclick = startGame;
-        const rb = document.getElementById('resetBtn'); if (rb) rb.onclick = resetGame;
-        
-        const themeBtn = document.querySelector('[data-theme-toggle]');
-        if(themeBtn) { 
-            themeBtn.onclick = () => { const root = document.documentElement; if(root.getAttribute('data-theme') === 'dark') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☀️'; } else { root.setAttribute('data-theme', 'dark'); themeBtn.textContent = '🌙'; } };
-        }
+            // === 10. ИНИЦИАЛИЗАЦИЯ И СТАРТ ===
+            const sb = document.getElementById('startBtn'); if (sb) sb.onclick = startGame;
+            const rb = document.getElementById('resetBtn'); if (rb) rb.onclick = resetGame;
 
-        renderRight("moderation");
-        
-        supa.auth.getSession().then(async ({ data: { session } }) => { 
-            currentUser = session?.user || null;
-            if (currentUser) {
-                currentNickname = currentUser.user_metadata?.nickname; 
-                document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
-            
-                document.getElementById('loginBtnUI').style.display = 'none'; 
-                document.getElementById('logoutBtnUI').style.display = 'inline-block'; 
-                document.getElementById('authModal').style.display = 'none'; 
-          
-                const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
-                if(adminRoles) {
-                    dynamicModLeaders = adminRoles.filter(r => r.status === 'leadership').map(r => r.link);
-                    dynamicApLeaders = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link);
-                }
+            async function saveProgress() {
+                if(!currentUser) return;
+                try { await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) }); } catch(e) { console.error("Save Error:", e); }
+            }
 
-                const isCreator = currentUser.email === creatorEmail;
-                const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id); 
-                const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
-                
-                if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
-                if (isModLeader) { 
-                    document.getElementById('leadershipTabBtn').style.display = 'inline-block';
-                    document.getElementById('adminLogTabBtn').style.display = 'inline-block';
-                }
-                if (isApLeader) { 
-                    document.getElementById('apAdminTabBtn').style.display = 'inline-block';
-                    document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; 
-                }
+            supa.auth.getSession().then(async ({ data: { session } }) => { 
+                currentUser = session?.user || null;
+                if (currentUser) {
+                    currentNickname = currentUser.user_metadata?.nickname; document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
+                    document.getElementById('loginBtnUI').style.display = 'none'; document.getElementById('logoutBtnUI').style.display = 'inline-block'; document.getElementById('authModal').style.display = 'none'; 
+              
+                    const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+                    if(adminRoles) { dynamicModLeaders = adminRoles.filter(r => r.status === 'leadership').map(r => r.link); dynamicApLeaders = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link); }
 
-                await loadGlobalShopAndRoulette();
-                await loadWallOfFame();
+                    const isCreator = currentUser.email === creatorEmail;
+                    const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id); 
+                    const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+                    
+                    if (isCreator) { document.getElementById('creatorTabBtn').style.display = 'inline-block'; loadCreatorQueue(); }
+                    if (isModLeader) { document.getElementById('leadershipTabBtn').style.display = 'inline-block'; document.getElementById('adminLogTabBtn').style.display = 'inline-block'; }
+                    if (isApLeader) { document.getElementById('apAdminTabBtn').style.display = 'inline-block'; document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; }
 
-                supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
-                    if(data) { 
-                        state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; 
-                        supportState.resolved = Number(data.sup_resolved) || 0; supportState.correct = Number(data.sup_correct) || 0; supportState.mistakes = Number(data.sup_mistakes) || 0; 
-                        shopState.spent = Number(data.shop_spent) || 0; shopState.apSpent = Number(data.ap_spent) || 0; 
-                    }
-                
-                    supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
-                        state.reportXp = 0; 
-                        if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                        updateModStats(); updateSupportStats(); updateShopStats(); checkReportAccess(); checkDailyReward();
+                    await loadGlobalShopAndRoulette();
+
+                    try {
+                        const {data} = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).single();
+                        if(data) { state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; supportState.resolved = Number(data.sup_resolved) || 0; supportState.correct = Number(data.sup_correct) || 0; supportState.mistakes = Number(data.sup_mistakes) || 0; shopState.spent = Number(data.shop_spent) || 0; shopState.apSpent = Number(data.ap_spent) || 0; }
+                    
+                        const {data: repData} = await supa.from('reports').select('xp').eq('email', currentUser.email);
+                        state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
+                        updateModStats(); updateSupportStats(); updateShopStats(); checkDailyReward();
                         if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
-                    });
-                });
-                if(isCreator) loadCreatorPanelData();
-            } else { 
-                await loadGlobalShopAndRoulette();
-                await loadWallOfFame();
-                checkReportAccess();
-            }
-        });
+                    } catch (e) { console.error("Stat Load Error:", e); }
+
+                } else { 
+                    await loadGlobalShopAndRoulette(); 
+                }
+            }).catch(e => console.error("Session Error:", e));
+            
+        } catch (fatalError) {
+            console.error("FATAL SCRIPT ERROR:", fatalError);
+            alert("Произошла ошибка при загрузке скриптов сайта. Пожалуйста, обновите страницу.");
+        }
     }); 
   </script>
 </body>
