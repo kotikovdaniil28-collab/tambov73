@@ -63,6 +63,7 @@
     html[data-site-theme="exam"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(108, 140, 255, 0.2), transparent 55%), linear-gradient(160deg, #180508, #120205 45%, #0d0208 100%); }
     html[data-site-theme="creator"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
 
+    /* Анимация переходов режимов */
     .fade-in { animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes modeFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -76,6 +77,7 @@
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem; }
     .brand { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
 
+    /* ДОСКА ПОЧЕТА (БЕГУЩАЯ СТРОКА) */
     .ticker-wrap { width: 100%; overflow: hidden; background: rgba(13, 16, 32, 0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 191, 71, 0.3); border-bottom: 1px solid rgba(255, 191, 71, 0.3); padding: 0.6rem 0; margin-bottom: 1.5rem; border-radius: 12px; box-shadow: inset 0 0 20px rgba(255, 191, 71, 0.05); position: relative; }
     .ticker-wrap::before, .ticker-wrap::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40px; z-index: 2; pointer-events: none; }
     .ticker-wrap::before { left: 0; background: linear-gradient(to right, rgba(5,6,10,1), transparent); }
@@ -501,7 +503,6 @@
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none;">Закончить игру</button>
     </div>
   </div>
-
   <main class="page">
     <header class="topbar">
       <div class="brand">
@@ -606,7 +607,6 @@
               <h2>Личный Профиль</h2>
               <p>Статистика, достижения и косметика.</p>
             </div>
-            
             <div style="display: flex; align-items: center; gap: 1.5rem; background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(191, 198, 255, 0.3); margin-bottom: 1.5rem;">
                 <div class="avatar" id="profileAvatar" style="width: 80px; height: 80px; font-size: 2rem;">?</div>
                 <div>
@@ -614,12 +614,10 @@
                     <div style="color: var(--color-text-muted); font-size: 0.9rem;">Должность: Сотрудник проекта</div>
                 </div>
             </div>
-            
             <div class="stats-grid">
               <div class="stat"><span class="stat-label">Доступно XP</span><div class="stat-value" id="profileXp" style="color:var(--color-primary);">0</div></div>
               <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
             </div>
-
             <div style="margin-top: 1.5rem; background: rgba(0, 0, 0, 0.4); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary);">
                 <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Перевод средств (Обменник)</h3>
                 <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">Переведите часть своего XP другому сотруднику.</p>
@@ -628,20 +626,17 @@
                 <button id="transferBtn" class="btn btn-primary" style="width: 100%;">Отправить перевод</button>
             </div>
         </div>
-
         <div>
             <div style="background: rgba(13, 16, 32, 0.4); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191, 198, 255, 0.2); margin-bottom: 1.5rem;">
                 <h3 style="margin-bottom: 1rem; color: var(--color-text-muted); font-size: 1rem; text-transform: uppercase;">Динамика заработка XP</h3>
                 <canvas id="statsChart" style="width: 100%; height: 180px;"></canvas>
             </div>
-
             <div>
                 <h3 style="margin-bottom: 1rem; color: #ffbf47;">Достижения</h3>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" id="achievementsContainer">
                     <div class="message-text">Загрузка достижений...</div>
                 </div>
             </div>
-
             <div style="margin-top: 1.5rem;">
                 <h3 style="margin-bottom: 1rem; color: var(--color-success);">Косметика (Инвентарь)</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="cosmeticsContainer">
@@ -663,9 +658,22 @@
       <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
         <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
         
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Настройки добавления в магазин</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Если выключено — Руководство отправляет заявки. Если включено — товары/вопросы добавляются сразу (без твоей модерации).</p>
+          <label style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="toggleDirectMod" style="width: 20px; height: 20px; accent-color: var(--color-primary);">
+              <span>Мгновенное добавление (Модерация)</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="toggleDirectAp" style="width: 20px; height: 20px; accent-color: #ff8fc4;">
+              <span>Мгновенное добавление (АП)</span>
+          </label>
+        </div>
+
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-warning); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-warning);">Очередь одобрения (Заявки)</h3>
-          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Руководство отправляет сюда товары, вопросы и сообщения. Одобряй или отклоняй.</p>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Здесь появляются заявки от Руководства (если выключено мгновенное добавление выше).</p>
           <div id="approvalQueueList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;">
             <div class="message-text">Загрузка заявок...</div>
           </div>
@@ -679,40 +687,13 @@
         </div>
         
         <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга (20+ команд) 🤡</h3>
-          <select id="trollSuperSelect" class="support-input" style="margin-bottom:1rem; width:100%;">
-            <option value="wipe_xp">⬇️ Обнулить баланс XP</option>
-            <option value="debt_winston">💸 Долг: Выдать Winston 10k XP долга (по приколу)</option>
-            <option value="debt_10k">💸 Долг: Выдать 10,000 XP долга (Всем)</option>
-            <option value="debt_50k">💸 Долг: Выдать 50,000 XP долга</option>
-            <option value="debt_custom">💸 Долг: Своё значение (вписать ниже)</option>
-            <option value="nick_clown">🤡 Сменить ник на '🤡 Клоун 🤡'</option>
-            <option value="nick_bot">🤖 Сменить ник на 'Я Бот'</option>
-            <option value="nick_slid">🚰 Сменить ник на 'Слит'</option>
-            <option value="nick_toxic">☣️ Сменить ник на 'Токсик'</option>
-            <option value="nick_chsv">👑 Сменить ник на 'ЧСВ'</option>
-            <option value="nick_simp">🥺 Сменить ник на 'Симп'</option>
-            <option value="nick_boss">🕶️ Сменить ник на 'Босс Качалки'</option>
-            <option value="nick_obizhenka">😭 Сменить ник на 'Обиженка'</option>
-            <option value="nick_empty">👻 Сделать ник невидимым</option>
-            <option value="nick_ban">🔨 Сменить ник на 'Забанен'</option>
-            <option value="nick_hack">🏴‍☠️ Сменить ник на 'Взломан'</option>
-            <option value="random_nick">🎲 Рандомный смешной ник (автогенератор)</option>
-            <option value="add_1k_err">📉 Испортить стату: +1000 ошибок (Модер)</option>
-            <option value="add_1k_err_ap">📉 Испортить стату: +1000 ошибок (АП)</option>
-            <option value="wipe_correct">🗑️ Обнулить правильные ответы во всех режимах</option>
-            <option value="give_99k_xp">💰 БЛАТ: Выдать 99,999 XP</option>
-            <option value="give_99k_ap">💰 БЛАТ: Выдать 99,999 Баллов АП</option>
-            <option value="del_acc">🧨 Удалить аккаунт навсегда</option>
-          </select>
-          <input type="number" id="trollCustomValue" placeholder="Свое значение для долга (если выбрано)" class="support-input" style="margin-bottom:1rem; width:100%;">
-          <button id="trollExecuteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); width: 100%;">🤡 Применить наказание</button>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid #6c8cff; margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #6c8cff;">🗑️ Управление логами</h3>
-          <button id="creatorLoadLogsBtn" class="btn btn-secondary" style="width: 100%;">Загрузить логи для удаления</button>
-          <div id="creatorLogsList" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;"></div>
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
+          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
+            <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
+            <button id="trollDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+          </div>
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
@@ -727,6 +708,12 @@
             <button id="creatorRemoveAdminBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Забрать права</button>
           </div>
           <div id="creatorAdminsList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid #6c8cff; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #6c8cff;">🗑️ Управление логами</h3>
+          <button id="creatorLoadLogsBtn" class="btn btn-secondary" style="width: 100%;">Загрузить логи для удаления</button>
+          <div id="creatorLogsList" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;"></div>
         </div>
 
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 191, 71, 0.3);">
@@ -779,18 +766,22 @@
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Добавить товар в Магазин</h3>
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Магазин (Добавить товар)</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара">
              <input type="text" id="modShopItemDesc" class="support-input" placeholder="Описание">
              <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)">
              <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <button id="addModShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить (Заявка)</button>
+            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
+          </div>
         </div>
         
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Добавить сообщение в Тренажер</h3>
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Тренажер (Добавить сообщение)</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <textarea id="modSimItemText" class="support-input" placeholder="Текст сообщения..." style="resize: vertical; min-height: 60px;"></textarea>
              <select id="modSimItemType" class="support-input">
@@ -799,7 +790,22 @@
                 <option value="ban">Бан</option>
              </select>
           </div>
-          <button id="addModSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить</button>
+          <button id="addModSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить (Заявка)</button>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: var(--color-warning);">Конструктор Рулетки (Модерация)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <select id="modRouletteSlot" class="support-input">
+                <option value="leg">Легендарный слот</option>
+                <option value="rare">Редкий слот</option>
+                <option value="fail">Обычный слот</option>
+                <option value="fine">Слот Штрафа</option>
+             </select>
+             <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)">
+             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -1000)">
+          </div>
+          <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
@@ -847,24 +853,662 @@
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Добавить товар в Магазин АП</h3>
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Магазин АП (Добавить товар)</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="apShopItemTitle" class="support-input" placeholder="Название товара">
              <input type="text" id="apShopItemDesc" class="support-input" placeholder="Описание">
              <input type="number" id="apShopItemPrice" class="support-input" placeholder="Цена (Баллы)">
              <input type="text" id="apShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
-          <button id="addApShopItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addApShopItemBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить (Заявка)</button>
+            <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
+          </div>
         </div>
         
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Добавить вопрос в Тренажер АП</h3>
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Тренажер АП (Добавить вопрос)</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="apSimItemTitle" class="support-input" placeholder="Категория (Например: Навигация)">
              <textarea id="apSimItemText" class="support-input" placeholder="Текст вопроса..." style="resize: vertical; min-height: 60px;"></textarea>
              <input type="text" id="apSimItemKeywords" class="support-input" placeholder="Ключи (через запятую: gps, гпс)">
           </div>
-          <button id="addApSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить</button>
+          <button id="addApSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить (Заявка)</button>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: #ff8fc4;">Конструктор Рулетки (АП)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <select id="apRouletteSlot" class="support-input">
+                <option value="leg">Легендарный слот</option>
+                <option value="rare">Редкий слот</option>
+                <option value="fail">Обычный слот</option>
+             </select>
+             <input type="text" id="apRouletteText" class="support-input" placeholder="Текст (напр. 100 Баллов)">
+             <input type="number" id="apRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -100)">
+          </div>
+          <button id="updateApRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить слот рулетки</button>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3);">
+          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: #ff8fc4;">Ключи доступа (Магазин АП)</h3>
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <input type="text" id="apAdminKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
+          </div>
+          <button id="apAdminAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Создать ключ</button>
+          <div id="apAdminKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-support" style="display:none;">
+        <div class="section-head">
+          <h2>Панель агента поддержки</h2>
+          <p>Вопросы игроков скрыты до старта. Отвечайте быстро, спокойно и по делу.</p>
+        </div>
+        <div style="margin-bottom: 1.5rem; position: relative;">
+            <input type="text" id="apSearchInput" class="support-input" placeholder="🔍 Шпаргалка: Быстрый поиск по базе (по ключевым словам)...">
+            <div id="apSearchResults" style="display:none; position: absolute; z-index: 100; width: 100%; background: rgba(10,12,22,0.95); padding: 1rem; border-radius: 12px; margin-top: 0.5rem; max-height: 250px; overflow-y: auto; border: 1px solid #ff8fc4; box-shadow: 0 10px 30px rgba(0,0,0,0.8);"></div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Вопросов</span><div class="stat-value" id="supportResolvedValue">0</div></div>
+          <div class="stat"><span class="stat-label">Зачтено</span><div class="stat-value" id="supportCorrectValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="supportMistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Общий XP</span><div class="stat-value" id="supportXpValue" style="color: var(--color-primary);">0</div></div>
+        </div>
+        <div>
+          <div class="xp-bar"><div class="xp-fill" id="supportXpFill"></div></div>
+          <div id="supportBanner" class="banner-line" style="display:flex; justify-content:space-between; margin-top:0.5rem; font-size:var(--text-sm); color:var(--color-text-muted);">
+            <span><strong>Результат:</strong> смена ещё не начата</span>
+            <span id="supportBannerHint">Нажми «Начать смену», чтобы открыть первый вопрос.</span>
+          </div>
+        </div>
+        <div class="feed">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot"></span># tambov-73 / support</div>
+            <div class="author-row">
+              <div class="avatar">AP</div>
+              <div><div class="author-name" id="supportQuestionTitle">Вопрос скрыт</div><div class="author-meta" id="supportMeta">Появится после начала смены</div></div>
+            </div>
+            <div class="message-text" id="supportQuestionText">Нажми «Начать смену», затем открой вопрос и помоги игроку разобраться.</div>
+            <div class="support-answer-row">
+              <div class="support-answer-row-inner">
+                <input id="supportAnswerInput" class="support-input" type="text" placeholder="Напиши ответ игроку...">
+                <button class="support-check-btn" type="button" id="supportCheckBtn">Проверить ответ</button>
+              </div>
+              <div class="support-result" id="supportResultText"></div>
+            </div>
+          </article>
+          <button class="btn btn-secondary" type="button" id="supportNextBtn" style="width:100%;">Следующий вопрос</button>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-exam" style="display:none;">
+        <div class="section-head">
+          <h2 style="color: #ff6b88;">Аттестация (Экзамен) 🎓</h2>
+          <p>20 сложных вопросов. Строго 10 секунд на ответ. Никаких подсказок. Проходной балл — 18/20.</p>
+        </div>
+        <div id="examStartScreen" style="text-align: center; padding: 4rem 0;">
+          <div style="font-size: 5rem; margin-bottom: 1rem;">📝</div>
+          <button id="examStartBtn" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.5rem 4rem; background: linear-gradient(135deg, #ff3b60, #ff6b88);">Начать Экзамен</button>
+        </div>
+        <div id="examGameScreen" style="display:none;">
+          <div class="exam-progress" id="examProgress"></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+             <span style="font-weight: bold; color: var(--color-text-muted);">Вопрос <span id="examQNum">1</span>/20</span>
+             <div class="timer-display" id="examTimer" style="font-size: 2.5rem; color: #ff6b88; margin: 0; text-shadow: 0 0 10px rgba(255,107,136,0.5);">10</div>
+          </div>
+          <div class="feed">
+             <article class="message-card" style="border-color: #ff6b88;">
+               <div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># аттестация / live</div>
+               <div class="author-row">
+                 <div class="avatar" style="background: #ff3b60;" id="examAvatar">EX</div>
+                 <div><div class="author-name" id="examAuthor">Система</div><div class="author-meta">Определите нарушение</div></div>
+               </div>
+               <div class="message-text" id="examMessageText" style="font-size: 1.15rem; font-weight: 500;">Загрузка...</div>
+             </article>
+             <div class="controls">
+                <button class="action-btn skip-btn" type="button" onclick="judgeExam('good')">✅ Без нарушения</button>
+                <button class="action-btn warn-btn" type="button" onclick="judgeExam('warn')">⚠️ Пред / Мут</button>
+                <button class="action-btn ban-btn" type="button" onclick="judgeExam('ban')">🔨 Бан</button>
+             </div>
+          </div>
+        </div>
+        <div id="examResultScreen" style="display:none; text-align: center; padding: 3rem 0;">
+           <div id="examResultIcon" style="font-size: 5rem; margin-bottom: 1rem;">🏆</div>
+           <h2 id="examFinalScore" style="font-size: 4rem; margin-bottom: 0.5rem; font-family: var(--font-display);">18 / 20</h2>
+           <p id="examFinalVerdict" style="font-size: 1.1rem; color: var(--color-text-muted); margin-bottom: 2rem;">Вердикт системы</p>
+           <button class="btn btn-secondary" onclick="document.querySelector('[data-mode=moderation]').click()">Вернуться к работе</button>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-ap_speed" style="display:none;">
+        <div class="section-head">
+          <h2 style="color: #8df0ae;">Клавиатурный ниндзя (АП) ⌨️</h2>
+          <p>Перепечатывай команды и шаблоны ответов максимально быстро! За скорость начисляются бонусные Баллы АП.</p>
+        </div>
+        <div style="text-align:center; padding: 3rem 1rem; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px dashed rgba(82, 199, 123, 0.4);">
+           <div style="font-size: 1.8rem; color: #a7afcf; margin-bottom: 1.5rem; font-weight: bold; user-select: none;" id="apSpeedTarget">Нажми Старт</div>
+           <input type="text" id="apSpeedInput" class="support-input" placeholder="Печатать сюда..." style="font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem; padding: 1rem;" disabled autocomplete="off" spellcheck="false">
+           <div id="apSpeedTimer" style="font-size: 2.5rem; font-family: var(--font-display); color: var(--color-success); margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(82, 199, 123, 0.3);">0.000 сек</div>
+           <button id="apSpeedStartBtn" class="btn btn-primary" style="background: linear-gradient(135deg, #52c77b, #3da860); color: #000; padding: 1rem 3rem; font-size: 1.2rem;">Начать тренировку</button>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-moderation">
+        <div class="section-head">
+          <h2>Панель модератора</h2>
+          <p>Сообщения и нарушения появятся только после нажатия «Начать смену».</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Обработано</span><div class="stat-value" id="resolvedValue">0</div></div>
+          <div class="stat"><span class="stat-label">Правильных</span><div class="stat-value" id="correctValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="mistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Остаток XP</span><div class="stat-value" id="xpValue" style="color: var(--color-primary);">0</div></div>
+        </div>
+        <div>
+          <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+          <div id="resultBanner" class="banner-line" style="display:flex; justify-content:space-between; margin-top:0.5rem; font-size:var(--text-sm); color:var(--color-text-muted);">
+            <span><strong>Результат:</strong> смена ещё не начата</span>
+            <span id="resultHint">Нажми «Начать смену», чтобы получить сообщение.</span>
+          </div>
+        </div>
+        <div class="feed">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot"></span># tambov-73 / moderation</div>
+            <div class="author-row">
+              <div class="avatar" id="avatarBox">T7</div>
+              <div><div class="author-name" id="authorName">System</div><div class="author-meta" id="authorMeta">Сообщение появится после старта смены</div></div>
+            </div>
+            <div class="message-text" id="messageText">Пока сообщений нет. Нажми «Начать смену».</div>
+            <div class="hint" id="hintText">Оценка: без нарушения, устное/пред/мут, бан/перма/глобал.</div>
+          </article>
+          <div class="controls">
+            <button class="action-btn skip-btn" type="button" data-action="good">✅ Без нарушения</button>
+            <button class="action-btn warn-btn" type="button" data-action="warn">⚠️ Пред / Мут</button>
+            <button class="action-btn ban-btn" type="button" data-action="ban">🔨 Бан</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-timeattack" style="display:none;">
+        <div class="section-head">
+          <h2 style="color: #ffbf47;">Спидран (На время) ⏱️</h2>
+          <p>У вас есть ровно 60 секунд. Каждая ошибка отнимает 3 секунды.</p>
+        </div>
+        <div class="timer-display" id="taTimer">01:00</div>
+        <div class="stats-grid" style="margin-bottom: 1rem;">
+          <div class="stat"><span class="stat-label">Счет</span><div class="stat-value" id="taScore" style="color: var(--color-success); font-size: 1.5rem;">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибки</span><div class="stat-value" id="taMistakes" style="color: var(--color-error); font-size: 1.5rem;">0</div></div>
+        </div>
+        <div id="taStartScreen" style="text-align: center; padding: 3rem 0;">
+          <button id="taStartBtn" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.5rem 4rem;">Начать заезд!</button>
+        </div>
+        <div class="feed" id="taGameScreen" style="display:none;">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot" style="background:#ffbf47;"></span># speedrun / moderation</div>
+            <div class="author-row">
+              <div class="avatar" id="taAvatar">T7</div>
+              <div><div class="author-name" id="taAuthorName">System</div><div class="author-meta">Быстрее принимайте решение!</div></div>
+            </div>
+            <div class="message-text" id="taMessageText" style="font-size: 1.15rem; font-weight: 500;">Загрузка...</div>
+          </article>
+          <div class="controls">
+            <button class="action-btn skip-btn" type="button" data-ta-action="good">✅ Без нарушения</button>
+            <button class="action-btn warn-btn" type="button" data-ta-action="warn">⚠️ Пред / Мут</button>
+            <button class="action-btn ban-btn" type="button" data-ta-action="ban">🔨 Бан</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-complaints" style="display:none;">
+        <div class="section-head">
+          <h2>Жалобы пользователей</h2>
+          <p>Рассматривайте репорты из раздела жалоб. Одобряйте, отказывайте или передавайте КГМ/ГМ.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Рассмотрено</span><div class="stat-value" id="compResolvedValue">0</div></div>
+          <div class="stat"><span class="stat-label">Верно</span><div class="stat-value" id="compCorrectValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="compMistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Общий XP</span><div class="stat-value" id="compXpValue" style="color: var(--color-primary);">0</div></div>
+        </div>
+        <div class="feed">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># tambov-73 / reports</div>
+            <div class="author-row">
+              <div class="avatar" style="background: conic-gradient(from 210deg, #ff6b88, #ff3b60, #ff6b88);">Ж</div>
+              <div><div class="author-name" id="compAuthor">Жалоба скрыта</div><div class="author-meta" id="compMeta">Появится после начала смены</div></div>
+            </div>
+            <div class="message-text" id="compText">Нажми «Начать смену», чтобы открыть первую жалобу.</div>
+            <div class="evidence-box" id="compEvidence" style="background:rgba(255,255,255,0.05); padding:1rem; border-radius:8px; border-left:3px solid #ff6b88;">Доказательства: Отсутствуют</div>
+          </article>
+          <div class="controls">
+            <button class="action-btn warn-btn" type="button" data-comp-action="reject">❌ Отказать</button>
+            <button class="action-btn skip-btn" type="button" data-comp-action="approve">✅ Одобрить</button>
+            <button class="action-btn pass-btn" type="button" data-comp-action="pass">👑 Передать КГМ</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-quests" style="display:none;">
+        <div class="section-head"><h2>Система Квестов</h2><p>Выполняй задания в тренажёрах и получай бонусный XP.</p></div>
+        <div class="feed" id="questsContainer"></div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-leaderboard" style="display:none;">
+        <div class="section-head"><h2>Таблица лидеров (Топ-10)</h2><p>Самые активные сотрудники.</p></div>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <button id="lbBtnMod" class="btn btn-primary" style="flex:1;">Топ Модерации (XP)</button>
+          <button id="lbBtnAp" class="btn btn-secondary" style="flex:1;">Топ АП (Баллы)</button>
+        </div>
+        <div class="feed" id="leaderboardList"><div class="message-text" style="text-align: center; padding: 2rem;">⏳ Загрузка...</div></div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-guide" style="display:none;">
+        <div class="section-head"><h2>Руководство Сервера</h2><p>Контакты и списки команды.</p></div>
+        <div class="feed">
+          <article class="message-card" style="min-height: auto; gap: 1.5rem; background: rgba(13, 16, 32, 0.6);">
+            <div style="position: relative;">
+               <input type="text" id="guideSearchInput" class="support-input" placeholder="🔍 Поиск по базе знаний и GPS..." style="margin-bottom: 1rem;">
+               <div id="guideSearchResults" style="display:none; background:rgba(0,0,0,0.8); padding:1rem; border-radius:12px; border:1px solid var(--color-primary); margin-bottom: 1.5rem;"></div>
+            </div>
+            <div>
+              <h3 style="color: #6c8cff; margin-bottom: 0.8rem; font-size: 1.1rem; border-bottom: 1px solid rgba(108,140,255,0.3); padding-bottom: 0.3rem;">Модерация</h3>
+              <div style="display: grid; gap: 0.6rem; font-size: var(--text-sm); color: var(--color-text-muted);">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Главный Модератор</strong> — Lexa_Mackenzie</span> <a href="https://vk.com/id783455796" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>ЗГМ</strong> — John_Wick</span> <a href="https://vk.com/id628466808" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>ЗГМ</strong> — Andrey_Caypen</span> <a href="https://vk.ru/andreycaypen" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Куратор модерации</strong> — Hunter_Mackenzie</span> <a href="https://vk.com/id641685097" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
+              </div>
+              <div id="publicModListArea" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed rgba(108,140,255,0.3); display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+
+            <div>
+              <h3 style="color: #ffbf47; margin-bottom: 0.8rem; font-size: 1.1rem; border-bottom: 1px solid rgba(255,191,71,0.3); padding-bottom: 0.3rem;">Администрация</h3>
+              <div style="display: grid; gap: 0.6rem; font-size: var(--text-sm); color: var(--color-text-muted);">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Главный Администратор</strong> — Lars_Crown</span> <a href="https://vk.ru/larsellorcrowner" target="_blank" style="color:#ffbf47;text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>ЗГА</strong> — Egor_Versachi</span> <a href="https://vk.ru/id775315885" target="_blank" style="color:#ffbf47;text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>ЗГА</strong> — Oskar_Lofrein</span> <a href="https://vk.ru/oooutlivq" target="_blank" style="color:#ffbf47;text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Куратор Администрации</strong> — Kiruha_Lubera</span> <a href="https://vk.ru/kiruha_wl" target="_blank" style="color:#ffbf47;text-decoration:none; font-weight: bold;">[VK]</a></div>
+              </div>
+            </div>
+
+            <div>
+              <h3 style="color: #52c77b; margin-bottom: 0.8rem; font-size: 1.1rem; border-bottom: 1px solid rgba(82,199,123,0.3); padding-bottom: 0.3rem;">Агенты Поддержки</h3>
+              <div style="display: grid; gap: 0.6rem; font-size: var(--text-sm); color: var(--color-text-muted);">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Куратор АП</strong></span> <a href="https://vk.ru/ioanalost" target="_blank" style="color:#52c77b;text-decoration:none; font-weight: bold;">[VK]</a></div>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Заместитель Куратора АП</strong></span> <a href="https://vk.com/id861801616" target="_blank" style="color:#52c77b;text-decoration:none; font-weight: bold;">[VK]</a></div>
+              </div>
+              <div id="publicApListArea" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed rgba(82,199,123,0.3); display: flex; flex-direction: column; gap: 0.4rem;"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-about" style="display:none;">
+        <div class="section-head"><h2>О команде</h2></div>
+        <div class="feed">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot"></span># project / team</div>
+            <div class="author-row"><div class="avatar">JW</div><div><div class="author-name">John Wick</div><div class="author-meta">Автор проекта</div></div></div>
+            <div class="message-text">Сайт создан <strong>John Wick</strong> при поддержке <strong>Леха Матиз</strong>, <strong>Руфатик бурмалдатик</strong> и <strong>Евгения Бабешко</strong>.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-shop" style="display:none;">
+        <div class="section-head"><h2>Магазин & Игры (Модерация)</h2></div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Доступно XP</span><div class="stat-value" id="shopTotalXp" style="color:var(--color-primary);">0</div></div>
+          <div class="stat"><span class="stat-label">Потрачено</span><div class="stat-value" id="shopSpentXp">0</div></div>
+        </div>
+        <div class="shop-grid" id="shopItemsContainer"></div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-ap_shop" style="display:none;">
+        <div class="section-head"><h2 style="color:#ff8fc4;">Магазин АП</h2></div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="apShopTotalPts" style="color:#ff8fc4;">0</div></div>
+          <div class="stat"><span class="stat-label">Потрачено</span><div class="stat-value" id="apShopSpentPts">0</div></div>
+        </div>
+        <div class="shop-grid" id="apShopItemsContainer"></div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-report" style="display:none;">
+        <div class="section-head"><h2>Форма отчетности</h2><p>Сдайте свой ежедневный отчет онлайна из Discord сюда.</p></div>
+        <div id="reportAccessWarning" class="message-card" style="min-height: auto; align-content: center; text-align: center; color: var(--color-warning);">
+          Вы не авторизованы! <br><span style="font-size: var(--text-sm); color: var(--color-text-muted);">Войдите в аккаунт, чтобы сдать отчет.</span>
+        </div>
+        <div class="feed" id="reportFormArea" style="display:none;">
+          <article class="message-card" style="min-height: auto;">
+            <div class="channel"><span class="channel-dot" style="background:#a26cff;"></span># tambov-73 / reports</div>
+            <div class="author-row"><div class="avatar" style="background: conic-gradient(from 210deg, #a26cff, #c4a1ff, #a26cff);">R</div><div><div class="author-name">Отчет Discord (Онлайн)</div><div class="author-meta">Вставьте ссылку на скриншот</div></div></div>
+            <div class="support-answer-row">
+              <div class="support-answer-row-inner">
+                <input id="reportLinkInput" class="support-input" type="url" placeholder="Ссылка (Imgur, Yapx)...">
+                <button class="support-check-btn" type="button" id="submitReportBtn">Отправить</button>
+              </div>
+              <div class="support-result" id="reportResultText"></div>
+            </div>
+          </article>
+          <div id="adminPanelArea" style="display:none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(191,198,255,0.2);">
+            <h3 style="margin-bottom: 1rem; font-size: var(--text-sm); color: var(--color-primary); text-transform: uppercase;">Панель Руководства</h3>
+            <button class="btn btn-secondary" type="button" id="viewReportsBtn" style="width:100%;">Проверить сданные отчеты</button>
+          </div>
+          <div id="reportsListArea" style="display:none; margin-top: 1rem; flex-direction: column; gap: 0.75rem;"></div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-admin_log" style="display:none;">
+        <div class="section-head"><h2 style="color: #ffbf47;">Логи выдачи (Модерация)</h2><p>Покупки из магазина и Рулетки.</p></div>
+        <button class="btn btn-secondary" type="button" id="loadAdminLogsBtn" style="width:100%; margin-bottom:1.5rem;">Обновить список</button>
+        <div class="feed" id="adminLogsArea"><div class="message-text">Нажмите «Обновить список»</div></div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-ap_admin_log" style="display:none;">
+        <div class="section-head"><h2 style="color: #ff8fc4;">Логи выдачи (АП)</h2><p>Покупки агентов поддержки из магазина АП.</p></div>
+        <button class="btn btn-secondary" type="button" id="loadApAdminLogsBtn" style="width:100%; margin-bottom:1.5rem;">Обновить список логов АП</button>
+        <div class="feed" id="apAdminLogsArea"><div class="message-text">Нажмите «Обновить список»</div></div>
+      </section>
+
+      <aside class="panel side fade-in">
+        <div class="section-head"><h2>Лог смены</h2><p>Здесь фиксируются ваши решения.</p></div>
+        <div class="log" id="logList"><div class="log-item">Пока пусто. Нажми «Начать смену», чтобы начать работу.</div></div>
+      </aside>
+      
+    </section>
+  </main>
+
+  <section class="game-wrap" id="game">
+
+      <section class="panel game-card fade-in profile-grid" id="mode-profile" style="display:none;">
+        <div>
+            <div class="section-head">
+              <h2>Личный Профиль</h2>
+              <p>Статистика, достижения и косметика.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1.5rem; background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(191, 198, 255, 0.3); margin-bottom: 1.5rem;">
+                <div class="avatar" id="profileAvatar" style="width: 80px; height: 80px; font-size: 2rem;">?</div>
+                <div>
+                    <h3 id="profileName" style="font-size: 1.8rem; margin-bottom: 0.2rem; color: #fff;">Загрузка...</h3>
+                    <div style="color: var(--color-text-muted); font-size: 0.9rem;">Должность: Сотрудник проекта</div>
+                </div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat"><span class="stat-label">Доступно XP</span><div class="stat-value" id="profileXp" style="color:var(--color-primary);">0</div></div>
+              <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
+            </div>
+            <div style="margin-top: 1.5rem; background: rgba(0, 0, 0, 0.4); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary);">
+                <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Перевод средств (Обменник)</h3>
+                <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">Переведите часть своего XP другому сотруднику.</p>
+                <select id="transferUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка пользователей...</option></select>
+                <input type="number" id="transferAmount" class="support-input" placeholder="Сумма XP для перевода" style="margin-bottom: 1rem;">
+                <button id="transferBtn" class="btn btn-primary" style="width: 100%;">Отправить перевод</button>
+            </div>
+        </div>
+        <div>
+            <div style="background: rgba(13, 16, 32, 0.4); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191, 198, 255, 0.2); margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--color-text-muted); font-size: 1rem; text-transform: uppercase;">Динамика заработка XP</h3>
+                <canvas id="statsChart" style="width: 100%; height: 180px;"></canvas>
+            </div>
+            <div>
+                <h3 style="margin-bottom: 1rem; color: #ffbf47;">Достижения</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;" id="achievementsContainer">
+                    <div class="message-text">Загрузка достижений...</div>
+                </div>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--color-success);">Косметика (Инвентарь)</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" id="cosmeticsContainer">
+                    <div style="padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">👑</div>
+                        <div style="font-weight: bold; margin-bottom: 0.5rem; font-size: 0.9rem;">Корона Лидера</div>
+                        <button id="equipCrownBtn" class="btn btn-secondary" style="width: 100%; padding: 0.5rem; font-size: 0.8rem;">Надеть</button>
+                    </div>
+                    <div style="padding: 1rem; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌈</div>
+                        <div style="font-weight: bold; margin-bottom: 0.5rem; font-size: 0.9rem;">Цветной Ник</div>
+                        <button id="equipColorBtn" class="btn btn-secondary" style="width: 100%; padding: 0.5rem; font-size: 0.8rem;">Надеть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
+        <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
+        
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Настройки добавления в магазин</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Если выключено — Руководство отправляет заявки. Если включено — товары/вопросы добавляются сразу (без твоей модерации).</p>
+          <label style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="toggleDirectMod" style="width: 20px; height: 20px; accent-color: var(--color-primary);">
+              <span>Мгновенное добавление (Модерация)</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem;">
+              <input type="checkbox" id="toggleDirectAp" style="width: 20px; height: 20px; accent-color: #ff8fc4;">
+              <span>Мгновенное добавление (АП)</span>
+          </label>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-warning); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-warning);">Очередь одобрения (Заявки)</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Здесь появляются заявки от Руководства (если выключено мгновенное добавление выше).</p>
+          <div id="approvalQueueList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;">
+            <div class="message-text">Загрузка заявок...</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-primary);">Выдача / Изъятие XP</h3>
+          <select id="creatorUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <input type="number" id="creatorXpAmount" class="support-input" placeholder="Количество XP (например: 100 или -50)" style="margin-bottom: 1rem;">
+          <button id="creatorXpBtn" class="btn btn-primary" style="width: 100%;">Изменить баланс XP</button>
+        </div>
+        
+        <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
+          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
+            <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
+            <button id="trollDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">👑 Выдача прав Руководства</h3>
+          <select id="creatorAdminSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <select id="creatorAdminRole" class="support-input" style="margin-bottom: 1rem; width: 100%;">
+              <option value="leadership">Руководство (Модерация)</option>
+              <option value="ap_admin">Руководство (АП)</option>
+          </select>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="creatorAddAdminBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
+            <button id="creatorRemoveAdminBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Забрать права</button>
+          </div>
+          <div id="creatorAdminsList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid #6c8cff; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #6c8cff;">🗑️ Управление логами</h3>
+          <button id="creatorLoadLogsBtn" class="btn btn-secondary" style="width: 100%;">Загрузить логи для удаления</button>
+          <div id="creatorLogsList" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;"></div>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 191, 71, 0.3);">
+          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-warning);">Ключи доступа</h3>
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <select id="creatorKeyRole" class="support-input" style="flex: 1;">
+                <option value="shop">Магазин</option>
+                <option value="report">Отчеты</option>
+                <option value="ap_shop">Магазин АП</option>
+            </select>
+            <input type="text" id="creatorKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
+          </div>
+          <button id="creatorAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Создать ключ</button>
+          <div id="creatorKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-leadership" style="display:none;">
+        <div class="section-head"><h2 style="color: #52c77b;">Руководство (Модерация)</h2></div>
+        
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px dashed var(--color-success); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Тайная проверка (Скрытый тест) 🕵️</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Отправить модератору специальное сообщение. Оно выпадет ему первым при начале смены.</p>
+          <select id="hiddenCheckUserSelectMod" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <textarea id="hiddenCheckTextMod" class="support-input" placeholder="Текст сообщения-ловушки..." style="margin-bottom: 1rem; resize: vertical; min-height: 80px;"></textarea>
+          <select id="hiddenCheckVerdictMod" class="support-input" style="margin-bottom: 1rem;">
+            <option value="good">Правильный ответ: ✅ Без нарушения</option>
+            <option value="warn">Правильный ответ: ⚠️ Пред / Мут</option>
+            <option value="ban">Правильный ответ: 🔨 Бан</option>
+          </select>
+          <button id="sendHiddenCheckModBtn" class="btn btn-secondary" style="width:100%; border-color: var(--color-success); color: var(--color-success);">Отправить ловушку</button>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3);">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Управление пользователями</h3>
+          <select id="leadershipUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <input type="number" id="leadershipXpAmount" class="support-input" placeholder="Количество XP (+ или -)" style="margin-bottom: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="leadershipXpBtn" class="btn btn-primary" style="grid-column: span 2;">Выдать / Списать XP</button>
+            <button id="leadershipDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Публичный список Модераторов</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="leadAddStaffBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Выдать статус</button>
+            <button id="leadRemoveStaffBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Убрать из списка</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Магазин (Добавить товар)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара">
+             <input type="text" id="modShopItemDesc" class="support-input" placeholder="Описание">
+             <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)">
+             <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить (Заявка)</button>
+            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
+          </div>
+        </div>
+        
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Тренажер (Добавить сообщение)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <textarea id="modSimItemText" class="support-input" placeholder="Текст сообщения..." style="resize: vertical; min-height: 60px;"></textarea>
+             <select id="modSimItemType" class="support-input">
+                <option value="good">Без нарушения</option>
+                <option value="warn">Пред / Мут</option>
+                <option value="ban">Бан</option>
+             </select>
+          </div>
+          <button id="addModSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Отправить (Заявка)</button>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: var(--color-warning);">Конструктор Рулетки (Модерация)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <select id="modRouletteSlot" class="support-input">
+                <option value="leg">Легендарный слот</option>
+                <option value="rare">Редкий слот</option>
+                <option value="fail">Обычный слот</option>
+                <option value="fine">Слот Штрафа</option>
+             </select>
+             <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)">
+             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -1000)">
+          </div>
+          <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Ключи доступа (Модерация)</h3>
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <select id="leadershipKeyRole" class="support-input" style="flex: 1;">
+                <option value="shop">Магазин</option>
+                <option value="report">Отчеты</option>
+            </select>
+            <input type="text" id="leadershipKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
+          </div>
+          <button id="leadershipAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Создать ключ</button>
+          <div id="leadershipKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-ap_admin" style="display:none;">
+        <div class="section-head"><h2 style="color: #ff8fc4;">Руководство АП</h2></div>
+        
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px dashed #ff8fc4; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Тайная проверка (Скрытый вопрос) 🕵️</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Отправить агенту поддержки кастомный вопрос. Он выпадет ему первым.</p>
+          <select id="hiddenCheckUserSelectAp" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <textarea id="hiddenCheckTextAp" class="support-input" placeholder="Текст вопроса игрока..." style="margin-bottom: 1rem; resize: vertical; min-height: 80px;"></textarea>
+          <input type="text" id="hiddenCheckKeywordsAp" class="support-input" placeholder="Ключевые слова для зачета (через запятую)..." style="margin-bottom: 1rem;">
+          <button id="sendHiddenCheckApBtn" class="btn btn-secondary" style="width:100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить ловушку</button>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Управление пользователями</h3>
+          <select id="apAdminUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <input type="number" id="apAdminPointsAmount" class="support-input" placeholder="Количество Баллов (+ или -)" style="margin-bottom: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="apAdminPointsBtn" class="btn btn-primary" style="grid-column: span 2;">Выдать / Списать Баллы</button>
+            <button id="apAdminDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Публичный список АП</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="apAdminAddStaffBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Выдать статус</button>
+            <button id="apAdminRemoveStaffBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Убрать из списка</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Магазин АП (Добавить товар)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <input type="text" id="apShopItemTitle" class="support-input" placeholder="Название товара">
+             <input type="text" id="apShopItemDesc" class="support-input" placeholder="Описание">
+             <input type="number" id="apShopItemPrice" class="support-input" placeholder="Цена (Баллы)">
+             <input type="text" id="apShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <button id="addApShopItemBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить (Заявка)</button>
+            <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
+          </div>
+        </div>
+        
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Тренажер АП (Добавить вопрос)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <input type="text" id="apSimItemTitle" class="support-input" placeholder="Категория (Например: Навигация)">
+             <textarea id="apSimItemText" class="support-input" placeholder="Текст вопроса..." style="resize: vertical; min-height: 60px;"></textarea>
+             <input type="text" id="apSimItemKeywords" class="support-input" placeholder="Ключи (через запятую: gps, гпс)">
+          </div>
+          <button id="addApSimItemBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Отправить (Заявка)</button>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: #ff8fc4;">Конструктор Рулетки (АП)</h3>
+          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
+             <select id="apRouletteSlot" class="support-input">
+                <option value="leg">Легендарный слот</option>
+                <option value="rare">Редкий слот</option>
+                <option value="fail">Обычный слот</option>
+             </select>
+             <input type="text" id="apRouletteText" class="support-input" placeholder="Текст (напр. 100 Баллов)">
+             <input type="number" id="apRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -100)">
+          </div>
+          <button id="updateApRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить слот рулетки</button>
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3);">
@@ -1283,8 +1927,9 @@
             let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
             let shopState = { spent: 0, apSpent: 0 };
             let taState = { score: 0, mistakes: 0, time: 60, interval: null, active: false, current: null };
+            
             let modQueue = [], supQueue = [], compQueue = [], taQueue = [];
-            let modTrap = null, apTrap = null;
+            let modTrap = null, apTrap = null; // Скрытые проверки
 
             // МАГАЗИН И СООБЩЕНИЯ
             let defaultShopItems = [ { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора.", price: 200, icon: "⏳" }, { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора.", price: 250, icon: "⏳" }, { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" }, { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' }, { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' }, { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' }, { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' } ];
@@ -1313,19 +1958,142 @@
                         else if (row.email === 'ROULETTE_AP') { const idx = apRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); } }
                         else if (row.email === 'STAFF_MOD') publicModStaff.push({ id: row.link, name: row.status });
                         else if (row.email === 'STAFF_AP') publicApStaff.push({ id: row.link, name: row.status });
-                        else if (row.email === 'SIM_MOD') allModMessages.push({ type: row.status, text: row.date });
-                        else if (row.email === 'SIM_AP') allSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s=>s.trim()) });
-                        else if (row.email === 'TRAP_MOD' && currentUser && row.link === currentUser.id) modTrap = { id: row.id, type: row.status, text: row.date, isTrap: true };
-                        else if (row.email === 'TRAP_AP' && currentUser && row.link === currentUser.id) apTrap = { id: row.id, title: "Скрытая проверка", text: row.date, keywords: row.status.split(','), isTrap: true, meta: "Проверка от руководства" };
+                        else if (row.email === 'SIM_MOD') { allModMessages.push({ type: row.status, text: row.date }); }
+                        else if (row.email === 'SIM_AP') { allSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s=>s.trim()) }); }
+                        
+                        // Ловушки (Тайные проверки)
+                        else if (row.email === 'TRAP_MOD' && currentUser && row.link === currentUser.id) { modTrap = { id: row.id, type: row.status, text: row.date, isTrap: true }; }
+                        else if (row.email === 'TRAP_AP' && currentUser && row.link === currentUser.id) { apTrap = { id: row.id, title: "Скрытая проверка", text: row.date, keywords: row.status.split(','), isTrap: true, meta: "Проверка от руководства" }; }
                     });
                 }
                 shopItems = [...defaultShopItems, ...customShopItems]; apShopItems = [...defaultApShopItems, ...customApShopItems];
                 renderShopItems(); renderApShopItems(); renderPublicStaffLists();
             }
 
-            // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ И ИГРА ===
+            // ДОСКА ПОЧЕТА (БЕГУЩАЯ СТРОКА)
+            async function loadWallOfFame() {
+                const ticker = document.getElementById('wallOfFameTicker');
+                if(!ticker) return;
+                
+                const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
+                const { data: users } = await supa.from('user_stats').select('*');
+                const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+                
+                let modLeadersIds = [], apLeadersIds = [];
+                if(adminRoles) { modLeadersIds = adminRoles.filter(r => r.status === 'leadership').map(r => r.link); apLeadersIds = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link); }
+                
+                let modArr = [], apArr = [];
+                if(users) {
+                    users.forEach(u => {
+                        const isModLeader = adminEmails.includes(u.email) || modLeadersIds.includes(u.user_id);
+                        const isApLeader = apLeadershipEmails.includes(u.email) || apLeadersIds.includes(u.user_id);
+                        let reportXp = 0; if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
+                        const mXp = Math.max(0, calcXP(u.mod_correct) + reportXp - Number(u.shop_spent||0));
+                        const aXp = Math.max(0, calcXP(u.sup_correct) - Number(u.ap_spent||0));
+                        if(u.nickname) { if (!isModLeader && mXp > 0) modArr.push({ name: u.nickname, score: mXp }); if (!isApLeader && aXp > 0) apArr.push({ name: u.nickname, score: aXp }); }
+                    });
+                }
+                modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
+                
+                let tickerItems = [];
+                modArr.slice(0,3).forEach((u, i) => tickerItems.push(`🏆 Топ ${i+1} Модер: <span>${u.name} (${u.score} XP)</span>`));
+                apArr.slice(0,3).forEach((u, i) => tickerItems.push(`🌟 Топ ${i+1} АП: <span>${u.name} (${u.score} Баллов)</span>`));
+                
+                if(tickerItems.length > 0) {
+                    ticker.innerHTML = tickerItems.join(' • ') + ' • ' + tickerItems.join(' • ');
+                } else {
+                    ticker.innerHTML = '<div class="ticker__item">🌟 Доска почета пока пуста</div>';
+                }
+            }
+
+            // === ОЧЕРЕДЬ ЗАЯВОК СОЗДАТЕЛЯ ===
+            async function loadCreatorQueue() {
+                if (!currentUser || currentUser.email !== creatorEmail) return;
+                const list = document.getElementById('approvalQueueList'); if(!list) return;
+                list.innerHTML = 'Загрузка...';
+                const { data: queue } = await supa.from('reports').select('*').in('email', ['PENDING_SHOP_MOD', 'PENDING_SHOP_AP', 'PENDING_SIM_MOD', 'PENDING_SIM_AP']).order('id', { ascending: false });
+                
+                if(queue && queue.length > 0) {
+                    list.innerHTML = queue.map(q => {
+                        let typeText = q.email === 'PENDING_SHOP_MOD' ? 'Товар (Модеры)' : q.email === 'PENDING_SHOP_AP' ? 'Товар (АП)' : q.email === 'PENDING_SIM_MOD' ? 'Вопрос (Модеры)' : 'Вопрос (АП)';
+                        let details = `Название/Текст: <strong>${q.date}</strong><br>Описание/Вердикт/Ключи: ${q.status}`;
+                        if(q.xp > 0) details += `<br>Цена: ${q.xp}`;
+                        
+                        return `<div class="pending-card">
+                            <div style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">[Заявка] ${typeText}</div>
+                            <div style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; line-height: 1.4;">${details}</div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary" style="flex:1; border-color: var(--color-success); color: var(--color-success); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', true)">✅ Одобрить</button>
+                                <button class="btn btn-secondary" style="flex:1; border-color: var(--color-error); color: var(--color-error); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', false)">❌ Отказать</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else { list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Очередь пуста</div>'; }
+            }
+
+            window.processApproval = async function(id, currentEmail, isApproved) {
+                if(isApproved) {
+                    const newEmail = currentEmail.replace('PENDING_', '');
+                    await supa.from('reports').update({ email: newEmail }).eq('id', id);
+                    alert("Заявка одобрена и добавлена в базу!");
+                } else {
+                    await supa.from('reports').delete().eq('id', id);
+                    alert("Заявка отклонена и удалена.");
+                }
+                loadCreatorQueue(); loadGlobalShopAndRoulette();
+            };
+
+            // Отправка заявок из панелей руководства
+            document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
+                const title = document.getElementById('modShopItemTitle').value.trim(); const desc = document.getElementById('modShopItemDesc').value.trim(); const price = Number(document.getElementById('modShopItemPrice').value); const icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
+                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
+                const targetEmail = directModShopAdd ? 'SHOP_MOD' : 'PENDING_SHOP_MOD';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
+                alert(directModShopAdd ? "Товар добавлен в магазин!" : "Заявка отправлена Создателю!"); document.getElementById('modShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            });
+
+            document.getElementById('addModSimItemBtn')?.addEventListener('click', async () => {
+                const text = document.getElementById('modSimItemText').value.trim(); const type = document.getElementById('modSimItemType').value;
+                if(!text) return alert("Введите текст сообщения!");
+                const targetEmail = directModShopAdd ? 'SIM_MOD' : 'PENDING_SIM_MOD';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: text, status: type, xp: 0, link: '' }]);
+                alert(directModShopAdd ? "Сообщение добавлено в тренажер!" : "Заявка на сообщение отправлена Создателю!"); document.getElementById('modSimItemText').value = ''; loadGlobalShopAndRoulette();
+            });
+
+            document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
+                const title = document.getElementById('apShopItemTitle').value.trim(); const desc = document.getElementById('apShopItemDesc').value.trim(); const price = Number(document.getElementById('apShopItemPrice').value); const icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
+                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
+                const targetEmail = directApShopAdd ? 'SHOP_AP' : 'PENDING_SHOP_AP';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
+                alert(directApShopAdd ? "Товар АП добавлен в магазин!" : "Заявка на товар АП отправлена Создателю!"); document.getElementById('apShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            });
+
+            document.getElementById('addApSimItemBtn')?.addEventListener('click', async () => {
+                const title = document.getElementById('apSimItemTitle').value.trim(); const text = document.getElementById('apSimItemText').value.trim(); const keywords = document.getElementById('apSimItemKeywords').value.trim();
+                if(!title || !text || !keywords) return alert("Заполните все поля вопроса!");
+                const targetEmail = directApShopAdd ? 'SIM_AP' : 'PENDING_SIM_AP';
+                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: text, status: keywords, xp: 0, link: title }]);
+                alert(directApShopAdd ? "Вопрос АП добавлен в тренажер!" : "Заявка на вопрос АП отправлена Создателю!"); document.getElementById('apSimItemText').value = ''; loadGlobalShopAndRoulette();
+            });
+
+            // ОТПРАВКА СКРЫТЫХ ПРОВЕРОК
+            document.getElementById('sendHiddenCheckModBtn')?.addEventListener('click', async () => {
+                const userId = document.getElementById('hiddenCheckUserSelectMod').value; const text = document.getElementById('hiddenCheckTextMod').value.trim(); const verdict = document.getElementById('hiddenCheckVerdictMod').value;
+                if(!userId || userId.startsWith("Загрузка") || !text) return alert("Выберите пользователя и введите текст ловушки!");
+                await supa.from('reports').insert([{ id: 'trap_' + Date.now(), email: 'TRAP_MOD', link: userId, date: text, status: verdict, xp: 0 }]);
+                alert("Скрытая проверка для Модератора успешно установлена!"); document.getElementById('hiddenCheckTextMod').value = '';
+            });
+
+            document.getElementById('sendHiddenCheckApBtn')?.addEventListener('click', async () => {
+                const userId = document.getElementById('hiddenCheckUserSelectAp').value; const text = document.getElementById('hiddenCheckTextAp').value.trim(); const keywords = document.getElementById('hiddenCheckKeywordsAp').value.trim();
+                if(!userId || userId.startsWith("Загрузка") || !text || !keywords) return alert("Выберите пользователя, введите текст и ключи!");
+                await supa.from('reports').insert([{ id: 'trap_' + Date.now(), email: 'TRAP_AP', link: userId, date: text, status: keywords, xp: 0 }]);
+                alert("Скрытая проверка для Агента Поддержки успешно установлена!"); document.getElementById('hiddenCheckTextAp').value = '';
+            });
+
+            // === 6. ЛОГИКА ИГРЫ И ДЕЛЕГИРОВАНИЕ ===
             function randomFunnyNick() { 
-                const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "Токсик", "Дед"]; const funnyRight = ["из_Тамбова", "в_муте", "обижен", "ищет_баги"];
+                const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "Токсик"]; const funnyRight = ["из_Тамбова", "в_муте", "обижен", "ищет_баги"];
                 return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
             }
             function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
@@ -1434,6 +2202,7 @@
                     await supa.from('admin_logs').insert([{ user_email: currentUser?.email || 'N/A', nickname: currentNickname || 'N/A', item_name: 'Тайная проверка', cost: 0, type: 'mod_shop', status: `Вердикт: ${isCorrect ? 'ВЕРНО' : 'ОШИБКА'}` }]);
                     await supa.from('reports').delete().eq('id', modTrap.id); modTrap = null;
                 }
+
                 if (isCorrect) { state.correct++; window.playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
                 else { state.mistakes++; window.playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
                 updateModStats(); saveProgress(); randomMessage();
@@ -1470,7 +2239,8 @@
                     await supa.from('reports').delete().eq('id', apTrap.id); apTrap = null;
                 } else {
                     if (supportState.currentIndex < 0) return;
-                    const q = allSupQuestions[supportState.currentIndex]; ok = q.keywords.some(k => answer.includes(k));
+                    const q = allSupQuestions[supportState.currentIndex];
+                    ok = q.keywords.some(k => answer.includes(k));
                 }
                 
                 if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; window.playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
@@ -1484,6 +2254,25 @@
                 supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
                 document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
             });
+
+            // Поиск (Шпаргалка АП и Гайд)
+            function setupSearch(inputId, resultsId, dataArray) {
+                const input = document.getElementById(inputId); const results = document.getElementById(resultsId);
+                if(!input || !results) return;
+                input.addEventListener('input', () => {
+                    const val = input.value.toLowerCase().trim();
+                    if(val.length < 2) { results.style.display = 'none'; return; }
+                    const filtered = dataArray.filter(i => (i.text && i.text.toLowerCase().includes(val)) || (i.keywords && i.keywords.some(k => k.includes(val))));
+                    if(filtered.length > 0) {
+                        results.innerHTML = filtered.map(i => `<div style="padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1);"><strong style="color:var(--color-primary);">${i.title || 'Вопрос'}</strong>: <span style="color:#fff;">${i.text}</span> <br><span style="font-size:0.75rem; color:var(--color-text-faint);">Ключи: ${i.keywords ? i.keywords.join(', ') : ''}</span></div>`).join('');
+                        results.style.display = 'block';
+                    } else {
+                        results.innerHTML = '<div style="padding:0.5rem; color:var(--color-text-muted);">Ничего не найдено...</div>'; results.style.display = 'block';
+                    }
+                });
+                document.addEventListener('click', (e) => { if(!input.contains(e.target) && !results.contains(e.target)) results.style.display = 'none'; });
+            }
+            setupSearch('apSearchInput', 'apSearchResults', allSupQuestions); setupSearch('guideSearchInput', 'guideSearchResults', allSupQuestions);
 
             // === 7. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА, ГРАФИКИ, АЧИВКИ ===
             let statsChartInst = null;
@@ -1511,6 +2300,24 @@
                 if(currentUser && currentNickname) { document.getElementById('profileAvatar').textContent = initials(currentNickname); }
                 document.getElementById('profileXp').textContent = availableXp(); document.getElementById('profilePts').textContent = availablePts();
             }
+
+            async function loadUsersForTransfer() {
+                const sel = document.getElementById('transferUserSelect'); if(!sel) return;
+                const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent');
+                if (users && users.length > 0) { window.transferUsersList = users; sel.innerHTML = users.filter(u => u.user_id !== currentUser?.id).map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
+            }
+
+            document.getElementById('transferBtn')?.addEventListener('click', async () => {
+                const toUser = document.getElementById('transferUserSelect').value; const amount = parseInt(document.getElementById('transferAmount').value);
+                if(!toUser || isNaN(amount) || amount <= 0) return alert("Некорректная сумма!"); if(availableXp() < amount) return alert("Недостаточно XP на балансе!"); if(toUser === currentUser?.id) return alert("Нельзя перевести самому себе!");
+                const targetUser = window.transferUsersList.find(u => u.user_id === toUser); if(!targetUser) return alert("Пользователь не найден.");
+                shopState.spent += amount; const newTargetSpent = (Number(targetUser.shop_spent) || 0) - amount; 
+                await supa.from('user_stats').update({ shop_spent: newTargetSpent }).eq('user_id', toUser); await saveProgress(); updateModStats(); renderProfileData(); alert(`Успешный перевод ${amount} XP пользователю ${targetUser.nickname || targetUser.email}!`);
+            });
+
+            // КОСМЕТИКА
+            document.getElementById('equipCrownBtn')?.addEventListener('click', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
+            document.getElementById('equipColorBtn')?.addEventListener('click', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
 
             function updateModStats() {
                 const xp = availableXp(); document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = xp;
@@ -1548,53 +2355,91 @@
             document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
             document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
 
-            // === 9. ОЧЕРЕДЬ ЗАЯВОК СОЗДАТЕЛЯ ===
-            window.processApproval = async function(id, currentEmail, isApproved) {
-                if(isApproved) {
-                    const newEmail = currentEmail.replace('PENDING_', '');
-                    await supa.from('reports').update({ email: newEmail }).eq('id', id); alert("Заявка одобрена и добавлена в базу!");
-                } else { await supa.from('reports').delete().eq('id', id); alert("Заявка отклонена и удалена."); }
-                loadCreatorQueue(); loadGlobalShopAndRoulette();
-            };
-
-            async function loadCreatorQueue() {
-                if (!currentUser || currentUser.email !== creatorEmail) return;
-                const list = document.getElementById('approvalQueueList'); if(!list) return; list.innerHTML = 'Загрузка...';
-                const { data: queue } = await supa.from('reports').select('*').in('email', ['PENDING_SHOP_MOD', 'PENDING_SHOP_AP', 'PENDING_SIM_MOD', 'PENDING_SIM_AP']).order('id', { ascending: false });
-                if(queue && queue.length > 0) {
-                    list.innerHTML = queue.map(q => {
-                        let typeText = q.email === 'PENDING_SHOP_MOD' ? 'Товар (Модеры)' : q.email === 'PENDING_SHOP_AP' ? 'Товар (АП)' : q.email === 'PENDING_SIM_MOD' ? 'Вопрос (Модеры)' : 'Вопрос (АП)';
-                        let details = `Текст: <strong>${q.date}</strong><br>Доп. Инфа: ${q.status}`; if(q.xp > 0) details += `<br>Цена: ${q.xp}`;
-                        return `<div class="pending-card"> <div style="font-size: 0.8rem; color: var(--color-primary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: bold;">[Заявка] ${typeText}</div> <div style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; line-height: 1.4;">${details}</div> <div style="display: flex; gap: 0.5rem;"> <button class="btn btn-secondary" style="flex:1; border-color: var(--color-success); color: var(--color-success); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', true)">✅ Одобрить</button> <button class="btn btn-secondary" style="flex:1; border-color: var(--color-error); color: var(--color-error); padding: 0.4rem;" onclick="processApproval('${q.id}', '${q.email}', false)">❌ Отказать</button> </div> </div>`;
-                    }).join('');
-                } else { list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Очередь пуста</div>'; }
+            // === 9. ОЧЕРЕДЬ ЗАЯВОК И АВТОРИЗАЦИЯ ===
+            function checkReportAccess() {
+                const warn = document.getElementById('reportAccessWarning'); const formArea = document.getElementById('reportFormArea'); const adminPanel = document.getElementById('adminPanelArea');
+                if (currentUser) { 
+                    if(warn) warn.style.display = 'none'; if(formArea) formArea.style.display = 'block';
+                    if (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id)) { if(adminPanel) adminPanel.style.display = 'block'; } 
+                } 
+                else { if(warn) warn.style.display = 'block'; if(formArea) formArea.style.display = 'none'; }
             }
 
-            // Отправка заявок/Товаров в Магазин (с учетом Тумблеров)
-            document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
-                const title = document.getElementById('modShopItemTitle').value.trim(); const desc = document.getElementById('modShopItemDesc').value.trim(); const price = Number(document.getElementById('modShopItemPrice').value); const icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
-                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-                const targetEmail = directModShopAdd ? 'SHOP_MOD' : 'PENDING_SHOP_MOD';
-                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
-                alert(directModShopAdd ? "Товар добавлен в магазин!" : "Заявка отправлена Создателю!"); document.getElementById('modShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            document.getElementById('submitReportBtn')?.addEventListener('click', async () => {
+                if (!currentUser) return; const link = document.getElementById('reportLinkInput').value.trim(); const res = document.getElementById('reportResultText');
+                if (!link.startsWith('http')) { res.textContent = "Укажите корректную ссылку!"; res.style.color = "var(--color-error)"; return; } 
+                res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
+                const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: currentUser.email, link: link, date: new Date().toLocaleString('ru-RU'), status: 'На проверке', xp: 0 }]);
+                if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
+                res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)"; document.getElementById('reportLinkInput').value = ''; playSound('win');
             });
 
-            document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
-                const title = document.getElementById('apShopItemTitle').value.trim(); const desc = document.getElementById('apShopItemDesc').value.trim(); const price = Number(document.getElementById('apShopItemPrice').value); const icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
-                if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-                const targetEmail = directApShopAdd ? 'SHOP_AP' : 'PENDING_SHOP_AP';
-                await supa.from('reports').insert([{ id: 'req_' + Date.now(), email: targetEmail, date: title, status: desc, xp: price, link: icon }]);
-                alert(directApShopAdd ? "Товар АП добавлен в магазин!" : "Заявка на товар АП отправлена Создателю!"); document.getElementById('apShopItemTitle').value = ''; loadGlobalShopAndRoulette();
+            document.getElementById('viewReportsBtn')?.addEventListener('click', async () => {
+                const listArea = document.getElementById('reportsListArea'); if(!listArea) return; 
+                if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
+                listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
+                try {
+                    const { data: reports, error } = await supa.from('reports').select('*').neq('email', 'ACCESS_KEY').neq('email', 'ADMIN_ROLE').neq('email', 'SHOP_MOD').neq('email', 'SHOP_AP').neq('email', 'ROULETTE_MOD').neq('email', 'ROULETTE_AP').not('email', 'like', 'PENDING_%').not('email', 'like', 'SIM_%').not('email', 'like', 'TRAP_%').order('date', { ascending: false }).limit(30);
+                    if (error) throw error;
+                    if(reports && reports.length > 0) { 
+                        listArea.innerHTML = reports.map(r => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);"><div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;"><strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">${r.date || ''}</span></div><div style="margin-bottom: 0.5rem;"><a href="${r.link || '#'}" target="_blank" style="color: var(--color-primary);">Скриншот онлайна</a></div><div style="display:flex; flex-direction: column; gap: 0.5rem;"><span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `<div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;"><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button><button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button></div>` : ''}</div></div>`).join('');
+                    } else { listArea.innerHTML = '<div class="message-text">Отчетов пока нет</div>'; }
+                } catch (err) { listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`; }
             });
-
-            // === 10. ИНИЦИАЛИЗАЦИЯ И СТАРТ ===
-            const sb = document.getElementById('startBtn'); if (sb) sb.onclick = startGame;
-            const rb = document.getElementById('resetBtn'); if (rb) rb.onclick = resetGame;
+            window.processReport = async function(id, statusText, xpAmount) { await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); document.getElementById('viewReportsBtn').click(); setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); };
 
             async function saveProgress() {
                 if(!currentUser) return;
-                try { await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) }); } catch(e) { console.error("Save Error:", e); }
+                try { await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) }); } catch(e) {}
             }
+
+            document.getElementById('accessSubmitBtn')?.addEventListener('click', async () => {
+                const val = document.getElementById('accessCodeInput').value.trim(); const err = document.getElementById('accessErrorMsg'); const btn = document.getElementById('accessSubmitBtn'); btn.disabled = true; btn.textContent = "Проверка...";
+                if (pendingAction.type === 'switch_tab_shop' && val === 'JohnWickModer') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); return; }
+                if (pendingAction.type === 'switch_tab_report' && val === 'JohnWIckTopModer') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); return; }
+                if (pendingAction.type === 'switch_tab_ap_shop' && val === 'ApMasterKey123') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); return; }
+                
+                const { data } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('link', val);
+                if (data && data.length > 0) { 
+                    const keyData = data[0];
+                    if (pendingAction.type === 'switch_tab_shop' && keyData.status === 'shop') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); } 
+                    else if (pendingAction.type === 'switch_tab_report' && keyData.status === 'report') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); } 
+                    else if (pendingAction.type === 'switch_tab_ap_shop' && keyData.status === 'ap_shop') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); } 
+                    else finishAccess(false);
+                } else finishAccess(false);
+
+                function finishAccess(success, roleMode) { btn.disabled = false; btn.textContent = "Подтвердить"; if (success) { document.getElementById('accessModal').style.display = 'none'; switchMode(roleMode, pendingAction.btn); pendingAction = null; } else err.style.display = 'block'; }
+            });
+
+            document.getElementById('accessCloseBtn')?.addEventListener('click', () => { document.getElementById('accessModal').style.display = 'none'; pendingAction = null; });
+            document.getElementById('loginBtnUI').onclick = () => { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authErrorMsg').style.display = 'none'; };
+            document.getElementById('authCloseModal').onclick = () => { document.getElementById('authModal').style.display = 'none'; };
+            document.getElementById('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
+
+            document.getElementById('authLoginSubmit').onclick = async () => {
+                const email = document.getElementById('authEmail').value; const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
+                if(!email || !password) { err.textContent = "Введите Email и Пароль!"; err.style.display = 'block'; return; }
+                const { error } = await supa.auth.signInWithPassword({ email, password });
+                if(error) { err.textContent = error.message; err.style.display = 'block'; } else document.getElementById('authModal').style.display = 'none';
+            };
+
+            document.getElementById('authRegisterSubmit').onclick = async () => {
+                const email = document.getElementById('authEmail').value; const nickname = document.getElementById('authNickname').value; const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
+                if(!email || !password || !nickname) { err.textContent = "Заполните все поля, включая Никнейм!"; err.style.display = 'block'; return; }
+                const { error } = await supa.auth.signUp({ email, password, options: { data: { nickname: nickname } } });
+                if(error) { err.textContent = error.message; err.style.display = 'block'; } else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; err.style.display = 'block'; }
+            };
+
+            document.getElementById('forceNicknameBtn')?.addEventListener('click', async () => {
+                const val = document.getElementById('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
+                await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
+                currentNickname = val; document.getElementById('userEmailDisplay').textContent = val; document.getElementById('nicknameModal').style.display = 'none'; 
+                if(!state.started && document.getElementById("authorName")?.textContent === "System") startGame();
+            });
+
+            // ИНИЦИАЛИЗАЦИЯ И СТАРТ СИСТЕМЫ
+            const sb = document.getElementById('startBtn'); if (sb) sb.onclick = startGame;
+            const rb = document.getElementById('resetBtn'); if (rb) rb.onclick = resetGame;
 
             supa.auth.getSession().then(async ({ data: { session } }) => { 
                 currentUser = session?.user || null;
@@ -1614,6 +2459,8 @@
                     if (isApLeader) { document.getElementById('apAdminTabBtn').style.display = 'inline-block'; document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; }
 
                     await loadGlobalShopAndRoulette();
+                    await loadWallOfFame();
+                    await loadUsersForTransfer();
 
                     try {
                         const {data} = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).single();
@@ -1621,18 +2468,19 @@
                     
                         const {data: repData} = await supa.from('reports').select('xp').eq('email', currentUser.email);
                         state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                        updateModStats(); updateSupportStats(); updateShopStats(); checkDailyReward();
+                        updateModStats(); updateSupportStats(); updateShopStats(); checkReportAccess(); checkDailyReward();
                         if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
                     } catch (e) { console.error("Stat Load Error:", e); }
 
                 } else { 
                     await loadGlobalShopAndRoulette(); 
+                    await loadWallOfFame();
+                    checkReportAccess();
                 }
             }).catch(e => console.error("Session Error:", e));
             
         } catch (fatalError) {
             console.error("FATAL SCRIPT ERROR:", fatalError);
-            alert("Произошла ошибка при загрузке скриптов сайта. Пожалуйста, обновите страницу.");
         }
     }); 
   </script>
