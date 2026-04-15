@@ -1166,4 +1166,849 @@
       </aside>
 
     </section>
-  </main>
+  </main> 
+
+    <script>
+    // Вспомогательные настройки магазина (Тумблеры)
+    let directModShopAdd = localStorage.getItem('directModShopAdd') === 'true';
+    let directApShopAdd = localStorage.getItem('directApShopAdd') === 'true';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      try {
+        // === ИНЖЕКТ ТУМБЛЕРОВ В ПАНЕЛЬ СОЗДАТЕЛЯ ===
+        const creatorPanel = document.getElementById('mode-creator');
+        if (creatorPanel) {
+          const togglesHtml = `
+          <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Настройки добавления в магазин</h3>
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">Если включено, товары из панелей Руководства будут добавляться сразу. Если выключено — будут отправляться вам в заявки (Очередь).</p>
+            <label style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; cursor: pointer; font-size: 0.9rem;">
+                <input type="checkbox" id="toggleDirectMod" style="width: 20px; height: 20px; accent-color: var(--color-primary);" ${directModShopAdd ? 'checked' : ''}>
+                <span>Мгновенное добавление товаров (Модерация)</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.9rem;">
+                <input type="checkbox" id="toggleDirectAp" style="width: 20px; height: 20px; accent-color: #ff8fc4;" ${directApShopAdd ? 'checked' : ''}>
+                <span>Мгновенное добавление товаров (АП)</span>
+            </label>
+          </div>`;
+          creatorPanel.querySelector('.section-head').insertAdjacentHTML('afterend', togglesHtml);
+          
+          document.getElementById('toggleDirectMod').addEventListener('change', (e) => {
+              directModShopAdd = e.target.checked;
+              localStorage.setItem('directModShopAdd', directModShopAdd);
+          });
+          document.getElementById('toggleDirectAp').addEventListener('change', (e) => {
+              directApShopAdd = e.target.checked;
+              localStorage.setItem('directApShopAdd', directApShopAdd);
+          });
+        }
+
+        // === 1. БАЗОВЫЕ НАСТРОЙКИ И UI ===
+        let bgMusic = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3");
+        bgMusic.loop = true; bgMusic.volume = 0.15;
+        let isMusicPlaying = false;
+        let isSfxEnabled = true;
+
+        const sfx = {
+            click: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b8f722cb.mp3"),
+            ok: new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3"),
+            fail: new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_82c2394eeb.mp3"),
+            win: new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3")
+        };
+        Object.values(sfx).forEach(a => a.volume = 0.4);
+
+        window.playSound = function(type) {
+            if (isSfxEnabled && sfx[type]) {
+                sfx[type].currentTime = 0;
+                sfx[type].play().catch(e => console.warn("Audio play blocked:", e));
+            }
+        };
+
+        const themeBtn = document.querySelector('[data-theme-toggle]');
+        const htmlEl = document.documentElement;
+        themeBtn?.addEventListener('click', () => {
+            const isDark = htmlEl.getAttribute('data-theme') === 'dark';
+            htmlEl.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeBtn.textContent = isDark ? '☀️' : '🌙';
+        });
+
+        document.getElementById('musicToggleBtn')?.addEventListener('click', (e) => {
+            isMusicPlaying = !isMusicPlaying;
+            if (isMusicPlaying) {
+                e.target.textContent = '🔊';
+                bgMusic.play().catch(() => { isMusicPlaying = false; e.target.textContent = '🔇'; });
+            } else {
+                e.target.textContent = '🔇';
+                bgMusic.pause();
+            }
+        });
+
+        document.getElementById('sfxToggleBtn')?.addEventListener('click', (e) => {
+            isSfxEnabled = !isSfxEnabled;
+            e.target.textContent = isSfxEnabled ? '🔊' : '🔈';
+        });
+
+        // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
+        const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+        const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null, currentNickname = null, pendingAction = null;
+        let hasAccessCode = localStorage.getItem('access_shop') === 'true';
+        let hasReportAccessCode = localStorage.getItem('access_report') === 'true';
+        let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
+
+        let dynamicModLeaders = [], dynamicApLeaders = [], publicModStaff = [], publicApStaff = [];
+        let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
+
+        const creatorEmail = 'daniiltimosin72@gmail.com';
+        const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+        const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+
+        let state = { resolved: 0, correct: 0, mistakes: 0, started: false, log: [], current: null, reportXp: 0 };
+        let supportState = { resolved: 0, correct: 0, mistakes: 0, started: false, currentIndex: -1 };
+        let complaintState = { resolved: 0, correct: 0, mistakes: 0, started: false, current: null };
+        let shopState = { spent: 0, apSpent: 0 };
+        let taState = { score: 0, mistakes: 0, interval: null };
+        let examState = { qNum: 0, correct: 0, timer: null };
+
+        let supQueue = [];
+        let modTrap = null, apTrap = null;
+        let spamTimerInterval = null;
+
+        // === 3. ДАННЫЕ МАГАЗИНА И РУЛЕТОК ===
+        let defaultShopItems = [
+            { id: '1', title: "Похвала от ГМ", desc: "Устное поощрение от Руководства.", price: 50, icon: "👍" },
+            { id: '2', title: "Снятие устника", desc: "Снимает 1 активный устный выговор.", price: 100, icon: "✅" },
+            { id: '3', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 250, icon: "🛡️" },
+            { id: '4', title: "Выходной (1 день)", desc: "Дает право не сдавать норму 1 день.", price: 200, icon: "🌴" },
+            { id: 'roulette', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
+            { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' },
+            { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
+            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' }
+        ];
+
+        let defaultApShopItems = [
+            { id: 'ap_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" },
+            { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" },
+            { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
+        ];
+
+        let defaultModRoulettePrizes = [
+            { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: -500 },
+            { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: -300 },
+            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
+            { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: +100 }
+        ];
+
+        let defaultApRoulettePrizes = [
+            { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: -50 },
+            { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: -30 },
+            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }
+        ];
+
+        let shopItems = [...defaultShopItems], apShopItems = [...defaultApShopItems], customShopItems = [], customApShopItems = [];
+        let modRoulettePrizes = [...defaultModRoulettePrizes], apRoulettePrizes = [...defaultApRoulettePrizes];
+
+        // === 4. МАССИВЫ СООБЩЕНИЙ И ЖАЛОБ ===
+        let allModMessages = [
+            {type:"warn",text:"АХАХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХХА"},
+            {type:"warn",text:"ААААААААААААААААААААААААААААААААААААААА"},
+            {type:"warn",text:"ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ"},
+            {type:"warn",text:"ООООООООООООООООООООООООООООООООООООООО"},
+            {type:"warn",text:"УУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУУ"},
+            {type:"warn",text:"Как дела ????????????????????????"},
+            {type:"warn",text:"Куплю супру срочно!!!!!!!!!!!!!!!!!!!!"},
+            {type:"warn",text:"Эй,,,,,,,,,, кто тут главный???????"},
+            {type:"warn",text:"Я тебя по IP вычислю, жди гостей вечером"},
+            {type:"warn",text:"Напиши еще слово и я тебе интернет отключу"},
+            {type:"warn",text:"Жди докс, к****, я тебя найду"},
+            {type:"warn",text:"Админы вообще не работают, только и умеют муты давать"},
+            {type:"warn",text:"Слышь, я тебя сейчас в чс закину, понял?"},
+            {type:"warn",text:"Да я твой дом труба шатал"},
+            {type:"warn",text:"Сколько стоит випка? Хочу купить"},
+            {type:"warn",text:"Как стать админом? Я всё знаю про игру"},
+            {type:"warn",text:"Кто со мной в казино на миллион?"},
+            {type:"warn",text:"Где можно купить наркотики в игре?"},
+            {type:"ban",text:"Продам вирты, 1кк = 50 рублей. Писать в ЛС"},
+            {type:"ban",text:"Куплю жирный аккаунт с випкой за реал"},
+            {type:"ban",text:"Кто продаст супру за 500 рублей на карту?"},
+            {type:"ban",text:"Обменяю скины в CS:GO на вирты тут"},
+            {type:"ban",text:"Продаю симку блатную, оплата криптой"},
+            {type:"ban",text:"Продам фаму 10 лвл за 2000 рублей"},
+            {type:"ban",text:"Куплю админку за деньги, кому переводить?"},
+            {type:"ban",text:"Заходите на мой сервер IP 192.168.1.1 топовый мод"},
+            {type:"ban",text:"Скачай читы по ссылке cheat.ru без вирусов"},
+            {type:"ban",text:"Кому дать промокод на 10кк? Заходите в тг канал"},
+            {type:"ban",text:"Продам обход бана, писать в дискорд"},
+            {type:"ban",text:"Раздача аккаунтов на сайте free-accs.com"},
+            {type:"ban",text:"Ищу людей для фарма виртов багом, в лс"},
+            {type:"ban",text:"Куплю бота на рыбалку, дорого"},
+            {type:"good",text:"Пацаны, кто в казик пойдет?"},
+            {type:"good",text:"Продам супру ФТ ФТ, цена 5кк, торг уместен"},
+            {type:"good",text:"Кто примет в фаму? Адекватный, 15 лет"},
+            {type:"good",text:"Подскажите, где находится автосалон?"},
+            {type:"good",text:"Куплю дом на Рублевке, бюджет свободный"},
+            {type:"good",text:"Ищу друга для совместной игры по дискорду"},
+            {type:"good",text:"Как вступить в армию? Подскажите плз"},
+            {type:"good",text:"Сколько сейчас стоит скин водолаза?"},
+            {type:"good",text:"Помогите, застрял в текстурах!"},
+            {type:"good",text:"Где можно получить медкарту?"},
+            {type:"good",text:"Как перевести деньги на другой счет?"}
+        ];
+
+        let allSupQuestions = [
+            { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где находится здание ФСБ?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Как доехать до автосалона низкого класса?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Не могу найти автосервис (СТО), подскажите команду.", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] },
+            { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] },
+            { title: "Команды", text: "Какая команда для передачи денег другому?", keywords: ["pay", "пей"] },
+            { title: "Команды", text: "Как использовать ремкомплект для починки?", keywords: ["repair", "репайр", "инвентар", "меню"] },
+            { title: "Команды", text: "Подскажите команду, чтобы завести машину.", keywords: ["engine", "енжин"] },
+            { title: "Игровой процесс", text: "Как получить права на вождение машины?", keywords: ["автошкол", "лиценз", "сдать"] },
+            { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] },
+            { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] },
+            { title: "Не вижу каналов", meta: "Дискорд", text: "Я зашел на сервер, но вижу только приветствие. Что нужно сделать?", keywords: ['вериф', 'роль', 'правил'] },
+            { title: "Не приходит код", meta: "Проблема", text: "Мне не приходит код подтверждения на почту. Что делать?", keywords: ['спам', 'подожд', 'повтор'] },
+            { title: "Куда жаловаться", meta: "Жалобы", text: "Хочу подать жалобу на модератора. Куда писать?", keywords: ['жалоб', 'форум'] },
+            { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] }
+        ];
+
+        let allComplaints = [
+            { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' },
+            { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' },
+            { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' },
+            { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' }
+        ];
+
+        // === ПРАВИЛА И ПОДСКАЗКИ (ПРОПАВШИЙ МАССИВ) ===
+        const rightContent = {
+            moderation: {
+                title: "Материалы модератора",
+                lead: "Подсказки по модерации.",
+                cards: [
+                    ["Без нарушения", "Обычное сообщение."],
+                    ["Пред / Мут", "Флуд, капс, политика."],
+                    ["Бан / Перма", "Реклама, РМТ, обход банов."]
+                ]
+            },
+            timeattack: {
+                title: "Спидран",
+                lead: "Правила режима на время.",
+                cards: [
+                    ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."],
+                    ["Опыт", "XP не зачисляется на баланс."]
+                ]
+            },
+            exam: {
+                title: "Аттестация",
+                lead: "Экзаменационный режим.",
+                cards: [
+                    ["Правила", "20 вопросов, 10 секунд на каждый."],
+                    ["Проходной балл", "Нужно набрать минимум 18 из 20 правильных ответов."]
+                ]
+            },
+            support: {
+                title: "Материалы АП",
+                lead: "База знаний для АП и шаблоны ответов.",
+                cards: [
+                    ["База знаний", "Используйте команды /gps и уровни работ."],
+                    ["Ответы", "Давайте четкие и понятные ответы."]
+                ]
+            },
+            ap_speed: {
+                title: "Скорость печати",
+                lead: "Тренажер для АП.",
+                cards: [
+                    ["Суть", "Печатайте текст ответа как можно быстрее без ошибок."],
+                    ["Тренировка", "Помогает улучшить скорость реакции на репорты."]
+                ]
+            },
+            complaints: {
+                title: "Правила жалоб",
+                lead: "Как рассматривать репорты.",
+                cards: [
+                    ["Одобрить", "Явное нарушение (оск, реклама)."],
+                    ["Отказать", "Нет док-в или обрезаны."],
+                    ["Передать", "Обжалование ЧСМ или банов ГМ."]
+                ]
+            },
+            quests: {
+                title: "Квесты",
+                lead: "Выполняй задания и забирай XP.",
+                cards: [
+                    ["Прогресс", "Выполняйте норму в тренажерах."],
+                    ["Награды", "Нажмите 'Забрать' после выполнения."]
+                ]
+            },
+            guide: {
+                title: "Контакты (ВК)",
+                lead: "Все актуальные ссылки находятся в центре экрана.",
+                cards: [
+                    ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."]
+                ]
+            },
+            leaderboard: {
+                title: "О Лидерборде",
+                lead: "Рейтинг формируется на основе заработанного XP.",
+                cards: [
+                    ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."],
+                    ["Никнейм", "Отображаются только сотрудники с установленным никнеймом."]
+                ]
+            },
+            about: {
+                title: "О команде",
+                lead: "Информация о людях, создавших тренажёр.",
+                cards: [
+                    ["Создано", "John Wick."],
+                    ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."]
+                ]
+            },
+            profile: {
+                title: "Личный профиль",
+                lead: "Ваша статистика и косметика.",
+                cards: [
+                    ["Никнейм", "Ваш игровой ник."],
+                    ["XP / Баллы", "Ваши накопления."],
+                    ["Косметика", "Визуальные улучшения."]
+                ]
+            },
+            shop: {
+                title: "Магазин модераторов",
+                lead: "Тратьте XP.",
+                cards: [
+                    ["Выдача", "Все покупки уходят к руководству."],
+                    ["Рулетка", "Призы могут выдать XP или штраф."]
+                ]
+            },
+            ap_shop: {
+                title: "Магазин АП",
+                lead: "Тратьте Баллы.",
+                cards: [
+                    ["Выдача", "Все покупки уходят к руководству АП."],
+                    ["Иммунитеты", "Можно купить защиту от выговоров."]
+                ]
+            },
+            report: {
+                title: "Отчетность",
+                lead: "Сдача ежедневной нормы.",
+                cards: [
+                    ["Скриншот", "Ссылка на скриншот онлайна (imgur, postimages)."],
+                    ["Проверка", "Ожидайте проверки Руководством."]
+                ]
+            },
+            admin_log: {
+                title: "Логи (Модерация)",
+                lead: "Только для Руководства.",
+                cards: [
+                    ["Выдача", "Отмечайте товары как выданные после отправки в игре/дискорде."]
+                ]
+            },
+            ap_admin_log: {
+                title: "Логи (АП)",
+                lead: "Только для Руководства АП.",
+                cards: [
+                    ["Выдача", "Отмечайте товары как выданные."]
+                ]
+            },
+            creator: {
+                title: "Управление доступом",
+                lead: "Только для Создателя (John Wick).",
+                cards: [
+                    ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."],
+                    ["Троллинг", "Сброс XP ставит долг 99999. Смена ника моментально меняет имя в базе."],
+                    ["Ключи", "Все ключи сохраняются в базе. Модератор вводит их для доступа."]
+                ]
+            },
+            leadership: {
+                title: "Управление пользователями",
+                lead: "Только для Руководства.",
+                cards: [
+                    ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."],
+                    ["Удаление", "Удаляет аккаунт пользователя из базы."]
+                ]
+            },
+            ap_admin: {
+                title: "Управление пользователями (АП)",
+                lead: "Только для Руководства АП.",
+                cards: [
+                    ["Баллы", "Выдача или снятие баллов обновляет ap_spent пользователя."],
+                    ["Ключи", "Генерация ключей для доступа в магазин АП."],
+                    ["Удаление", "Удаляет аккаунт пользователя из базы."]
+                ]
+            }
+        };
+
+        function renderRight(mode) {
+            const rt = document.getElementById("rightTitle"), rl = document.getElementById("rightLead"), rc = document.getElementById("rightCards");
+            if(!rt || !rl || !rc) return;
+            const data = rightContent[mode] || rightContent['moderation'];
+            rt.innerHTML = data.title;
+            rl.innerHTML = data.lead;
+            rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
+        }
+
+        const allModesList = ["moderation","timeattack","exam","ap_speed","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","admin_log","ap_admin_log","quests","creator","leadership","ap_admin"];
+        
+        function switchMode(mode, btn) {
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            if(btn) btn.classList.add("active");
+            
+            allModesList.forEach(m => {
+                const panel = document.getElementById("mode-" + m);
+                if(panel) {
+                    if(m === mode) {
+                        panel.style.display = "";
+                        panel.classList.remove('fade-in');
+                        void panel.offsetWidth;
+                        panel.classList.add('fade-in');
+                    } else {
+                        panel.style.display = "none";
+                    }
+                }
+            });
+
+            let currentTheme = "mod";
+            if(["support","ap_admin","ap_admin_log","ap_shop","ap_speed"].includes(mode)) currentTheme = "support";
+            if(["about","profile"].includes(mode)) currentTheme = "about";
+            if(["shop","leadership"].includes(mode)) currentTheme = "shop";
+            if(mode === "report") currentTheme = "report";
+            if(mode === "guide") currentTheme = "guide";
+            if(mode === "leaderboard") currentTheme = "leaderboard";
+            if(["admin_log"].includes(mode)) currentTheme = "admin_log";
+            if(mode === "complaints") currentTheme = "complaints";
+            if(mode === "quests") currentTheme = "quests";
+            if(mode === "timeattack") currentTheme = "timeattack";
+            if(mode === "exam") currentTheme = "exam";
+            if(mode === "creator") currentTheme = "creator";
+            
+            document.documentElement.setAttribute("data-site-theme", currentTheme);
+            renderRight(mode);
+            
+            const brandSub = document.getElementById("brandSubtitle");
+            const hTitle = document.getElementById("heroTitle");
+            const hText = document.getElementById("heroText");
+            const hBadge = document.getElementById("heroBadge2");
+            
+            if (mode === "moderation" || mode === "timeattack" || mode === "exam") {
+                if(brandSub) brandSub.textContent = "Симулятор смены модераторов";
+                if(hTitle) hTitle.innerHTML = 'Следи за <span>порядком</span> на сервере.';
+                if(hText) hText.textContent = "Проверяй сообщения, принимай решения и поддерживай порядок в чате.";
+                if(hBadge) hBadge.textContent = "Режим: модераторы";
+            } else if (mode === "complaints") {
+                if(brandSub) brandSub.textContent = "Симулятор раздела жалоб";
+                if(hTitle) hTitle.innerHTML = 'Рассматривай <span>жалобы</span>.';
+                if(hText) hText.textContent = "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.";
+                if(hBadge) hBadge.textContent = "Режим: жалобы";
+            } else if (mode === "support" || mode === "ap_speed") {
+                if(brandSub) brandSub.textContent = "Симулятор смены агентов поддержки";
+                if(hTitle) hTitle.innerHTML = 'Создавай <span>уют</span> и помогай игрокам.';
+                if(hText) hText.textContent = "Отвечай на вопросы игроков, ориентируйся в материалах.";
+                if(hBadge) hBadge.textContent = "Режим: агенты поддержки";
+            } else if (mode === "quests") {
+                if(brandSub) brandSub.textContent = "Квесты сотрудников";
+                if(hTitle) hTitle.innerHTML = 'Выполняй <span>задания</span>.';
+                if(hText) hText.textContent = "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.";
+                if(hBadge) hBadge.textContent = "Режим: квесты";
+            } else if (mode === "guide") {
+                if(brandSub) brandSub.textContent = "Руководство Сервера";
+                if(hTitle) hTitle.innerHTML = 'Контакты <span>руководства</span>.';
+                if(hText) hText.textContent = "Основная информация и контактные данные.";
+                if(hBadge) hBadge.textContent = "Режим: руководство";
+            } else if (mode === "leaderboard") {
+                if(brandSub) brandSub.textContent = "Таблица лидеров";
+                if(hTitle) hTitle.innerHTML = 'Топ <span>лучших</span>.';
+                if(hText) hText.textContent = "Отображаются активные сотрудники с наибольшим количеством XP.";
+                if(hBadge) hBadge.textContent = "Режим: лидерборд";
+            } else if (mode === "about" || mode === "profile") {
+                if(brandSub) brandSub.textContent = "Люди, которые сделали этот проект";
+                if(hTitle) hTitle.innerHTML = 'Узнай, кто <span>стоит за идеей</span>.';
+                if(hText) hText.textContent = "Вся информация о создателях и команде тестеров.";
+                if(hBadge) hBadge.textContent = "Режим: информация";
+            } else if (mode === "shop" || mode === "ap_shop") {
+                if(brandSub) brandSub.textContent = "Внутриигровой Магазин";
+                if(hTitle) hTitle.innerHTML = 'Трать <span>XP</span> с умом.';
+                if(hText) hText.textContent = "Покупай иммунитеты, снимай выговоры или крути рулетку.";
+                if(hBadge) hBadge.textContent = "Режим: магазин";
+            } else if (mode === "report") {
+                if(brandSub) brandSub.textContent = "Система отчетности";
+                if(hTitle) hTitle.innerHTML = 'Сдавай <span>отчеты</span> вовремя.';
+                if(hText) hText.textContent = "Прикрепляй ссылки на скриншоты своего онлайна для проверки.";
+                if(hBadge) hBadge.textContent = "Режим: отчетность";
+            } else if (mode === "creator" || mode === "leadership" || mode === "ap_admin") {
+                if(brandSub) brandSub.textContent = "Панель Руководства";
+                if(hTitle) hTitle.innerHTML = 'Управление <span>Пользователями</span>.';
+                if(hText) hText.textContent = "Управление базой данных, выдача опыта и создание ключей доступа.";
+                if(hBadge) hBadge.textContent = "Режим: Руководство";
+            }
+        }
+// === 5. ЛОГИКА ТРЕНАЖЕРА МОДЕРАЦИИ ===
+        function getRandomModMessage() {
+            return allModMessages[Math.floor(Math.random() * allModMessages.length)];
+        }
+
+        function renderModMessage() {
+            if (!state.started) return;
+            state.current = getRandomModMessage();
+            document.getElementById('messageText').textContent = state.current.text;
+            document.getElementById('authorName').textContent = "Игрок_" + Math.floor(Math.random() * 9999);
+            document.getElementById('authorMeta').textContent = "ID: " + Math.floor(Math.random() * 1000);
+            document.getElementById('avatarBox').textContent = "US";
+            document.getElementById('avatarBox').style.background = `hsl(${Math.random() * 360}, 70%, 50%)`;
+            document.getElementById('hintText').textContent = "Ожидание вердикта...";
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            state.started = true;
+            document.getElementById('resultBanner').innerHTML = `<span style="color:var(--color-success);">Смена активна</span>`;
+            renderModMessage();
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            state = { resolved: 0, correct: 0, mistakes: 0, started: false, log: [], current: null, reportXp: state.reportXp };
+            document.getElementById('messageText').textContent = "Смена сброшена. Нажми «Начать смену».";
+            updateModStats();
+        });
+
+        document.querySelectorAll('#mode-moderation .action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (!state.started || !state.current) return;
+                const action = e.target.getAttribute('data-action');
+                let xpChange = 0;
+                
+                if (action === state.current.type) {
+                    state.correct++;
+                    xpChange = 10;
+                    playSound('ok');
+                } else {
+                    state.mistakes++;
+                    xpChange = -5;
+                    playSound('fail');
+                }
+                
+                state.resolved++;
+                shopState.spent -= xpChange; // Добавляем XP (поскольку spent это траты, отрицательная трата = доход)
+                
+                updateModStats();
+                saveStatsToDB();
+                renderModMessage();
+            });
+        });
+
+        function updateModStats() {
+            document.getElementById('resolvedValue').textContent = state.resolved;
+            document.getElementById('correctValue').textContent = state.correct;
+            document.getElementById('mistakeValue').textContent = state.mistakes;
+            
+            const totalXp = (state.correct * 10) - (state.mistakes * 5) - shopState.spent + state.reportXp;
+            document.getElementById('xpValue').textContent = totalXp;
+            
+            const progress = state.resolved === 0 ? 0 : Math.min(100, (state.correct / state.resolved) * 100);
+            document.getElementById('xpFill').style.width = `${progress}%`;
+        }
+
+        // === 6. ЛОГИКА ТРЕНАЖЕРА АП ===
+        function getRandomSupQuestion() {
+            return allSupQuestions[Math.floor(Math.random() * allSupQuestions.length)];
+        }
+
+        function renderSupQuestion() {
+            if (!supportState.started) return;
+            const q = getRandomSupQuestion();
+            supportState.currentIndex = allSupQuestions.indexOf(q);
+            document.getElementById('supportQuestionText').textContent = q.text;
+            document.getElementById('supportQuestionTitle').textContent = q.title;
+            document.getElementById('supportMeta').textContent = q.meta || "Вопрос игрока";
+            document.getElementById('supportResultText').textContent = "";
+            document.getElementById('supportAnswerInput').value = "";
+        }
+
+        document.getElementById('supportNextBtn').addEventListener('click', () => {
+            supportState.started = true;
+            document.getElementById('supportBanner').innerHTML = `<span style="color:var(--color-success);">Смена АП активна</span>`;
+            renderSupQuestion();
+        });
+
+        document.getElementById('supportCheckBtn').addEventListener('click', () => {
+            if (!supportState.started || supportState.currentIndex === -1) return;
+            const answer = document.getElementById('supportAnswerInput').value.toLowerCase();
+            const q = allSupQuestions[supportState.currentIndex];
+            const isCorrect = q.keywords.some(kw => answer.includes(kw));
+
+            if (isCorrect) {
+                supportState.correct++;
+                shopState.apSpent -= 5; // 5 баллов за правильный ответ
+                playSound('ok');
+                document.getElementById('supportResultText').innerHTML = `<span style="color:var(--color-success);">Отличный ответ! +5 Баллов</span>`;
+                setTimeout(renderSupQuestion, 1000);
+            } else {
+                supportState.mistakes++;
+                playSound('fail');
+                document.getElementById('supportResultText').innerHTML = `<span style="color:var(--color-error);">Не совсем точно. Попробуй упомянуть: ${q.keywords.join(', ')}</span>`;
+            }
+            supportState.resolved++;
+            updateSupportStats();
+            saveStatsToDB();
+        });
+
+        function updateSupportStats() {
+            document.getElementById('supportResolvedValue').textContent = supportState.resolved;
+            document.getElementById('supportCorrectValue').textContent = supportState.correct;
+            document.getElementById('supportMistakeValue').textContent = supportState.mistakes;
+            
+            const totalPts = (supportState.correct * 5) - shopState.apSpent;
+            document.getElementById('supportXpValue').textContent = totalPts;
+        }
+
+        // === 7. ЭКЗАМЕН ===
+        window.judgeExam = function(action) {
+            if (!examState.timer) return;
+            const msg = allModMessages[examState.qNum];
+            if (action === msg.type) examState.correct++;
+            
+            examState.qNum++;
+            updateExamUI();
+            
+            if (examState.qNum >= 20) {
+                endExam();
+            } else {
+                nextExamQuestion();
+            }
+        };
+
+        function nextExamQuestion() {
+            const msg = allModMessages[examState.qNum]; // берем по порядку для экзамена
+            document.getElementById('examMessageText').textContent = msg.text;
+            document.getElementById('examQNum').textContent = examState.qNum + 1;
+            
+            let timeLeft = 10;
+            document.getElementById('examTimer').textContent = timeLeft;
+            document.getElementById('examTimer').className = 'timer-display';
+            
+            clearInterval(examState.timer);
+            examState.timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('examTimer').textContent = timeLeft;
+                if (timeLeft <= 3) document.getElementById('examTimer').classList.add('danger');
+                if (timeLeft <= 0) {
+                    examState.qNum++;
+                    updateExamUI();
+                    if (examState.qNum >= 20) endExam();
+                    else nextExamQuestion();
+                }
+            }, 1000);
+        }
+
+        function updateExamUI() {
+            const progress = document.getElementById('examProgress');
+            progress.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'exam-dot';
+                if (i < examState.qNum) {
+                    // Упрощенная визуализация (мы не трекаем каждый ответ детально в UI, просто заполняем прогресс бар)
+                    dot.classList.add('ok'); 
+                }
+                progress.appendChild(dot);
+            }
+        }
+
+        function endExam() {
+            clearInterval(examState.timer);
+            document.getElementById('examGameScreen').style.display = 'none';
+            document.getElementById('examResultScreen').style.display = 'block';
+            document.getElementById('examFinalScore').textContent = `${examState.correct}/20`;
+            
+            if (examState.correct >= 18) {
+                document.getElementById('examResultDesc').textContent = "Поздравляем! Вы успешно сдали аттестацию.";
+                document.getElementById('examResultIcon').textContent = "🏆";
+                playSound('win');
+            } else {
+                document.getElementById('examResultDesc').textContent = "Экзамен провален. Изучите материалы и попробуйте снова.";
+                document.getElementById('examResultIcon').textContent = "❌";
+                playSound('fail');
+            }
+        }
+
+        document.getElementById('examStartBtn').addEventListener('click', () => {
+            examState = { qNum: 0, correct: 0, timer: null };
+            document.getElementById('examStartScreen').style.display = 'none';
+            document.getElementById('examGameScreen').style.display = 'block';
+            updateExamUI();
+            nextExamQuestion();
+        });
+
+        // === 8. СКОРОСТЬ ПЕЧАТИ ===
+        const typeTexts = [
+            "Уважаемый игрок, ваша жалоба передана руководству.",
+            "Для использования навигатора введите команду /gps.",
+            "Приятной игры на нашем сервере!",
+            "Пожалуйста, уточните суть вашего вопроса."
+        ];
+        let speedTimer, startTime;
+
+        document.getElementById('apSpeedStartBtn').addEventListener('click', () => {
+            const target = typeTexts[Math.floor(Math.random() * typeTexts.length)];
+            document.getElementById('apSpeedTargetText').textContent = target;
+            const input = document.getElementById('apSpeedInput');
+            input.value = "";
+            input.disabled = false;
+            input.focus();
+            
+            document.getElementById('apSpeedStartBtn').style.display = 'none';
+            document.getElementById('apSpeedTimer').textContent = "0.000 сек";
+            document.getElementById('apSpeedTimer').style.color = "var(--color-warning)";
+            
+            startTime = performance.now();
+            clearInterval(speedTimer);
+            speedTimer = setInterval(() => {
+                const diff = (performance.now() - startTime) / 1000;
+                document.getElementById('apSpeedTimer').textContent = diff.toFixed(3) + " сек";
+            }, 50);
+        });
+
+        document.getElementById('apSpeedInput').addEventListener('input', (e) => {
+            const target = document.getElementById('apSpeedTargetText').textContent;
+            if (e.target.value === target) {
+                clearInterval(speedTimer);
+                e.target.disabled = true;
+                document.getElementById('apSpeedTimer').style.color = "var(--color-success)";
+                document.getElementById('apSpeedStartBtn').style.display = 'inline-flex';
+                document.getElementById('apSpeedStartBtn').textContent = "Сыграть еще раз";
+                playSound('ok');
+                
+                const diff = ((performance.now() - startTime) / 1000).toFixed(3);
+                // Бонусные баллы за скорость
+                if (diff < 5) shopState.apSpent -= 10;
+                else if (diff < 8) shopState.apSpent -= 5;
+                
+                updateSupportStats();
+                saveStatsToDB();
+            }
+        });
+
+        // === 9. СОХРАНЕНИЕ В БАЗУ ДАННЫХ (Supabase) ===
+        async function saveStatsToDB() {
+            if (!currentUser) return;
+            try {
+                await supa.from('user_stats').upsert({
+                    user_id: currentUser.id,
+                    email: currentUser.email,
+                    nickname: currentNickname || currentUser.email.split('@')[0],
+                    mod_resolved: state.resolved,
+                    mod_correct: state.correct,
+                    mod_mistakes: state.mistakes,
+                    sup_resolved: supportState.resolved,
+                    sup_correct: supportState.correct,
+                    sup_mistakes: supportState.mistakes,
+                    shop_spent: shopState.spent,
+                    ap_spent: shopState.apSpent,
+                    updated_at: new Date().toISOString()
+                });
+            } catch (e) {
+                console.error("Save error", e);
+            }
+        }
+
+        // === 10. АВТОРИЗАЦИЯ И ИНИЦИАЛИЗАЦИЯ ===
+        async function checkSession() {
+            try {
+                const { data: { session } } = await supa.auth.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    document.getElementById('userEmailDisplay').textContent = currentUser.email;
+                    document.getElementById('loginBtnUI').style.display = 'none';
+                    document.getElementById('logoutBtnUI').style.display = 'inline-flex';
+                    
+                    // Загрузка статистики
+                    const { data } = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).single();
+                    if(data) {
+                        currentNickname = data.nickname;
+                        state.resolved = Number(data.mod_resolved) || 0; 
+                        state.correct = Number(data.mod_correct) || 0; 
+                        state.mistakes = Number(data.mod_mistakes) || 0; 
+                        supportState.resolved = Number(data.sup_resolved) || 0; 
+                        supportState.correct = Number(data.sup_correct) || 0; 
+                        supportState.mistakes = Number(data.sup_mistakes) || 0; 
+                        shopState.spent = Number(data.shop_spent) || 0; 
+                        shopState.apSpent = Number(data.ap_spent) || 0; 
+                    }
+                    
+                    if(adminEmails.includes(currentUser.email)) {
+                        document.getElementById('leadershipTabBtn').style.display = 'block';
+                        document.getElementById('adminLogTabBtn').style.display = 'block';
+                    }
+                    if(creatorEmail === currentUser.email) {
+                        document.getElementById('creatorTabBtn').style.display = 'block';
+                    }
+                    if(apLeadershipEmails.includes(currentUser.email) || adminEmails.includes(currentUser.email)) {
+                        document.getElementById('apAdminTabBtn').style.display = 'block';
+                        document.getElementById('apAdminLogTabBtn').style.display = 'block';
+                    }
+                    
+                    updateModStats();
+                    updateSupportStats();
+                    
+                } else {
+                    document.getElementById('userEmailDisplay').textContent = "Гость";
+                    document.getElementById('loginBtnUI').style.display = 'inline-flex';
+                    document.getElementById('logoutBtnUI').style.display = 'none';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        document.getElementById('loginBtnUI').addEventListener('click', () => {
+            document.getElementById('authModal').style.display = 'flex';
+        });
+
+        document.getElementById('authCloseModal').addEventListener('click', () => {
+            document.getElementById('authModal').style.display = 'none';
+        });
+
+        document.getElementById('logoutBtnUI').addEventListener('click', async () => {
+            await supa.auth.signOut();
+            location.reload();
+        });
+
+        // Навигация
+        document.querySelectorAll(".main-cat-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                document.querySelectorAll(".main-cat-btn").forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                const cat = e.target.getAttribute("data-cat");
+                
+                document.getElementById("subNavModeration").style.display = cat === "moderation" ? "flex" : "none";
+                document.getElementById("subNavSupport").style.display = cat === "support" ? "flex" : "none";
+                document.getElementById("subNavGeneral").style.display = cat === "general" ? "flex" : "none";
+                
+                if (cat === "moderation") switchMode("moderation", document.querySelector('[data-mode="moderation"]'));
+                else if (cat === "support") switchMode("support", document.querySelector('[data-mode="support"]'));
+                else if (cat === "general") switchMode("profile", document.querySelector('[data-mode="profile"]'));
+            });
+        });
+
+        document.querySelectorAll(".mode-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                switchMode(e.target.getAttribute("data-mode"), e.target);
+            });
+        });
+
+        // Запуск
+        checkSession();
+        switchMode("moderation", document.querySelector('[data-mode="moderation"]'));
+
+      } catch (err) {
+        console.error("Critical Start Error:", err);
+      }
+    });
+  </script>
+</body>
+</html>
+        
+
+    
