@@ -62,13 +62,8 @@
     html[data-site-theme="creator"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
 
     /* Анимация переходов режимов */
-    .fade-in {
-        animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    @keyframes modeFade {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
+    .fade-in { animation: modeFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes modeFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
     button, input, select { font: inherit; }
     button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
@@ -454,6 +449,7 @@
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none;">Закончить игру</button>
     </div>
   </div>
+
   <main class="page">
     <header class="topbar">
       <div class="brand">
@@ -589,12 +585,38 @@
         
         <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
-          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
-            <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
-            <button id="trollDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
-          </div>
+          <select id="trollSuperSelect" class="support-input" style="margin-bottom:1rem; width:100%;">
+            <option value="wipe_xp">⬇️ Обнулить баланс XP</option>
+            <option value="debt_10k">💸 Долг: Выдать 10,000 XP долга</option>
+            <option value="debt_50k">💸 Долг: Выдать 50,000 XP долга</option>
+            <option value="debt_custom">💸 Долг: Своё значение (вписать ниже)</option>
+            <option value="nick_clown">🤡 Сменить ник на '🤡 Клоун 🤡'</option>
+            <option value="nick_bot">🤖 Сменить ник на 'Я Бот'</option>
+            <option value="nick_slid">🚰 Сменить ник на 'Слит'</option>
+            <option value="nick_toxic">☣️ Сменить ник на 'Токсик'</option>
+            <option value="nick_chsv">👑 Сменить ник на 'ЧСВ'</option>
+            <option value="nick_simp">🥺 Сменить ник на 'Симп'</option>
+            <option value="nick_boss">🕶️ Сменить ник на 'Босс Качалки'</option>
+            <option value="nick_obizhenka">😭 Сменить ник на 'Обиженка'</option>
+            <option value="nick_empty">👻 Сделать ник невидимым</option>
+            <option value="nick_ban">🔨 Сменить ник на 'Забанен'</option>
+            <option value="nick_hack">🏴‍☠️ Сменить ник на 'Взломан'</option>
+            <option value="random_nick">🎲 Рандомный смешной ник (автогенератор)</option>
+            <option value="add_1k_err">📉 Испортить стату: +1000 ошибок (Модер)</option>
+            <option value="add_1k_err_ap">📉 Испортить стату: +1000 ошибок (АП)</option>
+            <option value="wipe_correct">🗑️ Обнулить правильные ответы во всех режимах</option>
+            <option value="give_99k_xp">💰 БЛАТ: Выдать 99,999 XP</option>
+            <option value="give_99k_ap">💰 БЛАТ: Выдать 99,999 Баллов АП</option>
+            <option value="del_acc">🧨 Удалить аккаунт навсегда</option>
+          </select>
+          <input type="number" id="trollCustomValue" placeholder="Свое значение для долга (если выбрано)" class="support-input" style="margin-bottom:1rem; width:100%;">
+          <button id="trollExecuteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); width: 100%;">🤡 Применить наказание</button>
+        </div>
+
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid #6c8cff; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #6c8cff;">🗑️ Управление логами выдачи</h3>
+          <button id="creatorLoadLogsBtn" class="btn btn-secondary" style="width: 100%;">Загрузить логи для удаления</button>
+          <div id="creatorLogsList" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 300px; overflow-y: auto;"></div>
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
@@ -640,6 +662,15 @@
             <button id="leadershipXpBtn" class="btn btn-primary" style="grid-column: span 2;">Выдать / Списать XP</button>
             <button id="leadershipDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
           </div>
+        </div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Список Модераторов (Публичный)</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="leadAddStaffBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Выдать статус</button>
+            <button id="leadRemoveStaffBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Убрать из списка</button>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--color-text-faint); margin-top: 0.5rem;">Выберите пользователя выше и нажмите "Выдать статус", чтобы он отображался во вкладке Руководство.</p>
         </div>
 
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
@@ -694,6 +725,15 @@
             <button id="apAdminPointsBtn" class="btn btn-primary" style="grid-column: span 2;">Выдать / Списать Баллы</button>
             <button id="apAdminDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
           </div>
+        </div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Список АП (Публичный)</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="apAdminAddStaffBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Выдать статус</button>
+            <button id="apAdminRemoveStaffBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Убрать из списка</button>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--color-text-faint); margin-top: 0.5rem;">Выберите пользователя выше и нажмите "Выдать статус", чтобы он отображался во вкладке Руководство.</p>
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
@@ -891,7 +931,7 @@
       <section class="panel game-card fade-in" id="mode-guide" style="display:none;">
         <div class="section-head">
           <h2>Руководство Сервера</h2>
-          <p>Контакты руководящего состава для связи.</p>
+          <p>Контакты руководящего состава и публичные списки команды.</p>
         </div>
         <div class="feed">
           <article class="message-card" style="min-height: auto; gap: 1.5rem; background: rgba(13, 16, 32, 0.6);">
@@ -903,6 +943,7 @@
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>ЗГМ</strong> — Andrey_Caypen</span> <a href="https://vk.ru/andreycaypen" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Куратор модерации</strong> — Hunter_Mackenzie</span> <a href="https://vk.com/id641685097" target="_blank" style="color:var(--color-primary);text-decoration:none; font-weight: bold;">[VK]</a></div>
               </div>
+              <div id="publicModListArea" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed rgba(108,140,255,0.3); display: flex; flex-direction: column; gap: 0.4rem;"></div>
             </div>
 
             <div>
@@ -921,6 +962,7 @@
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Куратор АП</strong></span> <a href="https://vk.ru/ioanalost" target="_blank" style="color:#52c77b;text-decoration:none; font-weight: bold;">[VK]</a></div>
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;"><span><strong>Заместитель Куратора АП</strong></span> <a href="https://vk.com/id861801616" target="_blank" style="color:#52c77b;text-decoration:none; font-weight: bold;">[VK]</a></div>
               </div>
+              <div id="publicApListArea" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed rgba(82,199,123,0.3); display: flex; flex-direction: column; gap: 0.4rem;"></div>
             </div>
 
             <div>
@@ -976,6 +1018,7 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-report" style="display:none;">
+
         <div class="section-head">
           <h2>Форма отчетности</h2>
           <p>Сдайте свой ежедневный отчет онлайна из Discord сюда.</p>
@@ -1037,6 +1080,7 @@
       
     </section>
   </main>
+
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         
@@ -1108,8 +1152,10 @@
         let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
         let dynamicModLeaders = [];
         let dynamicApLeaders = [];
+        let publicModStaff = [];
+        let publicApStaff = [];
         let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
-        
+
         function requestAccess(actionType, btnElement) {
             pendingAction = { type: actionType, btn: btnElement };
             document.getElementById('accessCodeInput').value = ''; 
@@ -1125,7 +1171,8 @@
         let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
         let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
         let shopState = { spent: 0, apSpent: 0 };
-        let modQueue = [], supQueue = [], compQueue = [];
+        let taState = { score: 0, mistakes: 0, time: 60, interval: null, active: false, current: null };
+        let modQueue = [], supQueue = [], compQueue = [], taQueue = [];
 
         // === 3. МАССИВЫ МАГАЗИНА И КВЕСТОВ ===
         let defaultShopItems = [
@@ -1172,10 +1219,11 @@
         let apRoulettePrizes = [...defaultApRoulettePrizes];
 
         async function loadGlobalShopAndRoulette() {
-            const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP']);
-            
+            const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'STAFF_MOD', 'STAFF_AP']);
             customShopItems = [];
             customApShopItems = [];
+            publicModStaff = [];
+            publicApStaff = [];
             modRoulettePrizes = [...defaultModRoulettePrizes];
             apRoulettePrizes = [...defaultApRoulettePrizes];
 
@@ -1191,6 +1239,10 @@
                     } else if (row.email === 'ROULETTE_AP') {
                         const idx = apRoulettePrizes.findIndex(p => p.id === row.link);
                         if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); }
+                    } else if (row.email === 'STAFF_MOD') {
+                        publicModStaff.push({ id: row.link, name: row.status });
+                    } else if (row.email === 'STAFF_AP') {
+                        publicApStaff.push({ id: row.link, name: row.status });
                     }
                 });
             }
@@ -1198,6 +1250,7 @@
             apShopItems = [...defaultApShopItems, ...customApShopItems];
             renderShopItems();
             renderApShopItems();
+            renderPublicStaffLists();
         }
 
         const questsData = [
@@ -1280,9 +1333,9 @@
             report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Сдавать отчеты могут все авторизованные модераторы."], ["Проверка", "Только администрация может проверять и начислять XP."] ] },
             admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
             ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
-            creator: { title: "Управление доступом", lead: "Только для Создателя (John Wick).", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Троллинг", "Сброс XP ставит долг 99999. Смена ника моментально меняет имя в базе."], ["Ключи", "Все ключи сохраняются в базе. Модератор вводит их для доступа."] ] },
-            leadership: { title: "Управление пользователями", lead: "Только для Руководства.", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] },
-            ap_admin: { title: "Управление пользователями (АП)", lead: "Только для Руководства АП.", cards: [ ["Баллы", "Выдача или снятие баллов обновляет ap_spent пользователя."], ["Ключи", "Генерация ключей для доступа в магазин АП."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] }
+            creator: { title: "Управление доступом", lead: "Только для Создателя (John Wick).", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Троллинг", "Панель для наказаний и шуток."], ["Ключи", "Все ключи сохраняются в базе. Модератор вводит их для доступа."] ] },
+            leadership: { title: "Управление пользователями", lead: "Только для Руководства.", cards: [ ["XP", "Выдача или снятие XP обновляет shop_spent пользователя."], ["Списки", "Управление публичным списком Модераторов."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] },
+            ap_admin: { title: "Управление пользователями (АП)", lead: "Только для Руководства АП.", cards: [ ["Баллы", "Выдача или снятие баллов обновляет ap_spent пользователя."], ["Списки", "Управление публичным списком Агентов Поддержки."], ["Удаление", "Удаляет аккаунт пользователя из базы."] ] }
         };
 
         function renderRight(mode) {
@@ -1319,6 +1372,7 @@
             if(mode === 'creator') loadCreatorPanelData();
             if(mode === 'leadership' || mode === 'ap_admin') loadUsersForAdmin();
             if(mode === 'profile') renderProfileData();
+            if(mode === 'guide') renderPublicStaffLists();
 
             const brandSub = document.getElementById("brandSubtitle");
             const hTitle = document.getElementById("heroTitle"); const hText = document.getElementById("heroText"); const hBadge = document.getElementById("heroBadge2");
@@ -1408,10 +1462,12 @@
         function availablePts() { return Math.max(0, calcXP(supportState.correct) - Number(shopState.apSpent || 0)); }
 
         let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
+
         function isSpamming() {
             const now = Date.now();
             const blockUntil = localStorage.getItem('spam_block_until');
             if (blockUntil && now < blockUntil) return true;
+
             if (now - lastActionTime < 1000) {
                 spamWarnings++;
                 if (spamWarnings >= 3) {
@@ -1427,7 +1483,8 @@
             const blockUntil = localStorage.getItem('spam_block_until');
             if (!blockUntil) return;
             const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
-            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
+            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5';
+            closeBtn.style.cursor = 'not-allowed';
             let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
             closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
             spamTimerInterval = setInterval(() => {
@@ -1449,6 +1506,7 @@
             state.started = true;
             supportState.started = true; complaintState.started = true; document.getElementById('startBtn').disabled = true;
             randomMessage(); randomComplaint();
+            
             if (allSupQuestions.length) {
                 if (supQueue.length === 0) { supQueue = allSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
                 supportState.currentIndex = supQueue.pop();
@@ -1484,6 +1542,7 @@
         window.judge = function(action) {
             if (!state.started || !state.current) { startGame(); return; }
             if (isSpamming()) return;
+
             const isCorrect = action === state.current.type; state.resolved++;
             if (isCorrect) { state.correct++; playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
             else { state.mistakes++; playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
@@ -1493,6 +1552,7 @@
         window.judgeComplaint = function(action) {
             if (!complaintState.started || !complaintState.current) { startGame(); return; }
             if (isSpamming()) return;
+
             const isCorrect = action === complaintState.current.type; complaintState.resolved++;
             if (isCorrect) { complaintState.correct++; playSound('ok'); pushLog(`✅ Жалобы: верное решение (${action})`); } 
             else { complaintState.mistakes++; playSound('fail'); pushLog(`❌ Жалобы: ошибка (${action})`); }
@@ -1505,10 +1565,12 @@
             const resEl = document.getElementById("supportResultText");
             if (!answer) { resEl.textContent = "Напиши ответ игроку."; return; }
             supportState.resolved++; 
+           
             const ok = q.keywords.some(k => answer.includes(k));
             if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
             else { supportState.mistakes++; resEl.textContent = "Ответ не засчитан: не хватает ключевых слов или команды."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
-            updateSupportStats(); saveProgress();
+            updateSupportStats();
+            saveProgress();
         });
 
         document.getElementById('supportNextBtn')?.addEventListener('click', () => {
@@ -1517,6 +1579,67 @@
             supportState.currentIndex = supQueue.pop(); const q = allSupQuestions[supportState.currentIndex];
             document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
         });
+
+        // === РЕЖИМ СПИДРАН (TIMEATTACK) ===
+        document.getElementById('taStartBtn')?.addEventListener('click', () => {
+            taState = { score: 0, mistakes: 0, time: 60, interval: null, active: true, current: null };
+            document.getElementById('taStartScreen').style.display = 'none';
+            document.getElementById('taGameScreen').style.display = 'grid';
+            updateTAStats();
+            nextTAMessage();
+            
+            taState.interval = setInterval(() => {
+                taState.time--;
+                if (taState.time <= 0) { endTA(); }
+                else { updateTAStats(); }
+            }, 1000);
+        });
+
+        function updateTAStats() {
+            const timerEl = document.getElementById('taTimer');
+            if (taState.time <= 10) timerEl.classList.add('danger'); else timerEl.classList.remove('danger');
+            timerEl.textContent = `00:${taState.time.toString().padStart(2, '0')}`;
+            document.getElementById('taScore').textContent = taState.score;
+            document.getElementById('taMistakes').textContent = taState.mistakes;
+        }
+
+        function nextTAMessage() {
+            if (taQueue.length === 0) { taQueue = allModMessages.map((_, i) => i); shuffleArray(taQueue); }
+            const item = allModMessages[taQueue.pop()];
+            const user = randomFunnyNick(); 
+            taState.current = { ...item, user };
+            document.getElementById("taAuthorName").textContent = user;
+            document.getElementById("taMessageText").textContent = item.text;
+            document.getElementById("taAvatar").textContent = initials(user);
+        }
+
+        window.judgeTA = function(action) {
+            if (!taState.active || !taState.current) return;
+            const isCorrect = action === taState.current.type;
+            if (isCorrect) {
+                taState.score++;
+                playSound('ok');
+            } else {
+                taState.mistakes++;
+                taState.time = Math.max(0, taState.time - 3); // Penalty
+                playSound('fail');
+            }
+            updateTAStats();
+            if (taState.time <= 0) endTA(); else nextTAMessage();
+        };
+
+        document.querySelectorAll('[data-ta-action]').forEach(btn => {
+            btn.onclick = () => judgeTA(btn.dataset.taAction);
+        });
+
+        function endTA() {
+            clearInterval(taState.interval);
+            taState.active = false;
+            document.getElementById('taGameScreen').style.display = 'none';
+            document.getElementById('taStartScreen').style.display = 'block';
+            document.getElementById('taStartBtn').textContent = `Игра окончена! Счет: ${taState.score}. Начать заново`;
+            playSound('win');
+        }
 
         // === 7. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА И ПРОФИЛЬ ===
         function renderProfileData() {
@@ -1585,13 +1708,11 @@
             localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics));
             renderProfileData();
         });
-
         document.getElementById('equipColorBtn')?.addEventListener('click', () => {
             activeCosmetics.color = !activeCosmetics.color;
             localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics));
             renderProfileData();
         });
-
         document.getElementById('deleteModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             if(!title) return alert("Введите точное название товара для удаления!");
@@ -1601,7 +1722,6 @@
                 alert("Товар удален у всех!"); loadGlobalShopAndRoulette();
             } else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
         });
-
         document.getElementById('deleteApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             if(!title) return alert("Введите точное название товара для удаления!");
@@ -1645,7 +1765,8 @@
                 else if (action === 'mod_coin') openCoinGame();
                 else if (action === 'mod_safes') openSafesGame();
                 else if (action === 'mod_jw') openJwQuiz();
-                else { const item = shopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); }
+                else { const item = shopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price);
+                alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); }
             } else playSound('fail');
         };
 
@@ -1654,7 +1775,9 @@
                 shopState.apSpent += price;
                 playSound('ok'); updateShopStats(); await saveProgress();
                 if (action === 'ap_roulette') openFortune(true);
-                else { const item = apShopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, true, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`); }
+                else { const item = apShopItems.find(i => i.id === id);
+                await logPurchase(`Покупка: ${item.title}`, false, true, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`);
+                }
             } else playSound('fail');
         };
 
@@ -1768,6 +1891,7 @@
             const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
             const { data: users } = await supa.from('user_stats').select('*');
             const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+            
             let modLeadersIds = [];
             let apLeadersIds = [];
             if(adminRoles) {
@@ -1812,9 +1936,9 @@
         async function loadCreatorPanelData() {
             if (!currentUser || currentUser.email !== creatorEmail) return;
             const sel = document.getElementById('creatorUserSelect'); if (sel) sel.innerHTML = '<option>Загрузка...</option>';
-            const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent');
+            const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent, ap_spent, mod_correct, sup_correct');
             if (users && users.length > 0) { creatorUsersList = users;
-                if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join('');
+                if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано XP: ${u.shop_spent || 0} | Баллов: ${u.ap_spent || 0})</option>`).join('');
             }
             
             const list = document.getElementById('creatorKeysList');
@@ -1852,29 +1976,88 @@
             const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
             if (!error) { document.getElementById('creatorKeyInput').value = ''; alert("Ключ успешно создан!"); loadCreatorPanelData(); } document.getElementById('creatorAddKeyBtn').disabled = false;
         });
+
         document.getElementById('creatorXpBtn')?.addEventListener('click', async () => {
              const userId = document.getElementById('creatorUserSelect').value; const amount = Number(document.getElementById('creatorXpAmount').value);
              if (!userId || isNaN(amount)) return; const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
              const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
         });
-        document.getElementById('trollWipeXpBtn')?.addEventListener('click', async () => {
-            if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
-            await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: targetNick, shop_spent: 99999 }); alert(`🤡 Троллинг: XP обнулен, новый ник: ${targetNick}`); location.reload();
-        });
-        document.getElementById('trollRenameBtn')?.addEventListener('click', async () => {
-            if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
-            await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', currentUser.id); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); location.reload();
-        });
-        document.getElementById('trollDeleteBtn')?.addEventListener('click', async () => {
+
+        // ПАНЕЛЬ ТРОЛЛИНГА
+        document.getElementById('trollExecuteBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value;
-            if(!userId) return;
-            if(confirm("Вы уверены, что хотите удалить этого пользователя?")) {
-                await supa.from('user_stats').delete().eq('user_id', userId);
-                alert('Пользователь удален из базы статистики!');
+            if(!userId || userId.startsWith("Загрузка")) return alert("Сначала выберите пользователя!");
+            const targetUser = creatorUsersList.find(u => u.user_id === userId); 
+            if(!targetUser) return;
+            
+            const action = document.getElementById('trollSuperSelect').value;
+            const customVal = document.getElementById('trollCustomValue').value.trim();
+            let updates = {};
+
+            if (action === 'wipe_xp') updates.shop_spent = 99999;
+            else if (action === 'debt_10k') updates.shop_spent = (Number(targetUser.shop_spent) || 0) + 10000;
+            else if (action === 'debt_50k') updates.shop_spent = (Number(targetUser.shop_spent) || 0) + 50000;
+            else if (action === 'debt_custom') {
+                if(!customVal || isNaN(customVal)) return alert("Введите корректное число в поле своего значения!");
+                updates.shop_spent = (Number(targetUser.shop_spent) || 0) + Number(customVal);
+            }
+            else if (action === 'nick_clown') updates.nickname = '🤡 Клоун 🤡';
+            else if (action === 'nick_bot') updates.nickname = '🤖 Я Бот';
+            else if (action === 'nick_slid') updates.nickname = '🚰 Слит';
+            else if (action === 'nick_toxic') updates.nickname = '☣️ Токсик';
+            else if (action === 'nick_chsv') updates.nickname = '👑 ЧСВ';
+            else if (action === 'nick_simp') updates.nickname = '🥺 Симп';
+            else if (action === 'nick_boss') updates.nickname = '🕶️ Босс Качалки';
+            else if (action === 'nick_obizhenka') updates.nickname = '😭 Обиженка';
+            else if (action === 'nick_empty') updates.nickname = 'ㅤ'; // Invisible character
+            else if (action === 'nick_ban') updates.nickname = '🔨 Забанен';
+            else if (action === 'nick_hack') updates.nickname = '🏴‍☠️ Взломан';
+            else if (action === 'random_nick') updates.nickname = randomFunnyNick();
+            else if (action === 'add_1k_err') updates.mod_mistakes = (Number(targetUser.mod_mistakes) || 0) + 1000;
+            else if (action === 'add_1k_err_ap') updates.sup_mistakes = (Number(targetUser.sup_mistakes) || 0) + 1000;
+            else if (action === 'wipe_correct') { updates.mod_correct = 0; updates.sup_correct = 0; }
+            else if (action === 'give_99k_xp') updates.shop_spent = (Number(targetUser.shop_spent) || 0) - 99999;
+            else if (action === 'give_99k_ap') updates.ap_spent = (Number(targetUser.ap_spent) || 0) - 99999;
+            else if (action === 'del_acc') {
+                if(confirm("Вы уверены, что хотите УДАЛИТЬ аккаунт навсегда?")) {
+                    await supa.from('user_stats').delete().eq('user_id', userId);
+                    alert('Пользователь удален из базы статистики!');
+                    return loadCreatorPanelData();
+                }
+                return;
+            }
+
+            if(Object.keys(updates).length > 0) {
+                await supa.from('user_stats').update(updates).eq('user_id', userId);
+                alert(`🤡 Троллинг: Действие применено успешно к ${targetUser.nickname || targetUser.email}!`);
                 loadCreatorPanelData();
             }
         });
+
+        // УДАЛЕНИЕ ЛОГОВ (CREATOR PANEL)
+        document.getElementById('creatorLoadLogsBtn')?.addEventListener('click', async () => {
+            const list = document.getElementById('creatorLogsList');
+            if(!list) return;
+            list.innerHTML = "Загрузка...";
+            const { data: logs, error } = await supa.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(50);
+            if(error) { list.innerHTML = "Ошибка загрузки логов"; return; }
+            if(logs && logs.length > 0) {
+                list.innerHTML = logs.map(log => `
+                <div style="background: rgba(0,0,0,0.5); padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(108,140,255,0.3); display:flex; justify-content:space-between; align-items:center;">
+                    <div><span style="color:var(--color-primary);">${log.nickname}</span> - ${log.item_name} <div style="font-size:0.7rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString()} | ${log.type}</div></div>
+                    <button class="badge ban del-log-btn" data-id="${log.id}" style="cursor:pointer; padding: 0.4rem 0.8rem;">Удалить</button>
+                </div>`).join('');
+                list.querySelectorAll('.del-log-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        btn.disabled = true;
+                        await supa.from('admin_logs').delete().eq('id', btn.dataset.id);
+                        document.getElementById('creatorLoadLogsBtn').click();
+                    });
+                });
+            } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Логов нет</div>';
+        });
+
         document.getElementById('creatorAddAdminBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('creatorAdminSelect').value;
             const role = document.getElementById('creatorAdminRole').value;
@@ -1965,6 +2148,7 @@
             const isApLeader = apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
             if(!isModLeader && !isApLeader) return;
             const { data: users } = await supa.from('user_stats').select('*').order('nickname', { ascending: true }); if(users) adminUsersList = users;
+            
             if (isModLeader) { 
                 const sel = document.getElementById('leadershipUserSelect');
                 if(sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (XP долг: ${u.shop_spent||0})</option>`).join('');
@@ -2018,6 +2202,7 @@
             if (!error) { document.getElementById('leadershipKeyInput').value = ''; alert("Ключ успешно создан!"); loadUsersForAdmin(); }
             document.getElementById('leadershipAddKeyBtn').disabled = false;
         });
+
         document.getElementById('apAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('apAdminUserSelect').value; const amount = Number(document.getElementById('apAdminPointsAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
@@ -2037,6 +2222,55 @@
             if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); document.getElementById('apAdminAddKeyBtn').disabled = true;
             const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: 'ap_shop', xp: 0 }]);
             if (!error) { document.getElementById('apAdminKeyInput').value = ''; alert("Ключ для магазина АП успешно создан!"); loadUsersForAdmin(); } document.getElementById('apAdminAddKeyBtn').disabled = false;
+        });
+
+        // СПИСКИ РУКОВОДСТВА И СТАФФА (ПРОСМОТР В GUIDE)
+        function renderPublicStaffLists() {
+            const modArea = document.getElementById('publicModListArea');
+            const apArea = document.getElementById('publicApListArea');
+            if (modArea) {
+                if (publicModStaff.length > 0) {
+                    modArea.innerHTML = publicModStaff.map(m => `<div style="display: flex; justify-content: space-between; gap: 0.5rem; color: var(--color-text-muted);"><span>Модератор — ${m.name}</span> <span style="color:var(--color-primary);">[✓]</span></div>`).join('');
+                } else modArea.innerHTML = '<span style="color:var(--color-text-faint); font-size:var(--text-xs);">Список пуст</span>';
+            }
+            if (apArea) {
+                if (publicApStaff.length > 0) {
+                    apArea.innerHTML = publicApStaff.map(a => `<div style="display: flex; justify-content: space-between; gap: 0.5rem; color: var(--color-text-muted);"><span>Агент Поддержки — ${a.name}</span> <span style="color:#52c77b;">[✓]</span></div>`).join('');
+                } else apArea.innerHTML = '<span style="color:var(--color-text-faint); font-size:var(--text-xs);">Список пуст</span>';
+            }
+        }
+
+        // ДОБАВЛЕНИЕ/УДАЛЕНИЕ ИЗ ПУБЛИЧНЫХ СПИСКОВ
+        document.getElementById('leadAddStaffBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadershipUserSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            const { data: existing } = await supa.from('reports').select('*').eq('email', 'STAFF_MOD').eq('link', userId);
+            if(existing && existing.length > 0) return alert("Этот пользователь уже есть в списке Модераторов!");
+            await supa.from('reports').insert([{ id: 'smod_' + Date.now(), email: 'STAFF_MOD', link: userId, date: new Date().toLocaleString('ru-RU'), status: targetUser.nickname || targetUser.email, xp: 0 }]);
+            alert("Пользователь добавлен в список Модераторов!"); loadGlobalShopAndRoulette();
+        });
+        document.getElementById('leadRemoveStaffBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadershipUserSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            await supa.from('reports').delete().eq('email', 'STAFF_MOD').eq('link', userId);
+            alert("Пользователь удален из списка Модераторов!"); loadGlobalShopAndRoulette();
+        });
+
+        document.getElementById('apAdminAddStaffBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('apAdminUserSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            const { data: existing } = await supa.from('reports').select('*').eq('email', 'STAFF_AP').eq('link', userId);
+            if(existing && existing.length > 0) return alert("Этот пользователь уже есть в списке АП!");
+            await supa.from('reports').insert([{ id: 'sap_' + Date.now(), email: 'STAFF_AP', link: userId, date: new Date().toLocaleString('ru-RU'), status: targetUser.nickname || targetUser.email, xp: 0 }]);
+            alert("Пользователь добавлен в список АП!"); loadGlobalShopAndRoulette();
+        });
+        document.getElementById('apAdminRemoveStaffBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('apAdminUserSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            await supa.from('reports').delete().eq('email', 'STAFF_AP').eq('link', userId);
+            alert("Пользователь удален из списка АП!"); loadGlobalShopAndRoulette();
         });
 
         async function renderAdminLogs(isAp = false) {
@@ -2102,7 +2336,7 @@
             if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
             listArea.style.display = 'flex'; 
             listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
-            
+         
             try {
                 const { data: reports, error } = await supa.from('reports')
                     .select('*')
@@ -2112,11 +2346,12 @@
                     .neq('email', 'SHOP_AP')
                     .neq('email', 'ROULETTE_MOD')
                     .neq('email', 'ROULETTE_AP')
+                    .neq('email', 'STAFF_MOD')
+                    .neq('email', 'STAFF_AP')
                     .order('date', { ascending: false })
                     .limit(30);
                 
                 if (error) throw error;
-
                 if(reports && reports.length > 0) { 
                     listArea.innerHTML = reports.map(r => `
                     <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);">
@@ -2129,7 +2364,8 @@
                         <div style="display:flex; flex-direction: column; gap: 0.5rem;">
                             <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
                             
-                            ${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `
+                            ${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ?
+                            `
                             <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
@@ -2137,7 +2373,7 @@
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
                             </div>` : ''}
                         </div>
-                    </div>`).join(''); 
+                    </div>`).join('');
                 } else {
                     listArea.innerHTML = '<div class="message-text">Отчетов пока нет</div>';
                 }
@@ -2146,9 +2382,9 @@
                 console.error(err);
             }
         });
-      
+
         window.processReport = async function(id, statusText, xpAmount) { 
-            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); 
+            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id);
             document.getElementById('viewReportsBtn').click(); 
             setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
         };
@@ -2186,7 +2422,7 @@
         document.getElementById('loginBtnUI').onclick = () => { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authErrorMsg').style.display = 'none'; };
         document.getElementById('authCloseModal').onclick = () => { document.getElementById('authModal').style.display = 'none'; };
         document.getElementById('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
-        
+
         document.getElementById('authLoginSubmit').onclick = async () => {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value; const err = document.getElementById('authErrorMsg');
@@ -2204,7 +2440,7 @@
             if(error) { err.textContent = error.message; err.style.display = 'block'; } 
             else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; err.style.display = 'block'; }
         };
-        
+
         document.getElementById('forceNicknameBtn')?.addEventListener('click', async () => {
             const val = document.getElementById('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
             await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
@@ -2234,6 +2470,7 @@
             if (currentUser) {
                 currentNickname = currentUser.user_metadata?.nickname; 
                 document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
+            
                 document.getElementById('loginBtnUI').style.display = 'none'; 
                 document.getElementById('logoutBtnUI').style.display = 'inline-block'; 
                 document.getElementById('authModal').style.display = 'none'; 
@@ -2247,6 +2484,7 @@
                 const isCreator = currentUser.email === creatorEmail;
                 const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id); 
                 const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+                
                 if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
                 if (isModLeader) { 
                     document.getElementById('leadershipTabBtn').style.display = 'inline-block';
@@ -2257,7 +2495,7 @@
                     document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; 
                 }
 
-                await loadGlobalShopAndRoulette(); // Вызываем глобальную синхронизацию базы данных магазина
+                await loadGlobalShopAndRoulette(); // Вызываем глобальную синхронизацию базы данных магазина и стаффа
 
                 supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
                     if(data) { 
@@ -2268,7 +2506,7 @@
                 
                     supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
                         state.reportXp = 0; 
-                        if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0); 
+                        if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
                         updateModStats(); updateSupportStats(); updateShopStats(); checkReportAccess(); 
                         if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
                     });
