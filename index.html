@@ -52,7 +52,7 @@
     html[data-site-theme="about"] body, html[data-site-theme="profile"] body { background: radial-gradient(circle at top left, rgba(255, 220, 120, 0.16), transparent 55%), radial-gradient(circle at bottom right, rgba(108, 140, 255, 0.18), transparent 55%), linear-gradient(160deg, #0c0a05, #0c0a05 45%, #12100a 100%); }
     html[data-site-theme="shop"] body, html[data-site-theme="leadership"] body { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 191, 71, 0.14), transparent 55%), linear-gradient(160deg, #061008, #07110a 45%, #0a1116 100%); }
     html[data-site-theme="ap_shop"] body { background: radial-gradient(circle at top left, rgba(255, 143, 196, 0.3), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1f0512, #120208 45%, #0a0105 100%); }
-    html[data-site-theme="report"] body { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 50%), radial-gradient(circle at bottom right, rgba(108, 204, 255, 0.18), transparent 55%), linear-gradient(160deg, #090510, #0a0512 45%, #050411 100%); }
+    html[data-site-theme="report"] body, html[data-site-theme="inactives"] body { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 50%), radial-gradient(circle at bottom right, rgba(108, 204, 255, 0.18), transparent 55%), linear-gradient(160deg, #090510, #0a0512 45%, #050411 100%); }
     html[data-site-theme="guide"] body { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.15), transparent 50%), radial-gradient(circle at bottom right, rgba(0, 180, 216, 0.15), transparent 55%), linear-gradient(160deg, #020a10, #041018 45%, #02080d 100%); }
     html[data-site-theme="leaderboard"] body { background: radial-gradient(circle at top left, rgba(255, 61, 0, 0.18), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 158, 0, 0.15), transparent 55%), linear-gradient(160deg, #100502, #180804 45%, #0d0402 100%); }
     html[data-site-theme="admin_log"] body, html[data-site-theme="ap_admin_log"] body { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.15), transparent 55%), linear-gradient(160deg, #100502, #180804 45%, #0d0402 100%); }
@@ -80,7 +80,7 @@
     html[data-site-theme="about"] .logo, html[data-site-theme="profile"] .logo { background: linear-gradient(135deg, rgba(255, 191, 71, 0.55), rgba(108, 140, 255, 0.38)); border-color: rgba(255, 230, 180, 0.45); }
     html[data-site-theme="shop"] .logo, html[data-site-theme="leadership"] .logo { background: linear-gradient(135deg, rgba(82, 199, 123, 0.45), rgba(255, 191, 71, 0.28)); border-color: rgba(162, 241, 188, 0.42); }
     html[data-site-theme="ap_shop"] .logo { background: linear-gradient(135deg, rgba(255, 143, 196, 0.65), rgba(162, 108, 255, 0.6)); border-color: rgba(255, 190, 230, 0.7); }
-    html[data-site-theme="report"] .logo { background: linear-gradient(135deg, rgba(162, 108, 255, 0.55), rgba(108, 204, 255, 0.38)); border-color: rgba(200, 180, 255, 0.45); }
+    html[data-site-theme="report"] .logo, html[data-site-theme="inactives"] .logo { background: linear-gradient(135deg, rgba(162, 108, 255, 0.55), rgba(108, 204, 255, 0.38)); border-color: rgba(200, 180, 255, 0.45); }
     html[data-site-theme="guide"] .logo { background: linear-gradient(135deg, rgba(0, 229, 255, 0.45), rgba(0, 180, 216, 0.35)); border-color: rgba(180, 240, 255, 0.4); }
     html[data-site-theme="leaderboard"] .logo { background: linear-gradient(135deg, rgba(255, 61, 0, 0.45), rgba(255, 158, 0, 0.35)); border-color: rgba(255, 180, 150, 0.4); }
     html[data-site-theme="admin_log"] .logo, html[data-site-theme="ap_admin_log"] .logo { background: linear-gradient(135deg, rgba(255, 191, 71, 0.45), rgba(255, 61, 0, 0.35)); border-color: rgba(255, 214, 122, 0.4); }
@@ -92,20 +92,23 @@
     .brand-title { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: 0.08em; text-transform: uppercase; }
     .brand-sub { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 42ch; }
 
-    /* Доска почета / Бегущая строка */
-    .ticker-wrap {
-      width: 100%; overflow: hidden; background: rgba(13, 16, 32, 0.85); padding: 0.6rem 0; 
-      border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid rgba(191, 198, 255, 0.25);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: flex; align-items: center;
+    /* Новый информационный блок (Замена раздражающей доски почета) */
+    .info-banner {
+      width: 100%;
+      background: rgba(13, 16, 32, 0.7);
+      padding: 0.8rem 1.2rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(191, 198, 255, 0.15);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: opacity 0.5s ease;
     }
-    .ticker-title {
-      font-family: var(--font-display); color: var(--color-warning); padding: 0 1rem;
-      border-right: 2px solid rgba(255,191,71,0.5); white-space: nowrap; font-size: 0.9rem; z-index: 2;
-    }
-    .ticker { display: flex; white-space: nowrap; animation: ticker 25s linear infinite; gap: 3rem; padding-left: 2rem; }
-    @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-    .ticker-item { font-size: 0.9rem; font-weight: 500; }
-    .ticker-item span { color: var(--color-primary); font-weight: 800; }
+    .info-banner-icon { font-size: 1.2rem; }
+    .info-banner-text { font-size: 0.9rem; color: var(--color-text-muted); }
+    .info-banner-text span { color: var(--color-primary); font-weight: 700; }
 
     .icon-btn { min-width: 44px; min-height: 44px; padding: 0 0.75rem; border-radius: 999px; color: var(--color-text); background: rgba(16, 21, 40, 0.85); border: 1px solid rgba(191, 198, 255, 0.35); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.8); flex: 0 0 auto; font-size: 1.1rem; }
 
@@ -116,7 +119,7 @@
     html[data-site-theme="about"] .panel, html[data-site-theme="profile"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 19, 8, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(255, 214, 122, 0.28); }
     html[data-site-theme="shop"] .panel, html[data-site-theme="leadership"] .panel { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), linear-gradient(155deg, rgba(10, 23, 14, 0.98), rgba(8, 10, 15, 1)); border-color: rgba(162, 241, 188, 0.22); }
     html[data-site-theme="ap_shop"] .panel { background: radial-gradient(circle at top left, rgba(255, 143, 196, 0.2), transparent 55%), linear-gradient(155deg, rgba(28, 10, 18, 0.98), rgba(12, 4, 8, 1)); border-color: rgba(255, 143, 196, 0.5); }
-    html[data-site-theme="report"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.16), transparent 55%), linear-gradient(155deg, rgba(16, 9, 25, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(180, 150, 255, 0.28); }
+    html[data-site-theme="report"] .panel, html[data-site-theme="inactives"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.16), transparent 55%), linear-gradient(155deg, rgba(16, 9, 25, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(180, 150, 255, 0.28); }
     html[data-site-theme="guide"] .panel { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.12), transparent 55%), linear-gradient(155deg, rgba(4, 14, 22, 0.98), rgba(2, 8, 12, 1)); border-color: rgba(0, 229, 255, 0.25); }
     html[data-site-theme="leaderboard"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 0, 0.12), transparent 55%), linear-gradient(155deg, rgba(22, 8, 4, 0.98), rgba(12, 4, 2, 1)); border-color: rgba(255, 61, 0, 0.25); }
     html[data-site-theme="admin_log"] .panel, html[data-site-theme="ap_admin_log"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.12), transparent 55%), linear-gradient(155deg, rgba(25, 19, 8, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(255, 191, 71, 0.25); }
@@ -139,8 +142,8 @@
     html[data-site-theme="about"] .badge, html[data-site-theme="profile"] .badge { background: rgba(25, 19, 8, 0.96); border-color: rgba(255, 214, 122, 0.35); }
     html[data-site-theme="shop"] .badge, html[data-site-theme="leadership"] .badge { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.25); }
     html[data-site-theme="shop"] .badge.xp, html[data-site-theme="leadership"] .badge.xp { background: #52c77b; color: #08110b; }
-    html[data-site-theme="report"] .badge { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.35); }
-    html[data-site-theme="report"] .badge.xp { background: #a26cff; color: #fff; }
+    html[data-site-theme="report"] .badge, html[data-site-theme="inactives"] .badge { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.35); }
+    html[data-site-theme="report"] .badge.xp, html[data-site-theme="inactives"] .badge.xp { background: #a26cff; color: #fff; }
     html[data-site-theme="guide"] .badge { background: rgba(4, 18, 28, 0.96); border-color: rgba(0, 229, 255, 0.3); }
     html[data-site-theme="guide"] .badge.xp { background: #00e5ff; color: #002229; }
     html[data-site-theme="leaderboard"] .badge { background: rgba(28, 10, 4, 0.96); border-color: rgba(255, 61, 0, 0.3); }
@@ -152,7 +155,7 @@
     html[data-site-theme="support"] .hero h1 span, html[data-site-theme="ap_admin"] .hero h1 span, html[data-site-theme="ap_shop"] .hero h1 span { color: #ff8fc4; text-shadow: 0 0 26px rgba(255, 143, 196, 0.9); }
     html[data-site-theme="about"] .hero h1 span, html[data-site-theme="profile"] .hero h1 span { color: #ffbf47; text-shadow: 0 0 22px rgba(255, 191, 71, 0.72); }
     html[data-site-theme="shop"] .hero h1 span, html[data-site-theme="leadership"] .hero h1 span { color: #7fe8a0; text-shadow: 0 0 22px rgba(127, 232, 160, 0.62); }
-    html[data-site-theme="report"] .hero h1 span { color: #a26cff; text-shadow: 0 0 22px rgba(162, 108, 255, 0.72); }
+    html[data-site-theme="report"] .hero h1 span, html[data-site-theme="inactives"] .hero h1 span { color: #a26cff; text-shadow: 0 0 22px rgba(162, 108, 255, 0.72); }
     html[data-site-theme="guide"] .hero h1 span { color: #00e5ff; text-shadow: 0 0 22px rgba(0, 229, 255, 0.65); }
     html[data-site-theme="leaderboard"] .hero h1 span { color: #ff5419; text-shadow: 0 0 22px rgba(255, 61, 0, 0.65); }
     html[data-site-theme="complaints"] .hero h1 span { color: #ff6b88; text-shadow: 0 0 26px rgba(255, 107, 136, 0.9); }
@@ -173,7 +176,7 @@
     html[data-site-theme="support"] .btn-primary, html[data-site-theme="ap_admin"] .btn-primary, html[data-site-theme="ap_shop"] .btn-primary { background: linear-gradient(135deg, #ff78b4, #ffb0dd); box-shadow: 0 15px 35px rgba(255, 144, 196, 0.5); color: #1a0510; }
     html[data-site-theme="about"] .btn-primary, html[data-site-theme="profile"] .btn-primary { background: linear-gradient(135deg, #ffbf47, #ffd979); box-shadow: 0 15px 35px rgba(255, 191, 71, 0.4); color: #18171c; }
     html[data-site-theme="shop"] .btn-primary, html[data-site-theme="leadership"] .btn-primary { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 15px 35px rgba(82, 199, 123, 0.4); color: #08110b; }
-    html[data-site-theme="report"] .btn-primary { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 15px 35px rgba(162, 108, 255, 0.4); color: #fff; }
+    html[data-site-theme="report"] .btn-primary, html[data-site-theme="inactives"] .btn-primary { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 15px 35px rgba(162, 108, 255, 0.4); color: #fff; }
     html[data-site-theme="guide"] .btn-primary { background: linear-gradient(135deg, #00b4d8, #00e5ff); box-shadow: 0 15px 35px rgba(0, 229, 255, 0.4); color: #001a22; }
     html[data-site-theme="leaderboard"] .btn-primary { background: linear-gradient(135deg, #ff3d00, #ff9e00); box-shadow: 0 15px 35px rgba(255, 61, 0, 0.4); color: #fff; }
     html[data-site-theme="complaints"] .btn-primary { background: linear-gradient(135deg, #ff3b60, #ff6b88); box-shadow: 0 15px 35px rgba(255, 107, 136, 0.5); }
@@ -204,7 +207,7 @@
     html[data-site-theme="complaints"] .mode-btn.active { background: linear-gradient(135deg, #ff6b88, #ff3b60); box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); color: #fff; }
     html[data-site-theme="quests"] .mode-btn.active { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 8px 20px rgba(162, 108, 255, 0.45); color: #fff; }
     html[data-site-theme="shop"] .mode-btn.active, html[data-site-theme="leadership"] .mode-btn.active { background: linear-gradient(135deg, #52c77b, #8fe0a8); box-shadow: 0 8px 20px rgba(82, 199, 123, 0.35); color: #08110b; }
-    html[data-site-theme="report"] .mode-btn.active { background: linear-gradient(135deg, #a26cff, #c4a1ff); color: #fff; box-shadow: 0 8px 20px rgba(162, 108, 255, 0.35); }
+    html[data-site-theme="report"] .mode-btn.active, html[data-site-theme="inactives"] .mode-btn.active { background: linear-gradient(135deg, #a26cff, #c4a1ff); color: #fff; box-shadow: 0 8px 20px rgba(162, 108, 255, 0.35); }
     html[data-site-theme="guide"] .mode-btn.active { background: linear-gradient(135deg, #00b4d8, #00e5ff); color: #001a22; box-shadow: 0 8px 20px rgba(0, 229, 255, 0.35); }
     html[data-site-theme="leaderboard"] .mode-btn.active { background: linear-gradient(135deg, #ff3d00, #ff9e00); color: #fff; box-shadow: 0 8px 20px rgba(255, 61, 0, 0.35); }
     html[data-site-theme="about"] .mode-btn.active, html[data-site-theme="profile"] .mode-btn.active { background: linear-gradient(135deg, #ffbf47, #ffd979); color: #18171c; box-shadow: 0 8px 20px rgba(255, 191, 71, 0.35); }
@@ -215,7 +218,6 @@
     .game-wrap { margin-top: 0.75rem; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr); gap: 1rem; align-items: start; }
     .rule-list, .feed, .log { display: grid; gap: 0.75rem; min-width: 0; }
 
-    /* Ограничиваем высоту для логов админ панелей */
     #adminLogsArea, #apAdminLogsArea { max-height: 500px; overflow-y: auto; padding-right: 5px; }
     #adminLogsArea::-webkit-scrollbar, #apAdminLogsArea::-webkit-scrollbar { width: 6px; }
     #adminLogsArea::-webkit-scrollbar-thumb, #apAdminLogsArea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -225,7 +227,7 @@
     html[data-site-theme="support"] .rule-item, html[data-site-theme="support"] .log-item, html[data-site-theme="support"] .stat { background: rgba(35, 10, 26, 0.96); border-color: rgba(255, 190, 230, 0.36); }
     html[data-site-theme="about"] .rule-item, html[data-site-theme="about"] .log-item, html[data-site-theme="about"] .stat, html[data-site-theme="profile"] .rule-item, html[data-site-theme="profile"] .log-item, html[data-site-theme="profile"] .stat { background: rgba(25, 19, 8, 0.96); border-color: rgba(255, 214, 122, 0.24); }
     html[data-site-theme="shop"] .rule-item, html[data-site-theme="shop"] .log-item, html[data-site-theme="shop"] .stat { background: rgba(11, 21, 15, 0.96); border-color: rgba(162, 241, 188, 0.22); }
-    html[data-site-theme="report"] .rule-item, html[data-site-theme="report"] .log-item, html[data-site-theme="report"] .stat { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.24); }
+    html[data-site-theme="report"] .rule-item, html[data-site-theme="report"] .log-item, html[data-site-theme="report"] .stat, html[data-site-theme="inactives"] .rule-item, html[data-site-theme="inactives"] .log-item, html[data-site-theme="inactives"] .stat { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.24); }
     html[data-site-theme="guide"] .rule-item, html[data-site-theme="guide"] .log-item, html[data-site-theme="guide"] .stat { background: rgba(4, 14, 22, 0.96); border-color: rgba(0, 229, 255, 0.22); }
     html[data-site-theme="leaderboard"] .rule-item, html[data-site-theme="leaderboard"] .log-item, html[data-site-theme="leaderboard"] .stat { background: rgba(22, 8, 4, 0.96); border-color: rgba(255, 61, 0, 0.22); }
 
@@ -247,17 +249,15 @@
     .xp-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ffbf47, #ffe38e); transition: width 300ms ease; border-radius: inherit; box-shadow: 0 0 26px rgba(255, 191, 71, 0.7); }
 
     .message-card { 
-      padding: 1.5rem; border-radius: 18px;
-      background: radial-gradient(circle at 0 0, rgba(108, 140, 255, 0.45), transparent 70%), linear-gradient(160deg, rgba(13, 16, 32, 0.98), rgba(5, 7, 15, 1));
-      border: 1px solid rgba(191, 198, 255, 0.4); min-height: 250px; display: grid; align-content: start; gap: 1rem; position: relative; overflow: hidden;
-      min-width: 0; 
+      padding: 1.5rem; border-radius: 18px; background: radial-gradient(circle at 0 0, rgba(108, 140, 255, 0.45), transparent 70%), linear-gradient(160deg, rgba(13, 16, 32, 0.98), rgba(5, 7, 15, 1));
+      border: 1px solid rgba(191, 198, 255, 0.4); min-height: 250px; display: grid; align-content: start; gap: 1rem; position: relative; overflow: hidden; min-width: 0; 
     }
     .message-card::after { content: ""; position: absolute; inset: auto -40px -40px auto; width: 160px; height: 160px; background: radial-gradient(circle, rgba(255, 191, 71, 0.45), transparent 65%); pointer-events: none; opacity: 0.6; }
 
     html[data-site-theme="support"] .message-card { background: radial-gradient(circle at 0 0, rgba(255, 160, 210, 0.45), transparent 70%), linear-gradient(160deg, rgba(35, 10, 26, 0.98), rgba(16, 4, 20, 1)); border-color: rgba(255, 190, 230, 0.55); }
     html[data-site-theme="about"] .message-card, html[data-site-theme="profile"] .message-card { background: radial-gradient(circle at 0 0, rgba(255, 191, 71, 0.18), transparent 70%), linear-gradient(160deg, rgba(25, 19, 8, 0.98), rgba(11, 10, 15, 1)); border-color: rgba(255, 214, 122, 0.25); }
     html[data-site-theme="shop"] .message-card { background: radial-gradient(circle at 0 0, rgba(82, 199, 123, 0.2), transparent 70%), linear-gradient(160deg, rgba(11, 21, 15, 0.98), rgba(8, 10, 15, 1)); border-color: rgba(162, 241, 188, 0.25); }
-    html[data-site-theme="report"] .message-card { background: radial-gradient(circle at 0 0, rgba(162, 108, 255, 0.18), transparent 70%), linear-gradient(160deg, rgba(16, 9, 25, 0.98), rgba(11, 10, 15, 1)); border-color: rgba(180, 150, 255, 0.25); }
+    html[data-site-theme="report"] .message-card, html[data-site-theme="inactives"] .message-card { background: radial-gradient(circle at 0 0, rgba(162, 108, 255, 0.18), transparent 70%), linear-gradient(160deg, rgba(16, 9, 25, 0.98), rgba(11, 10, 15, 1)); border-color: rgba(180, 150, 255, 0.25); }
     html[data-site-theme="guide"] .message-card { background: radial-gradient(circle at 0 0, rgba(0, 229, 255, 0.15), transparent 70%), linear-gradient(160deg, rgba(4, 14, 22, 0.98), rgba(2, 8, 12, 1)); border-color: rgba(0, 229, 255, 0.25); }
     html[data-site-theme="leaderboard"] .message-card { background: radial-gradient(circle at 0 0, rgba(255, 61, 0, 0.15), transparent 70%), linear-gradient(160deg, rgba(22, 8, 4, 0.98), rgba(12, 4, 2, 1)); border-color: rgba(255, 61, 0, 0.25); }
 
@@ -283,12 +283,14 @@
 
     .support-input { flex: 1 1 auto; min-width: 0; width: 100%; padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid rgba(191, 198, 255, 0.35); background: rgba(4, 6, 12, 0.9); color: var(--color-text); font-size: var(--text-base); transition: border-color 0.3s ease; }
     .support-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 15px rgba(108, 140, 255, 0.2); }
+    input[type="file"].support-input { padding: 0.6rem 1rem; }
+
     .support-check-btn { flex: 0 0 auto; min-height: 52px; padding: 0 1.5rem; border-radius: 12px; font-size: var(--text-sm); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #6c8cff, #8aa3ff); border: none; color: #fff; white-space: nowrap; box-shadow: 0 8px 20px rgba(108, 140, 255, 0.4); transition: all 0.3s ease; }
     .support-check-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(108, 140, 255, 0.6); }
     .support-check-btn:active { transform: translateY(1px); }
 
     html[data-site-theme="support"] .support-check-btn { background: linear-gradient(135deg, #ff78b4, #ffb0dd); box-shadow: 0 8px 20px rgba(255, 120, 180, 0.4); }
-    html[data-site-theme="report"] .support-check-btn { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 8px 20px rgba(162, 108, 255, 0.4); }
+    html[data-site-theme="report"] .support-check-btn, html[data-site-theme="inactives"] .support-check-btn { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 8px 20px rgba(162, 108, 255, 0.4); }
 
     .quest-btn { padding: 0.7rem 1.5rem; border-radius: 12px; font-weight: 800; text-transform: uppercase; font-size: var(--text-sm); text-align: center; border: none; cursor: pointer; transition: all 0.3s; }
     .quest-btn.claim { background: linear-gradient(135deg, #a26cff, #c4a1ff); color: #fff; box-shadow: 0 8px 20px rgba(162, 108, 255, 0.5); }
@@ -392,17 +394,6 @@
     </div>
   </div>
 
-  <div id="accessModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
-    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 400px; display: grid; gap: 1.2rem;">
-      <h2 style="margin: 0; font-family: var(--font-display); text-align: center;">Доступ закрыт</h2>
-      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0; text-align: center;">Введите код доступа для выполнения этого действия.</p>
-      <input type="password" id="accessCodeInput" class="support-input" placeholder="Код доступа">
-      <div id="accessErrorMsg" style="color: var(--color-error); font-size: var(--text-sm); display: none; text-align: center;">Неверный код доступа!</div>
-      <button id="accessSubmitBtn" class="btn btn-primary">Подтвердить</button>
-      <button id="accessCloseBtn" class="btn" style="background: transparent; border: 1px solid rgba(191,198,255,0.3); color: var(--color-text-muted);">Отмена</button>
-    </div>
-  </div>
-
   <div id="spamModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; pointer-events: auto;">
     <div class="panel" style="padding: 3rem; width: 90%; max-width: 450px; display: grid; gap: 1.5rem; text-align: center; border: 2px solid rgba(255, 107, 136, 0.6); box-shadow: 0 0 50px rgba(255, 107, 136, 0.3);">
       <div style="font-size: 4rem; margin-bottom: -1.5rem; animation: pulse 2s infinite;">👮‍♂️</div>
@@ -469,6 +460,7 @@
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none;">Закончить игру</button>
     </div>
   </div>
+
   <main class="page">
     <header class="topbar">
       <div class="brand">
@@ -500,11 +492,9 @@
       </div>
     </header>
 
-    <div class="ticker-wrap" id="tickerWrap">
-        <div class="ticker-title">🏆 ДОСКА ПОЧЕТА </div>
-        <div class="ticker" id="tickerContent">
-            <div class="ticker-item">Загрузка данных...</div>
-        </div>
+    <div id="infoBanner" class="info-banner fade-in">
+        <div class="info-banner-icon">🏆</div>
+        <div class="info-banner-text" id="infoBannerText">Добро пожаловать в тренажер! Выполняйте квесты, отвечайте на репорты и зарабатывайте XP.</div>
     </div>
 
     <section class="hero">
@@ -541,8 +531,9 @@
         <button class="mode-btn active" data-mode="moderation" type="button">Тренажёр</button>
         <button class="mode-btn" data-mode="timeattack" type="button">На время ⏱️</button>
         <button class="mode-btn" data-mode="complaints" type="button">Жалобы</button>
-        <button class="mode-btn" data-mode="shop" type="button">Магазин</button>
-        <button class="mode-btn" data-mode="report" type="button">Отчетность</button>
+        <button class="mode-btn" data-mode="shop" type="button" id="shopTabBtn" style="display:none;">Магазин</button>
+        <button class="mode-btn" data-mode="report" type="button" id="reportTabBtn" style="display:none;">Отчетность</button>
+        <button class="mode-btn" data-mode="inactives" type="button" id="inactiveTabBtn" style="display:none;">Неактивы</button>
         <button class="mode-btn" data-mode="leadership" type="button" id="leadershipTabBtn" style="display:none; color: #52c77b;">Руководство</button>
         <button class="mode-btn" data-mode="admin_log" type="button" id="adminLogTabBtn" style="display:none; color: #ffbf47;">Логи (Мод)</button>
         <button class="mode-btn" data-mode="creator" type="button" id="creatorTabBtn" style="display:none; color: #ff6b88;">Панель Создателя</button>
@@ -550,7 +541,7 @@
 
       <div class="sub-nav" id="subNavSupport" style="display:none;">
         <button class="mode-btn" data-mode="support" type="button">Тренажёр АП</button>
-        <button class="mode-btn" data-mode="ap_shop" type="button">Магазин АП</button>
+        <button class="mode-btn" data-mode="ap_shop" type="button" id="apShopTabBtn" style="display:none;">Магазин АП</button>
         <button class="mode-btn" data-mode="ap_admin" type="button" id="apAdminTabBtn" style="display:none; color: #ff8fc4;">Руководство АП</button>
         <button class="mode-btn" data-mode="ap_admin_log" type="button" id="apAdminLogTabBtn" style="display:none; color: #ff8fc4;">Логи (АП)</button>
       </div>
@@ -643,24 +634,20 @@
           
           <div id="creatorAdminsList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 191, 71, 0.3);">
-          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-warning);">Ключи доступа</h3>
-          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <select id="creatorKeyRole" class="support-input" style="flex: 1;">
-                <option value="shop">Магазин</option>
-                <option value="report">Отчеты</option>
-                <option value="ap_shop">Магазин АП</option>
-            </select>
-            <input type="text" id="creatorKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
-          </div>
-          <button id="creatorAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-warning); color: var(--color-warning);">Создать ключ</button>
-          <div id="creatorKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
-        </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-leadership" style="display:none;">
         <div class="section-head"><h2 style="color: #52c77b;">Руководство (Модерация)</h2></div>
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">➕ Выдача статуса Модератора</h3>
+          <select id="leadAddModSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <button id="leadAddModBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">Выдать статус</button>
+          </div>
+          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список модераторов:</h4>
+          <div id="leadModList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
 
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(162, 108, 255, 0.3); margin-bottom: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: #a26cff;">🕵️‍♂️ Тайный покупатель (Скрытая проверка)</h3>
@@ -685,8 +672,8 @@
             <button id="addCustomModMsgBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width:100%;">Добавить сообщение в общую базу</button>
         </div>
         
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3);">
-          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Управление пользователями</h3>
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Управление пользователями (XP)</h3>
           <select id="leadershipUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
           <input type="number" id="leadershipXpAmount" class="support-input" placeholder="Количество XP (+ или -)" style="margin-bottom: 1rem;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -695,7 +682,7 @@
           </div>
         </div>
 
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Управление Магазином (Модерация)</h3>
           <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
              <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара">
@@ -723,22 +710,25 @@
           <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
         </div>
 
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-top: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Ключи доступа (Модерация)</h3>
-          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <select id="leadershipKeyRole" class="support-input" style="flex: 1;">
-                <option value="shop">Магазин</option>
-                <option value="report">Отчеты</option>
-            </select>
-            <input type="text" id="leadershipKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
-          </div>
-          <button id="leadershipAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Создать ключ</button>
-          <div id="leadershipKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3);">
+          <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Заявки на Неактив</h3>
+          <button class="btn btn-secondary" id="viewInactivesBtn" style="width:100%;">Проверить неактивы</button>
+          <div id="inactivesListArea" style="display:none; flex-direction: column; gap: 0.75rem; margin-top: 1rem;"></div>
         </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-ap_admin" style="display:none;">
         <div class="section-head"><h2 style="color: #ff8fc4;">Руководство АП</h2></div>
+
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.5); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #ff8fc4;">➕ Выдача статуса АП</h3>
+          <select id="leadAddApSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+            <button id="leadAddApBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">Выдать статус</button>
+          </div>
+          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список АП:</h4>
+          <div id="leadApList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+        </div>
 
          <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.5); margin-bottom: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: #ff8fc4;">✏️ Редактор базы вопросов (АП)</h3>
@@ -783,15 +773,6 @@
              <input type="number" id="apRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -100)">
           </div>
           <button id="updateApRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить слот рулетки</button>
-        </div>
-
-        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3);">
-          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: #ff8fc4;">Ключи доступа (Магазин АП)</h3>
-          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <input type="text" id="apAdminKeyInput" class="support-input" placeholder="Код ключа" style="flex: 2;">
-          </div>
-          <button id="apAdminAddKeyBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Создать ключ</button>
-          <div id="apAdminKeysList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
       </section>
 
@@ -939,7 +920,7 @@
       <section class="panel game-card fade-in" id="mode-leaderboard" style="display:none;">
         <div class="section-head">
           <h2>Таблица лидеров (Топ-10)</h2>
-          <p>Самые активные сотрудники по количеству заработанного XP (с учетом трат).</p>
+          <p>Отображаются только действующие сотрудники (Модераторы / АП) по количеству заработанного XP (с учетом трат).</p>
         </div>
         <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
           <button id="lbBtnMod" class="btn btn-primary" style="flex:1;">Топ Модерации (XP)</button>
@@ -1043,7 +1024,7 @@
           <p>Сдайте свой ежедневный отчет онлайна из Discord сюда.</p>
         </div>
         <div id="reportAccessWarning" class="message-card" style="min-height: auto; align-content: center; text-align: center; color: var(--color-warning);">
-          Вы не авторизованы! <br><span style="font-size: var(--text-sm); color: var(--color-text-muted);">Войдите в аккаунт, чтобы сдать отчет.</span>
+          Доступ закрыт! <br><span style="font-size: var(--text-sm); color: var(--color-text-muted);">Раздел доступен только действующим модераторам.</span>
         </div>
         
         <div class="feed" id="reportFormArea" style="display:none;">
@@ -1051,14 +1032,15 @@
             <div class="channel"><span class="channel-dot" style="background:#a26cff;"></span># tambov-73 / reports</div>
             <div class="author-row">
               <div class="avatar" style="background: conic-gradient(from 210deg, #a26cff, #c4a1ff, #a26cff);">R</div>
-              <div><div class="author-name">Отчет Discord (Онлайн)</div><div class="author-meta">Вставьте ссылку на скриншот</div></div>
+              <div><div class="author-name">Отчет Discord (Онлайн)</div><div class="author-meta">Прикрепите фото или скриншот</div></div>
             </div>
             <div class="support-answer-row">
-              <div class="support-answer-row-inner">
-                <input id="reportLinkInput" class="support-input" type="url" placeholder="Ссылка (Imgur, Yapx)...">
-                <button class="support-check-btn" type="button" id="submitReportBtn">Отправить</button>
+              <div class="support-answer-row-inner" style="flex-direction: column;">
+                <label style="font-size: 0.9rem; color: var(--color-text-muted);">Загрузить скриншот напрямую:</label>
+                <input id="reportFileInput" class="support-input" type="file" accept="image/*">
+                <button class="support-check-btn" type="button" id="submitReportBtn" style="margin-top: 0.5rem;">Отправить Отчет</button>
               </div>
-              <div class="support-result" id="reportResultText"></div>
+              <div class="support-result" id="reportResultText" style="font-weight: bold; margin-top: 0.5rem;"></div>
             </div>
           </article>
           
@@ -1067,6 +1049,38 @@
             <button class="btn btn-secondary" type="button" id="viewReportsBtn" style="width:100%;">Проверить сданные отчеты</button>
           </div>
           <div id="reportsListArea" style="display:none; margin-top: 1rem; flex-direction: column; gap: 0.75rem;"></div>
+        </div>
+      </section>
+
+      <section class="panel game-card fade-in" id="mode-inactives" style="display:none;">
+        <div class="section-head">
+          <h2 style="color: #c4a1ff;">Заявки на Неактив</h2>
+          <p>Отправьте заявление, если не сможете выполнять норму.</p>
+        </div>
+        <div id="inactiveAccessWarning" class="message-card" style="min-height: auto; align-content: center; text-align: center; color: var(--color-warning);">
+          Доступ закрыт! <br><span style="font-size: var(--text-sm); color: var(--color-text-muted);">Раздел доступен только действующим модераторам.</span>
+        </div>
+        
+        <div class="feed" id="inactiveFormArea" style="display:none;">
+          <article class="message-card" style="min-height: auto; gap: 1.5rem;">
+            <div class="channel"><span class="channel-dot" style="background:#c4a1ff;"></span># tambov-73 / inactives</div>
+            <div class="author-row">
+              <div class="avatar" style="background: conic-gradient(from 210deg, #c4a1ff, #a26cff, #c4a1ff);">Z</div>
+              <div><div class="author-name">Форма заявления</div><div class="author-meta">Заполните все поля</div></div>
+            </div>
+            <div class="support-answer-row" style="gap: 1rem;">
+              <input id="inactiveNickInput" class="support-input" type="text" placeholder="Ваш Никнейм">
+              <div style="display: flex; gap: 1rem;">
+                <input id="inactiveDateFrom" class="support-input" type="text" placeholder="С (дата)">
+                <input id="inactiveDateTo" class="support-input" type="text" placeholder="По (дата)">
+              </div>
+              <input id="inactiveReasonInput" class="support-input" type="text" placeholder="Причина неактива">
+              <label style="font-size: 0.9rem; color: var(--color-text-muted); margin-top: 0.5rem;">Прикрепить фото (по желанию):</label>
+              <input id="inactiveFileInput" class="support-input" type="file" accept="image/*">
+              <button class="support-check-btn" type="button" id="submitInactiveBtn" style="margin-top: 0.5rem;">Отправить Заявку</button>
+              <div class="support-result" id="inactiveResultText" style="font-weight: bold; margin-top: 0.5rem;"></div>
+            </div>
+          </article>
         </div>
       </section>
 
@@ -1106,6 +1120,7 @@
         // === 1. АУДИО ===
         let isMusicEnabled = false, isSfxEnabled = true;    
         const uiSoundConfig = { volume: 0.15, pitch: 600, type: 'sine', duration: 0.04 };
+       
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         function playUIClick() {
@@ -1160,36 +1175,56 @@
         });
         document.getElementById('sfxToggleBtn').addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
         
+        // СЖАТИЕ ФОТО В BASE64 (Для отчетов и неактивов)
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+                    let width = img.width; let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                };
+            };
+        }
+
         // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
         const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
         const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
         
         let currentUser = null, currentNickname = null, pendingAction = null;
-        let hasAccessCode = localStorage.getItem('access_shop') === 'true';
-        let hasReportAccessCode = localStorage.getItem('access_report') === 'true';
-        let hasApShopAccess = localStorage.getItem('access_ap_shop') === 'true';
         let isReportsRequired = localStorage.getItem('require_reports') !== 'false';
         let dynamicModLeaders = [];
         let dynamicApLeaders = [];
+        let activeMods = [];
+        let activeAps = [];
+        let isModerator = false;
+        let isAp = false;
         let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
         
-        function requestAccess(actionType, btnElement) {
-            pendingAction = { type: actionType, btn: btnElement };
-            document.getElementById('accessCodeInput').value = ''; 
-            document.getElementById('accessErrorMsg').style.display = 'none'; 
-            document.getElementById('accessModal').style.display = 'flex'; 
-        }
-
         const creatorEmail = 'daniiltimosin72@gmail.com';
         const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
         const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+        
         let state = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false, log: [], reportXp: 0 };
         let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
         let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
         let shopState = { spent: 0, apSpent: 0 };
         let modQueue = [], supQueue = [], compQueue = [];
-        
+
         // === 3. МАССИВЫ МАГАЗИНА И КВЕСТОВ ===
         let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
@@ -1199,11 +1234,32 @@
             { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" },
             { id: 'bonus_3', title: "Иммунитет на предупреждение", desc: "Защищает от 1 предупреждения в будущем.", price: 300, icon: "🛡️" },
             { id: 'bonus_4', title: "Иммунитет на выговор", desc: "Защищает от 1 выговора в будущем.", price: 500, icon: "👑" },
-            { id: 'bonus_5', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 150, icon: "🛌" },
             { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
             { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' },
             { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
-            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' }
+            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' },
+            
+            // НОВЫЕ 20 ИГР / ПРЕДМЕТОВ
+            { id: 'g_1', title: "Блэкджек (Случайный)", desc: "Ставка 300 XP. Шанс удвоить или потерять.", price: 300, icon: "🃏", action: 'generic_game' },
+            { id: 'g_2', title: "Бросок Костей", desc: "Ставка 150 XP. Шанс выиграть 300 XP.", price: 150, icon: "🎲", action: 'generic_game' },
+            { id: 'g_3', title: "Сапёр удачи", desc: "Ставка 250 XP. Найдешь мину - сгоришь, пустоту - +500 XP.", price: 250, icon: "💣", action: 'generic_game' },
+            { id: 'g_4', title: "Слот-машина", desc: "Дерни рычаг за 100 XP. Джекпот: 500 XP.", price: 100, icon: "🎰", action: 'generic_game' },
+            { id: 'g_5', title: "Камень, ножницы, бумага", desc: "Сыграй с ботом на 50 XP (победа = 100 XP).", price: 50, icon: "✂️", action: 'generic_game' },
+            { id: 'g_6', title: "Лотерейный билет", desc: "Купи билет за 200 XP. Шанс на 1000 XP (редко!).", price: 200, icon: "🎟️", action: 'generic_game' },
+            { id: 'g_7', title: "Русская рулетка", desc: "Экстрим за 300 XP. Шанс 1/6 проиграть всё, 5/6 забрать 400 XP.", price: 300, icon: "🔫", action: 'generic_game' },
+            { id: 'g_8', title: "Сундук Пандоры", desc: "Ставка 500 XP. Открой и получи от 0 до 2000 XP.", price: 500, icon: "🧰", action: 'generic_game' },
+            { id: 'g_9', title: "Космическая гонка", desc: "Ставь 150 XP на свою ракету (победа = 300 XP).", price: 150, icon: "🚀", action: 'generic_game' },
+            { id: 'g_10', title: "Морской бой", desc: "Стреляй вслепую за 300 XP. Попал = 800 XP.", price: 300, icon: "🚢", action: 'generic_game' },
+            { id: 'g_11', title: "Скачки на лошадях", desc: "Ставка 250 XP на фаворита. Шанс 1 к 3 забрать 750 XP.", price: 250, icon: "🐎", action: 'generic_game' },
+            { id: 'g_12', title: "Счастливый клевер", desc: "Купи за 50 XP, есть шанс вытащить 200 XP.", price: 50, icon: "🍀", action: 'generic_game' },
+            { id: 'g_13', title: "Магический шар", desc: "Спроси шар за 100 XP. Ответит 'Да' = 250 XP.", price: 100, icon: "🔮", action: 'generic_game' },
+            { id: 'g_14', title: "Дартс", desc: "Бросок за 200 XP. Яблочко дает 600 XP.", price: 200, icon: "🎯", action: 'generic_game' },
+            { id: 'g_15', title: "Рыбалка", desc: "Закинь удочку за 150 XP. Можно поймать сапог или золотую рыбку (500 XP).", price: 150, icon: "🎣", action: 'generic_game' },
+            { id: 'g_16', title: "Мистический котёл", desc: "Свари зелье за 400 XP. Удача приносит 1000 XP.", price: 400, icon: "⚗️", action: 'generic_game' },
+            { id: 'g_17', title: "Золотая лихорадка", desc: "Копай за 350 XP. Нашел самородок = 900 XP.", price: 350, icon: "⛏️", action: 'generic_game' },
+            { id: 'g_18', title: "Колесо Чудес", desc: "Ставка 500 XP. Шанс 50/50: либо 0, либо 1100 XP.", price: 500, icon: "🎡", action: 'generic_game' },
+            { id: 'g_19', title: "Битва Гладиаторов", desc: "Ставка 600 XP на своего бойца. Победа = 1500 XP.", price: 600, icon: "⚔️", action: 'generic_game' },
+            { id: 'g_20', title: "Тайный Конверт", desc: "Купи за 100 XP. Внутри может быть что угодно до 1000 XP.", price: 100, icon: "✉️", action: 'generic_game' }
         ];
 
         let defaultApShopItems = [
@@ -1233,66 +1289,55 @@
         let customApShopItems = [];
         let modRoulettePrizes = [...defaultModRoulettePrizes];
         let apRoulettePrizes = [...defaultApRoulettePrizes];
-
-        // Инициализация кастомных вопросов и сообщений
         let customModMessages = [];
         let customSupQuestions = [];
         let hiddenChecks = [];
 
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*')
-                .in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK']);
+                .in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE']);
             
-            customShopItems = [];
-            customApShopItems = [];
-            customModMessages = [];
-            customSupQuestions = [];
-            hiddenChecks = [];
-            modRoulettePrizes = [...defaultModRoulettePrizes];
-            apRoulettePrizes = [...defaultApRoulettePrizes];
+            customShopItems = []; customApShopItems = []; customModMessages = []; customSupQuestions = []; hiddenChecks = []; activeMods = []; activeAps = [];
+            modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes];
             
             if (data) {
                 data.forEach(row => {
-                    if (row.email === 'SHOP_MOD') {
-                        customShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
-                    } 
-                    else if (row.email === 'SHOP_AP') {
-                        customApShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link });
-                    } else if (row.email === 'ROULETTE_MOD') {
-                        const idx = modRoulettePrizes.findIndex(p => p.id === row.link);
-                        if(idx !== -1) { modRoulettePrizes[idx].text = row.date; modRoulettePrizes[idx].val = Number(row.xp); }
-                    } else if (row.email === 'ROULETTE_AP') {
-                        const idx = apRoulettePrizes.findIndex(p => p.id === row.link);
-                        if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); }
-                    } else if (row.email === 'CUSTOM_MOD_MSG') {
-                        customModMessages.push({ type: row.status, text: row.date });
-                    } else if (row.email === 'CUSTOM_AP_MSG') {
-                        customSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s => s.trim().toLowerCase()) });
-                    } else if (row.email === 'HIDDEN_CHECK') {
-                        hiddenChecks.push({ id: row.id, userId: row.link, text: row.date, type: row.status });
+                    if (row.email === 'SHOP_MOD') { customShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link }); } 
+                    else if (row.email === 'SHOP_AP') { customApShopItems.push({ id: row.id, title: row.date, desc: row.status, price: Number(row.xp), icon: row.link }); } 
+                    else if (row.email === 'ROULETTE_MOD') { const idx = modRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { modRoulettePrizes[idx].text = row.date; modRoulettePrizes[idx].val = Number(row.xp); } } 
+                    else if (row.email === 'ROULETTE_AP') { const idx = apRoulettePrizes.findIndex(p => p.id === row.link); if(idx !== -1) { apRoulettePrizes[idx].text = row.date; apRoulettePrizes[idx].val = Number(row.xp); } } 
+                    else if (row.email === 'CUSTOM_MOD_MSG') { customModMessages.push({ type: row.status, text: row.date }); } 
+                    else if (row.email === 'CUSTOM_AP_MSG') { customSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s => s.trim().toLowerCase()) }); } 
+                    else if (row.email === 'HIDDEN_CHECK') { hiddenChecks.push({ id: row.id, userId: row.link, text: row.date, type: row.status }); }
+                    else if (row.email === 'USER_ROLE') {
+                        if(row.status === 'moderator') activeMods.push(row.link);
+                        if(row.status === 'ap') activeAps.push(row.link);
                     }
                 });
             }
             shopItems = [...defaultShopItems, ...customShopItems];
             apShopItems = [...defaultApShopItems, ...customApShopItems];
             
-            renderShopItems();
-            renderApShopItems();
-            updateTicker();
+            if (currentUser) {
+                isModerator = activeMods.includes(currentUser.id) || adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicModLeaders.includes(currentUser.id);
+                isAp = activeAps.includes(currentUser.id) || apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
+            }
+            checkRolesAndAccess();
+            renderShopItems(); renderApShopItems(); updateTicker();
         }
 
-        // --- БЕГУЩАЯ СТРОКА (ТИКЕР) ---
+        // --- БЕГУЩАЯ СТРОКА ЗАМЕНЕНА НА БАННЕР ---
         async function updateTicker() {
-            const ticker = document.getElementById('tickerContent');
-            if(!ticker) return;
-            const { data } = await supa.from('admin_logs').select('nickname, item_name').order('created_at', { ascending: false }).limit(10);
+            const banner = document.getElementById('infoBannerText');
+            if(!banner) return;
+            const { data } = await supa.from('admin_logs').select('nickname, item_name').order('created_at', { ascending: false }).limit(1);
             if(data && data.length > 0) {
-                ticker.innerHTML = data.map(log => `<div class="ticker-item">Сотрудник <span>${log.nickname}</span> приобрел/выиграл: <span>${log.item_name}</span>!</div>`).join('');
+                banner.innerHTML = `Последнее событие: Сотрудник <span>${data[0].nickname}</span> приобрел/выиграл: <span>${data[0].item_name}</span>!`;
             } else {
-                ticker.innerHTML = '<div class="ticker-item">Добро пожаловать в тренажер! Выполняйте квесты и зарабатывайте XP.</div>';
+                banner.innerHTML = 'Добро пожаловать в тренажер! Выполняйте квесты и зарабатывайте XP.';
             }
         }
-        setInterval(updateTicker, 60000); // Обновлять раз в минуту
+        setInterval(updateTicker, 60000);
 
         const questsData = [
             { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 },
@@ -1366,17 +1411,18 @@
             complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] },
             quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] },
             guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
-            leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Никнейм", "Отображаются только сотрудники с установленным никнеймом."] ] },
+            leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Отображение", "Показываются только действующие модераторы и АП."] ] },
             about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
             profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
-            shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Рулетка", "Призы могут выдать XP или штраф."] ] },
+            shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "20 мини-игр для проверки удачи."] ] },
             ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
-            report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Сдавать отчеты могут все авторизованные модераторы."], ["Проверка", "Только администрация может проверять и начислять XP."] ] },
+            report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модераторам."], ["Загрузка", "Вы можете загружать фото напрямую."] ] },
+            inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Фото", "Прикрепите фото причины по желанию."] ] },
             admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
             ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи приза/покупки в Discord."] ] },
-            creator: { title: "Управление доступом", lead: "Только для Создателя (John Wick).", cards: [ ["Настройки", "Глобальный переключатель отчетов."], ["Троллинг", "Сброс XP ставит долг 99999. Смена ника моментально меняет имя в базе."], ["Ключи", "Создание ключей доступа."] ] },
-            leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Тайный покупатель", "Закидывай сложную проверку конкретному сотруднику."], ["Редактор БД", "Добавляй новые сообщения в тренажер."] ] },
-            ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Редактор БД", "Добавляй новые вопросы игроков."], ["Пользователи", "Управление баллами и аккаунтами."] ] }
+            creator: { title: "Управление доступом", lead: "Только для Создателя (John Wick).", cards: [ ["Настройки", "Глобальный переключатель отчетов."], ["Троллинг", "Сброс XP ставит долг 99999."], ["Руководство", "Выдача прав руководства."] ] },
+            leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку, чтобы открыть ему доступ к Магазину и Отчетам."], ["Тайный покупатель", "Закидывай сложную проверку."] ] },
+            ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы игроков."] ] }
         };
 
         function renderRight(mode) {
@@ -1387,12 +1433,11 @@
             rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
         }
 
-        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","admin_log","ap_admin_log","quests","creator","leadership","ap_admin"];
+        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin"];
         
         function switchMode(mode, btn) {
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
             if(btn) btn.classList.add("active");
-            
             allModesList.forEach(m => { 
                 const panel = document.getElementById("mode-" + m); 
                 if(panel) { if(m===mode){ panel.style.display=""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } else panel.style.display="none"; }
@@ -1400,13 +1445,13 @@
             
             let currentTheme = "mod";
             if(["support","ap_admin","ap_admin_log","ap_shop"].includes(mode)) currentTheme = "support";
-            else if(["about","profile","shop","leadership","report","guide","leaderboard","admin_log","complaints","quests","timeattack","creator"].includes(mode)) currentTheme = mode;
+            else if(["about","profile","shop","leadership","report","inactives","guide","leaderboard","admin_log","complaints","quests","timeattack","creator"].includes(mode)) currentTheme = mode;
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
 
             if(mode === 'leaderboard') loadLeaderboard();
             if(mode === 'shop' || mode === 'ap_shop') updateShopStats();
-            if(mode === 'report') checkReportAccess(); 
+            if(mode === 'report' || mode === 'inactives') checkRolesAndAccess(); 
             if(mode === 'admin_log') renderAdminLogs(false); 
             if(mode === 'ap_admin_log') renderAdminLogs(true);
             if(mode === 'quests') renderQuests(); 
@@ -1416,6 +1461,7 @@
             
             const brandSub = document.getElementById("brandSubtitle");
             const hTitle = document.getElementById("heroTitle"); const hText = document.getElementById("heroText"); const hBadge = document.getElementById("heroBadge2");
+            
             if (mode === "moderation") {
                 if(brandSub) brandSub.textContent = "Симулятор смены модераторов";
                 if(hTitle) hTitle.innerHTML = 'Следи за <span>порядком</span> на сервере.'; if(hText) hText.textContent = "Проверяй сообщения, принимай решения и поддерживай порядок в чате.";
@@ -1456,8 +1502,12 @@
                 if(hBadge) hBadge.textContent = "Режим: магазин";
             } else if (mode === "report") {
                 if(brandSub) brandSub.textContent = "Симулятор смены: Отчетность";
-                if(hTitle) hTitle.innerHTML = 'Сдавай <span>отчеты</span> вовремя.'; if(hText) hText.textContent = "Отправляй скриншоты своего онлайна в Discord для проверки руководством.";
+                if(hTitle) hTitle.innerHTML = 'Сдавай <span>отчеты</span> вовремя.'; if(hText) hText.textContent = "Отправляй скриншоты своего онлайна для проверки руководством.";
                 if(hBadge) hBadge.textContent = "Режим: отчетность";
+            } else if (mode === "inactives") {
+                if(brandSub) brandSub.textContent = "Симулятор смены: Неактивы";
+                if(hTitle) hTitle.innerHTML = 'Берешь <span>отдых</span>?'; if(hText) hText.textContent = "Отправьте заявку на неактив с указанием причины.";
+                if(hBadge) hBadge.textContent = "Режим: неактивы";
             } else if (mode === "admin_log" || mode === "ap_admin_log") {
                 if(brandSub) brandSub.textContent = "Админ-Панель";
                 if(hTitle) hTitle.innerHTML = 'Логи <span>выдач</span>.'; if(hText) hText.textContent = "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.";
@@ -1477,13 +1527,9 @@
                 const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
             });
         });
-        
         document.querySelectorAll(".mode-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 const mode = btn.dataset.mode;
-                if (mode === 'shop' && !hasAccessCode) { requestAccess('switch_tab_' + mode, btn); return; }
-                if (mode === 'report' && !hasReportAccessCode) { requestAccess('switch_tab_' + mode, btn); return; }
-                if (mode === 'ap_shop' && !hasApShopAccess) { requestAccess('switch_tab_' + mode, btn); return; }
                 switchMode(mode, btn);
             });
         });
@@ -1501,7 +1547,6 @@
         function availablePts() { return Math.max(0, calcXP(supportState.correct) - Number(shopState.apSpent || 0)); }
 
         let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
-        
         function isSpamming() {
             const now = Date.now();
             const blockUntil = localStorage.getItem('spam_block_until');
@@ -1521,8 +1566,7 @@
             const blockUntil = localStorage.getItem('spam_block_until');
             if (!blockUntil) return;
             const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
-            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5';
-            closeBtn.style.cursor = 'not-allowed';
+            modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
             let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
             closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
             spamTimerInterval = setInterval(() => {
@@ -1541,13 +1585,10 @@
         }
 
         function startGame() {
-            state.started = true;
-            supportState.started = true; 
-            complaintState.started = true; 
+            state.started = true; supportState.started = true; complaintState.started = true; 
             document.getElementById('startBtn').disabled = true;
             
-            randomMessage(); 
-            randomComplaint();
+            randomMessage(); randomComplaint();
             
             let combinedSupQuestions = [...baseSupQuestions, ...customSupQuestions];
             if (combinedSupQuestions.length) {
@@ -1564,8 +1605,7 @@
         }
 
         function resetGame() {
-            state.started = false;
-            supportState.started = false; complaintState.started = false; document.getElementById('startBtn').disabled = false;
+            state.started = false; supportState.started = false; complaintState.started = false; document.getElementById('startBtn').disabled = false;
             document.getElementById("messageText").textContent = "Пока сообщений нет. Нажми «Начать смену».";
             document.getElementById("compText").textContent = "Нажми «Начать смену»."; document.getElementById("supportQuestionText").textContent = "Нажми «Начать смену».";
             pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
@@ -1576,7 +1616,6 @@
             const hcIndex = hiddenChecks.findIndex(hc => hc.userId === currentUser.id);
             if(hcIndex !== -1) {
                 const check = hiddenChecks[hcIndex];
-                // Удаляем из базы (одноразовая)
                 await supa.from('reports').delete().eq('id', check.id);
                 hiddenChecks.splice(hcIndex, 1);
                 return { type: check.type, text: check.text, user: "Тайный_Покупатель" };
@@ -1585,7 +1624,6 @@
         }
 
         async function randomMessage() {
-            // Проверка на тайного покупателя
             let hc = await checkAndApplyHiddenChecks();
             if(hc) {
                 state.current = hc;
@@ -1599,7 +1637,8 @@
             let combinedModMessages = [...baseModMessages, ...customModMessages];
             if (modQueue.length === 0) { modQueue = combinedModMessages.map((_, i) => i); shuffleArray(modQueue); }
             const item = combinedModMessages[modQueue.pop()];
-            const user = randomFunnyNick(); state.current = { ...item, user };
+            const user = randomFunnyNick();
+            state.current = { ...item, user };
             document.getElementById("authorName").textContent = user; document.getElementById("authorMeta").textContent = "Ожидает проверки"; document.getElementById("messageText").textContent = item.text;
             document.getElementById("avatarBox").textContent = initials(user);
         }
@@ -1610,26 +1649,21 @@
             document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
         }
 
-        // БАГФИКС ЛОГИКИ СУДЕЙСТВА (Теперь игра не запускается по кнопкам вердиктов, если она не начата кнопкой "Начать смену")
         window.judge = function(action) {
             if (!state.started) { alert('Сначала нажми "Начать смену"!'); return; }
             if (isSpamming() || !state.current) return;
-            
             const isCorrect = action === state.current.type; state.resolved++;
             if (isCorrect) { state.correct++; playSound('ok'); pushLog(`✅ Тренажёр: верное решение (${action.toUpperCase()})`); } 
             else { state.mistakes++; playSound('fail'); pushLog(`❌ Тренажёр: ошибка (${action.toUpperCase()})`); }
-            
             updateModStats(); saveProgress(); randomMessage();
         };
         
         window.judgeComplaint = function(action) {
             if (!complaintState.started) { alert('Сначала нажми "Начать смену"!'); return; }
             if (isSpamming() || !complaintState.current) return;
-            
             const isCorrect = action === complaintState.current.type; complaintState.resolved++;
             if (isCorrect) { complaintState.correct++; playSound('ok'); pushLog(`✅ Жалобы: верное решение (${action})`); } 
             else { complaintState.mistakes++; playSound('fail'); pushLog(`❌ Жалобы: ошибка (${action})`); }
-            
             updateComplaintStats(); saveProgress(); randomComplaint();
         };
 
@@ -1646,6 +1680,7 @@
             supportState.resolved++; 
            
             const ok = q.keywords.some(k => answer.includes(k));
+          
             if (ok) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
             else { supportState.mistakes++; resEl.textContent = "Ответ не засчитан: не хватает ключевых слов или команды."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
             
@@ -1666,7 +1701,6 @@
             let baseName = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
             if (activeCosmetics.crown) { baseName = "👑 " + baseName; }
             nameEl.textContent = baseName;
-            
             if (activeCosmetics.color) {
                 nameEl.style.background = "linear-gradient(90deg, #ff6b88, #ffbf47, #52c77b, #6c8cff, #a26cff)";
                 nameEl.style.webkitBackgroundClip = "text";
@@ -1729,6 +1763,7 @@
             if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар удален у всех!"); loadGlobalShopAndRoulette(); } 
             else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
         });
+        
         document.getElementById('deleteApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             if(!title) return alert("Введите точное название товара для удаления!");
@@ -1767,11 +1802,17 @@
             if (availableXp() >= price) {
                 shopState.spent += price;
                 playSound('ok'); updateShopStats(); await saveProgress();
+                
                 if (action === 'mod_roulette') openFortune(false);
                 else if (action === 'mod_coin') openCoinGame();
                 else if (action === 'mod_safes') openSafesGame();
                 else if (action === 'mod_jw') openJwQuiz();
-                else { const item = shopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, false, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); }
+                else if (action === 'generic_game') playGenericGame(id, price);
+                else { 
+                    const item = shopItems.find(i => i.id === id); 
+                    await logPurchase(`Покупка: ${item.title}`, false, false, price);
+                    alert(`Куплено: ${item.title}. Заявка отправлена руководству!`); 
+                }
             } else playSound('fail');
         };
 
@@ -1780,9 +1821,32 @@
                 shopState.apSpent += price;
                 playSound('ok'); updateShopStats(); await saveProgress();
                 if (action === 'ap_roulette') openFortune(true);
-                else { const item = apShopItems.find(i => i.id === id); await logPurchase(`Покупка: ${item.title}`, false, true, price); alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`); }
+                else { 
+                    const item = apShopItems.find(i => i.id === id);
+                    await logPurchase(`Покупка: ${item.title}`, false, true, price); 
+                    alert(`Куплено: ${item.title}. Заявка отправлена руководству АП!`);
+                }
             } else playSound('fail');
         };
+
+        function playGenericGame(id, price) {
+            const item = shopItems.find(i => i.id === id);
+            // Простая математика для мини-игр с шансами 50/50 или случайными
+            const winChance = Math.random();
+            let wonXp = 0;
+            if(winChance > 0.5) wonXp = price * 2; // Удвоение
+            
+            if(wonXp > 0) {
+                shopState.spent -= wonXp;
+                logPurchase(`${item.title}: Победа (${wonXp} XP)`, true, false, 0);
+                alert(`Победа в ${item.title}! Вы выиграли ${wonXp} XP.`);
+                playSound('win');
+            } else {
+                alert(`Проигрыш в ${item.title}. Попробуйте еще раз!`);
+                playSound('fail');
+            }
+            updateShopStats(); updateModStats(); saveProgress();
+        }
 
         function openFortune(isAp = false) {
             const modal = document.getElementById('fortuneModal');
@@ -1810,7 +1874,7 @@
             }, 100);
         }
         document.getElementById('closeFortuneBtn').addEventListener('click', () => { document.getElementById('fortuneModal').style.display = 'none'; });
-
+        
         function openCoinGame() {
             document.getElementById('coinModal').style.display = 'flex'; document.getElementById('coinResult').textContent = '';
             document.getElementById('coinAnimation').style.display = 'none'; document.getElementById('closeCoinBtn').style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false;
@@ -1848,6 +1912,7 @@
         document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
 
         const jwCharacters = [ { name: "John Wick", img: "https://upload.wikimedia.org/wikipedia/en/3/34/John_Wick_Chapter_2_Poster.jpg" }, { name: "Winston Scott", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, { name: "Bowery King", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" } ];
+        
         function openJwQuiz() {
             document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none';
             document.getElementById('jwResult').textContent = '';
@@ -1891,23 +1956,13 @@
 
             const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
             const { data: users } = await supa.from('user_stats').select('*');
-            const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
             
-            let modLeadersIds = [];
-            let apLeadersIds = [];
-            if(adminRoles) {
-                modLeadersIds = adminRoles.filter(r => r.status === 'leadership').map(r => r.link);
-                apLeadersIds = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link);
-            }
-
-            const modEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
-            const apEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
-
+            // Фильтруем только действующих модераторов и АП
             let modArr = [], apArr = [];
             if(users) {
                 users.forEach(u => {
-                    const isModLeader = modEmails.includes(u.email) || modLeadersIds.includes(u.user_id);
-                    const isApLeader = apEmails.includes(u.email) || apLeadersIds.includes(u.user_id);
+                    const isUserMod = activeMods.includes(u.user_id) || adminEmails.includes(u.email);
+                    const isUserAp = activeAps.includes(u.user_id) || apLeadershipEmails.includes(u.email);
 
                     let reportXp = 0; 
                     if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
@@ -1916,8 +1971,8 @@
                     const aXp = Math.max(0, calcXP(u.sup_correct) - Number(u.ap_spent||0));
   
                     if(u.nickname) { 
-                        if (!isModLeader && mXp > 0) { modArr.push({ name: u.nickname, score: mXp }); }
-                        if (!isApLeader && aXp > 0) { apArr.push({ name: u.nickname, score: aXp }); }
+                        if (isUserMod && mXp > 0) { modArr.push({ name: u.nickname, score: mXp }); }
+                        if (isUserAp && aXp > 0) { apArr.push({ name: u.nickname, score: aXp }); }
                     }
                 });
             }
@@ -1937,8 +1992,6 @@
         let creatorUsersList = [];
         async function loadCreatorPanelData() {
             if (!currentUser || currentUser.email !== creatorEmail) return;
-            
-            // Загрузка тумблера отчетов
             const toggle = document.getElementById('requireReportsToggle');
             if (toggle) {
                 toggle.checked = isReportsRequired;
@@ -1949,19 +2002,12 @@
                 }
             }
 
-            const sel = document.getElementById('creatorUserSelect'); if (sel) sel.innerHTML = '<option>Загрузка...</option>';
+            const sel = document.getElementById('creatorUserSelect');
+            if (sel) sel.innerHTML = '<option>Загрузка...</option>';
             const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent');
             if (users && users.length > 0) { creatorUsersList = users;
                 if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join('');
             }
-            
-            const list = document.getElementById('creatorKeysList');
-            if (!list) return; list.innerHTML = 'Загрузка ключей...';
-            const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').order('date', { ascending: false });
-            if (keys && keys.length > 0) {
-                list.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-primary); font-size: 1.1rem;">${k.link}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${k.status})</span></div><button class="badge ban del-key-btn" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
-                list.querySelectorAll('.del-key-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadCreatorPanelData(); }); });
-            } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
 
             const adminSel = document.getElementById('creatorAdminSelect');
             if (adminSel && creatorUsersList.length > 0) {
@@ -1984,30 +2030,22 @@
             }
         }
 
-        document.getElementById('creatorAddKeyBtn')?.addEventListener('click', async () => {
-            const role = document.getElementById('creatorKeyRole').value; const keyStr = document.getElementById('creatorKeyInput').value.trim();
-            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); document.getElementById('creatorAddKeyBtn').disabled = true;
-            const { error } = await supa.from('reports').
-              insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
-            if (!error) { document.getElementById('creatorKeyInput').value = ''; alert("Ключ успешно создан!"); loadCreatorPanelData(); } document.getElementById('creatorAddKeyBtn').disabled = false;
-        });
-
         document.getElementById('creatorXpBtn')?.addEventListener('click', async () => {
              const userId = document.getElementById('creatorUserSelect').value; const amount = Number(document.getElementById('creatorXpAmount').value);
              if (!userId || isNaN(amount)) return; const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
              const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
         });
-
+        
         document.getElementById('trollWipeXpBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
             await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: targetNick, shop_spent: 99999 }); alert(`🤡 Троллинг: XP обнулен, новый ник: ${targetNick}`); location.reload();
         });
-
+        
         document.getElementById('trollRenameBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
             await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', currentUser.id); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); location.reload();
         });
-
+        
         document.getElementById('trollDeleteBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value;
@@ -2018,7 +2056,7 @@
                 loadCreatorPanelData();
             }
         });
-
+        
         document.getElementById('creatorAddAdminBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('creatorAdminSelect').value;
             const role = document.getElementById('creatorAdminRole').value;
@@ -2029,7 +2067,7 @@
             alert("Пользователь успешно добавлен в руководство! Права появятся у него после перезагрузки страницы.");
             loadCreatorPanelData();
         });
-
+        
         document.getElementById('creatorRemoveAdminBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('creatorAdminSelect').value;
             const role = document.getElementById('creatorAdminRole').value;
@@ -2039,7 +2077,6 @@
             loadCreatorPanelData();
         });
 
-        // === НОВЫЕ ФУНКЦИИ ИЗ ОБНОВЛЕНИЯ: Тайный покупатель, Редакторы сообщений ===
         document.getElementById('sendHiddenCheckBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('hiddenCheckUser').value;
             const text = document.getElementById('hiddenCheckText').value.trim();
@@ -2092,7 +2129,7 @@
             } else alert("Ошибка при добавлении.");
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ (GLOBAL SYNC)
+        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ
         document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             const desc = document.getElementById('modShopItemDesc').value.trim();
@@ -2103,18 +2140,16 @@
             await supa.from('reports').insert([{ id: newItemId, email: 'SHOP_MOD', date: title, status: desc, xp: price, link: icon }]);
             alert("Товар добавлен для всех!"); loadGlobalShopAndRoulette();
         });
-
         document.getElementById('editModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim();
             const price = Number(document.getElementById('modShopItemPrice').value);
             if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
             const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
             if(item) { 
-                 await supa.from('reports').update({ xp: price }).eq('id', item.id);
+                await supa.from('reports').update({ xp: price }).eq('id', item.id);
                 alert("Цена успешно обновлена для всех!"); loadGlobalShopAndRoulette(); 
             } else alert("Пользовательский товар с таким названием не найден! (Базовые изменить нельзя)");
         });
-
         document.getElementById('updateModRouletteBtn')?.addEventListener('click', async () => {
             const slotId = document.getElementById('modRouletteSlot').value;
             const text = document.getElementById('modRouletteText').value.trim();
@@ -2126,7 +2161,7 @@
             alert("Рулетка модерации обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ (GLOBAL SYNC)
+        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ
         document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             const desc = document.getElementById('apShopItemDesc').value.trim();
@@ -2137,18 +2172,16 @@
             await supa.from('reports').insert([{ id: newItemId, email: 'SHOP_AP', date: title, status: desc, xp: price, link: icon }]);
             alert("Товар АП добавлен для всех!"); loadGlobalShopAndRoulette();
         });
-
         document.getElementById('editApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim();
             const price = Number(document.getElementById('apShopItemPrice').value);
             if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
             const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
             if(item) { 
-                 await supa.from('reports').update({ xp: price }).eq('id', item.id);
+                await supa.from('reports').update({ xp: price }).eq('id', item.id);
                 alert("Цена успешно обновлена для всех!"); loadGlobalShopAndRoulette(); 
             } else alert("Пользовательский товар с таким названием не найден! (Базовые изменить нельзя)");
         });
-
         document.getElementById('updateApRouletteBtn')?.addEventListener('click', async () => {
             const slotId = document.getElementById('apRouletteSlot').value;
             const text = document.getElementById('apRouletteText').value.trim();
@@ -2160,13 +2193,16 @@
             alert("Рулетка АП обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
+        // ВЫДАЧА СТАТУСОВ И АДМИН ПАНЕЛИ
         let adminUsersList = [];
         async function loadUsersForAdmin() {
             if(!currentUser) return;
             const isModLeader = adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicModLeaders.includes(currentUser.id); 
             const isApLeader = apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
             if(!isModLeader && !isApLeader) return;
+            
             const { data: users } = await supa.from('user_stats').select('*').order('nickname', { ascending: true }); if(users) adminUsersList = users;
+            
             if (isModLeader) { 
                 const sel = document.getElementById('leadershipUserSelect');
                 if(sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (XP долг: ${u.shop_spent||0})</option>`).join('');
@@ -2174,38 +2210,70 @@
                 const hcSel = document.getElementById('hiddenCheckUser');
                 if(hcSel) hcSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
 
-                const listModKeys = document.getElementById('leadershipKeysList');
-                if (listModKeys) {
-                    listModKeys.innerHTML = 'Загрузка ключей...';
-                    const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').in('status', ['shop', 'report']).order('date', { ascending: false });
-                    if (keys && keys.length > 0) {
-                        listModKeys.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success); font-size: 1.1rem;">${k.link}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${k.status})</span></div><button class="badge ban del-key-btn-mod" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
-                        listModKeys.querySelectorAll('.del-key-btn-mod').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); }); });
-                    } else listModKeys.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
+                const modSel = document.getElementById('leadAddModSelect');
+                if(modSel) modSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
+                
+                const list = document.getElementById('leadModList');
+                if (list) {
+                    const { data: modsData } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('status', 'moderator');
+                    if (modsData && modsData.length > 0) {
+                        list.innerHTML = modsData.map(m => {
+                            const u = users.find(user => user.user_id === m.link);
+                            const name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
+                            return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success);">${name}</strong></div><button class="badge ban del-mod-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
+                        }).join('');
+                        list.querySelectorAll('.del-mod-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
+                    } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Модераторов пока нет</div>';
                 }
             }
             if (isApLeader) { 
                 const sel = document.getElementById('apAdminUserSelect');
                 if(sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Баллы долг: ${u.ap_spent||0})</option>`).join('');
                 
-                const list = document.getElementById('apAdminKeysList');
+                const apSel = document.getElementById('leadAddApSelect');
+                if(apSel) apSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
+                
+                const list = document.getElementById('leadApList');
                 if (list) {
-                    list.innerHTML = 'Загрузка ключей...';
-                    const { data: keys } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('status', 'ap_shop').order('date', { ascending: false });
-                    if (keys && keys.length > 0) {
-                        list.innerHTML = keys.map(k => `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#ff8fc4; font-size: 1.1rem;">${k.link}</strong></div><button class="badge ban del-key-btn" data-id="${k.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Удалить</button></div>`).join('');
-                        list.querySelectorAll('.del-key-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); }); });
-                    } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Ключей пока нет</div>';
+                    const { data: apsData } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('status', 'ap');
+                    if (apsData && apsData.length > 0) {
+                        list.innerHTML = apsData.map(m => {
+                            const u = users.find(user => user.user_id === m.link);
+                            const name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
+                            return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#ff8fc4;">${name}</strong></div><button class="badge ban del-ap-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
+                        }).join('');
+                        list.querySelectorAll('.del-ap-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
+                    } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Агентов Поддержки пока нет</div>';
                 }
             }
         }
+        
+        document.getElementById('leadAddModBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadAddModSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'moderator');
+            if(existing && existing.length > 0) return alert("Этот пользователь уже является модератором!");
+            await supa.from('reports').insert([{ id: 'mod_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'moderator', xp: 0 }]);
+            alert("Статус Модератора успешно выдан!");
+            loadUsersForAdmin(); loadGlobalShopAndRoulette();
+        });
+        
+        document.getElementById('leadAddApBtn')?.addEventListener('click', async () => {
+            const userId = document.getElementById('leadAddApSelect').value;
+            if(!userId || userId.startsWith("Загрузка")) return;
+            const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'ap');
+            if(existing && existing.length > 0) return alert("Этот пользователь уже является АП!");
+            await supa.from('reports').insert([{ id: 'ap_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'ap', xp: 0 }]);
+            alert("Статус АП успешно выдан!");
+            loadUsersForAdmin(); loadGlobalShopAndRoulette();
+        });
         
         document.getElementById('leadershipXpBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('leadershipUserSelect').value; const amount = Number(document.getElementById('leadershipXpAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (Модерация)!');
         });
-
+        
         document.getElementById('leadershipDeleteBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('leadershipUserSelect').value;
             if(!userId) return;
@@ -2216,22 +2284,12 @@
             }
         });
 
-        document.getElementById('leadershipAddKeyBtn')?.addEventListener('click', async () => {
-            const role = document.getElementById('leadershipKeyRole').value;
-            const keyStr = document.getElementById('leadershipKeyInput').value.trim();
-            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); 
-            document.getElementById('leadershipAddKeyBtn').disabled = true;
-            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
-            if (!error) { document.getElementById('leadershipKeyInput').value = ''; alert("Ключ успешно создан!"); loadUsersForAdmin(); }
-            document.getElementById('leadershipAddKeyBtn').disabled = false;
-        });
-
         document.getElementById('apAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('apAdminUserSelect').value; const amount = Number(document.getElementById('apAdminPointsAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             const newSpent = (Number(targetUser.ap_spent) || 0) - amount; await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (АП)!');
         });
-
+        
         document.getElementById('apAdminDeleteBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('apAdminUserSelect').value;
             if(!userId) return;
@@ -2242,22 +2300,12 @@
             }
         });
 
-        document.getElementById('apAdminAddKeyBtn')?.addEventListener('click', async () => {
-            const keyStr = document.getElementById('apAdminKeyInput').value.trim();
-            if (keyStr.length < 3) return alert("Ключ должен быть длиннее 3 символов!"); document.getElementById('apAdminAddKeyBtn').disabled = true;
-            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ACCESS_KEY', link: keyStr, date: new Date().toLocaleString('ru-RU'), status: 'ap_shop', xp: 0 }]);
-            if (!error) { document.getElementById('apAdminKeyInput').value = ''; alert("Ключ для магазина АП успешно создан!"); loadUsersForAdmin(); } document.getElementById('apAdminAddKeyBtn').disabled = false;
-        });
-
         async function renderAdminLogs(isAp = false) {
             const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea');
             if(!area) return; area.innerHTML = 'Загрузка...';
             
             const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
-            if (error) {
-                area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`;
-                return;
-            }
+            if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
 
             if(logs && logs.length > 0) {
                 area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
@@ -2272,43 +2320,106 @@
         document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
         document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
 
-        // === 11. ОТЧЕТНОСТЬ И АВТОРИЗАЦИЯ ===
-        function checkReportAccess() {
-            const warn = document.getElementById('reportAccessWarning');
-            const formArea = document.getElementById('reportFormArea'); 
-            const adminPanel = document.getElementById('adminPanelArea');
-            if (currentUser) { 
-                if(warn) warn.style.display = 'none';
-                if(formArea) formArea.style.display = 'block';
-                if (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id)) { 
-                    if(adminPanel) adminPanel.style.display = 'block';
-                } 
-            } 
-            else { 
-                if(warn) warn.style.display = 'block';
-                if(formArea) formArea.style.display = 'none'; 
+        // === 11. ОТЧЕТНОСТЬ, НЕАКТИВЫ И ДОСТУП ===
+        function checkRolesAndAccess() {
+            // Магазины
+            if (isModerator) document.getElementById('shopTabBtn').style.display = 'inline-block';
+            else document.getElementById('shopTabBtn').style.display = 'none';
+
+            if (isAp) document.getElementById('apShopTabBtn').style.display = 'inline-block';
+            else document.getElementById('apShopTabBtn').style.display = 'none';
+
+            // Отчетность
+            if (isModerator) {
+                document.getElementById('reportTabBtn').style.display = 'inline-block';
+                document.getElementById('reportAccessWarning').style.display = 'none';
+                document.getElementById('reportFormArea').style.display = 'block';
+            } else {
+                document.getElementById('reportTabBtn').style.display = 'none';
+                document.getElementById('reportAccessWarning').style.display = 'block';
+                document.getElementById('reportFormArea').style.display = 'none';
             }
 
-            // Блокировка других панелей, если отчет обязателен, но не сдан (Опциональная логика, если нужно жесткое ограничение)
-            if(isReportsRequired && currentUser) {
-                // Дополнительная логика проверки сдачи отчета за сегодня
+            // Неактивы
+            if (isModerator) {
+                document.getElementById('inactiveTabBtn').style.display = 'inline-block';
+                document.getElementById('inactiveAccessWarning').style.display = 'none';
+                document.getElementById('inactiveFormArea').style.display = 'block';
+            } else {
+                document.getElementById('inactiveTabBtn').style.display = 'none';
+                document.getElementById('inactiveAccessWarning').style.display = 'block';
+                document.getElementById('inactiveFormArea').style.display = 'none';
+            }
+
+            // Админ панели
+            const isModLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id));
+            if (isModLeader) { 
+                document.getElementById('adminPanelArea').style.display = 'block';
+            } else {
+                document.getElementById('adminPanelArea').style.display = 'none';
             }
         }
 
         document.getElementById('submitReportBtn')?.addEventListener('click', async () => {
-            if (!currentUser) return; 
-            const link = document.getElementById('reportLinkInput').value.trim(); 
+            if (!currentUser || !isModerator) return; 
             const res = document.getElementById('reportResultText');
+            const fileInput = document.getElementById('reportFileInput');
             
-            if (!link.startsWith('http')) { res.textContent = "Укажите корректную ссылку!"; res.style.color = "var(--color-error)"; return; } 
+            if (fileInput.files.length === 0) { res.textContent = "Прикрепите скриншот!"; res.style.color = "var(--color-error)"; return; } 
+            res.textContent = "Обработка и отправка..."; res.style.color = "var(--color-text-muted)";
+            
+            compressImage(fileInput.files[0], async (base64Image) => {
+                const { error } = await supa.from('reports').insert([{ 
+                    id: 'rep_' + Date.now().toString(), 
+                    email: currentUser.email, 
+                    link: base64Image, 
+                    date: new Date().toLocaleString('ru-RU'), 
+                    status: 'На проверке', 
+                    xp: 0 
+                }]);
+                
+                if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
+                res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)";
+                fileInput.value = ''; 
+                playSound('win');
+            });
+        });
+
+        document.getElementById('submitInactiveBtn')?.addEventListener('click', async () => {
+            if (!currentUser || !isModerator) return; 
+            const nick = document.getElementById('inactiveNickInput').value.trim();
+            const dateFrom = document.getElementById('inactiveDateFrom').value.trim();
+            const dateTo = document.getElementById('inactiveDateTo').value.trim();
+            const reason = document.getElementById('inactiveReasonInput').value.trim();
+            const fileInput = document.getElementById('inactiveFileInput');
+            const res = document.getElementById('inactiveResultText');
+            
+            if (!nick || !dateFrom || !dateTo || !reason) { res.textContent = "Заполните все текстовые поля!"; res.style.color = "var(--color-error)"; return; } 
             res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
             
-            const { error } = await supa.from('reports').insert([{ id: Date.now().toString(), email: currentUser.email, link: link, date: new Date().toLocaleString('ru-RU'), status: 'На проверке', xp: 0 }]);
-            
-            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
-            res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)";
-            document.getElementById('reportLinkInput').value = ''; 
-            playSound('win');
+            const submitData = async (base64Image = "") => {
+                const combinedData = `Ник: ${nick} | С: ${dateFrom} | По: ${dateTo} | Причина: ${reason}`;
+                const { error } = await supa.from('reports').insert([{ 
+                    id: 'ina_' + Date.now().toString(), 
+                    email: 'INACTIVE_REQ', 
+                    link: base64Image, 
+                    date: combinedData, 
+                    status: 'Ожидает одобрения', 
+                    xp: 0 
+                }]);
+                if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
+                res.textContent = "Заявка успешно отправлена!"; res.style.color = "var(--color-success)";
+                document.getElementById('inactiveNickInput').value = ''; document.getElementById('inactiveDateFrom').value = '';
+                document.getElementById('inactiveDateTo').value = ''; document.getElementById('inactiveReasonInput').value = '';
+                fileInput.value = '';
+                playSound('win');
+            };
+
+            if (fileInput.files.length > 0) {
+                compressImage(fileInput.files[0], submitData);
+            } else {
+                submitData("");
+            }
         });
 
         document.getElementById('viewReportsBtn')?.addEventListener('click', async () => {
@@ -2317,22 +2428,12 @@
             if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
             listArea.style.display = 'flex'; 
             listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
-         
             try {
                 const { data: reports, error } = await supa.from('reports')
                     .select('*')
-                    .neq('email', 'ACCESS_KEY')
-                    .neq('email', 'ADMIN_ROLE')
-                    .neq('email', 'SHOP_MOD')
-                    .neq('email', 'SHOP_AP')
-                    .neq('email', 'ROULETTE_MOD')
-                    .neq('email', 'ROULETTE_AP')
-                    .neq('email', 'CUSTOM_MOD_MSG')
-                    .neq('email', 'CUSTOM_AP_MSG')
-                    .neq('email', 'HIDDEN_CHECK')
+                    .not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ")')
                     .order('date', { ascending: false })
                     .limit(30);
-                
                 if (error) throw error;
                 if(reports && reports.length > 0) { 
                     listArea.innerHTML = reports.map(r => `
@@ -2341,7 +2442,7 @@
                             <strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">${r.date || ''}</span>
                         </div>
                         <div style="margin-bottom: 0.5rem;">
-                            <a href="${r.link || '#'}" target="_blank" style="color: var(--color-primary);">Скриншот онлайна</a>
+                            ${r.link && r.link.startsWith('data:image') ? `<img src="${r.link}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">` : `<a href="${r.link || '#'}" target="_blank" style="color: var(--color-primary);">Ссылка</a>`}
                         </div>
                         <div style="display:flex; flex-direction: column; gap: 0.5rem;">
                             <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
@@ -2364,10 +2465,52 @@
             }
         });
 
+        document.getElementById('viewInactivesBtn')?.addEventListener('click', async () => {
+            const listArea = document.getElementById('inactivesListArea'); 
+            if(!listArea) return; 
+            if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
+            listArea.style.display = 'flex'; 
+            listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
+            try {
+                const { data: reports, error } = await supa.from('reports')
+                    .select('*')
+                    .eq('email', 'INACTIVE_REQ')
+                    .order('date', { ascending: false })
+                    .limit(30);
+                if (error) throw error;
+                if(reports && reports.length > 0) { 
+                    listArea.innerHTML = reports.map(r => `
+                    <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);">
+                        <div style="margin-bottom: 0.5rem; font-size: 0.9rem; color: #fff;">${r.date || ''}</div>
+                        ${r.link && r.link.startsWith('data:image') ? `<div style="margin-bottom: 0.5rem;"><img src="${r.link}" style="max-width: 100%; max-height: 150px; border-radius: 8px;"></div>` : ''}
+                        <div style="display:flex; flex-direction: column; gap: 0.5rem;">
+                            <span style="font-weight: bold; color: ${r.status === 'Одобрено' ? 'var(--color-success)' : r.status === 'Отказано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'}</span>
+                            
+                            ${(r.status === 'Ожидает одобрения') ? `
+                            <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processInactive('${r.id}', 'Одобрено')">Одобрить</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processInactive('${r.id}', 'Отказано')">Отказать</button>
+                            </div>` : ''}
+                        </div>
+                    </div>`).join('');
+                } else {
+                    listArea.innerHTML = '<div class="message-text">Заявок на неактив пока нет</div>';
+                }
+            } catch (err) {
+                listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`;
+            }
+        });
+
         window.processReport = async function(id, statusText, xpAmount) { 
             await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id);
             document.getElementById('viewReportsBtn').click(); 
             setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
+        };
+        
+        window.processInactive = async function(id, statusText) { 
+            await supa.from('reports').update({ status: statusText }).eq('id', id);
+            document.getElementById('viewInactivesBtn').click(); 
+            setTimeout(() => document.getElementById('viewInactivesBtn').click(), 100); 
         };
 
         async function saveProgress() {
@@ -2376,31 +2519,6 @@
         }
 
         // Авторизация Модалки
-        document.getElementById('accessSubmitBtn')?.addEventListener('click', async () => {
-            const val = document.getElementById('accessCodeInput').value.trim(); const err = document.getElementById('accessErrorMsg'); const btn = document.getElementById('accessSubmitBtn'); btn.disabled = true; btn.textContent = "Проверка...";
-            if (pendingAction.type === 'switch_tab_shop' && val === 'JohnWickModer') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); return; }
-            if (pendingAction.type === 'switch_tab_report' && val === 'JohnWIckTopModer') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); return; }
-            if (pendingAction.type === 'switch_tab_ap_shop' && val === 'ApMasterKey123') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); return; }
-            
-            const { data } = await supa.from('reports').select('*').eq('email', 'ACCESS_KEY').eq('link', val);
-            if (data && data.length > 0) { 
-                const keyData = data[0];
-                if (pendingAction.type === 'switch_tab_shop' && keyData.status === 'shop') { localStorage.setItem('access_shop', 'true'); hasAccessCode = true; finishAccess(true, 'shop'); } 
-                else if (pendingAction.type === 'switch_tab_report' && keyData.status === 'report') { localStorage.setItem('access_report', 'true'); hasReportAccessCode = true; finishAccess(true, 'report'); } 
-                else if (pendingAction.type === 'switch_tab_ap_shop' && keyData.status === 'ap_shop') { localStorage.setItem('access_ap_shop', 'true'); hasApShopAccess = true; finishAccess(true, 'ap_shop'); } 
-                else finishAccess(false);
-            } else finishAccess(false);
-
-            function finishAccess(success, roleMode) { 
-                btn.disabled = false;
-                btn.textContent = "Подтвердить";
-                if (success) { document.getElementById('accessModal').style.display = 'none'; switchMode(roleMode, pendingAction.btn); pendingAction = null; } 
-                else err.style.display = 'block';
-            }
-        });
-
-        document.getElementById('accessCloseBtn')?.addEventListener('click', () => { document.getElementById('accessModal').style.display = 'none'; pendingAction = null; });
-        
         document.getElementById('loginBtnUI').onclick = () => { document.getElementById('authModal').style.display = 'flex'; document.getElementById('authErrorMsg').style.display = 'none'; };
         document.getElementById('authCloseModal').onclick = () => { document.getElementById('authModal').style.display = 'none'; };
         document.getElementById('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
@@ -2422,7 +2540,7 @@
             if(error) { err.textContent = error.message; err.style.display = 'block'; } 
             else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; err.style.display = 'block'; }
         };
-
+        
         document.getElementById('forceNicknameBtn')?.addEventListener('click', async () => {
             const val = document.getElementById('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
             await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
@@ -2466,6 +2584,7 @@
                 const isCreator = currentUser.email === creatorEmail;
                 const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id); 
                 const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+                
                 if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
                 if (isModLeader) { 
                     document.getElementById('leadershipTabBtn').style.display = 'inline-block';
@@ -2476,7 +2595,7 @@
                     document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; 
                 }
 
-                await loadGlobalShopAndRoulette(); // Вызываем глобальную синхронизацию базы данных магазина
+                await loadGlobalShopAndRoulette();
 
                 supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
                     if(data) { 
@@ -2488,15 +2607,14 @@
                     supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
                         state.reportXp = 0; 
                         if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                        updateModStats(); updateSupportStats(); updateShopStats(); checkReportAccess(); 
+                        updateModStats(); updateSupportStats(); updateShopStats(); checkRolesAndAccess(); 
                         if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
                     });
                 });
                 if(isCreator) loadCreatorPanelData();
             } else { 
                 await loadGlobalShopAndRoulette();
-                // Загружаем для неавторизованных тоже
-                checkReportAccess();
+                checkRolesAndAccess();
             }
         });
     }); 
