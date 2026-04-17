@@ -201,7 +201,7 @@
     html[data-site-theme="leaderboard"] .mode-btn.active { background: linear-gradient(135deg, #ff3d00, #ff9e00); color: #fff; box-shadow: 0 8px 20px rgba(255, 61, 0, 0.35); }
     html[data-site-theme="about"] .mode-btn.active, html[data-site-theme="profile"] .mode-btn.active { background: linear-gradient(135deg, #ffbf47, #ffd979); color: #18171c; box-shadow: 0 8px 20px rgba(255, 191, 71, 0.35); }
     html[data-site-theme="admin_log"] .mode-btn.active, html[data-site-theme="ap_admin_log"] .mode-btn.active { background: linear-gradient(135deg, #ffbf47, #ff9e00); color: #18171c; box-shadow: 0 8px 20px rgba(255, 191, 71, 0.35); }
-    html[data-site-theme="timeattack"] .mode-btn.active { background: linear-gradient(135deg, #ffbf47, #ff3d00); color: #fff; box-shadow: 0 8px 20px rgba(255, 191, 71, 0.5); }
+    html[data-site-theme="timeattack"] .mode-btn.active { background: linear-gradient(135deg, #ffbf47, #ff3d00); color: #fff; box-shadow: 0 15px 35px rgba(255, 191, 71, 0.5); }
     html[data-site-theme="creator"] .mode-btn.active { background: linear-gradient(135deg, #ff3b60, #ff6b88); color: #fff; box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); }
 
     .game-wrap { margin-top: 0.75rem; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr); gap: 1rem; align-items: start; }
@@ -369,6 +369,10 @@
   </style>
 </head>
 <body>
+
+  <div id="imageModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 100000; align-items: center; justify-content: center; cursor: zoom-out;" onclick="this.style.display='none'">
+    <img id="imageModalSrc" src="" style="max-width: 95%; max-height: 95%; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.8);">
+  </div>
 
   <div id="authModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
     <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 400px; display: grid; gap: 1.2rem;">
@@ -2640,7 +2644,11 @@
                             <strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">Данные формы: ${r.date || ''}</span>
                         </div>
                         <div style="margin-bottom: 0.5rem;">
-                            ${r.link && r.link.startsWith('data:image') ? `<img src="${r.link}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">` : r.link ? `<a href="${r.link}" target="_blank" style="color: var(--color-primary);">Ссылка на доказательства</a>` : ''}
+                            ${r.link && r.link.startsWith('data:image') ? 
+                                `<img src="${r.link}" style="max-width: 100%; max-height: 150px; border-radius: 8px; cursor: zoom-in; border: 2px solid var(--color-primary);" onclick="document.getElementById('imageModal').style.display='flex'; document.getElementById('imageModalSrc').src='${r.link}'">` : 
+                            r.link ? 
+                                `<a href="${r.link}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📸 Открыть ссылку на док-во</a>` : 
+                            ''}
                         </div>
                         <div style="display:flex; flex-direction: column; gap: 0.5rem;">
                             <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
@@ -2803,8 +2811,7 @@
                     supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
                         state.reportXp = 0; 
                         if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                        updateModStats(); updateSupportStats(); updateShopStats();
-                        checkRolesAndAccess(); 
+                        updateModStats(); updateSupportStats(); updateShopStats(); checkRolesAndAccess(); 
                         if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
                     });
                 });
