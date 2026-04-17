@@ -348,13 +348,24 @@
     .slots-container { display: flex; gap: 1rem; justify-content: center; font-size: 3rem; background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; border: 2px solid var(--color-primary); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
     .slot-item { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
     
-    .timing-bar-wrap { width: 100%; height: 36px; background: rgba(0,0,0,0.8); border-radius: 18px; position: relative; overflow: hidden; margin: 1.5rem 0; border: 2px solid rgba(255,255,255,0.2); }
-    .timing-zone { position: absolute; left: 40%; width: 20%; height: 100%; background: linear-gradient(90deg, #3da860, #52c77b, #3da860); box-shadow: 0 0 15px #52c77b; }
-    .timing-cursor { position: absolute; left: 0; width: 8px; height: 100%; background: #fff; box-shadow: 0 0 15px #fff; border-radius: 4px; z-index: 2; }
-
     .timer-display { font-family: var(--font-display); font-size: 4rem; color: #ffbf47; text-align: center; text-shadow: 0 0 20px rgba(255, 191, 71, 0.6); line-height: 1; margin: 1.5rem 0; transition: color 0.3s ease; }
     .timer-display.danger { color: #ff6b88; text-shadow: 0 0 20px rgba(255, 107, 136, 0.8); animation: pulse 1s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+    /* === ИГРЫ НОВЫЕ СТИЛИ === */
+    .bj-table { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; width: 100%; }
+    .bj-hand { display: flex; gap: 0.5rem; min-height: 80px; justify-content: center; flex-wrap: wrap; }
+    .bj-card { width: 55px; height: 80px; background: #fff; color: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.4rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 2px solid #ccc; }
+    .bj-card.red { color: #ff3b60; }
+    .bj-card.hidden { background: repeating-linear-gradient(45deg, #181005, #181005 10px, #ffbf47 10px, #ffbf47 20px); border-color: #ffbf47; color: transparent; }
+    
+    .miner-grid, .pairs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 0.5rem; width: 100%; max-width: 300px; }
+    .miner-cell, .pairs-card { aspect-ratio: 1; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; user-select: none; }
+    .miner-cell:hover:not(.revealed), .pairs-card:hover:not(.flipped) { background: rgba(255,255,255,0.15); transform: scale(1.05); border-color: var(--color-primary); }
+    .miner-cell.revealed { background: rgba(0,0,0,0.6); cursor: default; border-color: transparent; }
+    .pairs-card.flipped { background: rgba(82, 199, 123, 0.2); border-color: #52c77b; cursor: default; transform: rotateY(180deg); }
+    .pairs-card .content { display: none; transform: rotateY(180deg); }
+    .pairs-card.flipped .content { display: block; }
 
     .support-answer-row { display: flex; flex-direction: column; gap: 0.5rem; }
     .support-answer-row-inner { display: flex; gap: 0.75rem; align-items: stretch; }
@@ -413,15 +424,18 @@
     <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
       <h2 id="ggTitle" style="margin: 0; font-family: var(--font-display); color: #ffbf47;">Игра</h2>
       
-      <div id="ggInteractiveArea" style="width: 100%; margin-top: 0.5rem;">
+      <div id="ggInteractiveArea" style="width: 100%; margin-top: 0.5rem; display: flex; flex-direction: column; align-items: center;">
          
-         <div id="ggRps" style="display:none; justify-content: center; gap: 1rem;">
-            <button class="gg-btn rps-btn" data-choice="rock">✊</button>
-            <button class="gg-btn rps-btn" data-choice="paper">✋</button>
-            <button class="gg-btn rps-btn" data-choice="scissors">✌️</button>
+         <div id="ggRps" style="display:none; flex-direction: column; align-items: center; gap: 1rem; width: 100%;">
+            <div id="rpsScore" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; color: #fff;">Игрок: 0 | Бот: 0</div>
+            <div style="display:flex; justify-content: center; gap: 1rem; width: 100%;">
+              <button class="gg-btn rps-btn" data-choice="rock">✊</button>
+              <button class="gg-btn rps-btn" data-choice="paper">✋</button>
+              <button class="gg-btn rps-btn" data-choice="scissors">✌️</button>
+            </div>
          </div>
          
-         <div id="ggSlots" style="display:none; flex-direction: column; align-items: center;">
+         <div id="ggSlots" style="display:none; flex-direction: column; align-items: center; width: 100%;">
             <div class="slots-container">
                <div class="slot-item" id="slot1">❓</div>
                <div class="slot-item" id="slot2">❓</div>
@@ -429,20 +443,35 @@
             </div>
             <button id="ggSpinBtn" class="btn btn-primary" style="width: 100%;">Дернуть рычаг</button>
          </div>
-         
-         <div id="ggTiming" style="display:none; flex-direction: column; align-items: center;">
-            <p style="font-size: 0.95rem; color: var(--color-text-muted);">Остановите ползунок в зеленой зоне!</p>
-            <div class="timing-bar-wrap">
-               <div class="timing-zone"></div>
-               <div class="timing-cursor" id="timingCursor"></div>
+
+         <div id="ggBlackjack" style="display:none; width: 100%;">
+            <div class="bj-table">
+               <div>Дилер: <span id="bjDealerScore" style="font-weight:bold; color:var(--color-error);">0</span></div>
+               <div class="bj-hand" id="bjDealerHand"></div>
+               <div style="margin-top:0.5rem;">Игрок: <span id="bjPlayerScore" style="font-weight:bold; color:var(--color-success);">0</span></div>
+               <div class="bj-hand" id="bjPlayerHand"></div>
+               <div style="display: flex; gap: 1rem; margin-top: 1rem; width:100%;" id="bjControls">
+                  <button id="bjHitBtn" class="btn btn-primary" style="flex:1;">Взять (Hit)</button>
+                  <button id="bjStandBtn" class="btn btn-secondary" style="flex:1;">Хватит (Stand)</button>
+               </div>
             </div>
-            <button id="ggStopBtn" class="btn btn-primary" style="width: 100%;">СТОП!</button>
+         </div>
+         
+         <div id="ggMiner" style="display:none; flex-direction: column; align-items: center; width: 100%;">
+            <div style="margin-bottom: 0.5rem; font-size: 1.1rem;">Множитель: <span id="minerMult" style="color:var(--color-success); font-weight:bold;">x1.0</span></div>
+            <div class="miner-grid" id="minerGrid"></div>
+            <button id="minerCashoutBtn" class="btn btn-primary" style="margin-top: 1rem; width:100%;">Забрать выигрыш</button>
+         </div>
+
+         <div id="ggPairs" style="display:none; flex-direction: column; align-items: center; width: 100%;">
+            <div style="margin-bottom: 0.5rem; font-size: 1.1rem;">Ошибки до проигрыша: <span id="pairsTries" style="color:var(--color-warning); font-weight:bold;">6</span></div>
+            <div class="pairs-grid" id="pairsGrid"></div>
          </div>
 
       </div>
 
       <div id="ggResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2.5rem; margin-top: 0.5rem;"></div>
-      <button id="closeGgBtn" class="btn btn-secondary" style="display: none;">Забрать результат</button>
+      <button id="closeGgBtn" class="btn btn-secondary" style="display: none; width:100%;">Забрать результат</button>
     </div>
   </div>
 
@@ -1282,13 +1311,12 @@
             { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
             { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' },
             
-            // МИНИ ИГРЫ
-            { id: 'g_1', title: "Блэкджек (Реакция)", desc: "Ставка 300 XP. Останови ползунок в зеленой зоне (х2).", price: 300, icon: "🃏", action: 'generic_game' },
-            { id: 'g_4', title: "Слот-машина", desc: "Дерни рычаг за 100 XP. Собери 3 в ряд и получи 500 XP.", price: 100, icon: "🎰", action: 'generic_game' },
-            { id: 'g_5', title: "Камень, ножницы, бумага", desc: "Сыграй с ботом на 50 XP (победа = 100 XP).", price: 50, icon: "✂️", action: 'generic_game' },
-            { id: 'g_7', title: "Русская рулетка (Реакция)", desc: "Экстрим за 300 XP. Успей остановить таймер!", price: 300, icon: "🔫", action: 'generic_game' },
-            { id: 'g_14', title: "Дартс (Тайминг)", desc: "Бросок за 200 XP. Попади в центр и получи 600 XP.", price: 200, icon: "🎯", action: 'generic_game' },
-            { id: 'g_15', title: "Рыбалка (Реакция)", desc: "Закинь удочку за 150 XP. Успей подсечь рыбку (500 XP).", price: 150, icon: "🎣", action: 'generic_game' }
+            // НОВЫЕ ИНТЕРАКТИВНЫЕ ИГРЫ
+            { id: 'g_bj', title: "Блэкджек (21)", desc: "Полноценная игра с дилером! Ставка 300 XP. Победа = х2.", price: 300, icon: "🃏", action: 'generic_game' },
+            { id: 'g_miner', title: "Минёр", desc: "Ставка 200 XP. Ищи сейфы, избегай 3-х бомб. Выведи деньги в любой момент!", price: 200, icon: "💣", action: 'generic_game' },
+            { id: 'g_pairs', title: "Найди пару (Memory)", desc: "Ставка 250 XP. Найди 8 пар, допуская не более 6 ошибок (х2.5).", price: 250, icon: "🧠", action: 'generic_game' },
+            { id: 'g_rps', title: "Камень-Ножницы-Бумага", desc: "Матч до 2-х побед. Ставка 150 XP, выигрыш = 300 XP.", price: 150, icon: "✂️", action: 'generic_game' },
+            { id: 'g_slots', title: "Слот-машина", desc: "Ставка 100 XP. Собери 3 в ряд и забери джекпот 500 XP!", price: 100, icon: "🎰", action: 'generic_game' }
         ];
 
         let defaultApShopItems = [
@@ -1899,10 +1927,6 @@
         };
 
         // ЛОГИКА ИНТЕРАКТИВНЫХ ИГР
-        let timingInterval;
-        let cursorPosition = 0;
-        let cursorDirection = 1;
-
         window.playGenericGame = function(id, price) {
             const item = shopItems.find(i => i.id === id);
             const modal = document.getElementById('genericGameModal');
@@ -1910,37 +1934,24 @@
             const resEl = document.getElementById('ggResult');
             const closeBtn = document.getElementById('closeGgBtn');
             
-            const rpsArea = document.getElementById('ggRps');
-            const slotsArea = document.getElementById('ggSlots');
-            const timingArea = document.getElementById('ggTiming');
+            document.getElementById('ggRps').style.display = 'none';
+            document.getElementById('ggSlots').style.display = 'none';
+            document.getElementById('ggBlackjack').style.display = 'none';
+            document.getElementById('ggMiner').style.display = 'none';
+            document.getElementById('ggPairs').style.display = 'none';
 
             resEl.textContent = '';
             closeBtn.style.display = 'none';
-            rpsArea.style.display = 'none';
-            slotsArea.style.display = 'none';
-            timingArea.style.display = 'none';
             modal.style.display = 'flex';
 
             window.currentGameItem = item;
             window.currentGamePrice = price;
 
-            if (id === 'g_5') { 
-                // Камень, ножницы, бумага
-                rpsArea.style.display = 'flex';
-                document.querySelectorAll('.rps-btn').forEach(b => { b.disabled = false; b.style.transform = 'scale(1)'; });
-            } else if (id === 'g_4') { 
-                // Слот-машина
-                slotsArea.style.display = 'flex';
-                document.getElementById('slot1').textContent = '❓';
-                document.getElementById('slot2').textContent = '❓';
-                document.getElementById('slot3').textContent = '❓';
-                document.getElementById('ggSpinBtn').disabled = false;
-            } else { 
-                // Остальные (Реакция/Тайминг)
-                timingArea.style.display = 'flex';
-                document.getElementById('ggStopBtn').disabled = false;
-                startTimingGame();
-            }
+            if (id === 'g_rps') startRpsGame();
+            else if (id === 'g_slots') startSlotsGame();
+            else if (id === 'g_bj') startBlackjack();
+            else if (id === 'g_miner') startMiner();
+            else if (id === 'g_pairs') startPairs();
         };
 
         // Завершение мини-игры с общими логами и начислением
@@ -1963,38 +1974,241 @@
             updateShopStats(); updateModStats(); saveProgress();
             closeBtn.style.display = 'inline-block';
         }
+        document.getElementById('closeGgBtn')?.addEventListener('click', () => document.getElementById('genericGameModal').style.display = 'none');
 
-        // Логика Камень Ножницы Бумага
+        // === 1. БЛЭКДЖЕК ===
+        let bjDeck = [], bjPlayer = [], bjDealer = [];
+        const suits = ['♥️','♦️','♣️','♠️'];
+        function getDeck() {
+            let deck = [];
+            suits.forEach(suit => {
+                for(let i=2; i<=10; i++) deck.push({v:i, l:i.toString(), s:suit});
+                ['J','Q','K'].forEach(f => deck.push({v:10, l:f, s:suit}));
+                deck.push({v:11, l:'A', s:suit});
+            });
+            shuffleArray(deck); return deck;
+        }
+        function bjScore(hand) {
+            let s = 0, aces = 0;
+            hand.forEach(c => { s+=c.v; if(c.v===11) aces++; });
+            while(s > 21 && aces > 0) { s-=10; aces--; }
+            return s;
+        }
+        function renderBjHand(hand, elId, hideFirst = false) {
+            const el = document.getElementById(elId); el.innerHTML = '';
+            hand.forEach((c, idx) => {
+                if(hideFirst && idx === 0) {
+                    el.innerHTML += `<div class="bj-card hidden">?</div>`;
+                } else {
+                    const color = (c.s === '♥️' || c.s === '♦️') ? 'red' : '';
+                    el.innerHTML += `<div class="bj-card ${color}">${c.l}${c.s}</div>`;
+                }
+            });
+        }
+        function startBlackjack() {
+            document.getElementById('ggBlackjack').style.display = 'flex';
+            document.getElementById('bjControls').style.display = 'flex';
+            bjDeck = getDeck();
+            bjPlayer = [bjDeck.pop(), bjDeck.pop()];
+            bjDealer = [bjDeck.pop(), bjDeck.pop()];
+            
+            document.getElementById('bjPlayerScore').textContent = bjScore(bjPlayer);
+            document.getElementById('bjDealerScore').textContent = '?';
+            renderBjHand(bjPlayer, 'bjPlayerHand');
+            renderBjHand(bjDealer, 'bjDealerHand', true);
+            
+            if(bjScore(bjPlayer) === 21) handleBjEnd();
+        }
+        document.getElementById('bjHitBtn')?.addEventListener('click', () => {
+            bjPlayer.push(bjDeck.pop());
+            const score = bjScore(bjPlayer);
+            document.getElementById('bjPlayerScore').textContent = score;
+            renderBjHand(bjPlayer, 'bjPlayerHand');
+            if(score >= 21) handleBjEnd();
+        });
+        document.getElementById('bjStandBtn')?.addEventListener('click', () => handleBjEnd());
+        
+        function handleBjEnd() {
+            document.getElementById('bjControls').style.display = 'none';
+            let pScore = bjScore(bjPlayer);
+            let dScore = bjScore(bjDealer);
+            
+            renderBjHand(bjDealer, 'bjDealerHand', false);
+            
+            if(pScore <= 21) {
+                while(dScore < 17) {
+                    bjDealer.push(bjDeck.pop());
+                    dScore = bjScore(bjDealer);
+                    renderBjHand(bjDealer, 'bjDealerHand', false);
+                }
+            }
+            
+            document.getElementById('bjDealerScore').textContent = dScore;
+            
+            let wonXp = 0;
+            let txt = '';
+            if(pScore > 21) { txt = "Перебор! Вы проиграли."; }
+            else if(dScore > 21 || pScore > dScore) { wonXp = window.currentGamePrice * 2; txt = "Победа! Ваши очки выше."; }
+            else if(pScore === dScore) { wonXp = window.currentGamePrice; txt = "Ничья! Ставка возвращена."; }
+            else { txt = "Дилер выиграл."; }
+            
+            finishInteractiveGame(wonXp, txt);
+        }
+
+        // === 2. МИНЁР ===
+        let minerCells = [], minerSafeClicked = 0, minerGameOver = false;
+        const minerMultipliers = [1.0, 1.2, 1.5, 1.8, 2.2, 2.6, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 10.0];
+        
+        function startMiner() {
+            document.getElementById('ggMiner').style.display = 'flex';
+            const grid = document.getElementById('minerGrid'); grid.innerHTML = '';
+            minerCells = Array(16).fill(0);
+            minerSafeClicked = 0; minerGameOver = false;
+            document.getElementById('minerMult').textContent = 'x1.0';
+            document.getElementById('minerCashoutBtn').style.display = 'block';
+
+            // 3 бомбы
+            let placed = 0;
+            while(placed < 3) {
+                let r = Math.floor(Math.random() * 16);
+                if(minerCells[r] === 0) { minerCells[r] = 1; placed++; }
+            }
+
+            for(let i=0; i<16; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'miner-cell';
+                cell.dataset.index = i;
+                cell.onclick = () => onMinerClick(i, cell);
+                grid.appendChild(cell);
+            }
+        }
+        function onMinerClick(idx, cell) {
+            if(minerGameOver || cell.classList.contains('revealed')) return;
+            cell.classList.add('revealed');
+            
+            if(minerCells[idx] === 1) {
+                // Bomb
+                minerGameOver = true;
+                cell.textContent = '💣'; cell.style.background = 'rgba(255,107,136,0.5)';
+                document.getElementById('minerCashoutBtn').style.display = 'none';
+                revealAllBombs();
+                finishInteractiveGame(0, "БУМ! Вы попали на мину. Ставка сгорела.");
+            } else {
+                // Safe
+                minerSafeClicked++;
+                cell.textContent = '💎';
+                document.getElementById('minerMult').textContent = 'x' + minerMultipliers[minerSafeClicked];
+                if(minerSafeClicked >= 13) {
+                    minerGameOver = true;
+                    document.getElementById('minerCashoutBtn').style.display = 'none';
+                    finishInteractiveGame(window.currentGamePrice * minerMultipliers[13], "Максимальный куш! Вы открыли все сейфы!");
+                }
+            }
+        }
+        function revealAllBombs() {
+            document.querySelectorAll('.miner-cell').forEach((c, i) => {
+                if(minerCells[i] === 1) { c.textContent = '💣'; c.classList.add('revealed'); }
+            });
+        }
+        document.getElementById('minerCashoutBtn')?.addEventListener('click', () => {
+            if(minerGameOver || minerSafeClicked === 0) return alert("Откройте хотя бы одну ячейку!");
+            minerGameOver = true;
+            document.getElementById('minerCashoutBtn').style.display = 'none';
+            let mult = minerMultipliers[minerSafeClicked];
+            finishInteractiveGame(Math.floor(window.currentGamePrice * mult), `Вы вовремя забрали выигрыш (х${mult})!`);
+        });
+
+        // === 3. НАЙДИ ПАРУ (MEMORY) ===
+        let pairsDeck = [], flippedCards = [], pairsMatched = 0, pairsTries = 6;
+        function startPairs() {
+            document.getElementById('ggPairs').style.display = 'flex';
+            const grid = document.getElementById('pairsGrid'); grid.innerHTML = '';
+            const emojis = ['🍎', '🍉', '🍇', '🍓', '🍒', '🍍', '🥝', '🥑'];
+            pairsDeck = [...emojis, ...emojis]; shuffleArray(pairsDeck);
+            flippedCards = []; pairsMatched = 0; pairsTries = 6;
+            document.getElementById('pairsTries').textContent = pairsTries;
+
+            pairsDeck.forEach((emoji, idx) => {
+                let card = document.createElement('div');
+                card.className = 'pairs-card';
+                card.dataset.val = emoji;
+                card.innerHTML = `<div class="content">${emoji}</div>`;
+                card.onclick = () => onPairsClick(card);
+                grid.appendChild(card);
+            });
+        }
+        function onPairsClick(card) {
+            if(flippedCards.length >= 2 || card.classList.contains('flipped')) return;
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if(flippedCards.length === 2) {
+                if(flippedCards[0].dataset.val === flippedCards[1].dataset.val) {
+                    pairsMatched++;
+                    flippedCards = [];
+                    if(pairsMatched === 8) finishInteractiveGame(window.currentGamePrice * 2.5, "Блестящая память! Победа (х2.5).");
+                } else {
+                    pairsTries--;
+                    document.getElementById('pairsTries').textContent = pairsTries;
+                    setTimeout(() => {
+                        flippedCards[0].classList.remove('flipped');
+                        flippedCards[1].classList.remove('flipped');
+                        flippedCards = [];
+                        if(pairsTries <= 0) finishInteractiveGame(0, "Закончились попытки! Вы проиграли.");
+                    }, 1000);
+                }
+            }
+        }
+
+        // === 4. КНБ (До 2-х побед) ===
+        let rpsPlayerWins = 0, rpsBotWins = 0;
+        function startRpsGame() {
+            document.getElementById('ggRps').style.display = 'flex';
+            rpsPlayerWins = 0; rpsBotWins = 0;
+            updateRpsScore();
+            document.querySelectorAll('.rps-btn').forEach(b => { b.disabled = false; b.style.transform = 'scale(1)'; });
+        }
+        function updateRpsScore() { document.getElementById('rpsScore').textContent = `Игрок: ${rpsPlayerWins} | Бот: ${rpsBotWins}`; }
         document.querySelectorAll('.rps-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.rps-btn').forEach(b => b.disabled = true);
                 btn.style.transform = 'scale(1.1)';
                 
-                const playerChoice = btn.dataset.choice;
+                const pChoice = btn.dataset.choice;
                 const choices = ['rock', 'paper', 'scissors'];
-                const botChoice = choices[Math.floor(Math.random() * 3)];
+                const bChoice = choices[Math.floor(Math.random() * 3)];
                 const emojiMap = { rock: '✊', paper: '✋', scissors: '✌️' };
                 
-                let win = false; let tie = false;
-                if (playerChoice === botChoice) tie = true;
-                else if ((playerChoice==='rock'&&botChoice==='scissors') || (playerChoice==='paper'&&botChoice==='rock') || (playerChoice==='scissors'&&botChoice==='paper')) win = true;
+                let win = false, tie = false;
+                if (pChoice === bChoice) tie = true;
+                else if ((pChoice==='rock'&&bChoice==='scissors') || (pChoice==='paper'&&bChoice==='rock') || (pChoice==='scissors'&&bChoice==='paper')) win = true;
 
                 setTimeout(() => {
-                    if (tie) finishInteractiveGame(window.currentGamePrice, `Ничья! Бот выбрал ${emojiMap[botChoice]}. Ставка возвращена.`);
-                    else finishInteractiveGame(win ? window.currentGamePrice * 2 : 0, `Бот выбрал ${emojiMap[botChoice]}. ${win ? "Победа!" : "Проигрыш."}`);
-                }, 500);
+                    document.querySelectorAll('.rps-btn').forEach(b => { b.disabled = false; b.style.transform = 'scale(1)'; });
+                    if(!tie) {
+                        if(win) rpsPlayerWins++; else rpsBotWins++;
+                        updateRpsScore();
+                    }
+                    if(rpsPlayerWins >= 2) finishInteractiveGame(window.currentGamePrice * 2, "Вы победили в серии! (х2)");
+                    else if(rpsBotWins >= 2) finishInteractiveGame(0, "Бот оказался хитрее. Вы проиграли.");
+                }, 800);
             });
         });
 
-        // Логика Слот-машины
+        // === 5. СЛОТЫ ===
+        function startSlotsGame() {
+            document.getElementById('ggSlots').style.display = 'flex';
+            document.getElementById('slot1').textContent = '❓';
+            document.getElementById('slot2').textContent = '❓';
+            document.getElementById('slot3').textContent = '❓';
+            document.getElementById('ggSpinBtn').disabled = false;
+        }
         document.getElementById('ggSpinBtn')?.addEventListener('click', () => {
             const btn = document.getElementById('ggSpinBtn');
             btn.disabled = true;
             const emojis = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
             let ticks = 0;
-            const s1 = document.getElementById('slot1');
-            const s2 = document.getElementById('slot2');
-            const s3 = document.getElementById('slot3');
+            const s1 = document.getElementById('slot1'), s2 = document.getElementById('slot2'), s3 = document.getElementById('slot3');
             
             let spinInt = setInterval(() => {
                 s1.textContent = emojis[Math.floor(Math.random() * emojis.length)];
@@ -2008,32 +2222,6 @@
                 }
             }, 50);
         });
-
-        // Логика Игры на Тайминг (Реакцию)
-        function startTimingGame() {
-            clearInterval(timingInterval);
-            cursorPosition = 0; cursorDirection = 1;
-            const cursor = document.getElementById('timingCursor');
-            let speed = 2 + Math.random() * 3.5; // Случайная скорость от игры к игре
-            
-            timingInterval = setInterval(() => {
-                cursorPosition += cursorDirection * speed;
-                if (cursorPosition >= 98) { cursorPosition = 98; cursorDirection = -1; }
-                if (cursorPosition <= 0) { cursorPosition = 0; cursorDirection = 1; }
-                cursor.style.left = cursorPosition + '%';
-            }, 20);
-        }
-        
-        document.getElementById('ggStopBtn')?.addEventListener('click', () => {
-            clearInterval(timingInterval);
-            document.getElementById('ggStopBtn').disabled = true;
-            
-            // Зеленая зона: 40% до 60%
-            const win = (cursorPosition >= 40 && cursorPosition <= 60);
-            finishInteractiveGame(win ? window.currentGamePrice * 2.5 : 0, win ? "Отличная реакция!" : "Слишком рано или слишком поздно!");
-        });
-
-        document.getElementById('closeGgBtn')?.addEventListener('click', () => document.getElementById('genericGameModal').style.display = 'none');
 
         // Остальные базовые игры (Рулетка, Орёл/Решка, Сейфы, Джок Уик)
         function openFortune(isAp = false) {
