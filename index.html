@@ -341,6 +341,17 @@
     .jw-option-btn.correct { background: rgba(82, 199, 123, 0.3) !important; border-color: #52c77b !important; color: #8df0ae !important; }
     .jw-option-btn.wrong { background: rgba(255, 107, 136, 0.4) !important; border-color: #ff6b88 !important; color: #ffb1c1 !important; }
 
+    /* === ИНТЕРАКТИВНЫЕ МИНИ-ИГРЫ === */
+    .gg-btn { padding: 1.5rem; font-size: 2.5rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; cursor: pointer; transition: 0.2s; flex: 1; text-align: center; }
+    .gg-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); transform: scale(1.05); border-color: var(--color-primary); }
+    
+    .slots-container { display: flex; gap: 1rem; justify-content: center; font-size: 3rem; background: rgba(0,0,0,0.6); padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; border: 2px solid var(--color-primary); box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+    .slot-item { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    
+    .timing-bar-wrap { width: 100%; height: 36px; background: rgba(0,0,0,0.8); border-radius: 18px; position: relative; overflow: hidden; margin: 1.5rem 0; border: 2px solid rgba(255,255,255,0.2); }
+    .timing-zone { position: absolute; left: 40%; width: 20%; height: 100%; background: linear-gradient(90deg, #3da860, #52c77b, #3da860); box-shadow: 0 0 15px #52c77b; }
+    .timing-cursor { position: absolute; left: 0; width: 8px; height: 100%; background: #fff; box-shadow: 0 0 15px #fff; border-radius: 4px; z-index: 2; }
+
     .timer-display { font-family: var(--font-display); font-size: 4rem; color: #ffbf47; text-align: center; text-shadow: 0 0 20px rgba(255, 191, 71, 0.6); line-height: 1; margin: 1.5rem 0; transition: color 0.3s ease; }
     .timer-display.danger { color: #ff6b88; text-shadow: 0 0 20px rgba(255, 107, 136, 0.8); animation: pulse 1s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -395,10 +406,38 @@
   </div>
 
   <div id="genericGameModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center;">
-    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
+    <div class="panel" style="padding: 2.5rem; width: 90%; max-width: 450px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
       <h2 id="ggTitle" style="margin: 0; font-family: var(--font-display); color: #ffbf47;">Игра</h2>
-      <div id="ggAnim" style="font-size: 4rem; text-shadow: 0 0 20px rgba(255,191,71,0.5);">🎲</div>
-      <div id="ggResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2rem;"></div>
+      
+      <div id="ggInteractiveArea" style="width: 100%; margin-top: 0.5rem;">
+         
+         <div id="ggRps" style="display:none; justify-content: center; gap: 1rem;">
+            <button class="gg-btn rps-btn" data-choice="rock">✊</button>
+            <button class="gg-btn rps-btn" data-choice="paper">✋</button>
+            <button class="gg-btn rps-btn" data-choice="scissors">✌️</button>
+         </div>
+         
+         <div id="ggSlots" style="display:none; flex-direction: column; align-items: center;">
+            <div class="slots-container">
+               <div class="slot-item" id="slot1">❓</div>
+               <div class="slot-item" id="slot2">❓</div>
+               <div class="slot-item" id="slot3">❓</div>
+            </div>
+            <button id="ggSpinBtn" class="btn btn-primary" style="width: 100%;">Дернуть рычаг</button>
+         </div>
+         
+         <div id="ggTiming" style="display:none; flex-direction: column; align-items: center;">
+            <p style="font-size: 0.95rem; color: var(--color-text-muted);">Остановите ползунок в зеленой зоне!</p>
+            <div class="timing-bar-wrap">
+               <div class="timing-zone"></div>
+               <div class="timing-cursor" id="timingCursor"></div>
+            </div>
+            <button id="ggStopBtn" class="btn btn-primary" style="width: 100%;">СТОП!</button>
+         </div>
+
+      </div>
+
+      <div id="ggResult" style="font-size: var(--text-lg); font-weight: bold; min-height: 2.5rem; margin-top: 0.5rem;"></div>
       <button id="closeGgBtn" class="btn btn-secondary" style="display: none;">Забрать результат</button>
     </div>
   </div>
@@ -1116,7 +1155,7 @@
     </section>
   </main>
 
-    <script>
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
         
         // === 1. АУДИО ===
@@ -1240,26 +1279,12 @@
             { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' },
             
             // МИНИ ИГРЫ
-            { id: 'g_1', title: "Блэкджек (Случайный)", desc: "Ставка 300 XP. Шанс удвоить или потерять.", price: 300, icon: "🃏", action: 'generic_game' },
-            { id: 'g_2', title: "Бросок Костей", desc: "Ставка 150 XP. Шанс выиграть 300 XP.", price: 150, icon: "🎲", action: 'generic_game' },
-            { id: 'g_3', title: "Сапёр удачи", desc: "Ставка 250 XP. Найдешь мину - сгоришь, пустоту - +500 XP.", price: 250, icon: "💣", action: 'generic_game' },
-            { id: 'g_4', title: "Слот-машина", desc: "Дерни рычаг за 100 XP. Джекпот: 500 XP.", price: 100, icon: "🎰", action: 'generic_game' },
+            { id: 'g_1', title: "Блэкджек (Реакция)", desc: "Ставка 300 XP. Останови ползунок в зеленой зоне (х2).", price: 300, icon: "🃏", action: 'generic_game' },
+            { id: 'g_4', title: "Слот-машина", desc: "Дерни рычаг за 100 XP. Собери 3 в ряд и получи 500 XP.", price: 100, icon: "🎰", action: 'generic_game' },
             { id: 'g_5', title: "Камень, ножницы, бумага", desc: "Сыграй с ботом на 50 XP (победа = 100 XP).", price: 50, icon: "✂️", action: 'generic_game' },
-            { id: 'g_6', title: "Лотерейный билет", desc: "Купи билет за 200 XP. Шанс на 1000 XP (редко!).", price: 200, icon: "🎟️", action: 'generic_game' },
-            { id: 'g_7', title: "Русская рулетка", desc: "Экстрим за 300 XP. Шанс 1/6 проиграть всё, 5/6 забрать 400 XP.", price: 300, icon: "🔫", action: 'generic_game' },
-            { id: 'g_8', title: "Сундук Пандоры", desc: "Ставка 500 XP. Открой и получи от 0 до 2000 XP.", price: 500, icon: "🧰", action: 'generic_game' },
-            { id: 'g_9', title: "Космическая гонка", desc: "Ставь 150 XP на свою ракету (победа = 300 XP).", price: 150, icon: "🚀", action: 'generic_game' },
-            { id: 'g_10', title: "Морской бой", desc: "Стреляй вслепую за 300 XP. Попал = 800 XP.", price: 300, icon: "🚢", action: 'generic_game' },
-            { id: 'g_11', title: "Скачки на лошадях", desc: "Ставка 250 XP на фаворита. Шанс 1 к 3 забрать 750 XP.", price: 250, icon: "🐎", action: 'generic_game' },
-            { id: 'g_12', title: "Счастливый клевер", desc: "Купи за 50 XP, есть шанс вытащить 200 XP.", price: 50, icon: "🍀", action: 'generic_game' },
-            { id: 'g_13', title: "Магический шар", desc: "Спроси шар за 100 XP. Ответит 'Да' = 250 XP.", price: 100, icon: "🔮", action: 'generic_game' },
-            { id: 'g_14', title: "Дартс", desc: "Бросок за 200 XP. Яблочко дает 600 XP.", price: 200, icon: "🎯", action: 'generic_game' },
-            { id: 'g_15', title: "Рыбалка", desc: "Закинь удочку за 150 XP. Можно поймать сапог или золотую рыбку (500 XP).", price: 150, icon: "🎣", action: 'generic_game' },
-            { id: 'g_16', title: "Мистический котёл", desc: "Свари зелье за 400 XP. Удача приносит 1000 XP.", price: 400, icon: "⚗️", action: 'generic_game' },
-            { id: 'g_17', title: "Золотая лихорадка", desc: "Копай за 350 XP. Нашел самородок = 900 XP.", price: 350, icon: "⛏️", action: 'generic_game' },
-            { id: 'g_18', title: "Колесо Чудес", desc: "Ставка 500 XP. Шанс 50/50: либо 0, либо 1100 XP.", price: 500, icon: "🎡", action: 'generic_game' },
-            { id: 'g_19', title: "Битва Гладиаторов", desc: "Ставка 600 XP на своего бойца. Победа = 1500 XP.", price: 600, icon: "⚔️", action: 'generic_game' },
-            { id: 'g_20', title: "Тайный Конверт", desc: "Купи за 100 XP. Внутри может быть что угодно до 1000 XP.", price: 100, icon: "✉️", action: 'generic_game' }
+            { id: 'g_7', title: "Русская рулетка (Реакция)", desc: "Экстрим за 300 XP. Успей остановить таймер!", price: 300, icon: "🔫", action: 'generic_game' },
+            { id: 'g_14', title: "Дартс (Тайминг)", desc: "Бросок за 200 XP. Попади в центр и получи 600 XP.", price: 200, icon: "🎯", action: 'generic_game' },
+            { id: 'g_15', title: "Рыбалка (Реакция)", desc: "Закинь удочку за 150 XP. Успей подсечь рыбку (500 XP).", price: 150, icon: "🎣", action: 'generic_game' }
         ];
 
         let defaultApShopItems = [
@@ -1812,7 +1837,7 @@
             else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
         });
 
-        // === 8. МАГАЗИН И МИНИ-ИГРЫ ===
+        // === 8. МАГАЗИН И ИНТЕРАКТИВНЫЕ МИНИ-ИГРЫ ===
         function renderShopItems() {
             const container = document.getElementById('shopItemsContainer');
             if(!container) return;
@@ -1847,7 +1872,7 @@
                 else if (action === 'mod_coin') openCoinGame();
                 else if (action === 'mod_safes') openSafesGame();
                 else if (action === 'mod_jw') openJwQuiz();
-                else if (action === 'generic_game') playGenericGame(id, price);
+                else if (action === 'generic_game') window.playGenericGame(id, price);
                 else { 
                     const item = shopItems.find(i => i.id === id);
                     await logPurchase(`Покупка: ${item.title}`, false, false, price);
@@ -1869,45 +1894,144 @@
             } else playSound('fail');
         };
 
+        // ЛОГИКА ИНТЕРАКТИВНЫХ ИГР
+        let timingInterval;
+        let cursorPosition = 0;
+        let cursorDirection = 1;
+
         window.playGenericGame = function(id, price) {
             const item = shopItems.find(i => i.id === id);
             const modal = document.getElementById('genericGameModal');
             document.getElementById('ggTitle').textContent = item.title;
-            const animEl = document.getElementById('ggAnim');
             const resEl = document.getElementById('ggResult');
             const closeBtn = document.getElementById('closeGgBtn');
+            
+            const rpsArea = document.getElementById('ggRps');
+            const slotsArea = document.getElementById('ggSlots');
+            const timingArea = document.getElementById('ggTiming');
 
-            modal.style.display = 'flex';
+            resEl.textContent = '';
             closeBtn.style.display = 'none';
-            resEl.textContent = 'Играем...';
-            animEl.textContent = item.icon;
-            animEl.style.animation = 'pulse 0.5s infinite';
+            rpsArea.style.display = 'none';
+            slotsArea.style.display = 'none';
+            timingArea.style.display = 'none';
+            modal.style.display = 'flex';
 
-            setTimeout(async () => {
-                animEl.style.animation = 'none';
-                const winChance = Math.random();
-                let wonXp = 0;
-                
-                // Простая логика: 50% шанс удвоить ставку
-                if(winChance > 0.5) wonXp = price * 2;
-                
-                if(wonXp > 0) {
-                    shopState.spent -= wonXp; // виртуально возвращаем XP (выигрыш)
-                    await logPurchase(`${item.title}: Победа (${wonXp} XP)`, true, false, 0);
-                    resEl.textContent = `Победа! Вы выиграли ${wonXp} XP.`;
-                    resEl.style.color = 'var(--color-success)';
-                    playSound('win');
-                } else {
-                    resEl.textContent = `Проигрыш. Повезет в следующий раз!`;
-                    resEl.style.color = 'var(--color-error)';
-                    playSound('fail');
-                }
-                updateShopStats(); updateModStats(); saveProgress();
-                closeBtn.style.display = 'inline-block';
-            }, 2000);
+            window.currentGameItem = item;
+            window.currentGamePrice = price;
+
+            if (id === 'g_5') { 
+                // Камень, ножницы, бумага
+                rpsArea.style.display = 'flex';
+                document.querySelectorAll('.rps-btn').forEach(b => { b.disabled = false; b.style.transform = 'scale(1)'; });
+            } else if (id === 'g_4') { 
+                // Слот-машина
+                slotsArea.style.display = 'flex';
+                document.getElementById('slot1').textContent = '❓';
+                document.getElementById('slot2').textContent = '❓';
+                document.getElementById('slot3').textContent = '❓';
+                document.getElementById('ggSpinBtn').disabled = false;
+            } else { 
+                // Остальные (Реакция/Тайминг)
+                timingArea.style.display = 'flex';
+                document.getElementById('ggStopBtn').disabled = false;
+                startTimingGame();
+            }
+        };
+
+        // Завершение мини-игры с общими логами и начислением
+        async function finishInteractiveGame(wonXp, customText = null) {
+            const resEl = document.getElementById('ggResult');
+            const closeBtn = document.getElementById('closeGgBtn');
+            const item = window.currentGameItem;
+
+            if(wonXp > 0) {
+                shopState.spent -= wonXp;
+                await logPurchase(`${item.title}: Победа (${wonXp} XP)`, true, false, 0);
+                resEl.textContent = customText || `Победа! Вы выиграли ${wonXp} XP.`;
+                resEl.style.color = 'var(--color-success)';
+                playSound('win');
+            } else {
+                resEl.textContent = customText || `Проигрыш. Повезет в следующий раз!`;
+                resEl.style.color = 'var(--color-error)';
+                playSound('fail');
+            }
+            updateShopStats(); updateModStats(); saveProgress();
+            closeBtn.style.display = 'inline-block';
         }
+
+        // Логика Камень Ножницы Бумага
+        document.querySelectorAll('.rps-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.rps-btn').forEach(b => b.disabled = true);
+                btn.style.transform = 'scale(1.1)';
+                
+                const playerChoice = btn.dataset.choice;
+                const choices = ['rock', 'paper', 'scissors'];
+                const botChoice = choices[Math.floor(Math.random() * 3)];
+                const emojiMap = { rock: '✊', paper: '✋', scissors: '✌️' };
+                
+                let win = false; let tie = false;
+                if (playerChoice === botChoice) tie = true;
+                else if ((playerChoice==='rock'&&botChoice==='scissors') || (playerChoice==='paper'&&botChoice==='rock') || (playerChoice==='scissors'&&botChoice==='paper')) win = true;
+
+                setTimeout(() => {
+                    if (tie) finishInteractiveGame(window.currentGamePrice, `Ничья! Бот выбрал ${emojiMap[botChoice]}. Ставка возвращена.`);
+                    else finishInteractiveGame(win ? window.currentGamePrice * 2 : 0, `Бот выбрал ${emojiMap[botChoice]}. ${win ? "Победа!" : "Проигрыш."}`);
+                }, 500);
+            });
+        });
+
+        // Логика Слот-машины
+        document.getElementById('ggSpinBtn')?.addEventListener('click', () => {
+            const btn = document.getElementById('ggSpinBtn');
+            btn.disabled = true;
+            const emojis = ['🍒', '🍋', '🔔', '💎', '7️⃣'];
+            let ticks = 0;
+            const s1 = document.getElementById('slot1');
+            const s2 = document.getElementById('slot2');
+            const s3 = document.getElementById('slot3');
+            
+            let spinInt = setInterval(() => {
+                s1.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                s2.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                s3.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                ticks++;
+                if (ticks > 25) {
+                    clearInterval(spinInt);
+                    const win = (s1.textContent === s2.textContent && s2.textContent === s3.textContent);
+                    finishInteractiveGame(win ? window.currentGamePrice * 5 : 0, win ? "ДЖЕКПОТ (х5)!" : "Мимо, не повезло!");
+                }
+            }, 50);
+        });
+
+        // Логика Игры на Тайминг (Реакцию)
+        function startTimingGame() {
+            clearInterval(timingInterval);
+            cursorPosition = 0; cursorDirection = 1;
+            const cursor = document.getElementById('timingCursor');
+            let speed = 2 + Math.random() * 3.5; // Случайная скорость от игры к игре
+            
+            timingInterval = setInterval(() => {
+                cursorPosition += cursorDirection * speed;
+                if (cursorPosition >= 98) { cursorPosition = 98; cursorDirection = -1; }
+                if (cursorPosition <= 0) { cursorPosition = 0; cursorDirection = 1; }
+                cursor.style.left = cursorPosition + '%';
+            }, 20);
+        }
+        
+        document.getElementById('ggStopBtn')?.addEventListener('click', () => {
+            clearInterval(timingInterval);
+            document.getElementById('ggStopBtn').disabled = true;
+            
+            // Зеленая зона: 40% до 60%
+            const win = (cursorPosition >= 40 && cursorPosition <= 60);
+            finishInteractiveGame(win ? window.currentGamePrice * 2.5 : 0, win ? "Отличная реакция!" : "Слишком рано или слишком поздно!");
+        });
+
         document.getElementById('closeGgBtn')?.addEventListener('click', () => document.getElementById('genericGameModal').style.display = 'none');
 
+        // Остальные базовые игры (Рулетка, Орёл/Решка, Сейфы, Джок Уик)
         function openFortune(isAp = false) {
             const modal = document.getElementById('fortuneModal');
             const track = document.getElementById('rouletteTrack'); const resultText = document.getElementById('fortuneResultText');
