@@ -143,7 +143,7 @@
     html[data-site-theme="complaints"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 61, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 107, 136, 0.15), transparent 55%), linear-gradient(160deg, #120505, #180408 45%, #0d0202 100%); border-color: rgba(255, 107, 136, 0.35); }
     html[data-site-theme="complaints"] .panel:hover { border-color: rgba(255, 107, 136, 0.6); }
     
-    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(155deg, rgba(18, 12, 28, 0.98), rgba(10, 6, 16, 1)); border-color: rgba(180, 150, 255, 0.35); }
+    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="quests"] .panel:hover { border-color: rgba(180, 150, 255, 0.6); }
     
     html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
@@ -271,6 +271,7 @@
     .status-good { background: rgba(22, 163, 74, 0.2) !important; color: #4ade80 !important; border-color: #16a34a !important; }
     .status-hero { background: rgba(59, 130, 246, 0.2) !important; color: #60a5fa !important; border-color: #3b82f6 !important; }
     .status-inactive { background: rgba(234, 88, 12, 0.2) !important; color: #fb923c !important; border-color: #ea580c !important; }
+    .status-missing { background: rgba(239, 68, 68, 0.2) !important; color: #ef4444 !important; border-color: #ef4444 !important; }
     .status-none { background: rgba(255,255,255,0.05) !important; color: var(--color-text-faint) !important; border-color: transparent !important; }
 
     .rule-item, .log-item, .stat, .quest-card { padding: 1.2rem; border-radius: 18px; background: rgba(13, 16, 32, 0.85); border: 1px solid rgba(191, 198, 255, 0.2); min-width: 0; overflow-wrap: anywhere; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
@@ -916,7 +917,7 @@
                 <option value="fine">Слот Штрафа</option>
              </select>
              <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)">
-             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (Для выигрыша: 1000, Штраф: -100)">
+             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -1000)">
           </div>
           <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
         </div>
@@ -1025,7 +1026,7 @@
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Обработано</span><div class="stat-value" id="resolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Правильных</span><div class="stat-value" id="correctValue">0</div></div>
-          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="mistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибки</span><div class="stat-value" id="mistakeValue">0</div></div>
           <div class="stat"><span class="stat-label">Остаток XP</span><div class="stat-value" id="xpValue" style="color: var(--color-primary);">0</div></div>
         </div>
         <div>
@@ -1061,7 +1062,7 @@
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Рассмотрено</span><div class="stat-value" id="compResolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Верно</span><div class="stat-value" id="compCorrectValue">0</div></div>
-          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="compMistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибки</span><div class="stat-value" id="compMistakeValue">0</div></div>
           <div class="stat"><span class="stat-label">Общий XP</span><div class="stat-value" id="compXpValue" style="color: var(--color-primary);">0</div></div>
         </div>
         <div class="feed">
@@ -1090,7 +1091,7 @@
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Вопросов</span><div class="stat-value" id="supportResolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Зачтено</span><div class="stat-value" id="supportCorrectValue">0</div></div>
-          <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="supportMistakeValue">0</div></div>
+          <div class="stat"><span class="stat-label">Ошибки</span><div class="stat-value" id="supportMistakeValue">0</div></div>
           <div class="stat"><span class="stat-label">Общий XP</span><div class="stat-value" id="supportXpValue" style="color: var(--color-primary);">0</div></div>
         </div>
         <div>
@@ -1507,7 +1508,7 @@
             { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 }
         ];
 
-        // === 4. МАССИВЫ СООБЩЕНИЙ (БЕЗ ИЗМЕНЕНИЙ) ===
+        // === 4. МАССИВЫ СООБЩЕНИЙ ===
         let baseModMessages = [
             { type: "good", text: "Всем привет, как настроение сегодня?" },
             { type: "good", text: "ПРОДАМ ГАРАЖ В БАТЫРЕВО, ФУЛЛ ПРОКАЧКА!" },
@@ -1604,7 +1605,7 @@
             { type: "warn", text: "Меняю валюту дискорда на роль, кто согласен?" },
             { type: "warn", text: "Да я твой дом труба шатал" },
             { type: "warn", text: "Женщинам тут не место, идите борщи варить." },
-            { type: "warn", text: "Скиньte 100 рублей на киви, не хватает на донат" },
+            { type: "warn", text: "Скиньте 100 рублей на киви, не хватает на донат" },
             { type: "warn", text: "Andrey_Caypen вообще не шарит за правила" },
             { type: "warn", text: "Привет........... как дела,,,,,,,,,," },
             { type: "warn", text: "Я жду ответ уже 5 минут!!!!! ГДЕ АДМИНЫ???" },
@@ -1733,7 +1734,6 @@
             { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' }
         ];
 
-        // === ГЛОБАЛЬНАЯ ЗАГРУЗКА И НАСТРОЙКИ МАГАЗИНОВ ===
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE', 'SHOP_OVERRIDE', 'GAME_XP']);
             
@@ -1781,111 +1781,6 @@
         }
         setInterval(updateTicker, 60000);
 
-        // === 5. ПРАВАЯ ПАНЕЛЬ И НАВИГАЦИЯ ===
-        const rightContent = {
-            moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] },
-            timeattack: { title: "Спидран", lead: "Правила режима на время.", cards: [ ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."], ["Опыт", "Счет конвертируется в бонусный XP!"] ] },
-            support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] },
-            complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] },
-            quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] },
-            guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
-            leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Отображение", "Показываются только действующие модераторы и АП."] ] },
-            about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
-            profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
-            shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "Мини-игры для проверки удачи."] ] },
-            ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
-            report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модераторам."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] },
-            inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Форма", "Укажите даты и точную причину."] ] },
-            admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи в Discord."] ] },
-            ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное'."] ] },
-            creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] },
-            leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку."], ["Тайный покупатель", "Закидывай сложную проверку."] ] },
-            ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы."] ] },
-            reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] }
-        };
-
-        function renderRight(mode) {
-            const rt = document.getElementById("rightTitle"), rl = document.getElementById("rightLead"), rc = document.getElementById("rightCards");
-            if(!rt || !rl || !rc) return;
-            const data = rightContent[mode] || rightContent['moderation'];
-            rt.innerHTML = data.title; rl.innerHTML = data.lead;
-            rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
-        }
-
-        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table"];
-        
-        function switchMode(mode, btn) {
-            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-            if(btn) btn.classList.add("active");
-            allModesList.forEach(m => { 
-                const panel = document.getElementById("mode-" + m); 
-                if(panel) { if(m===mode){ panel.style.display=""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } else panel.style.display="none"; }
-            });
-            
-            let currentTheme = "mod";
-            if(["support","ap_admin","ap_admin_log","ap_shop"].includes(mode)) currentTheme = "support";
-            else if(["about","profile","general"].includes(mode)) currentTheme = "general";
-            else if(["shop","leadership","reports_table"].includes(mode)) currentTheme = "shop";
-            else if(["report","inactives","quests"].includes(mode)) currentTheme = "quests";
-            else if(["guide"].includes(mode)) currentTheme = "guide";
-            else if(["leaderboard","admin_log"].includes(mode)) currentTheme = "leaderboard";
-            else if(["complaints"].includes(mode)) currentTheme = "complaints";
-            else if(["timeattack"].includes(mode)) currentTheme = "timeattack";
-            else if(["creator"].includes(mode)) currentTheme = "creator";
-
-            document.documentElement.setAttribute("data-site-theme", currentTheme);
-            renderRight(mode);
-
-            if(mode === 'leaderboard') loadLeaderboard();
-            if(mode === 'shop' || mode === 'ap_shop') updateShopStats();
-            if(mode === 'report' || mode === 'inactives') checkRolesAndAccess(); 
-            if(mode === 'admin_log') renderAdminLogs(false);
-            if(mode === 'ap_admin_log') renderAdminLogs(true);
-            if(mode === 'quests') renderQuests(); 
-            if(mode === 'creator') loadCreatorPanelData();
-            if(mode === 'leadership' || mode === 'ap_admin') loadUsersForAdmin();
-            if(mode === 'profile') renderProfileData();
-            if(mode === 'reports_table') loadReportsTable();
-            
-            const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");
-            const headers = {
-                moderation: ["Симулятор смены модераторов", 'Следи за <span>порядком</span> на сервере.', "Проверяй сообщения, принимай решения и поддерживай порядок в чате.", "Режим: модераторы"],
-                timeattack: ["Симулятор смены: На время", 'Успей за <span>минуту</span>.', "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!", "Режим: спидран"],
-                complaints: ["Симулятор смены: Жалобы", 'Рассматривай <span>репорты</span>.', "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.", "Режим: жалобы"],
-                support: ["Симулятор смены агентов поддержки", 'Создавай <span>уют</span> и помогай игрокам.', "Отвечай на вопросы игроков, ориентируйся в материалах.", "Режим: агенты поддержки"],
-                quests: ["Квесты сотрудников", 'Выполняй <span>задания</span>.', "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.", "Режим: квесты"],
-                guide: ["Руководство Сервера", 'Контакты <span>руководства</span>.', "Основная информация и контактные данные.", "Режим: руководство"],
-                leaderboard: ["Таблица лидеров", 'Топ <span>лучших</span>.', "Отображаются активные сотрудники с наибольшим количеством XP.", "Режим: лидерборд"],
-                about: ["Люди, которые сделали этот проект", 'Узнай, кто <span>стоит за идеей</span>.', "Этот раздел посвящён авторам и тем, кто помогал собрать тренажёр.", "Режим: о команде"],
-                profile: ["Личный Профиль", 'Ваша <span>Статистика</span>.', "Ваши достижения, баланс и визуальные улучшения для аккаунта.", "Режим: профиль"],
-                shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
-                ap_shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
-                report: ["Симулятор смены: Отчетность", 'Сдавай <span>отчеты</span> вовремя.', "Отправляй данные своего онлайна для проверки руководством.", "Режим: отчетность"],
-                inactives: ["Симулятор смены: Неактивы", 'Берешь <span>отдых</span>?', "Отправьте заявку на неактив с указанием причины.", "Режим: неактивы"],
-                admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
-                ap_admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
-                creator: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                leadership: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                ap_admin: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"]
-            };
-            if(headers[mode]) {
-                if(brandSub) brandSub.textContent = headers[mode][0]; if(hTitle) hTitle.innerHTML = headers[mode][1]; if(hText) hText.textContent = headers[mode][2]; if(hBadge) hBadge.textContent = headers[mode][3];
-            }
-        }
-
-        document.querySelectorAll('.main-cat-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport') };
-                Object.values(subNavs).forEach(nav => { if(nav) nav.style.display = 'none'; });
-                const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
-            });
-        });
-
-        document.querySelectorAll(".mode-btn").forEach(btn => { btn.addEventListener("click", () => switchMode(btn.dataset.mode, btn)); });
-
-        // === 6. ЛОГИКА ИГРЫ И АНТИ-СПАМ ===
         function randomFunnyNick() { 
             const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"], funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
             return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
@@ -2088,7 +1983,7 @@
             document.getElementById("resolvedValue").textContent = state.resolved; document.getElementById("correctValue").textContent = state.correct; document.getElementById("mistakeValue").textContent = state.mistakes; document.getElementById("xpValue").textContent = xp;
             document.getElementById("xpFill").style.width = (Math.min(1, (state.correct % 10 || (state.correct ? 10 : 0)) / 10) * 100) + "%";
             document.getElementById("resultBanner").firstElementChild.innerHTML = `<strong>${!state.started ? "Результат: смена ещё не начата" : "Результат: смена в процессе"}</strong>`;
-            document.getElementById("resultHint").textContent = !state.started ? "Нажми «Начать смену», чтобы получить первое сообщение." : `Сейчас доступно ${xp} XP.`;
+            document.getElementById("resultHint").textContent = !state.started ? "Нажми «Начать смену», чтобы получить сообщение." : `Сейчас доступно ${xp} XP.`;
             updateShopStats(); renderQuests();
         }
         
@@ -2372,14 +2267,25 @@
         });
         document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
         
-        const jwCharacters = [ { name: "John Wick", img: "https://upload.wikimedia.org/wikipedia/en/3/34/John_Wick_Chapter_2_Poster.jpg" }, { name: "Winston Scott", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, { name: "Bowery King", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" } ];
+        // НОВЫЕ РАБОЧИЕ КАРТИНКИ ДЛЯ ВИКТОРИНЫ
+        const jwCharacters = [ 
+            { name: "Джон Уик", img: "https://upload.wikimedia.org/wikipedia/ru/3/36/John_Wick_Chapter_4_poster.jpg" }, 
+            { name: "Уинстон Скотт", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, 
+            { name: "Король «Боулер»", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" },
+            { name: "Харон", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Lance_Reddick_by_Gage_Skidmore_1.jpg/500px-Lance_Reddick_by_Gage_Skidmore_1.jpg" }
+        ];
         
         function openJwQuiz() {
             document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none'; document.getElementById('jwResult').textContent = '';
             const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
             const correctChar = jwCharacters[Math.floor(Math.random() * jwCharacters.length)]; document.getElementById('jwImage').src = correctChar.img;
             let options = [...jwCharacters]; shuffleArray(options);
-            options.forEach(char => {
+            options.slice(0, 3).forEach(char => {
+                if(!options.includes(correctChar)) options[0] = correctChar; // Гарантируем, что правильный ответ есть
+            });
+            shuffleArray(options);
+            
+            options.slice(0, 3).forEach(char => {
                 const btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = char.name;
                 btn.onclick = async () => {
                     document.querySelectorAll('.jw-option-btn').forEach(b => { b.disabled = true; if(b.textContent === correctChar.name) b.classList.add('correct'); else b.classList.add('wrong'); });
@@ -2548,7 +2454,6 @@
             if(!error) { document.getElementById('customApTitle').value = ''; document.getElementById('customApText').value = ''; document.getElementById('customApKeywords').value = ''; alert("Вопрос успешно добавлен в общую базу АП!"); loadGlobalShopAndRoulette(); } else alert("Ошибка при добавлении.");
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ
         document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim(), desc = document.getElementById('modShopItemDesc').value.trim(), price = Number(document.getElementById('modShopItemPrice').value), icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
@@ -2571,7 +2476,6 @@
             alert("Рулетка модерации обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
-        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ
         document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim(), desc = document.getElementById('apShopItemDesc').value.trim(), price = Number(document.getElementById('apShopItemPrice').value), icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
@@ -2706,24 +2610,15 @@
         document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
 
         function checkRolesAndAccess() {
-            if (isModerator) document.getElementById('shopTabBtn').style.display = 'inline-block'; else document.getElementById('shopTabBtn').style.display = 'none';
-            if (isAp) document.getElementById('apShopTabBtn').style.display = 'inline-block'; else document.getElementById('apShopTabBtn').style.display = 'none';
-
-            if (isModerator) { document.getElementById('reportTabBtn').style.display = 'inline-block'; document.getElementById('reportAccessWarning').style.display = 'none'; document.getElementById('reportFormArea').style.display = 'block'; } 
-            else { document.getElementById('reportTabBtn').style.display = 'none'; document.getElementById('reportAccessWarning').style.display = 'block'; document.getElementById('reportFormArea').style.display = 'none'; }
-
-            if (isModerator) { document.getElementById('inactiveTabBtn').style.display = 'inline-block'; document.getElementById('inactiveAccessWarning').style.display = 'none'; document.getElementById('inactiveFormArea').style.display = 'block'; } 
-            else { document.getElementById('inactiveTabBtn').style.display = 'none'; document.getElementById('inactiveAccessWarning').style.display = 'block'; document.getElementById('inactiveFormArea').style.display = 'none'; }
-
+            // Теперь все вкладки видны, но проверяем контент внутри
             const isModLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
+            
             if (isModLeader) { 
                 document.getElementById('adminPanelArea').style.display = 'block';
                 const inactivePanel = document.getElementById('adminPanelAreaInactives'); if(inactivePanel) inactivePanel.style.display = 'block';
-                const rBtn = document.getElementById('reportsTableBtn'); if(rBtn) rBtn.style.display = 'inline-block';
             } else {
                 document.getElementById('adminPanelArea').style.display = 'none';
                 const inactivePanel = document.getElementById('adminPanelAreaInactives'); if(inactivePanel) inactivePanel.style.display = 'none';
-                const rBtn = document.getElementById('reportsTableBtn'); if(rBtn) rBtn.style.display = 'none';
             }
         }
 
@@ -2849,7 +2744,7 @@
             if (modIds.length === 0) { listArea.innerHTML = '<div class="message-text" style="text-align:center;">Модераторы не найдены. Выдайте кому-нибудь роль.</div>'; return; }
 
             const { data: usersData } = await supa.from('user_stats').select('user_id, nickname').in('user_id', modIds);
-            const mods = usersData || [];
+            let mods = usersData || [];
 
             let sortedDates = [];
             const today = new Date();
@@ -2865,9 +2760,17 @@
             
             const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
 
+            // Исключаем Руководство и Создателя из таблицы модераторов
+            if (!isLeader) {
+                mods = mods.filter(m => !adminEmails.includes(m.email) && m.email !== creatorEmail && !dynamicModLeaders.includes(m.user_id));
+            }
+
             let html = '<table class="report-grid-table"><thead><tr><th class="rg-header-top" style="width:20%;">СОТРУДНИК</th>';
             sortedDates.forEach(d => html += `<th class="rg-header-date">${d.slice(5)}</th>`);
             html += '</tr><tr class="rg-category-row"><td colspan="' + (sortedDates.length + 1) + '">СОСТАВ МОДЕРАЦИИ</td></tr></thead><tbody>';
+
+            const actualDateObj = new Date();
+            actualDateObj.setHours(0,0,0,0);
 
             mods.sort((a,b) => (a.nickname||'').localeCompare(b.nickname||'')).forEach(mod => {
                 html += `<tr><td class="rg-name-cell">${mod.nickname || 'Без ника'}</td>`;
@@ -2891,10 +2794,18 @@
                     let currentStatus = 'none';
                     if (rep) currentStatus = rep.status;
                     else if (isInactiveDay) currentStatus = 'Неактив';
+                    else {
+                        // АВТО-ПРОГУЛ: если дата в прошлом (строго меньше сегодня) и нет отчета/неактива
+                        const colDateObj = new Date(d);
+                        colDateObj.setHours(0,0,0,0);
+                        if (colDateObj < actualDateObj) {
+                            currentStatus = 'Нет отчета';
+                        }
+                    }
 
                     if (isLeader) {
                         let selectHtml = `<select class="status-select ${getStatusClass(currentStatus)}" onchange="updateReportStatusDirectly(this, '${mod.nickname}', '${d}', '${rep ? rep.id : ''}')">`;
-                        const opts = [ { val: 'none', text: '-' }, { val: 'Норма', text: 'Норма' }, { val: 'Перенорма', text: 'Перенорма' }, { val: 'Герой дня', text: 'Герой дня' }, { val: 'Неактив', text: 'Неактив' }, { val: 'Не засчитано', text: 'Отказ' } ];
+                        const opts = [ { val: 'none', text: '-' }, { val: 'Норма', text: 'Норма' }, { val: 'Перенорма', text: 'Перенорма' }, { val: 'Герой дня', text: 'Герой дня' }, { val: 'Неактив', text: 'Неактив' }, { val: 'Нет отчета', text: 'Нет отчета' }, { val: 'Не засчитано', text: 'Отказ' } ];
                         
                         opts.forEach(o => {
                             let selected = currentStatus === o.val || (currentStatus === 'Отказ' && o.val === 'Не засчитано') ? 'selected' : '';
@@ -2908,7 +2819,8 @@
                         else if (currentStatus === 'Перенорма') cellHtml = '<span style="color:#22c55e; font-weight:900;">Перенорма</span>';
                         else if (currentStatus === 'Герой дня') cellHtml = '<span style="color:#60a5fa; font-weight:900;">Герой дня</span>';
                         else if (currentStatus === 'Неактив') cellHtml = '<span style="color:#fb923c; font-weight:900;">Неактив</span>';
-                        else if (currentStatus === 'Отказ' || currentStatus === 'Не засчитано') cellHtml = '<span style="color:#f87171; font-weight:900;">Отказ</span>';
+                        else if (currentStatus === 'Нет отчета') cellHtml = '<span style="color:#ef4444; font-weight:900;">Нет отчета</span>';
+                        else if (currentStatus === 'Отказ' || currentStatus === 'Не засчитано') cellHtml = '<span style="color:#ef4444; font-weight:900;">Отказ</span>';
                         else if (currentStatus !== 'none') cellHtml = `<span style="color:#eab308; font-weight:900;">${currentStatus}</span>`;
                         html += `<td>${cellHtml}</td>`;
                     }
@@ -2922,6 +2834,7 @@
             if (status === 'Норма' || status === 'Перенорма') return 'status-good';
             if (status === 'Герой дня') return 'status-hero';
             if (status === 'Неактив') return 'status-inactive';
+            if (status === 'Нет отчета') return 'status-missing';
             return 'status-none';
         }
 
@@ -2942,7 +2855,7 @@
                     selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}')`);
                 }
             }
-            if (val === 'Не засчитано') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
+            if (val === 'Не засчитано' || val === 'Нет отчета') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
             selectEl.style.opacity = '1'; selectEl.disabled = false;
         };
 
@@ -3013,8 +2926,6 @@
 
                 await loadGlobalShopAndRoulette();
                 
-                checkRolesAndAccess(); 
-
                 try {
                     const { data } = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
                     if(data) { 
@@ -3025,7 +2936,7 @@
                     const { data: repData } = await supa.from('reports').select('xp').eq('email', currentUser.email);
                     state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
                     
-                    updateModStats(); updateSupportStats(); updateShopStats(); 
+                    updateModStats(); updateSupportStats(); updateShopStats(); checkRolesAndAccess(); 
                     if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
                 } catch(e) { console.error(e); }
                 
