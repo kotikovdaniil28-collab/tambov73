@@ -149,7 +149,7 @@
     html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
     html[data-site-theme="timeattack"] .panel:hover { border-color: rgba(255, 191, 71, 0.65); }
     
-    html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), linear-gradient(155deg, rgba(28, 10, 20, 0.98), rgba(16, 4, 10, 1)); border-color: rgba(255, 107, 136, 0.4); }
+    html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); border-color: rgba(255, 107, 136, 0.4); }
     html[data-site-theme="creator"] .panel:hover { border-color: rgba(255, 107, 136, 0.7); }
 
     .hero-card, .rules, .game-card, .side { padding: 1.8rem; display: grid; gap: 1.2rem; min-width: 0; align-content: start; }
@@ -250,6 +250,73 @@
     #adminLogsArea, #apAdminLogsArea { max-height: 500px; overflow-y: auto; padding-right: 5px; }
     #adminLogsArea::-webkit-scrollbar, #apAdminLogsArea::-webkit-scrollbar { width: 6px; }
     #adminLogsArea::-webkit-scrollbar-thumb, #apAdminLogsArea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+    /* НОВЫЙ ДИЗАЙН ТАБЛИЦЫ ОТЧЕТОВ КАК В EXCEL */
+    .report-grid-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        min-width: 800px;
+        background: #1e1e1e;
+    }
+    .report-grid-table th, .report-grid-table td {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.6rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .report-grid-table th {
+        font-weight: 800;
+    }
+    .rg-header-top {
+        background: #1d4ed8; /* Синий как в скрине */
+        color: #fff;
+    }
+    .rg-header-date {
+        background: #eab308; /* Желтый как в скрине */
+        color: #000;
+    }
+    .rg-header-name {
+        background: #a3e635; /* Зеленоватый как в скрине */
+        color: #000;
+        font-weight: 800;
+        text-align: left !important;
+    }
+    .rg-category-row {
+        background: #3b82f6; /* Голубой разделитель */
+        color: #fff;
+        font-weight: bold;
+        text-align: center;
+    }
+    .rg-name-cell {
+        background: #1e293b;
+        color: #fff;
+        font-weight: 700;
+        text-align: left !important;
+        border-right: 2px solid rgba(255,255,255,0.2) !important;
+    }
+    .status-select {
+        width: 100%;
+        padding: 0.3rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255,255,255,0.3);
+        font-weight: 700;
+        font-size: 0.85rem;
+        cursor: pointer;
+        appearance: none;
+        text-align: center;
+        outline: none;
+        color: #fff;
+    }
+    .status-select:focus { border-color: #fff; box-shadow: 0 0 5px rgba(255,255,255,0.5); }
+    
+    .status-select option { background: #1e1e1e; color: #fff; }
+    
+    .status-good { background: #16a34a !important; border-color: #15803d !important; }
+    .status-hero { background: #2563eb !important; border-color: #1d4ed8 !important; }
+    .status-inactive { background: #ea580c !important; border-color: #c2410c !important; }
+    .status-none { background: transparent !important; color: var(--color-text-faint) !important; border: 1px solid transparent !important; }
 
     .rule-item, .log-item, .stat, .quest-card { padding: 1.2rem; border-radius: 18px; background: rgba(13, 16, 32, 0.85); border: 1px solid rgba(191, 198, 255, 0.2); min-width: 0; overflow-wrap: anywhere; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
     
@@ -561,7 +628,7 @@
   <div id="fortuneModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
       <h2 id="fortuneTitle" style="margin: 0; font-family: var(--font-display); font-size: var(--text-xl); color: #ffbf47;">Колесо Фортуны</h2>
-      <p id="fortuneDesc" style="color: var(--color-text-muted); font-size: var(--text-base); margin: 0;">Испытай удачу! Призы будут добавлены на баланс игры или отправлены Руководству.</p>
+      <p id="fortuneDesc" style="color: var(--color-text-muted); font-size: var(--text-base); margin: 0;">Испытай удачу! Призы будут добавлены на баланс или отправлены Руководству.</p>
       <div class="roulette-wrapper">
           <div class="roulette-pointer"></div>
           <div class="roulette-track" id="rouletteTrack"></div>
@@ -726,9 +793,9 @@
             </div>
         </div>
         <div class="stats-grid" style="margin-top: 1.2rem;">
-          <div class="stat"><span class="stat-label">Доступно Игрового XP</span><div class="stat-value" id="profileXp" style="color:var(--color-primary);">0</div></div>
+          <div class="stat"><span class="stat-label">Игровой XP (Тренажер)</span><div class="stat-value" id="profileXp" style="color:var(--color-primary);">0</div></div>
           <div class="stat"><span class="stat-label">Реальный XP (Отчеты)</span><div class="stat-value" id="profileRealXp" style="color:var(--color-success);">0</div></div>
-          <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
+          <div class="stat"><span class="stat-label">Доступно Баллов АП</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
         </div>
         <div style="margin-top: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: var(--color-success);">Косметика (Инвентарь)</h3>
@@ -888,7 +955,7 @@
                 <option value="fine">Слот Штрафа</option>
              </select>
              <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)">
-             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (Для выигрыша: 1000, Штраф: -100)">
+             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -1000)">
           </div>
           <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
         </div>
@@ -998,13 +1065,13 @@
           <div class="stat"><span class="stat-label">Обработано</span><div class="stat-value" id="resolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Правильных</span><div class="stat-value" id="correctValue">0</div></div>
           <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="mistakeValue">0</div></div>
-          <div class="stat"><span class="stat-label">Доступно Игрового XP</span><div class="stat-value" id="xpValue" style="color: var(--color-primary);">0</div></div>
+          <div class="stat"><span class="stat-label">Остаток XP</span><div class="stat-value" id="xpValue" style="color: var(--color-primary);">0</div></div>
         </div>
         <div>
           <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
           <div id="resultBanner" style="display: flex; justify-content: space-between; font-size: 0.95rem; margin-top: 0.8rem; color: var(--color-text-muted);">
             <span><strong>Результат:</strong> смена ещё не начата</span>
-            <span id="resultHint">Нажми «Начать смену», чтобы получить сообщение.</span>
+            <span id="resultHint">Нажми «Начать смену», чтобы получить первое сообщение.</span>
           </div>
         </div>
         <div class="feed">
@@ -1034,7 +1101,7 @@
           <div class="stat"><span class="stat-label">Рассмотрено</span><div class="stat-value" id="compResolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Верно</span><div class="stat-value" id="compCorrectValue">0</div></div>
           <div class="stat"><span class="stat-label">Ошибок</span><div class="stat-value" id="compMistakeValue">0</div></div>
-          <div class="stat"><span class="stat-label">Игровой XP</span><div class="stat-value" id="compXpValue" style="color: var(--color-primary);">0</div></div>
+          <div class="stat"><span class="stat-label">Общий XP</span><div class="stat-value" id="compXpValue" style="color: var(--color-primary);">0</div></div>
         </div>
         <div class="feed">
           <article class="message-card">
@@ -1222,7 +1289,7 @@
               <div class="support-answer-row-inner" style="flex-direction: column; gap: 1rem;">
                 <div class="admin-field"><label>Ваш NickName:</label><input id="reportNickInput" class="support-input" type="text" placeholder="Введите никнейм"></div>
                 <div class="admin-field"><label>Проделанная работа за день:</label><textarea id="reportWorkInput" class="support-input" rows="3" placeholder="Что вы сегодня сделали?"></textarea></div>
-                <div class="admin-field"><label>Дата:</label><input id="reportDateInput" class="support-input" type="date"></div>
+                <div class="admin-field"><label>Дата (Только сегодня и вчера):</label><input id="reportDateInput" class="support-input" type="date"></div>
                 <div class="admin-field"><label>Ссылка на доказательства (Imgur/Yapx):</label><input id="reportLinkInput" class="support-input" type="url" placeholder="https://..."></div>
                 <div class="admin-field" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
                     <label style="color: #fff; font-weight: bold;">ИЛИ загрузите скриншот напрямую:</label>
@@ -1311,9 +1378,21 @@
     </section>
   </main>
 
-    <script>
+  <script>
     document.addEventListener("DOMContentLoaded", () => {
         
+        // Ограничение дат для отчетов (только сегодня и вчера)
+        const dateInput = document.getElementById('reportDateInput');
+        if (dateInput) {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const fmt = (d) => d.toISOString().split('T')[0];
+            dateInput.setAttribute('max', fmt(today));
+            dateInput.setAttribute('min', fmt(yesterday));
+        }
+
         // === 1. АУДИО ===
         let isMusicEnabled = false, isSfxEnabled = true;    
         const uiSoundConfig = { volume: 0.15, pitch: 600, type: 'sine', duration: 0.04 };
@@ -1362,7 +1441,6 @@
                     console.error("Ошибка музыки:", err);
                     isMusicEnabled = false; 
                     e.target.textContent = '🔇'; 
-                    alert('Браузер заблокировал аудио. Кликните еще раз!');
                 }); 
             } else { 
                 e.target.textContent = '🔇'; 
@@ -1413,7 +1491,6 @@
         let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
         let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
         let shopState = { spent: 0, apSpent: 0 };
-        
         let gameXpMod = 0; 
         
         let taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
@@ -1444,7 +1521,6 @@
             { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
         ];
 
-        // ИСПРАВЛЕНА РУЛЕТКА: Положительные значения для выигрыша, отрицательные для штрафа
         let defaultModRoulettePrizes = [
             { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: 500 },
             { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: 300 },
@@ -1455,14 +1531,13 @@
         let defaultApRoulettePrizes = [
             { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: 50 },
             { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: 30 },
-            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }
+            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
+            { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -10 Баллов', val: -10 }
         ];
 
-        let shopItems = [...defaultShopItems];
-        let apShopItems = [...defaultApShopItems];
+        let shopItems = [...defaultShopItems]; let apShopItems = [...defaultApShopItems];
         let customShopItems = [], customApShopItems = [];
-        let modRoulettePrizes = [...defaultModRoulettePrizes];
-        let apRoulettePrizes = [...defaultApRoulettePrizes];
+        let modRoulettePrizes = [...defaultModRoulettePrizes]; let apRoulettePrizes = [...defaultApRoulettePrizes];
         let customModMessages = [], customSupQuestions = [], hiddenChecks = [];
 
         const questsData = [
@@ -1903,7 +1978,7 @@
         function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
         function initials(name) { return name.split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
         
-        // РАЗДЕЛЕНИЕ БАЛАНСОВ ДЛЯ МАГАЗИНА
+        // РАЗДЕЛЕНИЕ БАЛАНСОВ
         function getTrainingBalance() { return Math.floor(Number(state.correct) / 10) * 15; }
         function getRealBalance() { return Math.max(0, Number(state.reportXp || 0) - Number(shopState.spent || 0)); }
         function getGameNetBalance() { return gameXpMod; }
@@ -1911,7 +1986,7 @@
         function availableXp() { 
             let real = getRealBalance();
             let game = getTrainingBalance() + getGameNetBalance();
-            if (game < 0) { real += game; game = 0; } // Если проиграл больше, чем заработал, списываем из реального
+            if (game < 0) { real += game; game = 0; }
             return Math.max(0, real + game); 
         }
 
@@ -2074,7 +2149,7 @@
             document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
         });
 
-        // ЛОГИКА ТАЙМ-АТАКИ (СПИДРАН)
+        // ЛОГИКА ТАЙМ-АТАКИ
         document.getElementById('taStartBtn')?.addEventListener('click', () => {
             document.getElementById('taStartScreen').style.display = 'none';
             document.getElementById('taGameScreen').style.display = 'grid';
@@ -2418,7 +2493,7 @@
             }, 1500);
         }
 
-        // Интерактивные мини-игры (старые)
+        // Интерактивные мини-игры
         let timingInterval;
         let cursorPosition = 0;
         let cursorDirection = 1;
@@ -2531,7 +2606,7 @@
             }, 50);
         });
 
-        // Логика Игры на Тайминг (Реакцию)
+        // Логика Игры на Тайминг
         function startTimingGame() {
             clearInterval(timingInterval);
             cursorPosition = 0; cursorDirection = 1;
@@ -2583,7 +2658,7 @@
                 setTimeout(async () => {
                     if (winnerItem.val !== 0) { 
                         if(isAp) shopState.apSpent -= winnerItem.val; 
-                        else await addGameXp(winnerItem.val); // ПРИБАВЛЕНИЕ ИЛИ ВЫЧИТАНИЕ (ТАК КАК ШТРАФ ИМЕЕТ МИНУС)
+                        else await addGameXp(winnerItem.val);
                         await logPurchase(`Рулетка: ${winnerItem.text}`, true, isAp, 0); 
                     }
                     updateShopStats(); updateModStats(); updateSupportStats(); await saveProgress(); resultText.textContent = `🎁 ${winnerItem.text} 🎁`; playSound(winnerItem.val > 0 ? 'win' : 'fail');
@@ -2613,6 +2688,7 @@
         document.getElementById('btnTails')?.addEventListener('click', () => playCoin('tails'));
         document.getElementById('closeCoinBtn')?.addEventListener('click', () => document.getElementById('coinModal').style.display = 'none');
 
+        // Три сейфа
         function openSafesGame() {
             document.getElementById('safesModal').style.display = 'flex';
             document.getElementById('safesResult').textContent = ''; document.getElementById('closeSafesBtn').style.display = 'none'; document.querySelectorAll('.safe-btn').forEach(btn => { btn.textContent = '🧰'; btn.disabled = false; });
@@ -2630,6 +2706,7 @@
         });
         document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
         
+        // Викторина JW
         const jwCharacters = [ { name: "John Wick", img: "https://upload.wikimedia.org/wikipedia/en/3/34/John_Wick_Chapter_2_Poster.jpg" }, { name: "Winston Scott", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, { name: "Bowery King", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" } ];
         
         function openJwQuiz() {
@@ -2758,7 +2835,7 @@
              await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
         });
 
-        // ТРОЛЛИНГ ПАНЕЛЬ ДОДЕЛАННАЯ
+        // ТРОЛЛИНГ ПАНЕЛЬ
         document.getElementById('trollWipeXpBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value;
@@ -3303,56 +3380,144 @@
             setTimeout(() => document.getElementById('viewInactivesBtn').click(), 100); 
         };
 
-        // ТАБЛИЦА ОТЧЕТОВ
+        // === ОБНОВЛЕННАЯ ТАБЛИЦА ОТЧЕТОВ ===
         async function loadReportsTable() {
             const listArea = document.getElementById('reportsTableWrapper');
             if(!listArea) return;
-            listArea.innerHTML = '<div class="message-text" style="text-align:center;">Загрузка матрицы...</div>';
+            listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы модераторов...</div>';
             
-            const { data: reports } = await supa.from('reports').select('*')
-                .not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP")')
-                .order('created_at', { ascending: false }).limit(200);
-                
-            if(!reports || activeMods.length === 0) {
-                listArea.innerHTML = '<div class="message-text">Нет данных для таблицы (возможно, нет выданных ролей модератора)</div>';
+            // Загружаем всех пользователей, у которых есть статус moderator
+            const { data: modRoles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', 'moderator');
+            const modIds = modRoles ? modRoles.map(r => r.link) : [];
+            
+            if (modIds.length === 0) {
+                listArea.innerHTML = '<div class="message-text" style="text-align:center;">Модераторы не найдены. Выдайте кому-нибудь роль.</div>';
                 return;
             }
 
+            // Получаем ники модераторов
+            const { data: usersData } = await supa.from('user_stats').select('user_id, nickname').in('user_id', modIds);
+            const mods = usersData || [];
+
+            // Загружаем отчеты
+            const { data: reports } = await supa.from('reports').select('*')
+                .not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP","INACTIVE_REQ")')
+                .order('created_at', { ascending: false }).limit(300);
+                
             let datesSet = new Set();
-            reports.forEach(r => {
-                const match = r.date?.match(/Дата:\s*([\d-]+)/);
-                if (match) datesSet.add(match[1]);
-            });
+            if (reports) {
+                reports.forEach(r => {
+                    const match = r.date?.match(/Дата:\s*([\d-]+)/);
+                    if (match) datesSet.add(match[1]);
+                });
+            }
+            
+            // Если отчетов нет, берем последние 7 дней для пустой сетки
+            if (datesSet.size === 0) {
+                for(let i=0; i<7; i++) {
+                    let d = new Date(); d.setDate(d.getDate() - i);
+                    datesSet.add(d.toISOString().split('T')[0]);
+                }
+            }
             
             let sortedDates = Array.from(datesSet).sort((a,b) => new Date(b) - new Date(a)).slice(0, 7);
             
-            let html = '<table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 600px;"><thead><tr><th style="padding:0.8rem; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--color-text-muted);">Модератор</th>';
-            sortedDates.forEach(d => html += `<th style="padding:0.8rem; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--color-text-muted);">${d}</th>`);
-            html += '</tr></thead><tbody>';
-            
-            const { data: usersData } = await supa.from('user_stats').select('user_id, nickname').in('user_id', activeMods);
-            const mods = usersData || [];
+            const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id));
+
+            let html = '<table class="report-grid-table"><thead><tr><th class="rg-header-top" style="width:20%;">СОТРУДНИК</th>';
+            sortedDates.forEach(d => html += `<th class="rg-header-date">${d}</th>`);
+            html += '</tr><tr class="rg-category-row"><td colspan="' + (sortedDates.length + 1) + '">СОСТАВ МОДЕРАЦИИ</td></tr></thead><tbody>';
 
             mods.forEach(mod => {
-                html += `<tr><td style="padding:0.8rem; border-bottom:1px solid rgba(255,255,255,0.05); font-weight:bold;">${mod.nickname || 'Без ника'}</td>`;
+                html += `<tr><td class="rg-name-cell">${mod.nickname || 'Без ника'}</td>`;
+                
                 sortedDates.forEach(d => {
-                    const rep = reports.find(r => r.date && r.date.toLowerCase().includes(mod.nickname?.toLowerCase() || '') && r.date.includes(d));
+                    // Ищем отчет модератора за этот день
+                    const rep = (reports || []).find(r => r.date && r.date.toLowerCase().includes((mod.nickname || '').toLowerCase()) && r.date.includes(d));
                     
-                    let cellHtml = '<span style="color:var(--color-text-faint); font-style:italic;">—</span>';
-                    if (rep) {
-                        if (rep.status === 'Норма') cellHtml = '<span style="color:var(--color-success); font-weight:bold;">Норма</span>';
-                        else if (rep.status === 'Перенорма') cellHtml = '<span style="color:#3dd68c; font-weight:bold;">Перенорма</span>';
-                        else if (rep.status === 'Герой дня') cellHtml = '<span style="color:#ffbf47; font-weight:bold; text-shadow:0 0 10px rgba(255,191,71,0.5);">Герой дня</span>';
-                        else if (rep.status === 'Отказ' || rep.status === 'Не засчитано') cellHtml = '<span style="color:var(--color-error);">Отказ</span>';
-                        else cellHtml = `<span style="color:var(--color-warning);">${rep.status}</span>`;
+                    if (isLeader) {
+                        // Руководство может менять статус прямо в таблице
+                        let currentStatus = rep ? rep.status : 'none';
+                        let selectHtml = `<select class="status-select ${getStatusClass(currentStatus)}" onchange="updateReportStatusDirectly(this, '${mod.nickname}', '${d}', '${rep ? rep.id : ''}')">`;
+                        
+                        const opts = [
+                            { val: 'none', text: '-' },
+                            { val: 'Норма', text: 'Норма' },
+                            { val: 'Перенорма', text: 'Перенорма' },
+                            { val: 'Герой дня', text: 'Герой дня' },
+                            { val: 'Неактив', text: 'Неактив' },
+                            { val: 'Не засчитано', text: 'Отказ' }
+                        ];
+                        
+                        opts.forEach(o => {
+                            let selected = currentStatus === o.val || (currentStatus === 'Отказ' && o.val === 'Не засчитано') ? 'selected' : '';
+                            if (!rep && o.val === 'none') selected = 'selected';
+                            selectHtml += `<option value="${o.val}" ${selected}>${o.text}</option>`;
+                        });
+                        selectHtml += `</select>`;
+                        html += `<td>${selectHtml}</td>`;
+                    } else {
+                        // Обычные модеры просто видят
+                        let cellHtml = '<span class="status-none">—</span>';
+                        if (rep) {
+                            if (rep.status === 'Норма') cellHtml = '<span style="color:#16a34a; font-weight:900;">Норма</span>';
+                            else if (rep.status === 'Перенорма') cellHtml = '<span style="color:#22c55e; font-weight:900;">Перенорма</span>';
+                            else if (rep.status === 'Герой дня') cellHtml = '<span style="color:#3b82f6; font-weight:900;">Герой дня</span>';
+                            else if (rep.status === 'Неактив') cellHtml = '<span style="color:#ea580c; font-weight:900;">Неактив</span>';
+                            else if (rep.status === 'Отказ' || rep.status === 'Не засчитано') cellHtml = '<span style="color:#ef4444; font-weight:900;">Отказ</span>';
+                            else cellHtml = `<span style="color:#eab308; font-weight:900;">${rep.status}</span>`;
+                        }
+                        html += `<td>${cellHtml}</td>`;
                     }
-                    html += `<td style="padding:0.8rem; border-bottom:1px solid rgba(255,255,255,0.05);">${cellHtml}</td>`;
                 });
                 html += '</tr>';
             });
+            
             html += '</tbody></table>';
             listArea.innerHTML = html;
         }
+
+        // Вспомогательная функция для классов Select
+        function getStatusClass(status) {
+            if (status === 'Норма' || status === 'Перенорма') return 'status-good';
+            if (status === 'Герой дня') return 'status-hero';
+            if (status === 'Неактив') return 'status-inactive';
+            if (status === 'Отказ' || status === 'Не засчитано') return 'status-none'; // Будет с красной границей, если захотим
+            return 'status-none';
+        }
+
+        // Функция обновления статуса прямо из таблицы (для руководства)
+        window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId) {
+            const val = selectEl.value;
+            selectEl.className = `status-select ${getStatusClass(val)}`;
+            
+            let xpAmount = 0;
+            if(val === 'Норма') xpAmount = 15;
+            if(val === 'Перенорма') xpAmount = 30;
+            if(val === 'Герой дня') xpAmount = 60;
+
+            if (existingId) {
+                // Если отчет уже был, обновляем
+                await supa.from('reports').update({ status: val, xp: xpAmount }).eq('id', existingId);
+            } else {
+                // Если отчета не было, создаем системный
+                if (val !== 'none') {
+                    const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
+                    await supa.from('reports').insert([{ 
+                        id: 'rep_manual_' + Date.now().toString(), 
+                        email: currentUser.email, 
+                        link: '', 
+                        date: fakeData, 
+                        status: val, 
+                        xp: xpAmount 
+                    }]);
+                }
+            }
+            
+            // Меняем класс визуально без перезагрузки всей таблицы
+            if (val === 'Не засчитано') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; }
+            else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
+        };
 
         async function saveProgress() {
             if(!currentUser) return;
