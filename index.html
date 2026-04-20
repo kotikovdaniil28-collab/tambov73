@@ -1341,29 +1341,41 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+        
+        // Ограничение дат для отчетов (только сегодня и вчера)
         const dateInput = document.getElementById('reportDateInput');
         if (dateInput) {
-            const today = new Date(), yesterday = new Date(today);
+            const today = new Date();
+            const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
+            
             const fmt = (d) => d.toISOString().split('T')[0];
-            dateInput.setAttribute('max', fmt(today)); dateInput.setAttribute('min', fmt(yesterday));
+            dateInput.setAttribute('max', fmt(today));
+            dateInput.setAttribute('min', fmt(yesterday));
         }
 
+        // === 1. АУДИО ===
         let isMusicEnabled = false, isSfxEnabled = true;    
+        const uiSoundConfig = { volume: 0.15, pitch: 600, type: 'sine', duration: 0.04 };
+       
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
         function playUIClick() {
             if (!isSfxEnabled) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.04);
-            gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+            osc.type = uiSoundConfig.type;
+            osc.frequency.setValueAtTime(uiSoundConfig.pitch, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(uiSoundConfig.pitch / 2, audioCtx.currentTime + uiSoundConfig.duration);
+            gainNode.gain.setValueAtTime(uiSoundConfig.volume, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + uiSoundConfig.duration);
             osc.connect(gainNode); gainNode.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.04);
+            osc.start(); osc.stop(audioCtx.currentTime + uiSoundConfig.duration);
         }
 
-        const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3'); bgMusic.loop = true; bgMusic.volume = 0.25;
+        const bgMusic = new Audio('https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3');
+        bgMusic.loop = true; 
+        bgMusic.volume = 0.25;
         const sndOk = new Audio('https://actions.google.com/sounds/v1/ui/pop.ogg'); sndOk.volume = 0.4;
         const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); sndFail.volume = 0.2;
         const sndWin = new Audio('https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'); sndWin.volume = 0.3;
@@ -1375,42 +1387,77 @@
             if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
         }
 
-        document.addEventListener('click', (e) => { if (audioCtx.state === 'suspended') audioCtx.resume(); if (e.target.closest('button') || e.target.closest('a')) playUIClick(); });
+        document.addEventListener('click', (e) => {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (e.target.closest('button') || e.target.closest('a')) playUIClick();
+        });
+
         document.getElementById('musicToggleBtn')?.addEventListener('click', (e) => {
             isMusicEnabled = !isMusicEnabled;
-            if (isMusicEnabled) { e.target.textContent = '⏳'; bgMusic.play().then(() => e.target.textContent = '🎵').catch(() => { isMusicEnabled = false; e.target.textContent = '🔇'; }); } 
-            else { e.target.textContent = '🔇'; bgMusic.pause(); }
+            if (isMusicEnabled) { 
+                e.target.textContent = '⏳'; 
+                bgMusic.play().then(() => { e.target.textContent = '🎵'; }).catch((err) => { 
+                    console.error("Ошибка музыки:", err);
+                    isMusicEnabled = false; 
+                    e.target.textContent = '🔇'; 
+                }); 
+            } else { 
+                e.target.textContent = '🔇'; 
+                bgMusic.pause(); 
+            }
         });
         document.getElementById('sfxToggleBtn')?.addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
 
         function compressImage(file, callback) {
-            const reader = new FileReader(); reader.readAsDataURL(file);
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
             reader.onload = event => {
-                const img = new Image(); img.src = event.target.result;
+                const img = new Image();
+                img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height;
-                    if (w > h) { if (w > 800) { h *= 800 / w; w = 800; } } else { if (h > 800) { w *= 800 / h; h = 800; } }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6));
+                    const MAX_WIDTH = 800; const MAX_HEIGHT = 800;
+                    let width = img.width; let height = img.height;
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
                 };
             };
         }
 
-        const supa = window.supabase.createClient('https://icfihnroblyjjflsfepq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ');
+        // === 2. БАЗА ДАННЫХ И СОСТОЯНИЕ ===
+        const supabaseUrl = 'https://icfihnroblyjjflsfepq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+        const supa = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        let currentUser = null, currentNickname = null, isReportsRequired = localStorage.getItem('require_reports') !== 'false';
-        let dynamicModLeaders = [], dynamicApLeaders = [], activeMods = [], activeAps = [], isModerator = false, isAp = false;
+        let currentUser = null, currentNickname = null, pendingAction = null;
+        let isReportsRequired = localStorage.getItem('require_reports') !== 'false';
+        let dynamicModLeaders = [], dynamicApLeaders = [], activeMods = [], activeAps = [];
+        let isModerator = false, isAp = false;
         let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics')) || { crown: false, color: false };
-        const creatorEmail = 'daniiltimosin72@gmail.com', adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'], apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
+        
+        const creatorEmail = 'daniiltimosin72@gmail.com';
+        const adminEmails = [creatorEmail, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+        const apLeadershipEmails = [creatorEmail, 'dianarlkh@gmail.com', 'kirillbarvichus@gmail.com'];
         
         let state = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false, log: [], reportXp: 0 };
         let supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, started: false };
         let complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null, started: false };
-        let shopState = { spent: 0, apSpent: 0 }, gameXpMod = 0, taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
-        let modQueue = [], supQueue = [], compQueue = [], taQueue = [], currentTableWeekOffset = 0; 
+        let shopState = { spent: 0, apSpent: 0 };
+        let gameXpMod = 0; 
+        
+        let taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
+        let modQueue = [], supQueue = [], compQueue = [], taQueue = [];
+        let currentTableWeekOffset = 0; 
 
-        let shopItems = [
+        // === 3. МАССИВЫ МАГАЗИНА И КВЕСТОВ ===
+        let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
             { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
             { id: 'sm_1', title: "СМ: Скидка -1 день", desc: "Ускоряет повышение Старшего Модератора (СМ → ЗГМ).", price: 300, icon: "⏳" },
@@ -1425,7 +1472,8 @@
             { id: 'crash_game', title: "Crash (Краш)", desc: "Ставка 100 XP. Забери до краша!", price: 100, icon: "📈", action: 'mod_crash' },
             { id: 'cases_game', title: "Кейсы", desc: "Ставка 300 XP. Открывай кейсы!", price: 300, icon: "📦", action: 'mod_cases' }
         ];
-        let apShopItems = [
+
+        let defaultApShopItems = [
             { id: 'ap_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" },
             { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" },
             { id: 'ap_3', title: "Иммунитет на выговор", desc: "Защищает от получения 1 выговора.", price: 40, icon: "👑" },
@@ -1433,25 +1481,266 @@
             { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' }
         ];
 
-        let modRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: 500 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: 300 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: -100 }];
-        let apRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: 50 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: 30 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -10 Баллов', val: -10 }];
-
-        let customShopItems = [], customApShopItems = [], customModMessages = [], customSupQuestions = [], hiddenChecks = [];
-        const questsData = [ { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 }, { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 }, { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 }, { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 } ];
-
-        let baseModMessages = [
-            { type: "good", text: "Всем привет, как настроение сегодня?" }, { type: "good", text: "ПРОДАМ ГАРАЖ В БАТЫРЕВО, ФУЛЛ ПРОКАЧКА!" }, { type: "good", text: "Подскажите, где найти автосалон низкого класса?" }, { type: "good", text: "Кто пойдет со мной на водолаза? Нужен напарник." }, { type: "good", text: "Куплю супру. Бюджет 5кк. Писать в личные сообщения." }, { type: "good", text: "Парни, со скольки лет берут в инкассаторы?" }, { type: "good", text: "Я СЕГОДНЯ ВЫБИЛ ТАЧКУ ИЗ КОНТЕЙНЕРА!!!" }, { type: "good", text: "Как подать заявку на пост хелпера? Дайте ссылку на форум." }, { type: "good", text: "В какую семью можно вступить новичку?" }, { type: "good", text: "Кто может подвезти до Арзамаса? Стою на спавне Южного." }, { type: "good", text: "Продам скин 'Джон Уик', цена договорная." }, { type: "good", text: "Где посмотреть правила проведения стрел для ОПГ?" }, { type: "good", text: "Ребята, какую машину лучше взять первой: ВАЗ или Гольф?" }, { type: "good", text: "КАК ОТКРЫТЬ ИНВЕНТАРЬ?" }, { type: "good", text: "Спасибо большое админам за помощь!" }, { type: "good", text: "Ищу кредитора, нужно 2кк на неделю, верну 2.5кк." }, { type: "good", text: "На каком сервере сейчас самый большой онлайн?" }, { type: "good", text: "Продам сим-карту формата 7777, жду предложений." }, { type: "good", text: "Подскажите команду, чтобы передать деньги другому игроку." }, { type: "good", text: "Можете скинуть актуальный Discord канал моей фракции?" }, { type: "good", text: "Леха зашел в игру или еще нет?" }, { type: "good", text: "Во сколько сегодня будет слет домов?" }, { type: "good", text: "Парни, как устроиться в МЧС?" }, { type: "good", text: "Куплю симку 1111, бюджет свободный." }, { type: "good", text: "Меня посадили в деморган, где посмотреть время до выхода?" }, { type: "good", text: "Продам БМВ М5 Ф90, не донат!" }, { type: "good", text: "У кого есть фама с домом на Рублевке?" }, { type: "good", text: "Ищу человека с 3 лвл для выполнения фам квестов." }, { type: "good", text: "Как оплатить штрафы на авто?" }, { type: "good", text: "Дайте совет, на какой работе больше платят на 10 уровне?" }, { type: "good", text: "Есть у кого лишняя аптечка? Стою на трассе Южный-Арзамас." }, { type: "good", text: "Продам скин водолаза, писать в лс." }, { type: "good", text: "Когда будет следующий х2 донат?" }, { type: "good", text: "Кто может принять в УМВД прямо сейчас?" }, { type: "good", text: "Куплю дом в Эдово, пишите цены." }, { type: "good", text: "Сколько слотов в гараже высокого класса?" }, { type: "good", text: "Какой онлайн во фракции СМИ обычно?" }, { type: "good", text: "Ищу стрелков в фаму, премии за каждую выигранную вышку." }, { type: "good", text: "Продам колонку JBL, цена 1.5кк." }, { type: "good", text: "Ребят, какую клаву лучше взять для игры? Думаю над Red Square Keyrox." }, { type: "good", text: "Где находится аукцион контейнеров?" }, { type: "good", text: "Кто продаст Марк 2 с прошивкой спорт?" }, { type: "good", text: "Ищу строительную компанию, готов возить материалы каждый день." }, { type: "good", text: "Подскажите расценки на тюнинг в СТО Арзамаса." }, { type: "good", text: "У кого можно купить номера на авто формата О777ОО?" }, { type: "good", text: "Как сменить ник в игре через донат?" }, { type: "good", text: "Ищу напарника на инкассацию, у меня 3 ранг." }, { type: "good", text: "Продам рюкзак водолаза за 3кк." }, { type: "good", text: "Подскажите, сколько стоит слить супру в госс?" }, { type: "good", text: "Куплю аксессуар 'Крылья Ангела'." }, { type: "good", text: "Где спавнятся лодки для водолаза?" }, { type: "good", text: "Может кто-нибудь забрать от больницы Лыткарино?" }, { type: "good", text: "Как повысить законопослушность?" }, { type: "good", text: "Кто знает команду для просмотра списка администраторов онлайн?" }, { type: "good", text: "Куплю Гелик 63, сток. Писать цены в лс." }, { type: "good", text: "Проходит ли сейчас набор на пост лидера ФСБ?" }, { type: "good", text: "ПРОДАМ ВАЗ 2109 ФУЛЛ ТЮН!!" }, { type: "good", text: "Где лучше всего ставить музыкальную колонку?" }, { type: "good", text: "Кто продаст военный билет?" }, { type: "good", text: "Как узнать, когда слетит определенный бизнес?" }, { type: "good", text: "Сколько стоит создать свою Транспортную Компанию?" }, { type: "good", text: "Что дает премиум вип кроме опыта?" }, { type: "good", text: "Посоветуйте прибыльный бизнес за 50кк." }, { type: "good", text: "Как передать лидерство в семье другому человеку?" }, { type: "good", text: "Ищу транспортную компанию в Батырево." }, { type: "good", text: "Кто может сдать в аренду фуру на пару часов?" }, { type: "good", text: "Сколько рейтинга нужно для топ 1 фамы?" }, { type: "good", text: "Как купить военный билет через донат?" }, { type: "good", text: "Всем удачной игры и хорошего дня!" },
-            { type: "warn", text: "Дайте 10к на развитие пожалуйста, я бомжик" }, { type: "warn", text: "Админы дайте денег на банк пжпжпжпжпж" }, { type: "warn", text: "АХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХАХХАХАХАХА" }, { type: "warn", text: "Как дела ????????????????????????????????" }, { type: "warn", text: "Кто тут главный!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" }, { type: "warn", text: "Кто в патруль? Кто в патруль? Кто в патруль?" }, { type: "warn", text: "@everyone срочно зайдите в игру, у нас строй!" }, { type: "warn", text: "@here кому не лень, помогите с квестом" }, { type: "warn", text: "Ты вообще попуск, иди откисай на спавне дурачок" }, { type: "warn", text: "Плачь больше, форумная крыса" }, { type: "warn", text: "Что ты там вякнул? Иди уроки делай, школота" }, { type: "warn", text: "Кто за какую партию голосовал? Давайте обсудим законы." }, { type: "warn", text: "Слава [Название страны]! Остальные просто мусор!" }, { type: "warn", text: "Иисус или Аллах, кто круче? Пишите свое мнение" }, { type: "warn", text: "Админ, я тебе в лс флудить буду пока не ответишь" }, { type: "warn", text: "Давай, замуть меня, тебе же хуже будет" }, { type: "warn", text: "ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ" }, { type: "warn", text: "Эй, @Moderator, быстро проверь мою заявку на форуме!" }, { type: "warn", text: "Девочки на сервере есть? Скиньте фотки в лс))" }, { type: "warn", text: "Все [национальность] не умеют играть в эту игру." }, { type: "warn", text: "Модеры спят, можно спамить!!! 111" }, { type: "warn", text: "1\n2\n3\n4\n5\n6\n7" }, { type: "warn", text: "Меняю валюту дискорда на роль, кто согласен?" }, { type: "warn", text: "Да я твой дом труба шатал" }, { type: "warn", text: "Женщинам тут не место, идите борщи варить." }, { type: "warn", text: "Скиньте 100 рублей на киви, не хватает на донат" }, { type: "warn", text: "Andrey_Caypen вообще не шарит за правила" }, { type: "warn", text: "Привет........... как дела,,,,,,,,,," }, { type: "warn", text: "Я жду ответ уже 5 минут!!!!! ГДЕ АДМИНЫ???" }, { type: "warn", text: "Го все спамить в чат плюсики+++++++++" }, { type: "warn", text: "ХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХА" }, { type: "warn", text: "Продам фаму фаму фаму фаму фаму" }, { type: "warn", text: "@everyone почему сервер лагает???" }, { type: "warn", text: "Эй мусор, иди поплачь в подушку" }, { type: "warn", text: "В какую религию верите пацаны?" }, { type: "warn", text: "Путин топ, а вы все сосите" }, { type: "warn", text: "Все бабы дуры, факт." }, { type: "warn", text: "Киньте 5к на счет 12345 плз очень нужно" }, { type: "warn", text: "Модер дай роль быстро" }, { type: "warn", text: "ГО ГО ГО ГО ГО ГО ГО ГО" }, { type: "warn", text: "Снимайте этого админа, он блатер и вообще ничего не понимает." }, { type: "warn", text: "ЧЕ ЗА ФИГНЯ ПОЧЕМУ КИКНУЛО??????????" }, { type: "warn", text: "Я ВАС ВСЕХ РОТ НАОБОРОТ" }, { type: "warn", text: "Дайте денег дайте денег дайте денег" }, { type: "warn", text: "У кого можно занять 1кк? Верну 100% честно слово, дайте пж" }, { type: "warn", text: "Ты клоун просто, слился на стреле и ноешь" }, { type: "warn", text: "Блин, как же меня бесят эти админы, ниче не делают" }, { type: "warn", text: "Пинг пинг пинг пинг @Главный Модератор" }, { type: "warn", text: "АААААААААААААААААААААААААААААААААААААААААА" }, { type: "warn", text: "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-" }, { type: "warn", text: "Мужики, как относитесь к политике Байдена?" }, { type: "warn", text: "Скиньтесь на фаму кто сколько может, плиз" }, { type: "warn", text: "Все менты козлы, мусора бляди" }, { type: "warn", text: "Иди отсюда, нищеброд е***ый" }, { type: "warn", text: "Тебе лет 10 от силы, че ты мне тут доказываешь" }, { type: "warn", text: "Пойду создам тему на форуме, что вы все тут неадекваты" }, { type: "warn", text: "Дайте донат, дайте донат, дайте донат!!!" }, { type: "warn", text: "Кто не напишет '+' тот гей" }, { type: "warn", text: "qqqqqqqqqqqqqqqqqqqqqqqqqq" }, { type: "warn", text: "Пацаны, а кто по нации админ? Просто интересно..." }, { type: "warn", text: "Да пошли вы все нахрен со своими правилами" }, { type: "warn", text: "ТЫ ПРОСТО НУЛЬ, НУЛИНА, БОТ" }, { type: "warn", text: "Можно мне роль @ЗГМ просто так?" }, { type: "warn", text: "Я щас буду флудить пока мне не помогут" }, { type: "warn", text: "ПомогитеПомогитеПомогитеПомогите" }, { type: "warn", text: "Покидайте реакций на это сообщение!!!!!!!!!!!!!" }, { type: "warn", text: "Дайте лидерку ОПГ, я всё знаю" }, { type: "warn", text: "Тут вообще админы живые есть или вымерли все?" }, { type: "warn", text: "ЭЙ @everyone ЗАЙДИТЕ В КАНАЛ ОБЩЕНИЯ" }, { type: "warn", text: "Модеры, вы слепые? Он меня оскает" }, { type: "warn", text: "Не дадите роль - уйду с сервера" },
-            { type: "ban", text: "Продам вирты, 1кк = 50 рублей. Писать в ЛС" }, { type: "ban", text: "Куплю админку за деньги, кому переводить?" }, { type: "ban", text: "Трансфер виртов между серверами, комиссия 5%. Пишите в лс." }, { type: "ban", text: "Парни, открылся новый топ РП проект discord.gg/fake-rp" }, { type: "ban", text: "Заходите на мой сервер в майнкрафт, айпи: 192.168.1.1" }, { type: "ban", text: "Зацените расчлененку, жесть просто [ссылка на gore]" }, { type: "ban", text: "Скинул порнуху в общий чат, чекайте пока не удалили" }, { type: "ban", text: "Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10" }, { type: "ban", text: "Его номер +79991234567, звоните и пишите ему смс-бомбер" }, { type: "ban", text: "Работает баг на удвоение денег через трейд! Переведите мне 50к, верну 100к" }, { type: "ban", text: "Сливаю приватный аимбот на наш сервер: [ссылка]" }, { type: "ban", text: "Продам мефедрон, гашиш. Доставка по городу закладками" }, { type: "ban", text: "Твоя м*** сд***а в канаве, в******к" }, { type: "ban", text: "Мать твою в кино водил, щенок" }, { type: "ban", text: "Сливаю пароли от админ панелей, заходите [ссылка]" }, { type: "ban", text: "ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ, ЛИВАЕМ ОТСЮДА" }, { type: "ban", text: "Проект скатился на дно, экономика убита. Ухожу на другой серв." }, { type: "ban", text: "Я создал твинк, чтобы обойти ваш мут, лохи ахахахах" }, { type: "ban", text: "Я тебя по IP вычислю, жди гостей вечером, тебе п***ец" }, { type: "ban", text: "Продам аккаунт 25 лвл, на балансе 10кк. Цена 500р." }, { type: "ban", text: "Куплю бизнес за донат или реальные рубли на киви." }, { type: "ban", text: "Качайте топовый собейт для бизваров: [ссылка на exe]" }, { type: "ban", text: "У меня есть фотки админа из реальной жизни, скинуть?" }, { type: "ban", text: "Всем пока, ухожу играть на Гранд Мобайл." }, { type: "ban", text: "Нажми ALT+F4 чтобы получить миллион виртов бесплатно!" }, { type: "ban", text: "Я взломал этого чела, кто хочет купить его имущество за реал?" }, { type: "ban", text: "Сын ш****, чтоб ты сдох от рака" }, { type: "ban", text: "Привет, подписывайтесь на мой телеграм канал про заработок: t.me/scam" }, { type: "ban", text: "Продаю способы обхода античита, работает 100%. Писать в ЛС." }, { type: "ban", text: "Все кто не с нами, тех надо расстрелять. Смерть неверным!" }, { type: "ban", text: "Куплю Ив на сервере Тамбов по 40р/1кк." }, { type: "ban", text: "Ищу соучастника для дупа виртов, пишите в дс." }, { type: "ban", text: "Продам фастконнект без вирусов, 100 рублей." }, { type: "ban", text: "Мамку твою е***" }, { type: "ban", text: "Заходите на рулетку Блек Раши с бесплатным промокодом [ссылка]" }, { type: "ban", text: "Куплю игровую валюту, писать в тг @buyer_iv" }, { type: "ban", text: "Продам фаму за 500 рублей на карту." }, { type: "ban", text: "Кто хочет заработать реальные деньги играя в бр? Переходи по ссылке." }, { type: "ban", text: "Я нашел баг на вирты через багажник, продам способ за 100р." }, { type: "ban", text: "Твой батя сдох, утырок" }, { type: "ban", text: "Семью твою резал" }, { type: "ban", text: "Вот вам бот, который сам фармит на шахте: [ссылка]" }, { type: "ban", text: "Сливаю админскую инфу из их приватки, скрины тут: [ссылка]" }, { type: "ban", text: "Набираю людей на другой проект, даю админки при старте!" }, { type: "ban", text: "Продаю СИМ-карты оптом за реальные бабки." }, { type: "ban", text: "Я узнал в какой школе он учится, завтра пойдем его бить." }, { type: "ban", text: "Раздаю вирты тем, кто перейдет по моей рефералке: [фишинг]" }, { type: "ban", text: "Секретный мод на бесконечное хп, скачивать тут." }, { type: "ban", text: "Пошли в телегу, там договоримся о покупке аккаунта." }, { type: "ban", text: "Скидываю порно в лс всем желающим." }, { type: "ban", text: "Этот проект мусорка, не играйте тут, все донатом решается." }, { type: "ban", text: "Мать ебал" }, { type: "ban", text: "Зайдите на мой ютуб канал, там конкурс на 5к рублей: [ссылка]" }, { type: "ban", text: "Кто продаст скин за киви?" }, { type: "ban", text: "Трансферю деньги с Реда на Тамбов, комиссия 10%." }, { type: "ban", text: "Дайте админку или я вас всех задоксю." }, { type: "ban", text: "Я вас всех найду и зарежу" }, { type: "ban", text: "Продам обход лаунчера для игры с ПК." }, { type: "ban", text: "Гляньте фотку, там жесть полная: [шок контент]" }, { type: "ban", text: "Продажа ИВ / Аккаунтов по самым низким ценам." }
+        let defaultModRoulettePrizes = [
+            { id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: 500 },
+            { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: 300 },
+            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
+            { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: -100 }
         ];
 
-        let baseSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] }, { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] }, { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] }, { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] } ];
-        const allComplaints = [ { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' }, { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' }, { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' }, { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' }, { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' } ];
+        let defaultApRoulettePrizes = [
+            { id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: 50 },
+            { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: 30 },
+            { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 },
+            { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -10 Баллов', val: -10 }
+        ];
 
+        let shopItems = [...defaultShopItems]; let apShopItems = [...defaultApShopItems];
+        let customShopItems = [], customApShopItems = [];
+        let modRoulettePrizes = [...defaultModRoulettePrizes]; let apRoulettePrizes = [...defaultApRoulettePrizes];
+        let customModMessages = [], customSupQuestions = [], hiddenChecks = [];
+
+        const questsData = [
+            { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 },
+            { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 },
+            { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 },
+            { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 }
+        ];
+
+        // === 4. МАССИВЫ СООБЩЕНИЙ (БЕЗ ИЗМЕНЕНИЙ) ===
+        let baseModMessages = [
+            { type: "good", text: "Всем привет, как настроение сегодня?" },
+            { type: "good", text: "ПРОДАМ ГАРАЖ В БАТЫРЕВО, ФУЛЛ ПРОКАЧКА!" },
+            { type: "good", text: "Подскажите, где найти автосалон низкого класса?" },
+            { type: "good", text: "Кто пойдет со мной на водолаза? Нужен напарник." },
+            { type: "good", text: "Куплю супру. Бюджет 5кк. Писать в личные сообщения." },
+            { type: "good", text: "Парни, со скольки лет берут в инкассаторы?" },
+            { type: "good", text: "Я СЕГОДНЯ ВЫБИЛ ТАЧКУ ИЗ КОНТЕЙНЕРА!!!" },
+            { type: "good", text: "Как подать заявку на пост хелпера? Дайте ссылку на форум." },
+            { type: "good", text: "В какую семью можно вступить новичку?" },
+            { type: "good", text: "Кто может подвезти до Арзамаса? Стою на спавне Южного." },
+            { type: "good", text: "Продам скин 'Джон Уик', цена договорная." },
+            { type: "good", text: "Где посмотреть правила проведения стрел для ОПГ?" },
+            { type: "good", text: "Ребята, какую машину лучше взять первой: ВАЗ или Гольф?" },
+            { type: "good", text: "КАК ОТКРЫТЬ ИНВЕНТАРЬ?" },
+            { type: "good", text: "Спасибо большое админам за помощь!" },
+            { type: "good", text: "Ищу кредитора, нужно 2кк на неделю, верну 2.5кк." },
+            { type: "good", text: "На каком сервере сейчас самый большой онлайн?" },
+            { type: "good", text: "Продам сим-карту формата 7777, жду предложений." },
+            { type: "good", text: "Подскажите команду, чтобы передать деньги другому игроку." },
+            { type: "good", text: "Можете скинуть актуальный Discord канал моей фракции?" },
+            { type: "good", text: "Леха зашел в игру или еще нет?" },
+            { type: "good", text: "Во сколько сегодня будет слет домов?" },
+            { type: "good", text: "Парни, как устроиться в МЧС?" },
+            { type: "good", text: "Куплю симку 1111, бюджет свободный." },
+            { type: "good", text: "Меня посадили в деморган, где посмотреть время до выхода?" },
+            { type: "good", text: "Продам БМВ М5 Ф90, не донат!" },
+            { type: "good", text: "У кого есть фама с домом на Рублевке?" },
+            { type: "good", text: "Ищу человека с 3 лвл для выполнения фам квестов." },
+            { type: "good", text: "Как оплатить штрафы на авто?" },
+            { type: "good", text: "Дайте совет, на какой работе больше платят на 10 уровне?" },
+            { type: "good", text: "Есть у кого лишняя аптечка? Стою на трассе Южный-Арзамас." },
+            { type: "good", text: "Продам скин водолаза, писать в лс." },
+            { type: "good", text: "Когда будет следующий х2 донат?" },
+            { type: "good", text: "Кто может принять в УМВД прямо сейчас?" },
+            { type: "good", text: "Куплю дом в Эдово, пишите цены." },
+            { type: "good", text: "Сколько слотов в гараже высокого класса?" },
+            { type: "good", text: "Какой онлайн во фракции СМИ обычно?" },
+            { type: "good", text: "Ищу стрелков в фаму, премии за каждую выигранную вышку." },
+            { type: "good", text: "Продам колонку JBL, цена 1.5кк." },
+            { type: "good", text: "Ребят, какую клаву лучше взять для игры? Думаю над Red Square Keyrox." },
+            { type: "good", text: "Где находится аукцион контейнеров?" },
+            { type: "good", text: "Кто продаст Марк 2 с прошивкой спорт?" },
+            { type: "good", text: "Ищу строительную компанию, готов возить материалы каждый день." },
+            { type: "good", text: "Подскажите расценки на тюнинг в СТО Арзамаса." },
+            { type: "good", text: "У кого можно купить номера на авто формата О777ОО?" },
+            { type: "good", text: "Как сменить ник в игре через донат?" },
+            { type: "good", text: "Ищу напарника на инкассацию, у меня 3 ранг." },
+            { type: "good", text: "Продам рюкзак водолаза за 3кк." },
+            { type: "good", text: "Подскажите, сколько стоит слить супру в госс?" },
+            { type: "good", text: "Куплю аксессуар 'Крылья Ангела'." },
+            { type: "good", text: "Где спавнятся лодки для водолаза?" },
+            { type: "good", text: "Может кто-нибудь забрать от больницы Лыткарино?" },
+            { type: "good", text: "Как повысить законопослушность?" },
+            { type: "good", text: "Кто знает команду для просмотра списка администраторов онлайн?" },
+            { type: "good", text: "Куплю Гелик 63, сток. Писать цены в лс." },
+            { type: "good", text: "Проходит ли сейчас набор на пост лидера ФСБ?" },
+            { type: "good", text: "ПРОДАМ ВАЗ 2109 ФУЛЛ ТЮН!!" },
+            { type: "good", text: "Где лучше всего ставить музыкальную колонку?" },
+            { type: "good", text: "Кто продаст военный билет?" },
+            { type: "good", text: "Как узнать, когда слетит определенный бизнес?" },
+            { type: "good", text: "Сколько стоит создать свою Транспортную Компанию?" },
+            { type: "good", text: "Что дает премиум вип кроме опыта?" },
+            { type: "good", text: "Посоветуйте прибыльный бизнес за 50кк." },
+            { type: "good", text: "Как передать лидерство в семье другому человеку?" },
+            { type: "good", text: "Ищу транспортную компанию в Батырево." },
+            { type: "good", text: "Кто может сдать в аренду фуру на пару часов?" },
+            { type: "good", text: "Сколько рейтинга нужно для топ 1 фамы?" },
+            { type: "good", text: "Как купить военный билет через донат?" },
+            { type: "good", text: "Всем удачной игры и хорошего дня!" },
+
+            { type: "warn", text: "Дайте 10к на развитие пожалуйста, я бомжик" },
+            { type: "warn", text: "Админы дайте денег на банк пжпжпжпжпж" },
+            { type: "warn", text: "АХАХАХХАХАХАХАХАХАХАХАХАХАХАХАХАХАХХАХАХАХА" },
+            { type: "warn", text: "Как дела ????????????????????????????????" },
+            { type: "warn", text: "Кто тут главный!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" },
+            { type: "warn", text: "Кто в патруль? Кто в патруль? Кто в патруль?" },
+            { type: "warn", text: "@everyone срочно зайдите в игру, у нас строй!" },
+            { type: "warn", text: "@here кому не лень, помогите с квестом" },
+            { type: "warn", text: "Ты вообще попуск, иди откисай на спавне дурачок" },
+            { type: "warn", text: "Плачь больше, форумная крыса" },
+            { type: "warn", text: "Что ты там вякнул? Иди уроки делай, школота" },
+            { type: "warn", text: "Кто за какую партию голосовал? Давайте обсудим законы." },
+            { type: "warn", text: "Слава [Название страны]! Остальные просто мусор!" },
+            { type: "warn", text: "Иисус или Аллах, кто круче? Пишите свое мнение" },
+            { type: "warn", text: "Админ, я тебе в лс флудить буду пока не ответишь" },
+            { type: "warn", text: "Давай, замуть меня, тебе же хуже будет" },
+            { type: "warn", text: "ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ" },
+            { type: "warn", text: "Эй, @Moderator, быстро проверь мою заявку на форуме!" },
+            { type: "warn", text: "Девочки на сервере есть? Скиньте фотки в лс))" },
+            { type: "warn", text: "Все [национальность] не умеют играть в эту игру." },
+            { type: "warn", text: "Модеры спят, можно спамить!!! 111" },
+            { type: "warn", text: "1\n2\n3\n4\n5\n6\n7" },
+            { type: "warn", text: "Меняю валюту дискорда на роль, кто согласен?" },
+            { type: "warn", text: "Да я твой дом труба шатал" },
+            { type: "warn", text: "Женщинам тут не место, идите борщи варить." },
+            { type: "warn", text: "Скиньte 100 рублей на киви, не хватает на донат" },
+            { type: "warn", text: "Andrey_Caypen вообще не шарит за правила" },
+            { type: "warn", text: "Привет........... как дела,,,,,,,,,," },
+            { type: "warn", text: "Я жду ответ уже 5 минут!!!!! ГДЕ АДМИНЫ???" },
+            { type: "warn", text: "Го все спамить в чат плюсики+++++++++" },
+            { type: "warn", text: "ХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХАХА" },
+            { type: "warn", text: "Продам фаму фаму фаму фаму фаму" },
+            { type: "warn", text: "@everyone почему сервер лагает???" },
+            { type: "warn", text: "Эй мусор, иди поплачь в подушку" },
+            { type: "warn", text: "В какую религию верите пацаны?" },
+            { type: "warn", text: "Путин топ, а вы все сосите" },
+            { type: "warn", text: "Все бабы дуры, факт." },
+            { type: "warn", text: "Киньте 5к на счет 12345 плз очень нужно" },
+            { type: "warn", text: "Модер дай роль быстро" },
+            { type: "warn", text: "ГО ГО ГО ГО ГО ГО ГО ГО" },
+            { type: "warn", text: "Снимайте этого админа, он блатер и вообще ничего не понимает." },
+            { type: "warn", text: "ЧЕ ЗА ФИГНЯ ПОЧЕМУ КИКНУЛО??????????" },
+            { type: "warn", text: "Я ВАС ВСЕХ РОТ НАОБОРОТ" },
+            { type: "warn", text: "Дайте денег дайте денег дайте денег" },
+            { type: "warn", text: "У кого можно занять 1кк? Верну 100% честно слово, дайте пж" },
+            { type: "warn", text: "Ты клоун просто, слился на стреле и ноешь" },
+            { type: "warn", text: "Блин, как же меня бесят эти админы, ниче не делают" },
+            { type: "warn", text: "Пинг пинг пинг пинг @Главный Модератор" },
+            { type: "warn", text: "АААААААААААААААААААААААААААААААААААААААААА" },
+            { type: "warn", text: "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-" },
+            { type: "warn", text: "Мужики, как относитесь к политике Байдена?" },
+            { type: "warn", text: "Скиньтесь на фаму кто сколько может, плиз" },
+            { type: "warn", text: "Все менты козлы, мусора бляди" },
+            { type: "warn", text: "Иди отсюда, нищеброд е***ый" },
+            { type: "warn", text: "Тебе лет 10 от силы, че ты мне тут доказываешь" },
+            { type: "warn", text: "Пойду создам тему на форуме, что вы все тут неадекваты" },
+            { type: "warn", text: "Дайте донат, дайте донат, дайте донат!!!" },
+            { type: "warn", text: "Кто не напишет '+' тот гей" },
+            { type: "warn", text: "qqqqqqqqqqqqqqqqqqqqqqqqqq" },
+            { type: "warn", text: "Пацаны, а кто по нации админ? Просто интересно..." },
+            { type: "warn", text: "Да пошли вы все нахрен со своими правилами" },
+            { type: "warn", text: "ТЫ ПРОСТО НУЛЬ, НУЛИНА, БОТ" },
+            { type: "warn", text: "Можно мне роль @ЗГМ просто так?" },
+            { type: "warn", text: "Я щас буду флудить пока мне не помогут" },
+            { type: "warn", text: "ПомогитеПомогитеПомогитеПомогите" },
+            { type: "warn", text: "Покидайте реакций на это сообщение!!!!!!!!!!!!!" },
+            { type: "warn", text: "Дайте лидерку ОПГ, я всё знаю" },
+            { type: "warn", text: "Тут вообще админы живые есть или вымерли все?" },
+            { type: "warn", text: "ЭЙ @everyone ЗАЙДИТЕ В КАНАЛ ОБЩЕНИЯ" },
+            { type: "warn", text: "Модеры, вы слепые? Он меня оскает" },
+            { type: "warn", text: "Не дадите роль - уйду с сервера" },
+
+            { type: "ban", text: "Продам вирты, 1кк = 50 рублей. Писать в ЛС" },
+            { type: "ban", text: "Куплю админку за деньги, кому переводить?" },
+            { type: "ban", text: "Трансфер виртов между серверами, комиссия 5%. Пишите в лс." },
+            { type: "ban", text: "Парни, открылся новый топ РП проект discord.gg/fake-rp" },
+            { type: "ban", text: "Заходите на мой сервер в майнкрафт, айпи: 192.168.1.1" },
+            { type: "ban", text: "Зацените расчлененку, жесть просто [ссылка на gore]" },
+            { type: "ban", text: "Скинул порнуху в общий чат, чекайте пока не удалили" },
+            { type: "ban", text: "Я пробил его по номеру, вот его адрес: ул. Пушкина д. 10" },
+            { type: "ban", text: "Его номер +79991234567, звоните и пишите ему смс-бомбер" },
+            { type: "ban", text: "Работает баг на удвоение денег через трейд! Переведите мне 50к, верну 100к" },
+            { type: "ban", text: "Сливаю приватный аимбот на наш сервер: [ссылка]" },
+            { type: "ban", text: "Продам мефедрон, гашиш. Доставка по городу закладками" },
+            { type: "ban", text: "Твоя м*** сд***а в канаве, в******к" },
+            { type: "ban", text: "Мать твою в кино водил, щенок" },
+            { type: "ban", text: "Сливаю пароли от админ панелей, заходите [ссылка]" },
+            { type: "ban", text: "ДА ВЫ ВСЕ ТУТ К****Ы, СЕРВЕР МЁРТВЫЙ, ЛИВАЕМ ОТСЮДА" },
+            { type: "ban", text: "Проект скатился на дно, экономика убита. Ухожу на другой серв." },
+            { type: "ban", text: "Я создал твинк, чтобы обойти ваш мут, лохи ахахахах" },
+            { type: "ban", text: "Я тебя по IP вычислю, жди гостей вечером, тебе п***ец" },
+            { type: "ban", text: "Продам аккаунт 25 лвл, на балансе 10кк. Цена 500р." },
+            { type: "ban", text: "Куплю бизнес за донат или реальные рубли на киви." },
+            { type: "ban", text: "Качайте топовый собейт для бизваров: [ссылка на exe]" },
+            { type: "ban", text: "У меня есть фотки админа из реальной жизни, скинуть?" },
+            { type: "ban", text: "Всем пока, ухожу играть на Гранд Мобайл." },
+            { type: "ban", text: "Нажми ALT+F4 чтобы получить миллион виртов бесплатно!" },
+            { type: "ban", text: "Я взломал этого чела, кто хочет купить его имущество за реал?" },
+            { type: "ban", text: "Сын ш****, чтоб ты сдох от рака" },
+            { type: "ban", text: "Привет, подписывайтесь на мой телеграм канал про заработок: t.me/scam" },
+            { type: "ban", text: "Продаю способы обхода античита, работает 100%. Писать в ЛС." },
+            { type: "ban", text: "Все кто не с нами, тех надо расстрелять. Смерть неверным!" },
+            { type: "ban", text: "Куплю Ив на сервере Тамбов по 40р/1кк." },
+            { type: "ban", text: "Ищу соучастника для дупа виртов, пишите в дс." },
+            { type: "ban", text: "Продам фастконнект без вирусов, 100 рублей." },
+            { type: "ban", text: "Мамку твою е***" },
+            { type: "ban", text: "Заходите на рулетку Блек Раши с бесплатным промокодом [ссылка]" },
+            { type: "ban", text: "Куплю игровую валюту, писать в тг @buyer_iv" },
+            { type: "ban", text: "Продам фаму за 500 рублей на карту." },
+            { type: "ban", text: "Кто хочет заработать реальные деньги играя в бр? Переходи по ссылке." },
+            { type: "ban", text: "Я нашел баг на вирты через багажник, продам способ за 100р." },
+            { type: "ban", text: "Твой батя сдох, утырок" },
+            { type: "ban", text: "Семью твою резал" },
+            { type: "ban", text: "Вот вам бот, который сам фармит на шахте: [ссылка]" },
+            { type: "ban", text: "Сливаю админскую инфу из их приватки, скрины тут: [ссылка]" },
+            { type: "ban", text: "Набираю людей на другой проект, даю админки при старте!" },
+            { type: "ban", text: "Продаю СИМ-карты оптом за реальные бабки." },
+            { type: "ban", text: "Я узнал в какой школе он учится, завтра пойдем его бить." },
+            { type: "ban", text: "Раздаю вирты тем, кто перейдет по моей рефералке: [фишинг]" },
+            { type: "ban", text: "Секретный мод на бесконечное хп, скачивать тут." },
+            { type: "ban", text: "Пошли в телегу, там договоримся о покупке аккаунта." },
+            { type: "ban", text: "Скидываю порно в лс всем желающим." },
+            { type: "ban", text: "Этот проект мусорка, не играйте тут, все донатом решается." },
+            { type: "ban", text: "Мать ебал" },
+            { type: "ban", text: "Зайдите на мой ютуб канал, там конкурс на 5к рублей: [ссылка]" },
+            { type: "ban", text: "Кто продаст скин за киви?" },
+            { type: "ban", text: "Трансферю деньги с Реда на Тамбов, комиссия 10%." },
+            { type: "ban", text: "Дайте админку или я вас всех задоксю." },
+            { type: "ban", text: "Я вас всех найду и зарежу" },
+            { type: "ban", text: "Продам обход лаунчера для игры с ПК." },
+            { type: "ban", text: "Гляньте фотку, там жесть полная: [шок контент]" },
+            { type: "ban", text: "Продажа ИВ / Аккаунтов по самым низким ценам." }
+        ];
+
+        let baseSupQuestions = [
+            { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] },
+            { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] },
+            { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] },
+            { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] },
+            { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] },
+            { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] },
+            { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] },
+            { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] }
+        ];
+
+        const allComplaints = [
+            { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' },
+            { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' },
+            { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' },
+            { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' },
+            { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' }
+        ];
+
+        // === ГЛОБАЛЬНАЯ ЗАГРУЗКА И НАСТРОЙКИ МАГАЗИНОВ ===
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE', 'SHOP_OVERRIDE', 'GAME_XP']);
+            
             customShopItems = []; customApShopItems = []; customModMessages = []; customSupQuestions = []; hiddenChecks = []; activeMods = []; activeAps = [];
-            modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes]; gameXpMod = 0; let priceOverrides = {};
+            modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes];
+            gameXpMod = 0; let priceOverrides = {};
+            
             if (data) {
                 data.forEach(row => {
                     if (row.email === 'SHOP_OVERRIDE') { priceOverrides[row.link] = Number(row.xp); }
@@ -1463,51 +1752,61 @@
                     else if (row.email === 'CUSTOM_MOD_MSG') { customModMessages.push({ type: row.status, text: row.date }); } 
                     else if (row.email === 'CUSTOM_AP_MSG') { customSupQuestions.push({ title: row.link, text: row.date, keywords: row.status.split(',').map(s => s.trim().toLowerCase()) }); } 
                     else if (row.email === 'HIDDEN_CHECK') { hiddenChecks.push({ id: row.id, userId: row.link, text: row.date, type: row.status }); }
-                    else if (row.email === 'USER_ROLE') { if(row.status === 'moderator') activeMods.push(row.link); if(row.status === 'ap') activeAps.push(row.link); }
+                    else if (row.email === 'USER_ROLE') {
+                        if(row.status === 'moderator') activeMods.push(row.link);
+                        if(row.status === 'ap') activeAps.push(row.link);
+                    }
                 });
             }
+            
             shopItems = [...defaultShopItems, ...customShopItems].map(item => { if (priceOverrides[item.id]) item.price = priceOverrides[item.id]; return item; });
             apShopItems = [...defaultApShopItems, ...customApShopItems].map(item => { if (priceOverrides[item.id]) item.price = priceOverrides[item.id]; return item; });
+
             if (currentUser) {
                 isModerator = activeMods.includes(currentUser.id) || adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicModLeaders.includes(currentUser.id);
                 isAp = activeAps.includes(currentUser.id) || apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
             }
-            checkRolesAndAccess(); updateShopStats(); updateTicker();
+            updateShopStats(); updateTicker();
         }
 
         async function updateTicker() {
             const banner = document.getElementById('infoBannerText');
             if(!banner) return;
             const { data } = await supa.from('admin_logs').select('nickname, item_name').order('created_at', { ascending: false }).limit(1);
-            if(data && data.length > 0) banner.innerHTML = `Последнее событие: Сотрудник <span>${data[0].nickname}</span> приобрел/выиграл: <span>${data[0].item_name}</span>!`;
-            else banner.innerHTML = 'Добро пожаловать в тренажер! Выполняйте квесты и зарабатывайте XP.';
+            if(data && data.length > 0) {
+                banner.innerHTML = `Последнее событие: Сотрудник <span>${data[0].nickname}</span> приобрел/выиграл: <span>${data[0].item_name}</span>!`;
+            } else {
+                banner.innerHTML = 'Добро пожаловать в тренажер! Выполняйте квесты и зарабатывайте XP.';
+            }
         }
         setInterval(updateTicker, 60000);
+
+        // === 5. ПРАВАЯ ПАНЕЛЬ И НАВИГАЦИЯ ===
+        const rightContent = {
+            moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] },
+            timeattack: { title: "Спидран", lead: "Правила режима на время.", cards: [ ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."], ["Опыт", "Счет конвертируется в бонусный XP!"] ] },
+            support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] },
+            complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] },
+            quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] },
+            guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
+            leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Отображение", "Показываются только действующие модераторы и АП."] ] },
+            about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
+            profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
+            shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "Мини-игры для проверки удачи."] ] },
+            ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
+            report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модераторам."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] },
+            inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Форма", "Укажите даты и точную причину."] ] },
+            admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи в Discord."] ] },
+            ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное'."] ] },
+            creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] },
+            leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку."], ["Тайный покупатель", "Закидывай сложную проверку."] ] },
+            ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы."] ] },
+            reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] }
+        };
 
         function renderRight(mode) {
             const rt = document.getElementById("rightTitle"), rl = document.getElementById("rightLead"), rc = document.getElementById("rightCards");
             if(!rt || !rl || !rc) return;
-            const rightContent = {
-                moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] },
-                timeattack: { title: "Спидран", lead: "Правила режима на время.", cards: [ ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."], ["Опыт", "Счет конвертируется в бонусный XP!"] ] },
-                support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] },
-                complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] },
-                quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] },
-                guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] },
-                leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Отображение", "Показываются только действующие модераторы и АП."] ] },
-                about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] },
-                profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
-                shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "Мини-игры для проверки удачи."] ] },
-                ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
-                report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модераторам."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] },
-                inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Форма", "Укажите даты и точную причину."] ] },
-                admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи в Discord."] ] },
-                ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное'."] ] },
-                creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] },
-                leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку."], ["Тайный покупатель", "Закидывай сложную проверку."] ] },
-                ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы."] ] },
-                reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] }
-            };
             const data = rightContent[mode] || rightContent['moderation'];
             rt.innerHTML = data.title; rl.innerHTML = data.lead;
             rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
@@ -1586,6 +1885,7 @@
 
         document.querySelectorAll(".mode-btn").forEach(btn => { btn.addEventListener("click", () => switchMode(btn.dataset.mode, btn)); });
 
+        // === 6. ЛОГИКА ИГРЫ И АНТИ-СПАМ ===
         function randomFunnyNick() { 
             const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"], funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
             return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
@@ -1827,13 +2127,13 @@
         document.getElementById('deleteModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim(); if(!title) return alert("Введите точное название товара для удаления!");
             const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар удален у всех!"); loadGlobalShopAndRoulette(); } else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
+            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар удален у всех!"); loadGlobalShopAndRoulette(); } else alert("Пользовательский товар с таким названием не найден!");
         });
         
         document.getElementById('deleteApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim(); if(!title) return alert("Введите точное название товара для удаления!");
             const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар АП удален у всех!"); loadGlobalShopAndRoulette(); } else alert("Пользовательский товар с таким названием не найден! (Базовые товары удалять нельзя)");
+            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар АП удален у всех!"); loadGlobalShopAndRoulette(); } else alert("Пользовательский товар с таким названием не найден!");
         });
 
         function renderShopItems() {
@@ -2248,6 +2548,7 @@
             if(!error) { document.getElementById('customApTitle').value = ''; document.getElementById('customApText').value = ''; document.getElementById('customApKeywords').value = ''; alert("Вопрос успешно добавлен в общую базу АП!"); loadGlobalShopAndRoulette(); } else alert("Ошибка при добавлении.");
         });
 
+        // УПРАВЛЕНИЕ МАГАЗИНОМ МОДЕРАЦИИ И РУЛЕТКОЙ
         document.getElementById('addModShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('modShopItemTitle').value.trim(), desc = document.getElementById('modShopItemDesc').value.trim(), price = Number(document.getElementById('modShopItemPrice').value), icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
@@ -2270,6 +2571,7 @@
             alert("Рулетка модерации обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
+        // УПРАВЛЕНИЕ МАГАЗИНОМ АП И РУЛЕТКОЙ
         document.getElementById('addApShopItemBtn')?.addEventListener('click', async () => {
             const title = document.getElementById('apShopItemTitle').value.trim(), desc = document.getElementById('apShopItemDesc').value.trim(), price = Number(document.getElementById('apShopItemPrice').value), icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
@@ -2403,7 +2705,6 @@
         document.getElementById('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
         document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
 
-        // === 11. ОТЧЕТНОСТЬ, НЕАКТИВЫ И ДОСТУП ===
         function checkRolesAndAccess() {
             if (isModerator) document.getElementById('shopTabBtn').style.display = 'inline-block'; else document.getElementById('shopTabBtn').style.display = 'none';
             if (isAp) document.getElementById('apShopTabBtn').style.display = 'inline-block'; else document.getElementById('apShopTabBtn').style.display = 'none';
@@ -2414,7 +2715,7 @@
             if (isModerator) { document.getElementById('inactiveTabBtn').style.display = 'inline-block'; document.getElementById('inactiveAccessWarning').style.display = 'none'; document.getElementById('inactiveFormArea').style.display = 'block'; } 
             else { document.getElementById('inactiveTabBtn').style.display = 'none'; document.getElementById('inactiveAccessWarning').style.display = 'block'; document.getElementById('inactiveFormArea').style.display = 'none'; }
 
-            const isModLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id));
+            const isModLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
             if (isModLeader) { 
                 document.getElementById('adminPanelArea').style.display = 'block';
                 const inactivePanel = document.getElementById('adminPanelAreaInactives'); if(inactivePanel) inactivePanel.style.display = 'block';
@@ -2444,7 +2745,6 @@
                 
                 document.getElementById('reportNickInput').value = ''; document.getElementById('reportWorkInput').value = ''; document.getElementById('reportDateInput').value = ''; document.getElementById('reportLinkInput').value = ''; fileInput.value = ''; playSound('win');
             };
-
             if (fileInput.files.length > 0) compressImage(fileInput.files[0], submitData); else submitData("");
         });
 
@@ -2551,7 +2851,6 @@
             const { data: usersData } = await supa.from('user_stats').select('user_id, nickname').in('user_id', modIds);
             const mods = usersData || [];
 
-            // Определяем даты для отображения
             let sortedDates = [];
             const today = new Date();
             today.setDate(today.getDate() - (currentTableWeekOffset * 7));
@@ -2564,10 +2863,10 @@
             const { data: reports } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP","INACTIVE_REQ")').order('created_at', { ascending: false }).limit(500);
             const { data: inactives } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').eq('status', 'Одобрено');
             
-            const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id));
+            const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
 
             let html = '<table class="report-grid-table"><thead><tr><th class="rg-header-top" style="width:20%;">СОТРУДНИК</th>';
-            sortedDates.forEach(d => html += `<th class="rg-header-date">${d.slice(5)}</th>`); // показываем только MM-DD
+            sortedDates.forEach(d => html += `<th class="rg-header-date">${d.slice(5)}</th>`);
             html += '</tr><tr class="rg-category-row"><td colspan="' + (sortedDates.length + 1) + '">СОСТАВ МОДЕРАЦИИ</td></tr></thead><tbody>';
 
             mods.sort((a,b) => (a.nickname||'').localeCompare(b.nickname||'')).forEach(mod => {
@@ -2704,28 +3003,34 @@
                 const { data: adminRoles } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
                 if(adminRoles) { dynamicModLeaders = adminRoles.filter(r => r.status === 'leadership').map(r => r.link); dynamicApLeaders = adminRoles.filter(r => r.status === 'ap_admin').map(r => r.link); }
 
-                const isCreator = currentUser.email === creatorEmail, isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id), isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+                const isCreator = currentUser.email === creatorEmail;
+                const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id);
+                const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
+                
                 if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
-                if (isModLeader) { document.getElementById('leadershipTabBtn').style.display = 'inline-block'; document.getElementById('adminLogTabBtn').style.display = 'inline-block'; }
+                if (isModLeader) { document.getElementById('leadershipTabBtn').style.display = 'inline-block'; document.getElementById('adminLogTabBtn').style.display = 'inline-block'; document.getElementById('reportsTableBtn').style.display = 'inline-block'; }
                 if (isApLeader) { document.getElementById('apAdminTabBtn').style.display = 'inline-block'; document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; }
 
                 await loadGlobalShopAndRoulette();
-                supa.from('user_stats').select('*').eq('user_id', currentUser.id).single().then(({data}) => {
+                
+                checkRolesAndAccess(); 
+
+                try {
+                    const { data } = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
                     if(data) { 
                         state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; 
                         supportState.resolved = Number(data.sup_resolved) || 0; supportState.correct = Number(data.sup_correct) || 0; supportState.mistakes = Number(data.sup_mistakes) || 0; 
                         shopState.spent = Number(data.shop_spent) || 0; shopState.apSpent = Number(data.ap_spent) || 0; 
                     }
-                    supa.from('reports').select('xp').eq('email', currentUser.email).then(({data: repData}) => { 
-                      state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                        updateModStats(); updateSupportStats(); updateShopStats(); checkRolesAndAccess(); 
-                        if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
-                    });
-                });
+                    const { data: repData } = await supa.from('reports').select('xp').eq('email', currentUser.email);
+                    state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
+                    
+                    updateModStats(); updateSupportStats(); updateShopStats(); 
+                    if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
+                } catch(e) { console.error(e); }
+                
                 if(isCreator) loadCreatorPanelData();
             } else { await loadGlobalShopAndRoulette(); checkRolesAndAccess(); }
         });
     });
   </script>
-</body>
-</html>
