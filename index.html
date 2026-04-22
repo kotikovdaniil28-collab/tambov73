@@ -75,7 +75,7 @@
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
     button:hover { transform: translateY(-3px); }
-    button:active { transform: translateY(2px) scale(0.96); } /* ИСПРАВЛЕНИЕ: улучшенная анимация нажатия на мобильных */
+    button:active { transform: translateY(1px) scale(0.97); }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
     .page { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 1.5rem 0 3rem; }
@@ -375,7 +375,7 @@
     .quest-btn.in-progress { background: rgba(108, 140, 255, 0.1); color: #8aa3ff; border: 1px solid rgba(108, 140, 255, 0.3); cursor: not-allowed; }
     .quest-btn.completed { background: rgba(82, 199, 123, 0.1); color: #52c77b; border: 1px solid rgba(82, 199, 123, 0.3); cursor: not-allowed; }
 
-    /* === МАГАЗИН И НОВЫЕ ИГРЫ === */
+    /* === МАГАЗИН === */
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
     .shop-card { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.8rem; border-radius: 22px; background: linear-gradient(145deg, rgba(20, 24, 44, 0.9), rgba(10, 12, 22, 0.95)); border: 1px solid rgba(108, 140, 255, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); transition: all 0.3s ease; }
     .shop-card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(108, 140, 255, 0.6); box-shadow: 0 20px 50px rgba(108, 140, 255, 0.2); }
@@ -386,21 +386,14 @@
     .shop-buy-btn:hover:not(:disabled) { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 35px rgba(82, 199, 123, 0.6); }
     .shop-buy-btn:disabled { background: rgba(255, 255, 255, 0.05); color: #888; box-shadow: none; cursor: not-allowed; border: 1px solid rgba(255,255,255,0.1); }
 
+    /* Специфичные стили для Магазина АП */
     .ap-shop-card { border-color: rgba(255, 143, 196, 0.4); background: linear-gradient(145deg, rgba(35, 10, 26, 0.9), rgba(16, 4, 12, 0.95)); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 143, 196, 0.05); }
     .ap-shop-card:hover { border-color: rgba(255, 143, 196, 0.8); box-shadow: 0 20px 50px rgba(255, 143, 196, 0.25); }
     .ap-shop-card h3 { color: #ff8fc4; text-shadow: 0 0 15px rgba(255,143,196,0.3); }
     .ap-shop-price { color: #ff8fc4; border-color: #ff8fc4; background: rgba(255, 143, 196, 0.1); box-shadow: inset 0 0 15px rgba(255,143,196,0.2); }
     .ap-shop-buy-btn { background: linear-gradient(135deg, #ff78b4, #ffb0dd); color: #1a0510; box-shadow: 0 10px 30px rgba(255, 120, 180, 0.4); }
 
-    /* ОВЕРЛЕЙ СТАРТА ИГРЫ */
-    .ggStartOverlay { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:inherit; backdrop-filter: blur(8px); }
-
-    /* РАКЕТКА (Замена Краша) */
-    .rocket-graph { height: 250px; width: 100%; background: linear-gradient(to top, #0f2027, #203a43, #2c5364); border: 2px solid var(--color-primary); border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 1rem; }
-    .rocket-multiplier { font-family: var(--font-display); font-size: 4rem; color: #fff; text-shadow: 0 0 20px var(--color-primary); z-index: 4; transition: color 0.2s; position: relative; }
-    .rocket-emoji { font-size: 4rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: bottom 0.1s linear; z-index: 3; filter: drop-shadow(0 10px 10px rgba(255,100,50,0.8)); }
-
-    /* КОЛЕСО ФОРТУНЫ */
+    /* === КОЛЕСО ФОРТУНЫ === */
     .roulette-wrapper { position: relative; width: 100%; height: 180px; background: rgba(10, 12, 22, 0.95); border-radius: 20px; overflow: hidden; border: 3px solid rgba(255, 191, 71, 0.5); box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 15px 40px rgba(0, 0, 0, 0.8); }
     .roulette-wrapper::before, .roulette-wrapper::after { content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 5; pointer-events: none; }
     .roulette-wrapper::before { left: 0; background: linear-gradient(to right, rgba(10, 12, 22, 1), transparent); }
@@ -422,16 +415,20 @@
     .r-fine { background: radial-gradient(circle, rgba(255, 107, 136, 0.2) 0%, transparent 70%); border-bottom: 4px solid #ff6b88; }
     .r-fine span { color: #ff9fb4; }
 
+    /* === ОРЁЛ И РЕШКА === */
     @keyframes coinFlipAnim { 0% { transform: scaleY(1); } 50% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
     .flipping { animation: coinFlipAnim 0.15s infinite; }
 
+    /* === ТРИ СЕЙФА === */
     .safe-btn:hover:not(:disabled) { transform: scale(1.15) translateY(-5px); box-shadow: 0 15px 30px rgba(162, 108, 255, 0.5); }
     
+    /* === ВИКТОРИНА === */
     .jw-option-btn { width: 100%; padding: 1.2rem; border-radius: 14px; background: rgba(255, 107, 136, 0.15); border: 2px solid rgba(255, 107, 136, 0.4); color: #fff; font-weight: 800; font-size: 1.1rem; transition: 0.3s ease; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; }
     .jw-option-btn:hover:not(:disabled) { background: rgba(255, 107, 136, 0.35); border-color: #ff6b88; transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(255, 107, 136, 0.4); }
     .jw-option-btn.correct { background: rgba(82, 199, 123, 0.3) !important; border-color: #52c77b !important; color: #8df0ae !important; box-shadow: 0 0 20px rgba(82, 199, 123, 0.5); }
     .jw-option-btn.wrong { background: rgba(255, 107, 136, 0.4) !important; border-color: #ff6b88 !important; color: #ffb1c1 !important; }
 
+    /* === ИНТЕРАКТИВНЫЕ МИНИ-ИГРЫ === */
     .gg-btn { padding: 1.5rem; font-size: 3rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15); border-radius: 18px; cursor: pointer; transition: 0.3s ease; flex: 1; text-align: center; }
     .gg-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); transform: scale(1.08) translateY(-5px); border-color: var(--color-primary); box-shadow: 0 15px 35px rgba(108,140,255,0.4); }
     
@@ -442,25 +439,33 @@
     .timing-zone { position: absolute; left: 40%; width: 20%; height: 100%; background: linear-gradient(90deg, #3da860, #52c77b, #3da860); box-shadow: 0 0 25px #52c77b; }
     .timing-cursor { position: absolute; left: 0; width: 10px; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; border-radius: 5px; z-index: 2; }
 
+    /* === ROCKET И КЕЙСЫ === */
+    .rocket-graph { height: 250px; width: 100%; background: linear-gradient(to top, #0f2027, #203a43, #2c5364); border: 2px solid var(--color-primary); border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 1rem; }
+    .rocket-multiplier { font-family: var(--font-display); font-size: 4rem; color: #fff; text-shadow: 0 0 20px var(--color-primary); z-index: 4; transition: color 0.2s; position: relative; }
+    .rocket-emoji { font-size: 4rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: bottom 0.1s linear; z-index: 3; filter: drop-shadow(0 10px 10px rgba(255,100,50,0.8)); }
+    
     .case-box { background: linear-gradient(135deg, rgba(20,20,30,0.9), rgba(10,10,15,0.9)); border: 2px solid; border-radius: 16px; padding: 1.5rem; text-align: center; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex: 1; }
     .case-box:hover { transform: translateY(-5px) scale(1.02); }
     .case-box.bronze { border-color: #cd7f32; box-shadow: 0 10px 30px rgba(205,127,50,0.3); }
     .case-box.silver { border-color: #c0c0c0; box-shadow: 0 10px 30px rgba(192,192,192,0.3); }
     .case-box.gold { border-color: #ffd700; box-shadow: 0 10px 30px rgba(255,215,0,0.3); }
 
-    /* CSS НОВЫХ ИГР */
-    .dice-container { display: flex; gap: 2rem; justify-content: center; align-items: center; margin-bottom: 1.5rem; width: 100%; }
+    /* НОВЫЕ ИГРЫ CSS */
+    .dice-container, .hilo-container, .wheelx-container, .shells-container { display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 1rem; width: 100%; flex-wrap: wrap; }
     .dice-box { width: 100px; height: 100px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; color: #000; box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.5); }
+    
     .mines-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 250px; margin: 0 auto 1rem; }
     .mine-cell { background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
     .mine-cell.revealed { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.05); cursor: default; }
     .mine-cell.safe { background: rgba(82, 199, 123, 0.2); border-color: #52c77b; }
     .mine-cell.bomb { background: rgba(255, 107, 136, 0.4); border-color: #ff6b88; animation: pulse 0.5s infinite; }
+    
     .shell-cup { font-size: 4rem; cursor: pointer; transition: 0.3s ease; position: relative; }
     .shell-cup:hover { transform: translateY(-10px); filter: drop-shadow(0 10px 10px rgba(255,255,255,0.3)); }
     .shell-cup.lifted { transform: translateY(-40px); }
     .shell-ball { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 2rem; opacity: 0; transition: 0.3s; }
     .shell-cup.lifted .shell-ball { opacity: 1; }
+
     .wheelx-wrapper { position: relative; width: 200px; height: 200px; border-radius: 50%; border: 4px solid var(--color-primary); overflow: hidden; display: flex; justify-content: center; align-items: center; background: conic-gradient(#ff6b88 0% 25%, #ffbf47 25% 50%, #52c77b 50% 75%, #a26cff 75% 100%); transition: transform 3s cubic-bezier(0.15, 0.85, 0.2, 1); box-shadow: 0 0 30px rgba(0,0,0,0.8); }
     .wheelx-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 2rem; z-index: 10; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
 
@@ -546,10 +551,10 @@
   <div id="genericGameModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 10000; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center; position: relative;">
       
-      <div id="ggStartOverlay" class="ggStartOverlay" style="display:none;">
-          <h3 id="ggStartTitle" style="color: #fff; font-size: 1.8rem; margin-bottom: 0.5rem; font-family: var(--font-display);">Название игры</h3>
-          <p id="ggStartBetText" style="color: var(--color-warning); font-size: 1.1rem; font-weight: bold; margin-bottom: 1.5rem;">Ставка: 0 XP</p>
-          <button id="ggStartActionBtn" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 3rem;">🚀 Запустить игру</button>
+      <div id="ggStartOverlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.85); z-index:100; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(8px); border-radius:inherit;">
+          <h3 id="ggStartTitle" style="color:#fff; font-size:1.8rem; margin-bottom:0.5rem; font-family: var(--font-display);">Игра</h3>
+          <p id="ggStartBetText" style="color:var(--color-warning); font-size:1.1rem; font-weight:bold; margin-bottom:1.5rem;">Ставка: 0 XP</p>
+          <button id="ggStartActionBtn" class="btn btn-primary" style="font-size:1.2rem; padding:1rem 3rem;">🚀 Запустить</button>
       </div>
 
       <h2 id="ggTitle" style="margin: 0; font-family: var(--font-display); color: #ffbf47; font-size: 1.8rem;">Игра</h2>
@@ -587,7 +592,7 @@
                 <div class="rocket-multiplier" id="rocketMultiplier">1.00x</div>
                 <div class="rocket-emoji" id="rocketEmoji">🚀</div>
             </div>
-            <button id="ggCrashCashoutBtn" class="btn btn-primary" style="width: 100%; background: var(--color-success); border-color: var(--color-success);">Забрать (Cashout)</button>
+            <button id="ggRocketCashoutBtn" class="btn btn-primary" style="width: 100%; background: var(--color-success); border-color: var(--color-success);">Забрать (Cashout)</button>
          </div>
 
          <div id="ggCases" style="display:none; flex-direction: row; gap: 1rem; width: 100%; justify-content: center; flex-wrap: wrap;">
@@ -599,26 +604,16 @@
          <div id="ggDice" style="display:none; flex-direction:column; align-items:center; width:100%;">
             <p style="color:var(--color-text-muted); margin-bottom:1rem;">Твой бросок должен быть больше броска Дилера!</p>
             <div class="dice-container">
-                <div style="text-align:center;">
-                    <div class="dice-box" id="dicePlayer">?</div>
-                    <div style="margin-top:0.5rem; font-weight:bold;">Ты</div>
-                </div>
+                <div style="text-align:center;"><div class="dice-box" id="dicePlayer">?</div><div style="margin-top:0.5rem; font-weight:bold;">Ты</div></div>
                 <div style="font-size: 2rem; color: var(--color-text-faint);">VS</div>
-                <div style="text-align:center;">
-                    <div class="dice-box" id="diceDealer" style="background:#ffbf47;">?</div>
-                    <div style="margin-top:0.5rem; font-weight:bold; color:var(--color-warning);">Дилер</div>
-                </div>
+                <div style="text-align:center;"><div class="dice-box" id="diceDealer" style="background:#ffbf47;">?</div><div style="margin-top:0.5rem; font-weight:bold; color:var(--color-warning);">Дилер</div></div>
             </div>
             <button id="ggDiceBtn" class="btn btn-primary" style="width: 100%; font-size: 1.2rem;">Бросить кости</button>
          </div>
 
          <div id="ggMines" style="display:none; flex-direction:column; align-items:center; width:100%;">
-             <p style="color:var(--color-text-muted); margin-bottom:1rem;">Найди 3 алмаза, чтобы выиграть х2! (2 мины на поле)</p>
-             <div class="mines-grid" id="minesGrid">
-                 <div class="mine-cell" data-idx="0"></div><div class="mine-cell" data-idx="1"></div><div class="mine-cell" data-idx="2"></div>
-                 <div class="mine-cell" data-idx="3"></div><div class="mine-cell" data-idx="4"></div><div class="mine-cell" data-idx="5"></div>
-                 <div class="mine-cell" data-idx="6"></div><div class="mine-cell" data-idx="7"></div><div class="mine-cell" data-idx="8"></div>
-             </div>
+             <p style="color:var(--color-text-muted); margin-bottom:1rem;">Найди 3 алмаза (2 мины на поле)!</p>
+             <div class="mines-grid" id="minesGrid"></div>
              <div id="minesProgress" style="font-weight:bold; color:var(--color-success); font-size:1.2rem;">Найдено: 0 / 3</div>
          </div>
 
@@ -633,7 +628,7 @@
 
          <div id="ggWheelX" style="display:none; flex-direction:column; align-items:center; width:100%;">
              <p style="color:var(--color-text-muted); margin-bottom:1.5rem;">Вращай колесо иксов!</p>
-             <div style="position:relative; margin-bottom:2rem;">
+             <div style="position:relative; margin-bottom:2rem; width:200px; height:200px;">
                  <div class="wheelx-pointer">▼</div>
                  <div class="wheelx-wrapper" id="wheelXSpinner"></div>
              </div>
@@ -658,7 +653,7 @@
 
   <div id="fortuneModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 650px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center; position: relative;">
-      <div id="fortuneStartOverlay" class="ggStartOverlay">
+      <div id="fortuneStartOverlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.85); z-index:100; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(8px); border-radius:inherit;">
           <button id="startFortuneBtn" class="btn btn-primary" style="font-size:1.4rem; padding:1rem 3rem;">Крутить рулетку!</button>
       </div>
       <h2 id="fortuneTitle" style="margin: 0; font-family: var(--font-display); font-size: var(--text-xl); color: #ffbf47;">Колесо Фортуны</h2>
@@ -702,16 +697,16 @@
 
   <div id="jwModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 550px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
-      <h2 style="margin: 0; font-family: var(--font-display); color: #ff6b88; font-size: 1.8rem; text-transform: uppercase;">Кто это?</h2>
-      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Ставка: 600 XP. Угадай персонажа из вселенной «Джон Уик» и забери 1500 XP (х2.5).</p>
+      <h2 style="margin: 0; font-family: var(--font-display); color: #ff6b88; font-size: 1.8rem; text-transform: uppercase;">Викторина Джона Уика</h2>
+      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">5 случайных вопросов. Ответь правильно на 4 из 5 и получи <span style="color:#ff6b88; font-weight:bold;">3000 XP</span>. <br>Игра доступна только 1 раз!</p>
       
-      <div style="width: 100%; height: 280px; border-radius: 16px; overflow: hidden; border: 2px solid #ff6b88; box-shadow: 0 0 30px rgba(255,107,136,0.4); position: relative; background: #000;">
-          <img id="jwImage" src="" alt="Character" onerror="this.src='https://ui-avatars.com/api/?name=Secret+Character&background=random&size=250'" style="width: 100%; height: 100%; object-fit: cover; object-position: top;">
+      <div style="width: 100%; min-height: 150px; padding: 1.5rem; border-radius: 16px; border: 2px solid #ff6b88; box-shadow: 0 0 30px rgba(255,107,136,0.4); background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center;">
+          <h3 id="jwQuestionText" style="color: #fff; font-size: 1.3rem; margin: 0; line-height: 1.5;">Загрузка вопроса...</h3>
       </div>
       
       <div id="jwOptions" style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 0.5rem;"></div>
       
-      <div id="jwResult" style="font-size: 1.4rem; font-weight: 800; min-height: 2.5rem; padding: 0.5rem; background: rgba(0,0,0,0.4); border-radius: 12px;"></div>
+      <div id="jwResult" style="font-size: 1.4rem; font-weight: 800; min-height: 2.5rem; padding: 0.5rem; background: rgba(0,0,0,0.4); border-radius: 12px; display: none;"></div>
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none; width: 100%;">Закончить игру</button>
     </div>
   </div>
@@ -1420,65 +1415,6 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Динамическое добавление HTML для новых игр (чтобы вам не пришлось менять сам HTML-файл)
-        const ggArea = document.getElementById('ggInteractiveArea');
-        if(ggArea && !document.getElementById('ggStartOverlay')) {
-            ggArea.parentElement.style.position = 'relative';
-            ggArea.parentElement.insertAdjacentHTML('beforeend', `
-                <div id="ggStartOverlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.85); z-index:100; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(8px); border-radius:inherit;">
-                    <h3 id="ggStartTitle" style="color:#fff; font-size:1.8rem; margin-bottom:0.5rem; font-family: var(--font-display);">Игра</h3>
-                    <p id="ggStartBetText" style="color:var(--color-warning); font-size:1.1rem; font-weight:bold; margin-bottom:1.5rem;">Ставка: 0 XP</p>
-                    <button id="ggStartActionBtn" class="btn btn-primary" style="font-size:1.2rem; padding:1rem 3rem;">🚀 Запустить</button>
-                </div>
-            `);
-            ggArea.insertAdjacentHTML('beforeend', `
-                <div id="ggRocket" style="display:none; flex-direction: column; align-items: center; width: 100%;">
-                    <div style="height: 250px; width: 100%; background: linear-gradient(to top, #0f2027, #203a43, #2c5364); border: 2px solid var(--color-primary); border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 1rem;">
-                        <div id="rocketMultiplier" style="font-family: var(--font-display); font-size: 4rem; color: #fff; text-shadow: 0 0 20px var(--color-primary); z-index: 4; transition: color 0.2s; position: relative;">1.00x</div>
-                        <div id="rocketEmoji" style="font-size: 4rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: bottom 0.1s linear; z-index: 3; filter: drop-shadow(0 10px 10px rgba(255,100,50,0.8));">🚀</div>
-                    </div>
-                    <button id="ggRocketCashoutBtn" class="btn btn-primary" style="width: 100%; background: var(--color-success); border-color: var(--color-success);">Забрать (Cashout)</button>
-                </div>
-                <div id="ggDice" style="display:none; flex-direction:column; align-items:center; width:100%;">
-                    <p style="color:var(--color-text-muted); margin-bottom:1rem;">Твой бросок должен быть больше броска Дилера!</p>
-                    <div style="display:flex; gap:2rem; justify-content:center; align-items:center; margin-bottom:1.5rem; width:100%;">
-                        <div style="text-align:center;"><div id="dicePlayer" style="width:100px; height:100px; background:#fff; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:3rem; font-weight:900; color:#000; box-shadow:inset 0 0 15px rgba(0,0,0,0.3);">?</div><div style="margin-top:0.5rem; font-weight:bold;">Ты</div></div>
-                        <div style="font-size: 2rem; color: var(--color-text-faint);">VS</div>
-                        <div style="text-align:center;"><div id="diceDealer" style="width:100px; height:100px; background:#ffbf47; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:3rem; font-weight:900; color:#000; box-shadow:inset 0 0 15px rgba(0,0,0,0.3);">?</div><div style="margin-top:0.5rem; font-weight:bold; color:var(--color-warning);">Дилер</div></div>
-                    </div>
-                    <button id="ggDiceBtn" class="btn btn-primary" style="width: 100%; font-size: 1.2rem;">Бросить кости</button>
-                </div>
-                <div id="ggMines" style="display:none; flex-direction:column; align-items:center; width:100%;">
-                    <p style="color:var(--color-text-muted); margin-bottom:1rem;">Найди 3 алмаза (2 мины на поле)!</p>
-                    <div id="minesGrid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; width:100%; max-width:250px; margin:0 auto 1rem;"></div>
-                    <div id="minesProgress" style="font-weight:bold; color:var(--color-success); font-size:1.2rem;">Найдено: 0 / 3</div>
-                </div>
-                <div id="ggHiLo" style="display:none; flex-direction:column; align-items:center; width:100%;">
-                    <p style="color:var(--color-text-muted); margin-bottom:1rem;">Угадай, будет ли следующее число (1-100) БОЛЬШЕ или МЕНЬШЕ.</p>
-                    <div id="hiloCurrent" style="width:120px; height:120px; font-size:4rem; margin-bottom:1.5rem; border-radius:30px; background:linear-gradient(135deg, #a26cff, #c4a1ff); color:#fff; box-shadow:0 10px 30px rgba(162,108,255,0.4); display:flex; align-items:center; justify-content:center;">50</div>
-                    <div style="display:flex; gap:1rem; width:100%;">
-                        <button class="btn btn-primary" id="btnHiLoHigh" style="flex:1; font-size:1.2rem; background:var(--color-success); border-color:var(--color-success);">⬆️ Больше</button>
-                        <button class="btn btn-primary" id="btnHiLoLow" style="flex:1; font-size:1.2rem; background:var(--color-error); border-color:var(--color-error);">⬇️ Меньше</button>
-                    </div>
-                </div>
-                <div id="ggWheelX" style="display:none; flex-direction:column; align-items:center; width:100%;">
-                    <p style="color:var(--color-text-muted); margin-bottom:1.5rem;">Вращай колесо иксов!</p>
-                    <div style="position:relative; margin-bottom:2rem; width:200px; height:200px;">
-                        <div style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); font-size:2rem; z-index:10;">▼</div>
-                        <div id="wheelXSpinner" style="width:100%; height:100%; border-radius:50%; border:4px solid var(--color-primary); background:conic-gradient(#ff6b88 0% 25%, #ffbf47 25% 50%, #52c77b 50% 75%, #a26cff 75% 100%); transition:transform 3s cubic-bezier(0.15, 0.85, 0.2, 1);"></div>
-                    </div>
-                    <button id="ggWheelXBtn" class="btn btn-primary" style="width: 100%; font-size: 1.2rem;">Крутить колесо</button>
-                </div>
-                <div id="ggShells" style="display:none; flex-direction:column; align-items:center; width:100%;">
-                    <p style="color:var(--color-text-muted); margin-bottom:1.5rem;">Угадай, где спрятан мячик! (х2.5)</p>
-                    <div style="display:flex; gap:1.5rem; margin-bottom:1rem;" id="shellsContainer">
-                        <div class="shell-cup" data-idx="0" style="font-size:4rem; cursor:pointer; position:relative; transition:0.3s;">🍵<div class="shell-ball" style="position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); font-size:2rem; opacity:0; transition:0.3s;">🎾</div></div>
-                        <div class="shell-cup" data-idx="1" style="font-size:4rem; cursor:pointer; position:relative; transition:0.3s;">🍵<div class="shell-ball" style="position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); font-size:2rem; opacity:0; transition:0.3s;">🎾</div></div>
-                        <div class="shell-cup" data-idx="2" style="font-size:4rem; cursor:pointer; position:relative; transition:0.3s;">🍵<div class="shell-ball" style="position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); font-size:2rem; opacity:0; transition:0.3s;">🎾</div></div>
-                    </div>
-                </div>
-            `);
-        }
 
         // Ограничение дат для отчетов (только сегодня и вчера)
         const dateInput = document.getElementById('reportDateInput');
@@ -1551,7 +1487,7 @@
         let shopState = { spent: 0, apSpent: 0 }, gameXpMod = 0, taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
         let modQueue = [], supQueue = [], compQueue = [], taQueue = [], currentTableWeekOffset = 0; 
 
-        // === МАССИВЫ (Обновлено) ===
+        // === МАССИВЫ ИГР И ВОПРОСОВ ===
         let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
             { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
@@ -1563,7 +1499,7 @@
             { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' },
             { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' },
             { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' },
-            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Ставка 600 XP. Ответь и получи х2.5!", price: 600, icon: "🤡", action: 'mod_jw' },
+            { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Сыграй 1 раз. Ответь и получи 3000 XP!", price: 0, icon: "🔫", action: 'mod_jw' },
             { id: 'crash_game', title: "Ракетка (Краш)", desc: "Ставка 100 XP. Забери до краша!", price: 100, icon: "🚀", action: 'mod_crash' },
             { id: 'cases_game', title: "Кейсы", desc: "Ставка 300 XP. Открывай кейсы!", price: 300, icon: "📦", action: 'mod_cases' },
             { id: 'dice_game', title: "Кости", desc: "Ставка 150 XP. Брось больше дилера (х2).", price: 150, icon: "🎲", action: 'mod_dice' },
@@ -1639,7 +1575,7 @@
                 profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] },
                 shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "Мини-игры для проверки удачи."] ] },
                 ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] },
-                report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модераторам."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] },
+                report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модератора."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] },
                 inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Форма", "Укажите даты и точную причину."] ] },
                 admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи в Discord."] ] },
                 ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное'."] ] },
@@ -2330,29 +2266,106 @@
         });
         document.getElementById('closeSafesBtn')?.addEventListener('click', () => document.getElementById('safesModal').style.display = 'none');
         
-        const jwCharacters = [ 
-            { name: "Джон Уик", img: "https://upload.wikimedia.org/wikipedia/ru/3/36/John_Wick_Chapter_4_poster.jpg" }, 
-            { name: "Уинстон Скотт", img: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f6/Winston_Scott_%28John_Wick%29.jpg/220px-Winston_Scott_%28John_Wick%29.jpg" }, 
-            { name: "Король «Боулер»", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Laurence_Fishburne_by_Gage_Skidmore_2.jpg/500px-Laurence_Fishburne_by_Gage_Skidmore_2.jpg" },
-            { name: "Харон", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Lance_Reddick_by_Gage_Skidmore_1.jpg/500px-Lance_Reddick_by_Gage_Skidmore_1.jpg" }
+        // НОВАЯ ИГРА: ВИКТОРИНА ДЖОНА УИКА (Только 1 раз)
+        const jwQuizQuestions = [
+            { q: "Как звали щенка, которого Джону подарила покойная жена?", opts: ["Дейзи", "Бадди", "Макс", "Снупи"], ans: "Дейзи" },
+            { q: "Какая машина была у Джона Уика (ту, которую угнали)?", opts: ["Ford Mustang Boss 429", "Dodge Charger", "Chevrolet Camaro", "Gran Torino"], ans: "Ford Mustang Boss 429" },
+            { q: "Какой предмет использовал Джон Уик, чтобы убить троих в баре?", opts: ["Карандаш", "Ручку", "Книгу", "Нож для стейка"], ans: "Карандаш" },
+            { q: "Как называется знаменитый отель для наемных убийц?", opts: ["Континенталь", "Плаза", "Ритц", "Ассасин Инн"], ans: "Континенталь" },
+            { q: "Какую валюту используют наемные убийцы в этом мире?", opts: ["Золотые монеты", "Бриллианты", "Биткоины", "Пачки наличных"], ans: "Золотые монеты" },
+            { q: "Кто угнал машину Джона и убил его собаку?", opts: ["Иосиф Тарасов", "Вигго Тарасов", "Сантино Д'Антонио", "Джулиус"], ans: "Иосиф Тарасов" },
+            { q: "Какое прозвище было у Джона Уика в криминальном мире?", opts: ["Баба Яга", "Кощей", "Жнец", "Призрак"], ans: "Баба Яга" },
+            { q: "Какое главное правило отеля «Континенталь»?", opts: ["Никаких дел на территории отеля", "Никакого огнестрельного оружия", "Только рукопашный бой", "Можно всё за двойную плату"], ans: "Никаких дел на территории отеля" },
+            { q: "В кого стрелял Джон в отеле «Континенталь», нарушив главное правило?", opts: ["Сантино Д'Антонио", "Арес", "Вигго", "Маркиз де Грамон"], ans: "Сантино Д'Антонио" },
+            { q: "Кто является бессменным консьержем в нью-йоркском «Континентале»?", opts: ["Харон", "Уинстон", "Боулер", "Зеро"], ans: "Харон" }
         ];
-        
+
+        let jwCurrentQ = 0;
+        let jwCorrect = 0;
+        let jwSelectedQs = [];
+
         function openJwQuiz() {
-            document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none'; document.getElementById('jwResult').textContent = '';
-            const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
-            const correctChar = jwCharacters[Math.floor(Math.random() * jwCharacters.length)]; document.getElementById('jwImage').src = correctChar.img;
-            let options = [...jwCharacters]; shuffleArray(options);
-            options.slice(0, 3).forEach(char => { if(!options.includes(correctChar)) options[0] = correctChar; }); shuffleArray(options);
+            if(!currentUser) { alert("Войдите в аккаунт, чтобы играть!"); return; }
+            if(localStorage.getItem(`jw_played_${currentUser.email}`)) {
+                alert("Вы уже проходили эту викторину! Её можно пройти только 1 раз.");
+                return;
+            }
             
-            options.slice(0, 3).forEach(char => {
-                const btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = char.name;
-                btn.onclick = async () => {
-                    document.querySelectorAll('.jw-option-btn').forEach(b => { b.disabled = true; if(b.textContent === correctChar.name) b.classList.add('correct'); else b.classList.add('wrong'); });
-                    if (char.name === correctChar.name) { await addGameXp(1500); await logPurchase(`Викторина JW: Победа (1500 XP)`, true, false, 0); document.getElementById('jwResult').textContent = 'Правильно! +1500 XP'; document.getElementById('jwResult').style.color = 'var(--color-success)'; playSound('win'); }
-                    else { document.getElementById('jwResult').textContent = 'Неверно. Это ' + correctChar.name; document.getElementById('jwResult').style.color = 'var(--color-error)'; playSound('fail'); }
-                    updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeJwBtn').style.display = 'inline-block';
-                }; optsContainer.appendChild(btn);
+            document.getElementById('jwModal').style.display = 'flex';
+            document.getElementById('closeJwBtn').style.display = 'none';
+            document.getElementById('jwResult').style.display = 'none';
+            
+            jwSelectedQs = [...jwQuizQuestions].sort(() => 0.5 - Math.random()).slice(0, 5);
+            jwCurrentQ = 0;
+            jwCorrect = 0;
+            
+            renderJwQuestion();
+        }
+        
+        function renderJwQuestion() {
+            if (jwCurrentQ >= 5) {
+                finishJwQuiz();
+                return;
+            }
+            
+            const qObj = jwSelectedQs[jwCurrentQ];
+            document.getElementById('jwQuestionText').innerHTML = `<span style="color:#ff6b88;">Вопрос ${jwCurrentQ + 1} из 5:</span><br>${qObj.q}`;
+            
+            const optsContainer = document.getElementById('jwOptions');
+            optsContainer.innerHTML = '';
+            
+            let options = [...qObj.opts].sort(() => 0.5 - Math.random());
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'jw-option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    document.querySelectorAll('.jw-option-btn').forEach(b => {
+                        b.disabled = true;
+                        if(b.textContent === qObj.ans) b.classList.add('correct');
+                        else b.classList.add('wrong');
+                    });
+                    
+                    if (opt === qObj.ans) {
+                        jwCorrect++;
+                        playSound('ok');
+                    } else {
+                        playSound('fail');
+                    }
+                    
+                    setTimeout(() => {
+                        jwCurrentQ++;
+                        renderJwQuestion();
+                    }, 1500);
+                };
+                optsContainer.appendChild(btn);
             });
+        }
+        
+        async function finishJwQuiz() {
+            const resEl = document.getElementById('jwResult');
+            resEl.style.display = 'block';
+            
+            localStorage.setItem(`jw_played_${currentUser.email}`, 'true');
+            
+            document.getElementById('jwQuestionText').innerHTML = `Викторина завершена!<br>Ваш результат: ${jwCorrect} из 5.`;
+            document.getElementById('jwOptions').innerHTML = '';
+            
+            if (jwCorrect >= 4) {
+                await addGameXp(3000);
+                await logPurchase(`Викторина JW: Победа (3000 XP)`, true, false, 0);
+                resEl.textContent = 'Потрясающе! Вы знаток вселенной. +3000 XP';
+                resEl.style.color = 'var(--color-success)';
+                playSound('win');
+            } else {
+                resEl.textContent = 'Увы, нужно было ответить минимум на 4 вопроса. Награда не выдана.';
+                resEl.style.color = 'var(--color-error)';
+                playSound('fail');
+            }
+            
+            updateShopStats(); updateModStats(); await saveProgress();
+            document.getElementById('closeJwBtn').style.display = 'inline-block';
         }
         document.getElementById('closeJwBtn')?.addEventListener('click', () => document.getElementById('jwModal').style.display = 'none');
 
@@ -2730,7 +2743,7 @@
             listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
             
             try {
-                const { data: reports, error } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP")').order('created_at', { ascending: false }).limit(30);
+                const { data: reports, error } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP")').order('id', { ascending: false }).limit(30);
                 if (error) throw error;
                 if(reports && reports.length > 0) { 
                     listArea.innerHTML = reports.map(r => `
@@ -2761,7 +2774,7 @@
             if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
             listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
             try {
-                const { data: reports, error } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').order('created_at', { ascending: false }).limit(30);
+                const { data: reports, error } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').order('id', { ascending: false }).limit(30);
                 if (error) throw error;
                 if(reports && reports.length > 0) { 
                     listArea.innerHTML = reports.map(r => `
@@ -2820,7 +2833,7 @@
                 sortedDates.push(d.toISOString().split('T')[0]);
             }
 
-            const { data: reports } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP","INACTIVE_REQ")').order('created_at', { ascending: false }).limit(500);
+            const { data: reports } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP","INACTIVE_REQ")').order('id', { ascending: false }).limit(500);
             const { data: inactives } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').eq('status', 'Одобрено');
             
             const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
@@ -2900,7 +2913,7 @@
             return 'status-none';
         }
 
-        // РУЧНОЕ РЕДАКТИРОВАНИЕ ТАБЛИЦЫ (Фикс сохранения)
+        // РУЧНОЕ РЕДАКТИРОВАНИЕ ТАБЛИЦЫ
         window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId) {
             const val = selectEl.value; selectEl.className = `status-select ${getStatusClass(val)}`;
             let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Герой дня') xpAmount = 60;
