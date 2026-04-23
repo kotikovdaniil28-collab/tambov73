@@ -62,6 +62,16 @@
     html[data-site-theme="timeattack"] body { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); }
     html[data-site-theme="creator"] body { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
 
+    /* ЭФФЕКТЫ ТРОЛЛИНГА */
+    @keyframes drunkWobble {
+      0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+      50% { transform: rotate(3deg) scale(1.05); filter: hue-rotate(45deg); }
+      100% { transform: rotate(-3deg) scale(0.95); filter: hue-rotate(0deg); }
+    }
+    .troll-drunk { animation: drunkWobble 3s infinite alternate ease-in-out; overflow: hidden; }
+    .troll-blur { filter: blur(6px) contrast(1.2); pointer-events: none; user-select: none; }
+    .troll-ghost { opacity: 0.15; pointer-events: none; user-select: none; filter: grayscale(1); }
+
     /* Анимации загрузки страницы */
     .animate-top { animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
     .animate-hero { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards; opacity: 0; }
@@ -504,6 +514,12 @@
 </head>
 <body>
 
+  <div id="trollBobophone" style="display: none; position: fixed; inset: 0; background: #050000; z-index: 9999999; flex-direction: column; align-items: center; justify-content: center; color: #ff0000; font-family: 'Courier New', Courier, monospace; text-align: center; padding: 2rem;">
+      <h1 style="font-size: clamp(2rem, 5vw, 5rem); margin-bottom: 1rem; animation: pulse 0.5s infinite; text-shadow: 0 0 20px red;">В ВАШЕМ БОБОФОНЕ ЖУКИ!</h1>
+      <p style="font-size: clamp(1rem, 3vw, 2.5rem); font-weight: bold;">СРОЧНО УДАЛИТЕ БОБОФОН!</p>
+      <div style="font-size: clamp(5rem, 15vw, 12rem); margin-top: 2rem; animation: bounce 1s infinite;">🐛🕷️🪲</div>
+  </div>
+
   <div id="imageModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); z-index: 100000; align-items: center; justify-content: center; cursor: zoom-out;" onclick="this.style.display='none'">
     <img id="imageModalSrc" src="" style="max-width: 95%; max-height: 95%; border-radius: 16px; box-shadow: 0 0 50px rgba(0,0,0,0.9);">
   </div>
@@ -887,6 +903,13 @@
             <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
             <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
             <button id="trollDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+
+            <h4 style="grid-column: span 2; color: #8b00ff; margin-top: 1rem; margin-bottom: 0.2rem;">Эффекты на страницу:</h4>
+            <button id="trollEffectBobo" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🪲 Жуки в бобофоне</button>
+            <button id="trollEffectBlur" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">👓 Мыло (Размытие)</button>
+            <button id="trollEffectDrunk" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🥴 Пьяный мастер</button>
+            <button id="trollEffectGhost" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">👻 Призрак</button>
+            <button id="trollEffectClear" class="btn btn-primary" style="background: #8b00ff; border-color: #8b00ff; grid-column: span 2;">✨ Снять все эффекты</button>
           </div>
         </div>
 
@@ -2447,9 +2470,35 @@
             }
         }
 
+        // === ЛОГИКА ТРОЛЛИНГА ===
+        async function applyTrollEffect(effect) {
+            if (!currentUser || currentUser.email !== creatorEmail) return;
+            const userId = document.getElementById('creatorUserSelect').value;
+            if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
+            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("ОШИБКА: Нельзя применить эффект к Создателю (John Wick)!");
+
+            if (effect === 'clear') {
+                await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId);
+                alert("Все эффекты сняты с пользователя!");
+            } else {
+                await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]);
+                alert(`Эффект '${effect}' успешно применен к пользователю! Он активируется при его следующей загрузке страницы.`);
+            }
+        }
+
+        document.getElementById('trollEffectBobo')?.addEventListener('click', () => applyTrollEffect('bobo'));
+        document.getElementById('trollEffectBlur')?.addEventListener('click', () => applyTrollEffect('blur'));
+        document.getElementById('trollEffectDrunk')?.addEventListener('click', () => applyTrollEffect('drunk'));
+        document.getElementById('trollEffectGhost')?.addEventListener('click', () => applyTrollEffect('ghost'));
+        document.getElementById('trollEffectClear')?.addEventListener('click', () => applyTrollEffect('clear'));
+
+
         document.getElementById('creatorXpBtn')?.addEventListener('click', async () => {
              const userId = document.getElementById('creatorUserSelect').value, amount = Number(document.getElementById('creatorXpAmount').value);
-             if (!userId || isNaN(amount)) return; const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+             if (!userId || isNaN(amount)) return; 
+             const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+             if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Неприкосновенность Создателя!");
              const newSpent = (Number(targetUser.shop_spent) || 0) - amount; 
              await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
         });
@@ -2457,6 +2506,8 @@
         document.getElementById('trollWipeXpBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
+            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
             await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); loadCreatorPanelData();
         });
 
@@ -2464,12 +2515,17 @@
             const userId = document.getElementById('creatorUserSelect').value, amount = Number(document.getElementById('trollDebtAmount').value);
             if (!userId || isNaN(amount) || amount <= 0) return alert("Введите сумму!");
             const target = creatorUsersList.find(u => u.user_id === userId);
-            if(target) { await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`🤡 Троллинг: Игроку выдан долг ${amount} XP!`); loadCreatorPanelData(); }
+            if(target) { 
+                if (target.email === creatorEmail) return alert("У Создателя полный иммунитет!");
+                await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`🤡 Троллинг: Игроку выдан долг ${amount} XP!`); loadCreatorPanelData(); 
+            }
         });
 
         document.getElementById('trollRenameBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
+            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
             const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
             await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', userId); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); loadCreatorPanelData();
         });
@@ -2477,6 +2533,8 @@
         document.getElementById('trollDeleteBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
             if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы статистики!'); loadCreatorPanelData(); }
         });
 
@@ -2492,6 +2550,8 @@
         document.getElementById('creatorRemoveAdminBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('creatorAdminSelect').value, role = document.getElementById('creatorAdminRole').value;
             if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("Нельзя забрать права у Создателя!");
             await supa.from('reports').delete().eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role);
             alert("Пользователь удален из руководства!"); loadCreatorPanelData();
         });
@@ -2643,24 +2703,40 @@
         document.getElementById('leadershipXpBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('leadershipUserSelect').value, amount = Number(document.getElementById('leadershipXpAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            
+            // Проверки на иммунитет
+            if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
+            const isTargetLeader = adminEmails.includes(targetUser.email) || dynamicModLeaders.includes(targetUser.user_id);
+            if (isTargetLeader) return alert("Руководство не может выдавать XP себе или друг другу. Только модераторам!!");
+
             const newSpent = (Number(targetUser.shop_spent) || 0) - amount; await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (Модерация)!');
             loadUsersForAdmin();
         });
 
         document.getElementById('leadershipDeleteBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('leadershipUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = adminUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
             if(confirm("Удалить пользователя из базы статистики модераторов?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); loadUsersForAdmin(); }
         });
 
         document.getElementById('apAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('apAdminUserSelect').value, amount = Number(document.getElementById('apAdminPointsAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            
+            // Проверки на иммунитет
+            if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
+            const isTargetApLeader = apLeadershipEmails.includes(targetUser.email) || dynamicApLeaders.includes(targetUser.user_id);
+            if (isTargetApLeader) return alert("Руководство не может выдавать баллы себе или друг другу. Только агентам поддержки!!");
+
             const newSpent = (Number(targetUser.ap_spent) || 0) - amount; await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId); alert('Успешно выполнено (АП)!');
             loadUsersForAdmin();
         });
 
         document.getElementById('apAdminDeleteBtn')?.addEventListener('click', async () => {
             const userId = document.getElementById('apAdminUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
+            const targetUser = adminUsersList.find(u => u.user_id === userId);
+            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
             if(confirm("Удалить пользователя из базы статистики АП?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); loadUsersForAdmin(); }
         });
 
@@ -2987,6 +3063,16 @@
         supa.auth.getSession().then(async ({ data: { session } }) => { 
             currentUser = session?.user || null;
             if (currentUser) {
+                
+                // === ПРИМЕНЕНИЕ ТРОЛЛИНГ ЭФФЕКТОВ НА ЗАГРУЗКЕ ===
+                const { data: trollData } = await supa.from('reports').select('status').eq('email', 'TROLL_EFFECT').eq('link', currentUser.id).maybeSingle();
+                if (trollData) {
+                    if (trollData.status === 'bobo') { document.getElementById('trollBobophone').style.display = 'flex'; }
+                    if (trollData.status === 'blur') { document.body.classList.add('troll-blur'); }
+                    if (trollData.status === 'drunk') { document.body.classList.add('troll-drunk'); }
+                    if (trollData.status === 'ghost') { document.body.classList.add('troll-ghost'); }
+                }
+
                 currentNickname = currentUser.user_metadata?.nickname; 
                 document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
                 document.getElementById('loginBtnUI').style.display = 'none'; document.getElementById('logoutBtnUI').style.display = 'flex'; document.getElementById('authModal').style.display = 'none'; 
@@ -3023,5 +3109,3 @@
         });
     });
   </script>
-</body>
-</html>
