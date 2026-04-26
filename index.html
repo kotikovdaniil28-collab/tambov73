@@ -796,6 +796,7 @@
         <button class="main-cat-btn active" data-cat="moderation" type="button">🛡️ Модерация</button>
         <button class="main-cat-btn" data-cat="support" type="button">💬 Поддержка</button>
         <button class="main-cat-btn" data-cat="general" type="button">🌐 Общее</button>
+        <button class="main-cat-btn" data-cat="organizations" type="button">🏢 Организации</button>
       </div>
 
       <div class="sub-nav" id="subNavModeration">
@@ -817,6 +818,9 @@
         <button class="mode-btn" data-mode="ap_admin_log" type="button" id="apAdminLogTabBtn" style="display:none;">Логи (АП)</button>
       </div>
 
+      <div class="sub-nav" id="subNavOrganizations" style="display:none;">
+        <button class="mode-btn" data-mode="fsb" type="button">ФСБ</button>
+      </div>
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
         <button class="mode-btn" data-mode="quests" type="button">Квесты</button>
         <button class="mode-btn" data-mode="leaderboard" type="button">Лидерборд</button>
@@ -828,6 +832,33 @@
     </div>
 
     <section class="game-wrap" id="game">
+
+      <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
+        <div class="section-head">
+          <h2 style="color: #6c8cff;">Федеральная Служба Безопасности (ФСБ)</h2>
+          <p>Рассмотрение заявлений в Академию ФСБ и проверка по УК РФ.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">Проверено дел</span><div class="stat-value" id="fsbResolvedValue">0</div></div>
+          <div class="stat"><span class="stat-label">Одобрено</span><div class="stat-value" id="fsbApprovedValue" style="color: var(--color-success);">0</div></div>
+          <div class="stat"><span class="stat-label">Отказано</span><div class="stat-value" id="fsbRejectedValue" style="color: var(--color-error);">0</div></div>
+        </div>
+        <div class="feed">
+          <article class="message-card">
+            <div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># fsb / academy-applications</div>
+            <div class="author-row">
+              <div class="avatar" style="background: conic-gradient(from 210deg, #6c8cff, #3b82f6, #6c8cff);">A</div>
+              <div><div class="author-name" id="fsbAuthor">Кандидат скрыт</div><div class="author-meta" id="fsbMeta">Появится после начала смены</div></div>
+            </div>
+            <div class="message-text" id="fsbText">Ожидание заявления...</div>
+            <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
+          </article>
+          <div class="controls">
+            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
+            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')">✅ Одобрить (Годен)</button>
+          </div>
+        </div>
+      </section>
 
       <section class="panel game-card fade-in" id="mode-profile" style="display:none;">
         <div class="section-head">
@@ -879,7 +910,6 @@
            <div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div>
         </div>
       </section>
-      
       <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
         <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
         
@@ -1581,6 +1611,46 @@
         ];
 
         let baseSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] }, { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] }, { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] }, { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] } ];
+        
+        const allFsbApps = [
+            { text: 'Заявление на стажировку. Проживаю в области 15 лет, военный билет имеется. Лицензии на оружие и авто присутствуют.', evidence: 'Скриншоты с /time: Паспорт(РП ник), Мед.карта, Лицензии, ВБ.', type: 'approve' },
+            { text: 'Хочу в фсб. Мой ник Vanya_killer. Лвл 3.', evidence: 'Скриншот паспорта без /time. Нет военного билета.', type: 'reject' },
+            { text: 'Заявление в Академию. Опыт работы в УМВД (6 титул). Законопослушность 100.', evidence: 'Полный пакет документов с /time. РП отыгровки присутствуют.', type: 'approve' },
+            { text: 'Заявка. Имеется судимость за хулиганство (УК РФ 21.1), но я исправился.', evidence: 'Скриншоты документов. Законопослушность -50.', type: 'reject' },
+            { text: 'Резюме в ФСБ. Владею всеми видами оружия на 100%. Адекватный, грамотный.', evidence: 'Документы в норме, но никнейм nonRP формата (LexaGamer2010).', type: 'reject' }
+        ];
+        let fsbState = { resolved: 0, approved: 0, rejected: 0, current: null };
+        let fsbQueue = [];
+
+        function randomFsbApp() {
+            if (fsbQueue.length === 0) { fsbQueue = allFsbApps.map((_, i) => i); shuffleArray(fsbQueue); }
+            const item = allFsbApps[fsbQueue.pop()]; fsbState.current = item;
+            const fsbAuthor = document.getElementById("fsbAuthor");
+            if (fsbAuthor) {
+                fsbAuthor.textContent = randomFunnyNick(); 
+                document.getElementById("fsbMeta").textContent = "Ожидает проверки УФСБ"; 
+                document.getElementById("fsbText").textContent = item.text; 
+                document.getElementById("fsbEvidence").textContent = "Документы: " + item.evidence;
+            }
+        }
+
+        window.judgeFsb = function(action) {
+            if (!state.started) { alert('Сначала нажми "Начать смену" в главном меню!'); return; }
+            if (isSpamming() || !fsbState.current) return;
+            const isCorrect = action === fsbState.current.type;
+            fsbState.resolved++;
+            if (action === 'approve') fsbState.approved++; else fsbState.rejected++;
+            
+            if (isCorrect) { playSound('ok'); pushLog(`✅ ФСБ: верный вердикт (${action})`); addGameXp(10); } 
+            else { playSound('fail'); pushLog(`❌ ФСБ: ошибка в проверке!`); }
+            
+            document.getElementById("fsbResolvedValue").textContent = fsbState.resolved;
+            document.getElementById("fsbApprovedValue").textContent = fsbState.approved;
+            document.getElementById("fsbRejectedValue").textContent = fsbState.rejected;
+            
+            saveProgress(); randomFsbApp();
+        };
+
         const allComplaints = [ { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' }, { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' }, { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' }, { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' }, { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' } ];
 
         async function loadGlobalShopAndRoulette() {
@@ -1640,14 +1710,15 @@
                 creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] },
                 leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку."], ["Тайный покупатель", "Закидывай сложную проверку."] ] },
                 ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы."] ] },
-                reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] }
+                reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] },
+                fsb: { title: "Регламент ФСБ", lead: "Критерии отбора в Академию.", cards: [ ["Одобрение", "РП ник, военный билет, законопослушность >0, все скрины с /time."], ["Отказ", "НонРП ник, нет ВБ, отрицательная закона, скрины без /time, розыск."] ] }
             };
             const data = rightContent[mode] || rightContent['moderation'];
             rt.innerHTML = data.title; rl.innerHTML = data.lead;
             rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
         }
 
-        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table"];
+        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb"];
         
         function switchMode(mode, btn) {
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
@@ -1661,7 +1732,7 @@
             if(["support","ap_admin","ap_admin_log","ap_shop"].includes(mode)) currentTheme = "support";
             else if(["about","profile","general"].includes(mode)) currentTheme = "general";
             else if(["shop","leadership","reports_table"].includes(mode)) currentTheme = "shop";
-            else if(["report","inactives","quests"].includes(mode)) currentTheme = "quests";
+            else if(["report","inactives","quests","fsb"].includes(mode)) currentTheme = "quests";
             else if(["guide"].includes(mode)) currentTheme = "guide";
             else if(["leaderboard","admin_log"].includes(mode)) currentTheme = "leaderboard";
             else if(["complaints"].includes(mode)) currentTheme = "complaints";
@@ -1702,7 +1773,8 @@
                 creator: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
                 leadership: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
                 ap_admin: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"]
+                reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"],
+                fsb: ["Организации: ФСБ", 'Вербовка в <span>УФСБ</span>.', "Проверяйте заявления кандидатов на стажировку. Учитывайте РП правила и УК РФ.", "Режим: ФСБ"]
             };
             if(headers[mode]) {
                 if(brandSub) brandSub.textContent = headers[mode][0]; if(hTitle) hTitle.innerHTML = headers[mode][1]; if(hText) hText.textContent = headers[mode][2]; if(hBadge) hBadge.textContent = headers[mode][3];
@@ -1712,7 +1784,7 @@
         document.querySelectorAll('.main-cat-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport') };
+                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport'), organizations: document.getElementById('subNavOrganizations') };
                 Object.values(subNavs).forEach(nav => { if(nav) nav.style.display = 'none'; });
                 const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
             });
@@ -2780,7 +2852,7 @@
                     if (apsData && apsData.length > 0) {
                         list.innerHTML = apsData.map(m => {
                             const u = users.find(user => user.user_id === m.link), name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
-                            return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#ff8fc4;">${name}</strong></div><button class="badge ban del-ap-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
+                            return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="#ff8fc4;">${name}</strong></div><button class="badge ban del-ap-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
                         }).join('');
                         list.querySelectorAll('.del-ap-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
                     } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Агентов Поддержки пока нет</div>';
@@ -3230,36 +3302,16 @@
                 if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
                 if (isModLeader) { document.getElementById('leadershipTabBtn').style.display = 'inline-block'; document.getElementById('adminLogTabBtn').style.display = 'inline-block'; document.getElementById('reportsTableBtn').style.display = 'inline-block'; }
                 if (isApLeader) { document.getElementById('apAdminTabBtn').style.display = 'inline-block'; document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; }
-
+                
                 await loadGlobalShopAndRoulette();
-                
-                try {
-                    const { data } = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).maybeSingle();
-                    if(data) { 
-                        state.resolved = Number(data.mod_resolved) || 0; state.correct = Number(data.mod_correct) || 0; state.mistakes = Number(data.mod_mistakes) || 0; 
-                        supportState.resolved = Number(data.sup_resolved) || 0; supportState.correct = Number(data.sup_correct) || 0; supportState.mistakes = Number(data.sup_mistakes) || 0; 
-                        shopState.spent = Number(data.shop_spent) || 0; shopState.apSpent = Number(data.ap_spent) || 0; 
-                    }
-                    const { data: repData } = await supa.from('reports').select('xp').eq('email', currentUser.email);
-                    state.reportXp = 0; if (repData) state.reportXp = repData.reduce((sum, r) => sum + (Number(r.xp) || 0), 0);
-                    
-                    updateModStats(); updateSupportStats(); updateShopStats(); checkRolesAndAccess(); 
-                    if(!currentNickname) document.getElementById('nicknameModal').style.display = 'flex'; 
-                } catch(e) { console.error(e); }
-                
-                // Подготавливаем жалобы и поддержку сразу (БЕЗ "Начать смену")
-                randomComplaint();
-                let combinedSupQuestions = [...baseSupQuestions, ...customSupQuestions];
-                if (supQueue.length === 0) { supQueue = combinedSupQuestions.map((_, i) => i); shuffleArray(supQueue); }
-                supportState.currentIndex = supQueue.pop();
-                const q = combinedSupQuestions[supportState.currentIndex];
-                document.getElementById("supportQuestionTitle").textContent = q.title || "Вопрос"; 
-                document.getElementById("supportMeta").textContent = q.meta || "Вопрос игрока"; 
-                document.getElementById("supportQuestionText").textContent = q.text || "Без текста"; 
-                document.getElementById("supportResultText").textContent = "";
-                
-                if(isCreator) loadCreatorPanelData();
-            } else { await loadGlobalShopAndRoulette(); checkRolesAndAccess(); }
+            }
+            
+            // Подготавливаем жалобы, поддержку и ФСБ сразу (БЕЗ "Начать смену")
+            randomComplaint();
+            randomFsbApp();
+            
         });
     });
-</script>
+  </script>
+</body>
+</html>
