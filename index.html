@@ -242,6 +242,7 @@
     .main-cat-btn[data-cat="moderation"].active { background: linear-gradient(135deg, #6c8cff, #8aa3ff); }
     .main-cat-btn[data-cat="support"].active { background: linear-gradient(135deg, #ff78b4, #ffb0dd); }
     .main-cat-btn[data-cat="general"].active { background: linear-gradient(135deg, #ffbf47, #ffd979); color: #18171c; }
+            .main-cat-btn[data-cat="organizations"].active { background: linear-gradient(135deg, #00e5ff, #00b4d8); color: #001a22; }
 
     .sub-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; background: rgba(4, 6, 12, 0.85); border: 1px solid rgba(191, 198, 255, 0.2); padding: 0.4rem; border-radius: 999px; width: fit-content; animation: fadeIn 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.4); backdrop-filter: blur(10px); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -796,6 +797,7 @@
         <button class="main-cat-btn active" data-cat="moderation" type="button">🛡️ Модерация</button>
         <button class="main-cat-btn" data-cat="support" type="button">💬 Поддержка</button>
         <button class="main-cat-btn" data-cat="general" type="button">🌐 Общее</button>
+                    <button class="main-cat-btn" data-cat="organizations" type="button">🏙️ Организации</button>
       </div>
 
       <div class="sub-nav" id="subNavModeration">
@@ -825,13 +827,63 @@
         <button class="mode-btn" data-mode="about" type="button">О команде</button>
         <button class="mode-btn" data-mode="profile" type="button">Профиль</button>
       </div>
+
+              <div class="sub-nav" id="subNavOrganizations" style="display:none;">
+                            <button class="mode-btn" data-mode="fsb" type="button">🕵️ ФСБ</button>
+                                    </div>
     </div>
 
     <section class="game-wrap" id="game">
 
+
+                <!-- ===== РАЗДЕЛ ФСБ ===== -->
+                         <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
+                                      <div class="section-head">
+                                                    <h2>🕵️‍♂️ ФСБ Black Russia</h2>
+                                                                <p>Тренажёр агента ФСБ — отрабатывайте обыски, допросы и операции под прикрытием.</p>
+                                                                          </div>
+                                                                                    <!-- Основная информации фракции -->
+                                                                                               <div class="rule-list">
+                                                                                                            <div class="rule-item">
+                                                                                                                              <div class="rule-icon ok">🏗️</div>
+                                                                                                                                            <div class="rule-copy"><strong>Что такое ФСБ?</strong><span>ФСБ — элитная правоохранительная фракция Black Russia. Агенты ведут операции под прикрытием, проводят обыски и досмотры, борются с запрещёнкой и организованной преступностью.</span></div>
+                                                                                                                                                        </div>
+                                                                                                                                                                    <div class="rule-item">
+                                                                                                                                                                                      <div class="rule-icon warn">📌</div>
+                                                                                                                                                                                                    <div class="rule-copy"><strong>Обязанности агента</strong><span>Соблюдать устав фракции, подчиняться руководству, вести тайные операции, четко работать с документами и рацией. Отыгрывать РП-ситуации в рамках полномочий ФСБ.</span></div>
+                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                            <div class="rule-item">
+                                                                                                                                                                                                                                              <div class="rule-icon ban">🚫</div>
+                                                                                                                                                                                                                                                            <div class="rule-copy"><strong>Запрещено</strong><span>Разглашать данные операций посторонним лицам, злоупотреблять полномочиями, проводить незаконные задержания без оснований. Нарушения караются по Уставу.</span></div>
+                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                  </div>
       <section class="panel game-card fade-in" id="mode-profile" style="display:none;">
         <div class="section-head">
+                      <!-- Ранги ФСБ -->
+                                 <div class="section-head"><h2 style="font-size:1.2rem">🏅 Структура и ранги</h2></div>
+                                           <div class="stats-grid">
+                                                        <div class="stat"><span class="stat-label">Рядовой / Ефрейтор</span><span class="stat-value" style="font-size:1.1rem">🔵 Новичок</span></div>
+                                                                    <div class="stat"><span class="stat-label">Сержант / Старшина</span><span class="stat-value" style="font-size:1.1rem">🟡 Опытный</span></div>
+                                                                                <div class="stat"><span class="stat-label">Лейтенант / Капитан</span><span class="stat-value" style="font-size:1.1rem">🟠 Офицер</span></div>
+                                                                                            <div class="stat"><span class="stat-label">Майор / Полковник</span><span class="stat-value" style="font-size:1.1rem">🔴 Командир</span></div>
+                                                                                                      </div>
           <h2>Личный Профиль</h2>
+
+                    <!-- Интерактивный тренажёр -->
+                               <div class="section-head"><h2 style="font-size:1.2rem">🎮 Тренажёр операций</h2><p>Выберите режим и примите правильное решение.</p></div>
+                                         <div class="hero-actions" style="flex-direction:column;gap:0.7rem;">
+                                                        <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+                                                                          <button class="btn btn-secondary" onclick="fsbMode('search')">🔍 Обыск и досмотр</button>
+                                                                                        <button class="btn btn-secondary" onclick="fsbMode('undercover')">🕵️ Под прикрытием</button>
+                                                                                                      <button class="btn btn-secondary" onclick="fsbMode('raid')">🚨 Облава</button>
+                                                                                                                  </div>
+                                                                                                                              <div id="fsbScenario" class="message-card" style="display:none;min-height:auto;">
+                                                                                                                                              <div id="fsbScenarioText" style="color:var(--color-text);line-height:1.7;"></div>
+                                                                                                                                                            <div id="fsbChoices" style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.8rem;"></div>
+                                                                                                                                                                          <div id="fsbResult" style="display:none;padding:0.8rem;border-radius:12px;margin-top:0.5rem;"></div>
+                                                                                                                                                                                      </div>
+                                                                                                                                                                                                </div>
+                                                                                                                                                                                                        </section>
           <p>Ваша статистика, баланс и визуальная косметика.</p>
         </div>
         <div style="display: flex; align-items: center; gap: 1.5rem; background: rgba(13, 16, 32, 0.6); padding: 1.8rem; border-radius: 18px; border: 1px solid rgba(191, 198, 255, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.4);">
@@ -1647,7 +1699,7 @@
             rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
         }
 
-        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table"];
+        const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb"];
         
         function switchMode(mode, btn) {
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
@@ -1667,6 +1719,7 @@
             else if(["complaints"].includes(mode)) currentTheme = "complaints";
             else if(["timeattack"].includes(mode)) currentTheme = "timeattack";
             else if(["creator"].includes(mode)) currentTheme = "creator";
+                    else if(["fsb"].includes(mode)) currentTheme = "guide";
 
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
@@ -1712,7 +1765,7 @@
         document.querySelectorAll('.main-cat-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport') };
+                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport') , organizations: document.getElementById('subNavOrganizations')};
                 Object.values(subNavs).forEach(nav => { if(nav) nav.style.display = 'none'; });
                 const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
             });
@@ -3262,4 +3315,50 @@
             } else { await loadGlobalShopAndRoulette(); checkRolesAndAccess(); }
         });
     });
+
+      // ========= ФСБ ТРЕНАЖЁР =========
+        const fsbScenarios = {
+                search: [
+                          { text: 'Игрок 👤 задержан на посту. При досмотре обнаружено: пистолет (есть лицензия), нож (не запрещён), запрещённая закладка с наркотиками. Ваши действия?', choices: ['Изъять только наркотики, оформить протокол', 'Изъять всё, задержать игрока', 'Отпустить, пистолет легальный'], correct: 0, explanation: 'Пистолет легальный, нож — не запрещён. Наркотики — запрещённый предмет, изъять и оформить протокол.' },
+                                { text: 'Игрок вызван на допрос. Документы в порядке, но игрок отказывается отвечать на вопросы. Ваши действия?', choices: ['Задержать за отказ от сотрудничества', 'Отпустить, документы чистые', 'Поставить под наблюдение, запросить разрешение руководства'], correct: 2, explanation: 'Отказ отвечать — подозрительный признак, но документы чистые. Понадобится разрешение руководства на дальнейшее наблюдение.' }
+                                    ],
+                                        undercover: [
+                                                  { text: 'Вы работаете под прикрытием в OPГ. Лидер предлагает вам провести незаконную операцию в обмен на доверие. Ваши действия?', choices: ['Согласиться, чтобы не раскрыться', 'Отказаться и немедленно выйти на связь с руководством', 'Просить больше времени для сбора дополнительных данных'], correct: 1, explanation: 'Нельзя участвовать в незаконных действиях — немедленно докладывать руководству ФСБ.' },
+                                                        { text: 'На вас вышли на подозрение. Один из членов OPГ спрашивает ваш ранг. Ваши действия?', choices: ['Признаться, что вы из ФСБ', 'Придумать легенду и продолжить операцию', 'Немедленно выйти из OPГ'], correct: 1, explanation: 'Прикрытие не раскрыто. Легенда — ваш инструмент. Продолжайте сбор данных.' },
+                                                            ],
+                                                                raid: [
+                                                                          { text: 'Облава на базу OPГ. Трое игроков бегут. Один останавливается и просит предъявить основания облавы. Ваши действия?', choices: ['Предъявить ордер и основания для обыска', 'Отказать, пусть сам сдаётся', 'Отправить догонять других'], correct: 0, explanation: 'Право игрока — знать ауторизацию обыска. Предъявите ордер и основания.' },
+                                                                                { text: 'В ходе облавы найдено склад запрещённых предметов. Хозяин утверждает, что не знал. Ваши действия?', choices: ['Поверить и отпустить', 'Изъять запрещёнку, возбудить дело и допросить', 'Оставить на месте до экспертизы'], correct: 1, explanation: 'Факт незнания не основание. Изъять, возбудить дело, провести допрос.' },
+                                                                                    ]
+                                                                                      };
+
+                                                                                        function fsbMode(type) {
+                                                                                                const scenarios = fsbScenarios[type];
+                                                                                                    if (!scenarios || scenarios.length === 0) return;
+                                                                                                        const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+                                                                                                            const box = document.getElementById('fsbScenario');
+                                                                                                                const txt = document.getElementById('fsbScenarioText');
+                                                                                                                    const choices = document.getElementById('fsbChoices');
+                                                                                                                        const result = document.getElementById('fsbResult');
+                                                                                                                            box.style.display = 'grid';
+                                                                                                                                txt.textContent = s.text;
+                                                                                                                                    result.style.display = 'none';
+                                                                                                                                        choices.innerHTML = s.choices.map((c, i) =>
+                                                                                                                                              `<button class="btn btn-secondary" style="font-size:0.85rem;min-height:auto;padding:0.6rem 1rem;" onclick="fsbAnswer(${i},${s.correct},'${s.explanation.replace(/'/g,"&apos;")}')"> ${c}</button>`
+                                                                                                                                                  ).join('');
+                                                                                                                                                    }
+
+                                                                                                                                                      function fsbAnswer(chosen, correct, explanation) {
+                                                                                                                                                            const result = document.getElementById('fsbResult');
+                                                                                                                                                                result.style.display = 'block';
+                                                                                                                                                                    if (chosen === correct) {
+                                                                                                                                                                              result.style.background = 'rgba(82,199,123,0.15)';
+                                                                                                                                                                                    result.style.border = '1px solid rgba(82,199,123,0.4)';
+                                                                                                                                                                                          result.innerHTML = '<strong style="color:#52c77b">✅ Верно!</strong> ' + explanation;
+                                                                                                                                                                                              } else {
+                                                                                                                                                                                                      result.style.background = 'rgba(255,107,136,0.15)';
+                                                                                                                                                                                                            result.style.border = '1px solid rgba(255,107,136,0.4)';
+                                                                                                                                                                                                                  result.innerHTML = '<strong style="color:#ff6b88">❌ Неверно.</strong> ' + explanation;
+                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                        }
 </script>
