@@ -837,7 +837,7 @@
 
 
                 <!-- ===== РАЗДЕЛ ФСБ ===== -->
-                         <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
+                         <section class="panel game-card fade-in" id="mode-fsb" style="display:none;grid-column:1/-1;">
                                       <div class="section-head">
                                                     <h2>🕵️‍♂️ ФСБ Black Russia</h2>
                                                                 <p>Тренажёр агента ФСБ — отрабатывайте обыски, допросы и операции под прикрытием.</p>
@@ -1731,6 +1731,7 @@
                 const panel = document.getElementById("mode-" + m); 
                 if(panel) { if(m===mode){ panel.style.display=""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } else panel.style.display="none"; }
             });
+                    const _heroEl = document.querySelector('#game .hero-card'); const _asideEl = document.querySelector('#game aside'); const _isFsb = mode === 'fsb'; if(_heroEl) _heroEl.style.display = _isFsb ? 'none' : ''; if(_asideEl) _asideEl.style.display = _isFsb ? 'none' : '';
             
             let currentTheme = "mod";
             if(["support","ap_admin","ap_admin_log","ap_shop"].includes(mode)) currentTheme = "support";
