@@ -35,6 +35,7 @@
       --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.85);
       --font-display: "Russo One", system-ui, sans-serif;
       --font-body: "Inter", system-ui, sans-serif;
+      
       --transition: 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
@@ -108,21 +109,58 @@
     html[data-site-theme="timeattack"] .logo { background: linear-gradient(135deg, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); }
     html[data-site-theme="creator"] .logo { background: linear-gradient(135deg, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); }
 
+    .brand-title { font-family: var(--font-display); font-size: var(--text-lg); letter-spacing: 0.08em; text-transform: uppercase; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+    .brand-sub { color: var(--color-text-muted); font-size: var(--text-sm); max-width: 42ch; margin-top: 0.1rem; }
+
+    .info-banner { width: 100%; background: rgba(13, 16, 32, 0.7); padding: 0.9rem 1.4rem; border-radius: 14px; margin-bottom: 1.5rem; border: 1px solid rgba(191, 198, 255, 0.15); box-shadow: 0 8px 25px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 1rem; backdrop-filter: blur(10px); transition: transform 0.3s ease, border-color 0.3s ease; }
+    .info-banner:hover { transform: translateY(-2px); border-color: rgba(191, 198, 255, 0.3); }
+    .info-banner-icon { font-size: 1.4rem; }
+    .info-banner-text { font-size: 0.95rem; color: var(--color-text-muted); line-height: 1.4; }
+    .info-banner-text span { color: var(--color-primary); font-weight: 800; text-shadow: 0 0 10px rgba(108,140,255,0.4); }
+
+    .icon-btn { min-width: 46px; min-height: 46px; padding: 0; border-radius: 50%; color: var(--color-text); background: rgba(16, 21, 40, 0.85); border: 1px solid rgba(191, 198, 255, 0.35); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); display: grid; place-items: center; font-size: 1.2rem; transition: all var(--transition); }
+    .icon-btn:hover { box-shadow: 0 12px 25px rgba(255,255,255,0.15); background: rgba(26, 31, 50, 0.95); transform: translateY(-3px) scale(1.05); }
+
+    .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 1.2rem; align-items: stretch; }
+
     .panel { border-radius: 22px; border: 1px solid rgba(191, 198, 255, 0.28); box-shadow: var(--shadow-lg); backdrop-filter: blur(18px); background: radial-gradient(circle at top left, rgba(108, 140, 255, 0.23), transparent 55%), linear-gradient(155deg, rgba(18, 22, 38, 0.98), rgba(6, 7, 16, 1)); min-width: 0; transition: box-shadow var(--transition), border-color var(--transition); }
     .panel:hover { border-color: rgba(191, 198, 255, 0.4); box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9); }
     
     html[data-site-theme="support"] .panel, html[data-site-theme="ap_admin"] .panel { background: radial-gradient(circle at top left, rgba(255, 160, 210, 0.3), transparent 55%), linear-gradient(155deg, rgba(35, 10, 26, 0.98), rgba(16, 4, 20, 1)); border-color: rgba(255, 190, 230, 0.45); }
+    html[data-site-theme="support"] .panel:hover { border-color: rgba(255, 190, 230, 0.65); }
+    
     html[data-site-theme="about"] .panel, html[data-site-theme="profile"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 19, 8, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(255, 214, 122, 0.28); }
+    html[data-site-theme="about"] .panel:hover { border-color: rgba(255, 214, 122, 0.5); }
+    
     html[data-site-theme="shop"] .panel, html[data-site-theme="leadership"] .panel, html[data-site-theme="reports_table"] .panel { background: radial-gradient(circle at top left, rgba(82, 199, 123, 0.18), transparent 55%), linear-gradient(155deg, rgba(10, 23, 14, 0.98), rgba(8, 10, 15, 1)); border-color: rgba(162, 241, 188, 0.22); }
+    html[data-site-theme="shop"] .panel:hover, html[data-site-theme="reports_table"] .panel:hover { border-color: rgba(162, 241, 188, 0.45); }
+    
     html[data-site-theme="ap_shop"] .panel { background: radial-gradient(circle at top left, rgba(255, 143, 196, 0.2), transparent 55%), linear-gradient(155deg, rgba(28, 10, 18, 0.98), rgba(12, 4, 8, 1)); border-color: rgba(255, 143, 196, 0.5); }
+    html[data-site-theme="ap_shop"] .panel:hover { border-color: rgba(255, 143, 196, 0.7); }
+    
     html[data-site-theme="report"] .panel, html[data-site-theme="inactives"] .panel, html[data-site-theme="fsb_report"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.16), transparent 55%), linear-gradient(155deg, rgba(16, 9, 25, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(180, 150, 255, 0.28); }
+    html[data-site-theme="report"] .panel:hover, html[data-site-theme="inactives"] .panel:hover { border-color: rgba(180, 150, 255, 0.5); }
+    
     html[data-site-theme="guide"] .panel { background: radial-gradient(circle at top left, rgba(0, 229, 255, 0.12), transparent 55%), linear-gradient(155deg, rgba(4, 14, 22, 0.98), rgba(2, 8, 12, 1)); border-color: rgba(0, 229, 255, 0.25); }
+    html[data-site-theme="guide"] .panel:hover { border-color: rgba(0, 229, 255, 0.45); }
+    
     html[data-site-theme="leaderboard"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 0, 0.12), transparent 55%), linear-gradient(155deg, rgba(22, 8, 4, 0.98), rgba(12, 4, 2, 1)); border-color: rgba(255, 61, 0, 0.25); }
+    html[data-site-theme="leaderboard"] .panel:hover { border-color: rgba(255, 61, 0, 0.5); }
+    
     html[data-site-theme="admin_log"] .panel, html[data-site-theme="ap_admin_log"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.12), transparent 55%), linear-gradient(155deg, rgba(25, 19, 8, 0.98), rgba(10, 10, 14, 1)); border-color: rgba(255, 191, 71, 0.25); }
+    html[data-site-theme="admin_log"] .panel:hover { border-color: rgba(255, 191, 71, 0.5); }
+    
     html[data-site-theme="complaints"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 61, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 107, 136, 0.15), transparent 55%), linear-gradient(160deg, #120505, #180408 45%, #0d0202 100%); border-color: rgba(255, 107, 136, 0.35); }
-    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
-    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
+    html[data-site-theme="complaints"] .panel:hover { border-color: rgba(255, 107, 136, 0.6); }
+    
+    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
+    html[data-site-theme="quests"] .panel:hover { border-color: rgba(180, 150, 255, 0.6); }
+    
+    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); border-color: rgba(255, 191, 71, 0.4); }
+    html[data-site-theme="timeattack"] .panel:hover { border-color: rgba(255, 191, 71, 0.65); }
+    
     html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); border-color: rgba(255, 107, 136, 0.4); }
+    html[data-site-theme="creator"] .panel:hover { border-color: rgba(255, 107, 136, 0.7); }
 
     .hero-card, .rules, .game-card, .side { padding: 1.8rem; display: grid; gap: 1.2rem; min-width: 0; align-content: start; }
     .section-head { display: grid; gap: 0.4rem; min-width: 0; }
@@ -142,10 +180,13 @@
     html[data-site-theme="report"] .badge, html[data-site-theme="inactives"] .badge, html[data-site-theme="fsb_report"] .badge { background: rgba(16, 9, 25, 0.96); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="report"] .badge.xp, html[data-site-theme="inactives"] .badge.xp, html[data-site-theme="fsb_report"] .badge.xp { background: #a26cff; color: #fff; box-shadow: 0 4px 15px rgba(162, 108, 255, 0.4); }
     html[data-site-theme="guide"] .badge { background: rgba(4, 18, 28, 0.96); border-color: rgba(0, 229, 255, 0.3); }
+    html[data-site-theme="guide"] .badge.xp { background: #00e5ff; color: #002229; box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4); }
     html[data-site-theme="leaderboard"] .badge { background: rgba(28, 10, 4, 0.96); border-color: rgba(255, 61, 0, 0.3); }
+    html[data-site-theme="leaderboard"] .badge.xp { background: #ff3d00; color: #fff; box-shadow: 0 4px 15px rgba(255, 61, 0, 0.4); }
 
     .hero h1 { font-family: var(--font-display); font-size: clamp(2.3rem, 5.5vw, 3.6rem); line-height: 1.05; text-transform: uppercase; max-width: 13ch; transition: color 0.3s ease; }
     .hero h1 span { color: var(--color-primary); text-shadow: 0 0 25px rgba(108, 140, 255, 0.5); }
+
     html[data-site-theme="support"] .hero h1 span, html[data-site-theme="ap_admin"] .hero h1 span, html[data-site-theme="ap_shop"] .hero h1 span { color: #ff8fc4; text-shadow: 0 0 28px rgba(255, 143, 196, 0.8); }
     html[data-site-theme="about"] .hero h1 span, html[data-site-theme="profile"] .hero h1 span { color: #ffbf47; text-shadow: 0 0 25px rgba(255, 191, 71, 0.65); }
     html[data-site-theme="shop"] .hero h1 span, html[data-site-theme="leadership"] .hero h1 span, html[data-site-theme="reports_table"] .hero h1 span { color: #7fe8a0; text-shadow: 0 0 25px rgba(127, 232, 160, 0.55); }
@@ -309,7 +350,7 @@
     .hint { color: var(--color-text-faint); font-size: var(--text-sm); min-height: 1.5em; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; margin-top: 0.5rem; }
 
     .controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 0.5rem; }
-    .action-btn { min-height: 64px; padding: 1rem; border-radius: 18px; font-weight: 800; font-size: var(--text-sm); border: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.6rem; text-align: center; word-break: break-word; line-height: 1.2; }
+    .action-btn { min-height: 64px; padding: 1rem; border-radius: 18px; font-weight: 800; font-size: var(--text-sm); border: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.6rem; text-align: center; word-break: break-word; line-height: 1.2; cursor: pointer; }
     .skip-btn { background: rgba(82, 199, 123, 0.1); color: #52c77b; border-color: rgba(82, 199, 123, 0.3); }
     .skip-btn:hover { background: rgba(82, 199, 123, 0.2); border-color: #52c77b; box-shadow: 0 10px 30px rgba(82, 199, 123, 0.4); transform: translateY(-4px) scale(1.02); }
     .warn-btn { background: rgba(255, 191, 71, 0.1); color: #ffe29a; border-color: rgba(255, 191, 71, 0.4); }
@@ -324,7 +365,7 @@
     input[type="file"].support-input { padding: 0.8rem 1.2rem; }
     textarea.support-input { resize: vertical; min-height: 100px; line-height: 1.5; }
 
-    .support-check-btn { flex: 0 0 auto; min-height: 56px; padding: 0 2rem; border-radius: 14px; font-size: var(--text-sm); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #6c8cff, #8aa3ff); border: 1px solid rgba(255,255,255,0.2); color: #fff; white-space: nowrap; box-shadow: 0 10px 30px rgba(108, 140, 255, 0.4); transition: all 0.3s ease; text-align: center; }
+    .support-check-btn { flex: 0 0 auto; min-height: 56px; padding: 0 2rem; border-radius: 14px; font-size: var(--text-sm); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; background: linear-gradient(135deg, #6c8cff, #8aa3ff); border: 1px solid rgba(255,255,255,0.2); color: #fff; white-space: nowrap; box-shadow: 0 10px 30px rgba(108, 140, 255, 0.4); transition: all 0.3s ease; text-align: center; cursor: pointer; }
     .support-check-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 15px 40px rgba(108, 140, 255, 0.6); }
     .support-check-btn:active { transform: translateY(1px); }
 
@@ -337,6 +378,7 @@
     .quest-btn.in-progress { background: rgba(108, 140, 255, 0.1); color: #8aa3ff; border: 1px solid rgba(108, 140, 255, 0.3); cursor: not-allowed; }
     .quest-btn.completed { background: rgba(82, 199, 123, 0.1); color: #52c77b; border: 1px solid rgba(82, 199, 123, 0.3); cursor: not-allowed; }
 
+    /* === МАГАЗИН === */
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
     .shop-card { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.8rem; border-radius: 22px; background: linear-gradient(145deg, rgba(20, 24, 44, 0.9), rgba(10, 12, 22, 0.95)); border: 1px solid rgba(108, 140, 255, 0.2); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); transition: all 0.3s ease; }
     .shop-card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(108, 140, 255, 0.6); box-shadow: 0 20px 50px rgba(108, 140, 255, 0.2); }
@@ -354,6 +396,7 @@
     .ap-shop-price { color: #ff8fc4; border-color: #ff8fc4; background: rgba(255, 143, 196, 0.1); box-shadow: inset 0 0 15px rgba(255,143,196,0.2); }
     .ap-shop-buy-btn { background: linear-gradient(135deg, #ff78b4, #ffb0dd); color: #1a0510; box-shadow: 0 10px 30px rgba(255, 120, 180, 0.4); }
 
+    /* === КОЛЕСО ФОРТУНЫ И ИГРЫ === */
     .roulette-wrapper { position: relative; width: 100%; height: 180px; background: rgba(10, 12, 22, 0.95); border-radius: 20px; overflow: hidden; border: 3px solid rgba(255, 191, 71, 0.5); box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 15px 40px rgba(0, 0, 0, 0.8); }
     .roulette-wrapper::before, .roulette-wrapper::after { content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 5; pointer-events: none; }
     .roulette-wrapper::before { left: 0; background: linear-gradient(to right, rgba(10, 12, 22, 1), transparent); }
@@ -427,7 +470,7 @@
     @keyframes pulse { 0% { transform: scale(1.05); } 50% { transform: scale(1.12); } 100% { transform: scale(1.05); } }
 
     /* 3-й УРОВЕНЬ НАВИГАЦИИ */
-    .sub-sub-nav { border-radius: 16px; border-style: dashed; padding: 0.6rem; animation: fadeIn 0.3s ease; border-color: #6c8cff; display: flex; flex-wrap: wrap; gap: 0.4rem; background: rgba(4, 6, 12, 0.85); backdrop-filter: blur(10px); width: fit-content; }
+    .sub-sub-nav { border-radius: 16px; border-style: dashed; padding: 0.6rem; animation: slideDown 0.3s ease; border-color: #6c8cff; display: flex; flex-wrap: wrap; gap: 0.4rem; background: rgba(4, 6, 12, 0.85); backdrop-filter: blur(10px); width: fit-content; }
 
     @media (max-width: 900px) {
       .page { padding: 1rem 0.5rem 2rem; }
@@ -443,6 +486,7 @@
       .hero-card, .rules, .game-card, .side { padding: 1.5rem 1.2rem; }
       .admin-action-grid { grid-template-columns: 1fr !important; }
       .shop-grid { grid-template-columns: 1fr; }
+      .slot-item { width: 70px; height: 70px; font-size: 2.5rem; }
       .main-nav, .sub-nav, .sub-sub-nav { justify-content: center; width: 100%; }
       .badge-row { justify-content: center; }
       .hero h1, .hero p { text-align: center; margin: 0 auto; }
@@ -484,7 +528,8 @@
              <option value="news">СМИ</option>
              <option value="fsin">ФСИН</option>
          </select>
-         <div id="gossStaffList" style="text-align:left; max-height:300px; overflow-y:auto; margin-bottom:1.5rem; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1);"></div>
+         <div id="gossStaffList" style="text-align:left; max-height:300px; overflow-y:auto; margin-bottom:1.5rem; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1);">
+             </div>
          <div style="display:flex; flex-wrap: wrap; gap:1rem; margin-bottom:1rem;">
              <input type="text" id="gossStaffNick" class="support-input" placeholder="Никнейм">
              <input type="text" id="gossStaffPos" class="support-input" placeholder="Должность">
@@ -741,7 +786,7 @@
     <section class="game-wrap" id="game">
 
       <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
-        <div class="section-head"><h2 style="color: #6c8cff;">Академия ФСБ</h2><p>Проверка заявлений.</p></div>
+        <div class="section-head"><h2 style="color: #6c8cff;">Академия ФСБ</h2></div>
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">Проверено дел</span><div class="stat-value" id="fsbResolvedValue">0</div></div>
           <div class="stat"><span class="stat-label">Одобрено</span><div class="stat-value" id="fsbApprovedValue" style="color: var(--color-success);">0</div></div>
@@ -749,7 +794,7 @@
         </div>
         <div class="feed">
           <article class="message-card">
-            <div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># fsb / academy-applications</div>
+            <div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># fsb / academy</div>
             <div class="author-row">
               <div class="avatar" style="background: conic-gradient(from 210deg, #6c8cff, #3b82f6, #6c8cff);">A</div>
               <div><div class="author-name" id="fsbAuthor">Кандидат скрыт</div><div class="author-meta" id="fsbMeta">Нажмите "Начать смену"</div></div>
@@ -758,57 +803,47 @@
             <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
           </article>
           <div class="controls">
-            <button class="action-btn warn-btn" type="button" onclick="window.judgeFsb('reject')">❌ Отказать (Ошибки)</button>
-            <button class="action-btn skip-btn" type="button" onclick="window.judgeFsb('approve')">✅ Одобрить (Годен)</button>
+            <button class="action-btn warn-btn" type="button" id="fsbRejectBtn">❌ Отказать</button>
+            <button class="action-btn skip-btn" type="button" id="fsbApproveBtn">✅ Одобрить</button>
           </div>
         </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-fsb_report" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #6c8cff;">Форма отчетности ФСБ</h2>
-          <p>Сдайте свой ежедневный отчет онлайна сюда.</p>
-        </div>
+        <div class="section-head"><h2 style="color: #6c8cff;">Форма отчетности ФСБ</h2></div>
         <div class="feed">
           <article class="message-card" style="min-height: auto; gap: 1.5rem;">
             <div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># fsb / reports</div>
-            <div class="support-answer-row">
-              <div class="support-answer-row-inner" style="flex-direction: column; gap: 1rem;">
-                <div class="admin-field"><label>Ваш NickName:</label><input id="fsbReportNickInput" class="support-input" type="text" placeholder="Введите никнейм"></div>
-                <div class="admin-field"><label>Проделанная работа за день:</label><textarea id="fsbReportWorkInput" class="support-input" rows="3" placeholder="Что вы сегодня сделали?"></textarea></div>
-                <div class="admin-field"><label>Дата (Только сегодня и вчера):</label><input id="fsbReportDateInput" class="support-input" type="date"></div>
-                <div class="admin-field"><label>Ссылка на док-ва (Imgur/Yapx):</label><input id="fsbReportLinkInput" class="support-input" type="url" placeholder="https://..."></div>
-                <div class="admin-field" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
-                    <label style="color: #fff; font-weight: bold;">ИЛИ загрузите скриншот напрямую:</label>
-                    <input id="fsbReportFileInput" class="support-input" type="file" accept="image/*" style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
-                </div>
-                <button class="support-check-btn" type="button" id="submitFsbReportBtn" style="background: #6c8cff; border-color: #6c8cff; margin-top: 1rem; width: 100%;">Отправить Отчет ФСБ</button>
+            <div class="support-answer-row-inner" style="flex-direction: column; gap: 1rem;">
+              <input id="fsbReportNickInput" class="support-input" type="text" placeholder="Ваш NickName">
+              <textarea id="fsbReportWorkInput" class="support-input" rows="3" placeholder="Проделанная работа за день"></textarea>
+              <input id="fsbReportDateInput" class="support-input" type="date">
+              <input id="fsbReportLinkInput" class="support-input" type="url" placeholder="Ссылка на док-ва (Imgur/Yapx)">
+              <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
+                  <label style="color: #fff; font-size: 0.9rem;">Или загрузите скриншот:</label>
+                  <input id="fsbReportFileInput" class="support-input" type="file" accept="image/*" style="border: none; padding: 0; margin-top: 0.5rem; background: transparent;">
               </div>
-              <div id="fsbReportResultText" style="font-weight: 800; font-size: 1.1rem; text-align: center; margin-top: 1rem;"></div>
+              <button class="support-check-btn" type="button" id="submitFsbReportBtn" style="background: #6c8cff; border-color: #6c8cff;">Отправить Отчет ФСБ</button>
             </div>
+            <div id="fsbReportResultText" style="font-weight: 800; font-size: 1.1rem; text-align: center; margin-top: 1rem;"></div>
           </article>
         </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-fsb_reports_table" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #6c8cff;">Таблица Отчетов ФСБ</h2>
-          <p>Сводка по датам: кто сдал норму в ФСБ.</p>
-        </div>
+        <div class="section-head"><h2 style="color: #6c8cff;">Таблица Отчетов ФСБ</h2></div>
         <div class="rt-controls">
             <button class="btn btn-secondary" id="fsbRtPrevWeekBtn" style="padding: 0.6rem 1rem;">⬅️ Прошлая неделя</button>
             <h3 id="fsbRtCurrentWeekLabel" style="margin:0; font-size: 1rem; font-weight: 800; color:#fff;">Текущая неделя</h3>
             <button class="btn btn-secondary" id="fsbRtNextWeekBtn" style="padding: 0.6rem 1rem;" disabled>Следующая неделя ➡️</button>
         </div>
-        <div id="fsbReportsTableWrapper">
-           <div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div>
-        </div>
+        <div id="fsbReportsTableWrapper"><div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div></div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-fsb_shop" style="display:none;">
         <div class="section-head"><h2 style="color:#6c8cff;">Магазин ФСБ</h2></div>
         <div class="stats-grid" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(108,140,255,0.2);">
-          <div class="stat"><span class="stat-label">Доступно Баллов ФСБ</span><div class="stat-value" id="fsbShopTotalPts" style="color:#6c8cff; font-size: 2.2rem;">0</div></div>
+          <div class="stat"><span class="stat-label">Доступно Баллов ФСБ</span><div class="stat-value" id="fsbShopTotalPts" style="color:#6c8cff;">0</div></div>
         </div>
         <div class="shop-grid" id="fsbShopItemsContainer"></div>
       </section>
@@ -817,10 +852,12 @@
         <div class="section-head"><h2 style="color:#6c8cff;">Руководство ФСБ</h2></div>
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #6c8cff;">➕ Выдача статуса ФСБ</h3>
-          <select id="leadAddFsbSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <select id="leadAddFsbSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
           <button id="leadAddFsbBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width: 100%;">Выдать статус ФСБ</button>
+          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список сотрудников ФСБ:</h4>
+          <div id="leadFsbList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3);">
           <h3 style="margin-bottom: 1rem; color: #6c8cff;">Управление Баллами ФСБ</h3>
           <select id="fsbAdminUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
           <input type="number" id="fsbAdminPointsAmount" class="support-input" placeholder="Количество Баллов (+ или -)" style="margin-bottom: 1rem;">
@@ -853,6 +890,21 @@
           <div class="stat"><span class="stat-label">Реальный XP (Отчеты)</span><div class="stat-value" id="profileRealXp" style="color:var(--color-success);">0</div></div>
           <div class="stat"><span class="stat-label">Доступно Баллов АП</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
         </div>
+        <div style="margin-top: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--color-success);">Косметика (Инвентарь)</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem;" id="cosmeticsContainer">
+                <div style="padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">👑</div>
+                    <div style="font-weight: bold; margin-bottom: 1rem;">Корона Лидера</div>
+                    <button id="equipCrownBtn" class="btn btn-secondary" style="width: 100%;">Надеть</button>
+                </div>
+                <div style="padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 0.8rem;">🌈</div>
+                    <div style="font-weight: bold; margin-bottom: 1rem;">Цветной Ник</div>
+                    <button id="equipColorBtn" class="btn btn-secondary" style="width: 100%;">Надеть</button>
+                </div>
+            </div>
+        </div>
       </section>
 
       <section class="panel game-card fade-in" id="mode-reports_table" style="display:none;">
@@ -867,10 +919,11 @@
 
       <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
         <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
+        
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">👑 Управление ГОСС Руководством</h3>
-          <select id="creatorGossSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <select id="creatorGossOrg" class="support-input" style="margin-bottom: 1rem; width: 100%;">
+          <select id="creatorGossSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <select id="creatorGossOrg" class="support-input" style="margin-bottom: 1rem;">
               <option value="all">Все ГОСС (ГС/ЗГС ГОСС)</option>
               <option value="gov">Правительство</option>
               <option value="fsb">ФСБ</option>
@@ -887,21 +940,27 @@
           </div>
           <button id="openGossStaffBtn" class="btn btn-primary" style="width: 100%;">📋 Таблица старшего состава ГОСС</button>
         </div>
+
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: var(--color-primary);">База Модераторов (Изменение XP)</h3>
           <div id="creatorDbContainer" style="max-height: 400px; overflow-y: auto;">Загрузка базы...</div>
         </div>
+
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-primary);">Обычная Выдача / Изъятие XP</h3>
           <select id="creatorUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
-          <select id="creatorGiveType" class="support-input" style="margin-bottom: 1rem;"><option value="game">Игровой XP (Баланс на сайте)</option><option value="report">Реальный XP (Отчеты/Снятия)</option></select>
-          <input type="number" id="creatorXpAmount" class="support-input" placeholder="Количество XP (например: 100 или -50)" style="margin-bottom: 1rem;">
+          <select id="creatorGiveType" class="support-input" style="margin-bottom: 1rem;">
+             <option value="game">Игровой XP (Баланс на сайте)</option>
+             <option value="report">Реальный XP (Отчеты/Снятия)</option>
+          </select>
+          <input type="number" id="creatorXpAmount" class="support-input" placeholder="Количество XP" style="margin-bottom: 1rem;">
           <button id="creatorXpBtn" class="btn btn-primary" style="width: 100%;">Изменить баланс XP</button>
         </div>
+
         <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
-          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
-          <input type="number" id="trollDebtAmount" class="support-input" placeholder="Сумма долга (напр. 5000)" style="margin-bottom: 1rem; width: 100%;">
+          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник" style="margin-bottom: 1rem;">
+          <input type="number" id="trollDebtAmount" class="support-input" placeholder="Сумма долга" style="margin-bottom: 1rem;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <button id="trollDebtBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🤡 Влепить огромный долг XP</button>
             <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
@@ -910,13 +969,18 @@
             <button id="trollEffectClear" class="btn btn-primary" style="background: #8b00ff; border-color: #8b00ff; grid-column: span 2;">✨ Снять все эффекты</button>
           </div>
         </div>
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
+
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5);">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">👑 Выдача прав Руководства</h3>
-          <select id="creatorAdminSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <select id="creatorAdminRole" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option value="leadership">Руководство (Модерация)</option><option value="ap_admin">Руководство (АП)</option><option value="fsb_admin">Руководство (ФСБ)</option></select>
+          <select id="creatorAdminSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <select id="creatorAdminRole" class="support-input" style="margin-bottom: 1rem;">
+              <option value="leadership">Руководство (Модерация)</option>
+              <option value="ap_admin">Руководство (АП)</option>
+              <option value="fsb_admin">Руководство (ФСБ)</option>
+          </select>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <button id="creatorAddAdminBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
-            <button id="creatorRemoveAdminBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Забрать права</button>
+            <button id="creatorRemoveAdminBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Забрать</button>
           </div>
           <div id="creatorAdminsList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
@@ -925,17 +989,56 @@
       <section class="panel game-card fade-in" id="mode-leadership" style="display:none;">
         <div class="section-head"><h2 style="color: #52c77b;">Руководство (Модерация)</h2></div>
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-warning);">✏️ Изменить цену товара</h3>
+          <input type="text" id="editAnyItemId" class="support-input" placeholder="ID товара" style="margin-bottom: 1rem;">
+          <input type="number" id="editAnyItemPrice" class="support-input" placeholder="Новая цена (XP)" style="margin-bottom: 1rem;">
+          <button id="changeAnyPriceBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning); width:100%;">Сохранить</button>
+        </div>
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">➕ Выдача статуса Модератора</h3>
-          <select id="leadAddModSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <select id="leadAddModSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
           <button id="leadAddModBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success); width: 100%;">Выдать статус</button>
           <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список модераторов:</h4><div id="leadModList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(162, 108, 255, 0.3); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: #a26cff;">🕵️‍♂️ Тайный покупатель</h3>
+            <select id="hiddenCheckUser" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+            <input type="text" id="hiddenCheckText" class="support-input" placeholder="Текст сообщения..." style="margin-bottom: 1rem;">
+            <select id="hiddenCheckType" class="support-input" style="margin-bottom: 1rem;">
+                <option value="good">Без нарушения</option><option value="warn">Пред/Мут</option><option value="ban">Бан/Перма</option>
+            </select>
+            <button id="sendHiddenCheckBtn" class="btn btn-secondary" style="border-color: #a26cff; color: #a26cff; width:100%;">Закинуть скрытую проверку</button>
+        </div>
+        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: #6c8cff;">✏️ Редактор базы сообщений (Модерация)</h3>
+            <input type="text" id="customModText" class="support-input" placeholder="Текст сообщения..." style="margin-bottom: 1rem;">
+            <select id="customModType" class="support-input" style="margin-bottom: 1rem;">
+                <option value="good">Без нарушения</option><option value="warn">Пред/Мут</option><option value="ban">Бан/Перма</option>
+            </select>
+            <button id="addCustomModMsgBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width:100%;">Добавить сообщение в общую базу</button>
+        </div>
         <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: var(--color-success);">Управление XP модераторов</h3>
-          <select id="leadershipUserSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <select id="leadershipGiveType" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option value="game">Игровой XP (Баланс на сайте)</option><option value="report">Реальный XP (Отчеты/Снятия)</option></select>
-          <input type="number" id="leadershipXpAmount" class="support-input" placeholder="Например: 50" style="margin-bottom: 1rem; width: 100%;">
+          <select id="leadershipUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <select id="leadershipGiveType" class="support-input" style="margin-bottom: 1rem;"><option value="game">Игровой XP (Баланс на сайте)</option><option value="report">Реальный XP (Отчеты/Снятия)</option></select>
+          <input type="number" id="leadershipXpAmount" class="support-input" placeholder="Количество XP" style="margin-bottom: 1rem;">
           <button id="leadershipXpBtn" class="btn btn-primary" style="width: 100%;">Выдать / Списать XP</button>
+        </div>
+        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Управление Магазином (Модерация)</h3>
+          <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара" style="margin-bottom: 1rem;">
+          <input type="text" id="modShopItemDesc" class="support-input" placeholder="Описание" style="margin-bottom: 1rem;">
+          <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)" style="margin-bottom: 1rem;">
+          <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи)" style="margin-bottom: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
+            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+          </div>
+          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: var(--color-warning);">Конструктор Рулетки (Мод)</h3>
+          <select id="modRouletteSlot" class="support-input" style="margin-bottom: 1rem;"><option value="leg">Легендарный слот</option><option value="rare">Редкий слот</option><option value="fail">Обычный слот</option><option value="fine">Слот Штрафа</option></select>
+          <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)" style="margin-bottom: 1rem;">
+          <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (-1000 = выдача)" style="margin-bottom: 1rem;">
+          <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
         </div>
       </section>
 
@@ -943,14 +1046,33 @@
         <div class="section-head"><h2 style="color: #ff8fc4;">Руководство АП</h2></div>
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #ff8fc4;">➕ Выдача статуса АП</h3>
-          <select id="leadAddApSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
+          <select id="leadAddApSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
           <button id="leadAddApBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4; width: 100%;">Выдать статус</button>
+        </div>
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.5); margin-bottom: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; color: #ff8fc4;">✏️ Редактор базы вопросов (АП)</h3>
+            <input type="text" id="customApTitle" class="support-input" placeholder="Тема..." style="margin-bottom: 1rem;">
+            <input type="text" id="customApText" class="support-input" placeholder="Текст вопроса..." style="margin-bottom: 1rem;">
+            <input type="text" id="customApKeywords" class="support-input" placeholder="Ключевые слова (через запятую)..." style="margin-bottom: 1rem;">
+            <button id="addCustomApMsgBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4; width:100%;">Добавить вопрос</button>
         </div>
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Управление Баллами АП</h3>
-          <select id="apAdminUserSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <input type="number" id="apAdminPointsAmount" class="support-input" placeholder="Количество Баллов (+ или -)" style="margin-bottom: 1rem; width: 100%;">
+          <select id="apAdminUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
+          <select id="apAdminGiveType" class="support-input" style="margin-bottom: 1rem;"><option value="game">Игровой XP</option><option value="report">Реальный XP</option></select>
+          <input type="number" id="apAdminPointsAmount" class="support-input" placeholder="Количество Баллов" style="margin-bottom: 1rem;">
           <button id="apAdminPointsBtn" class="btn btn-primary" style="width: 100%;">Выдать / Списать Баллы</button>
+        </div>
+        <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3);">
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Управление Магазином (АП)</h3>
+          <input type="text" id="apShopItemTitle" class="support-input" placeholder="Название" style="margin-bottom: 1rem;">
+          <input type="number" id="apShopItemPrice" class="support-input" placeholder="Цена" style="margin-bottom: 1rem;">
+          <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning); width:100%; margin-bottom:1.5rem;">Изменить цену</button>
+          <h3 style="margin-bottom: 1rem; color: #ff8fc4;">Рулетка АП</h3>
+          <select id="apRouletteSlot" class="support-input" style="margin-bottom: 1rem;"><option value="leg">Легенда</option><option value="rare">Редкий</option><option value="fail">Обычный</option></select>
+          <input type="text" id="apRouletteText" class="support-input" placeholder="Текст" style="margin-bottom: 1rem;">
+          <input type="number" id="apRouletteVal" class="support-input" placeholder="Значение" style="margin-bottom: 1rem;">
+          <button id="updateApRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить рулетку</button>
         </div>
       </section>
 
@@ -963,8 +1085,8 @@
         </div>
         <div id="taStartScreen" style="text-align: center; padding: 3rem 0;"><button id="taStartBtn" class="btn btn-primary">Начать заезд!</button></div>
         <div class="feed" id="taGameScreen" style="display:none;">
-          <article class="message-card"><div class="message-text" id="taMessageText">Загрузка...</div></article>
-          <div class="controls"><button class="action-btn skip-btn" type="button" data-ta-action="good">✅ Без нарушения</button><button class="action-btn warn-btn" type="button" data-ta-action="warn">⚠️ Пред / Мут</button><button class="action-btn ban-btn" type="button" data-ta-action="ban">🔨 Бан</button></div>
+          <article class="message-card"><div class="author-row"><div class="avatar" id="taAvatar">T7</div><div><div class="author-name" id="taAuthorName">System</div></div></div><div class="message-text" id="taMessageText">Загрузка...</div></article>
+          <div class="controls"><button class="action-btn skip-btn" type="button" id="taBtnGood">✅ Без нарушения</button><button class="action-btn warn-btn" type="button" id="taBtnWarn">⚠️ Пред / Мут</button><button class="action-btn ban-btn" type="button" id="taBtnBan">🔨 Бан</button></div>
         </div>
       </section>
 
@@ -982,7 +1104,11 @@
             <div class="author-row"><div class="avatar" id="avatarBox">T7</div><div><div class="author-name" id="authorName">System</div></div></div>
             <div class="message-text" id="messageText">Пока сообщений нет. Нажми «Начать смену».</div>
           </article>
-          <div class="controls"><button class="action-btn skip-btn" type="button" data-action="good">✅ Без нарушения</button><button class="action-btn warn-btn" type="button" data-action="warn">⚠️ Устное / Пред / Мут</button><button class="action-btn ban-btn" type="button" data-action="ban">🔨 Бан / Перма</button></div>
+          <div class="controls">
+            <button class="action-btn skip-btn" type="button" id="btnModGood">✅ Без нарушения</button>
+            <button class="action-btn warn-btn" type="button" id="btnModWarn">⚠️ Устное / Пред / Мут</button>
+            <button class="action-btn ban-btn" type="button" id="btnModBan">🔨 Бан / Перма</button>
+          </div>
         </div>
       </section>
 
@@ -993,7 +1119,11 @@
             <div class="author-row"><div class="avatar">Ж</div><div><div class="author-name" id="compAuthor">Жалоба скрыта</div></div></div>
             <div class="message-text" id="compText">Ожидание жалобы...</div>
           </article>
-          <div class="controls"><button class="action-btn warn-btn" type="button" data-comp-action="reject">❌ Отказать</button><button class="action-btn skip-btn" type="button" data-comp-action="approve">✅ Одобрить</button><button class="action-btn pass-btn" type="button" data-comp-action="pass">👑 Передать КГМ</button></div>
+          <div class="controls">
+            <button class="action-btn warn-btn" type="button" id="btnCompReject">❌ Отказать</button>
+            <button class="action-btn skip-btn" type="button" id="btnCompApprove">✅ Одобрить</button>
+            <button class="action-btn pass-btn" type="button" id="btnCompPass">👑 Передать КГМ</button>
+          </div>
         </div>
       </section>
 
@@ -1001,6 +1131,7 @@
         <div class="section-head"><h2>Панель агента поддержки</h2></div>
         <div class="feed">
           <article class="message-card">
+            <div class="author-row"><div class="avatar">АП</div><div><div class="author-name" id="supportQuestionTitle">Вопрос скрыт</div></div></div>
             <div class="message-text" id="supportQuestionText">Ожидание вопроса...</div>
             <div class="support-answer-row">
               <div class="support-answer-row-inner"><input id="supportAnswerInput" class="support-input" type="text" placeholder="Напиши ответ..."><button class="support-check-btn" type="button" id="supportCheckBtn">Проверить</button></div>
@@ -1012,15 +1143,11 @@
       </section>
 
       <section class="panel game-card fade-in" id="mode-quests" style="display:none;"><div class="section-head"><h2>Система Квестов</h2></div><div class="feed" id="questsContainer" style="display: grid; gap: 1.5rem;"></div></section>
-      
       <section class="panel game-card fade-in" id="mode-leaderboard" style="display:none;"><div class="section-head"><h2>Таблица лидеров (Топ-10)</h2></div><div style="display: flex; gap: 1rem; margin-bottom: 1rem;"><button id="lbBtnMod" class="btn btn-primary" style="flex:1;">Топ Модерации (XP)</button><button id="lbBtnAp" class="btn btn-secondary" style="flex:1;">Топ АП (Баллы)</button></div><div class="feed" id="leaderboardList"></div></section>
-
       <section class="panel game-card fade-in" id="mode-guide" style="display:none;"><div class="section-head"><h2>Руководство Сервера</h2></div><div class="feed"><article class="message-card"><div class="message-text">Информация появится здесь.</div></article></div></section>
-      
       <section class="panel game-card fade-in" id="mode-about" style="display:none;"><div class="section-head"><h2>О команде</h2></div><div class="feed"><article class="message-card"><div class="message-text">Сайт создан John Wick.</div></article></div></section>
 
       <section class="panel game-card fade-in" id="mode-shop" style="display:none;"><div class="section-head"><h2>Магазин & Игры (Модерация)</h2></div><div class="shop-grid" id="shopItemsContainer"></div></section>
-      
       <section class="panel game-card fade-in" id="mode-ap_shop" style="display:none;"><div class="section-head"><h2 style="color:#ff8fc4;">Магазин АП</h2></div><div class="shop-grid" id="apShopItemsContainer"></div></section>
 
       <section class="panel game-card fade-in" id="mode-report" style="display:none;">
@@ -1090,24 +1217,20 @@
     let activeMods = [], activeAps = [], activeFsb = [];
     let dynamicModLeaders = [], dynamicApLeaders = [], dynamicFsbLeaders = [];
     let creatorUsersList = [];
-    
-    let isModerator = false, isAp = false, isFsbUser = false;
+    let isModerator = false, isAp = false, isFsbUser = false, isReportsRequired = false;
 
     const state = { started: false, resolved: 0, correct: 0, mistakes: 0, log: [], current: null, reportXp: 0, manualXp: 0 };
     const supportState = { resolved: 0, correct: 0, mistakes: 0, currentIndex: -1, manualPts: 0 };
     const complaintState = { resolved: 0, correct: 0, mistakes: 0, current: null };
     const fsbState = { resolved: 0, approved: 0, rejected: 0, current: null, manualPts: 0 };
     const taState = { score: 0, mistakes: 0, current: null };
-    
     const shopState = { spent: 0, gameSpent: 0, apSpent: 0, fsbSpent: 0 };
 
     let modQueue = [], supQueue = [], compQueue = [], fsbQueue = [], taQueue = [];
     let taTimerInt = null, taTimeLeft = 60, spamLockTimeout = null, lastActionTime = 0, currentTableWeekOffset = 0, fsbTableWeekOffset = 0;
     let gameXpMod = 0, currentGameCurrency = 'game';
-
     let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics') || '{"crown":false,"color":false}');
 
-    // Ограничение дат для отчетов
     const setDateLimits = (id) => {
         const el = document.getElementById(id); if(!el) return;
         const t = new Date(), y = new Date(t); y.setDate(y.getDate() - 1);
@@ -1130,15 +1253,7 @@
         if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
     }
 
-    document.getElementById('musicToggleBtn').onclick = (e) => {
-        isMusicEnabled = !isMusicEnabled; e.target.textContent = isMusicEnabled ? '🎵' : '🔇';
-        if(isMusicEnabled) bgMusic.play().catch(()=>{}); else bgMusic.pause();
-    };
-    document.getElementById('sfxToggleBtn').onclick = (e) => {
-        isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔕';
-    };
-
-    // === НАДЕЖНЫЕ КЛИКИ И АНТИСПАМ ===
+    // === НАДЕЖНЫЕ КЛИКИ И АНТИСПАМ (Работает везде) ===
     function safeClick(id, handler) { const el = document.getElementById(id); if(el) el.onclick = (e) => { e.preventDefault(); handler(e); }; }
     function safeClickAll(selector, handler) { document.querySelectorAll(selector).forEach(el => el.onclick = (e) => { e.preventDefault(); handler(e, el); }); }
 
@@ -1154,7 +1269,45 @@
         lastActionTime = now; return false;
     }
 
-    // === КОНТЕНТ (ЗАГОЛОВКИ И ПОДСКАЗКИ) ===
+    // =========================================================================
+    // ⬇️ ВАШИ МАССИВЫ (ДАННЫЕ) ⬇️
+    // Вы можете заменить эти короткие массивы на ваши оригинальные из 3000 строк!
+    // =========================================================================
+    
+    let baseModMessages = [
+        {type:"good",text:"Как купить машину?"},{type:"warn",text:"ДАЙТЕ ДЕНЕГ БЫСТРО!!!"},{type:"ban",text:"Продам вирты 1кк=50р."}
+    ];
+    let baseSupQuestions = [
+        {title:"Навигация",text:"Как найти правительство?",keywords:["gps","гпс","навигатор"]}
+    ];
+    let allComplaints = [
+        {text:'Жалоба на мут за капс.',type:'reject'},{text:'Оскорбление семьи.',type:'approve'}
+    ];
+    let allFsbApps = [
+        {text:'Заявление на стажировку. 15 лет в области.',evidence:'Скрины с /time',type:'approve'},
+        {text:'Хочу в фсб. Лвл 3.',evidence:'Скрин паспорта без /time.',type:'reject'}
+    ];
+    const jwQuizQuestions = [ 
+        { q: "Как зовут собаку Джона?", opts: ["Дейзи", "Люси", "Макс", "Белла"], ans: "Дейзи" }, 
+        { q: "Валюта в Континентале?", opts: ["Золотые монеты", "Биткоины", "Доллары", "Слитки"], ans: "Золотые монеты" }
+    ];
+    
+    // Магазины
+    let defaultShopItems = [{id:'m_1',title:"Скидка на повышение",desc:"Ускоряет повышение.",price:200,icon:"🎫"},{id:'m_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:400,icon:"🔥"},{id:'roulette_mod',title:"Рулетка Модерации",desc:"Испытай удачу!",price:100,icon:"🎰",action:'mod_roulette'},{id:'coin_mod',title:"Орёл или Решка",desc:"Ставка 500 XP.",price:500,icon:"🪙",action:'mod_coin'},{id:'safe_mod',title:"Три Сейфа",desc:"Найди х3 куш!",price:400,icon:"🧰",action:'mod_safes'},{id:'jw_quiz',title:"Викторина Джона Уика",desc:"Ответь и получи 3000 XP!",price:1500,icon:"🔫",action:'mod_jw'},{id:'crash_game',title:"Ракетка (Краш)",desc:"Забери до краша!",price:100,icon:"🚀",action:'mod_crash'},{id:'cases_game',title:"Кейсы",desc:"Открывай кейсы!",price:300,icon:"📦",action:'mod_cases'},{id:'dice_game',title:"Кости",desc:"Брось больше дилера.",price:150,icon:"🎲",action:'mod_dice'},{id:'mines_game',title:"Мины",desc:"Найди 3 алмаза.",price:300,icon:"💣",action:'mod_mines'},{id:'hilo_game',title:"Больше / Меньше",desc:"Угадай число.",price:100,icon:"📈",action:'mod_hilo'},{id:'wheelx_game',title:"Колесо Иксов",desc:"Вращай колесо.",price:250,icon:"🎡",action:'mod_wheelx'},{id:'shells_game',title:"Наперстки",desc:"Найди мяч.",price:200,icon:"🍵",action:'mod_shells'}];
+    let defaultApShopItems = [{id:'ap_1',title:"Снятие преда",desc:"Снимает 1 пред.",price:15,icon:"🛡️"},{id:'ap_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:25,icon:"🔥"},{id:'roulette_ap',title:"Рулетка АП",desc:"Испытай удачу!",price:10,icon:"🎰",action:'ap_roulette'}];
+    let defaultFsbShopItems = [{id:'fsb_1',title:"Отгул",desc:"На 1 день.",price:20,icon:"🛌"},{id:'fsb_2',title:"Снятие выговора",desc:"Снимает выговор.",price:40,icon:"📁"},{id:'fsb_3',title:"Снятие преда",desc:"Снимает пред.",price:25,icon:"⚠️"},{id:'fsb_9',title:"Рулетка ФСБ",desc:"Случайный приз.",price:30,icon:"🎰",action:'fsb_roulette_items'}];
+    
+    let shopItems = [...defaultShopItems], apShopItems = [...defaultApShopItems], fsbShopItems = [...defaultFsbShopItems];
+    let priceOverrides = {};
+    let defaultModRoulettePrizes = [{id:'leg',type:'r-leg',icon:'🏆',text:'500 XP',val:500},{id:'rare',type:'r-rare',icon:'💎',text:'300 XP',val:300},{id:'fail',type:'r-fail',icon:'💀',text:'Ничего',val:0},{id:'fine',type:'r-fine',icon:'📉',text:'Штраф -100 XP',val:-100}];
+    let defaultApRoulettePrizes = [{id:'leg',type:'r-leg',icon:'🏆',text:'50 Баллов',val:50},{id:'rare',type:'r-rare',icon:'💎',text:'30 Баллов',val:30},{id:'fail',type:'r-fail',icon:'💀',text:'Ничего',val:0},{id:'fine',type:'r-fine',icon:'📉',text:'Штраф -10 Баллов',val:-10}];
+    let modRoulettePrizes = [...defaultModRoulettePrizes], apRoulettePrizes = [...defaultApRoulettePrizes];
+
+    const questsData = [{id:'q1',title:'Младший Модератор',desc:'Рассмотреть 50 сообщений в тренажёре',max:50,getProgress:()=>state.resolved,reward:150},{id:'q2',title:'Активный Помощник',desc:'Ответить на 25 вопросов',max:25,getProgress:()=>supportState.resolved,reward:100},{id:'q3',title:'Детектив',desc:'Разобрать 15 жалоб',max:15,getProgress:()=>complaintState.resolved,reward:120},{id:'q4',title:'Мастер',desc:'Рассмотреть 200 сообщений',max:200,getProgress:()=>state.resolved,reward:500}];
+    
+    let customModMessages = [], customSupQuestions = [], hiddenChecks = [];
+    
+    // === ДИНАМИЧЕСКИЙ ДИЗАЙН (Заголовки и Подсказки) ===
     const headers = {
         moderation: ["Симулятор смены модераторов", 'Следи за <span>порядком</span> на сервере.', "Проверяй сообщения, принимай решения и поддерживай порядок в чате.", "Режим: модераторы"],
         timeattack: ["Симулятор смены: На время", 'Успей за <span>минуту</span>.', "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!", "Режим: спидран"],
@@ -1189,6 +1342,7 @@
         complaints: { title: "Правила рассмотрения", lead: "Как рассматривать жалобы.", cards: [["Одобрение", "Нарушение четко видно, есть /time."], ["Отказ", "Нет доказательств, нет /time."], ["Передать", "Сложные ситуации, блат."]] },
         support: { title: "Материалы АП", lead: "Подсказки АП.", cards: [["Ключевые слова", "Ответ засчитывается по ключевым словам."], ["Точность", "Не нужно писать длинно, главное - суть."]] },
         report: { title: "Форма Отчета", lead: "Правила сдачи", cards: [["Норма", "Сдавать до 00:00 по МСК."], ["Док-ва", "Скриншоты с /time или логи."]] },
+        fsb_report: { title: "Форма Отчета ФСБ", lead: "Правила сдачи", cards: [["Норма", "Сдавать до 00:00 по МСК."], ["Док-ва", "Скриншоты с /time."]] },
         inactives: { title: "Правила неактивов", lead: "Как взять неактив", cards: [["Сроки", "Максимум 7 дней в месяц."], ["Причина", "Указывать конкретную причину."]] },
         fsb: { title: "Регламент ФСБ", lead: "Критерии отбора в Академию.", cards: [["Одобрение", "РП ник, военный билет, законопослушность >0, все скрины с /time."], ["Отказ", "НонРП ник, нет ВБ, отрицательная закона, розыск."]] },
         fsb_shop: { title: "Магазин ФСБ", lead: "Возможности ФСБ.", cards: [["Баллы", "Баллы начисляются за проверку заявлений."]] },
@@ -1203,6 +1357,18 @@
         rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
     }
 
+    // === ЛОГИКА БАЛАНСА XP ===
+    function getTrainingBalance() { return Math.floor(Number(state.correct) / 10) * 15; }
+    function getGameBalance() { return Math.max(0, getTrainingBalance() + gameXpMod - (shopState.gameSpent || 0)); }
+    function getRealBalance() { return Math.max(0, Number(state.reportXp || 0) + Number(state.manualXp || 0) - Number(shopState.spent || 0)); }
+    function availablePts() { return Math.max(0, Math.floor(Number(supportState.correct) / 10) * 15 + Number(supportState.manualPts || 0) - Number(shopState.apSpent || 0)); }
+    function getFsbPoints() { return Math.max(0, Math.floor(Number(fsbState.approved + fsbState.rejected) / 5) * 10 + Number(fsbState.manualPts || 0) - Number(shopState.fsbSpent || 0)); }
+
+    async function addGameXp(amount) {
+        if (!currentUser) return; gameXpMod += amount;
+        await supa.from('reports').insert([{ id: 'gxp_' + Date.now() + Math.random(), email: 'GAME_XP', link: currentUser.id, xp: amount, status: 'mod' }]);
+    }
+
     // === ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ===
     const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb","fsb_report","fsb_shop","fsb_admin","fsb_reports_table","fsb_log","gov","umvd","gibdd","army","med","news","fsin"];
 
@@ -1212,10 +1378,7 @@
         
         allModesList.forEach(m => {
             const panel = document.getElementById("mode-" + m);
-            if(panel) {
-                if(m === mode) { panel.style.display = ""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } 
-                else panel.style.display = "none";
-            }
+            if(panel) { if(m === mode) { panel.style.display = ""; panel.classList.remove('fade-in'); void panel.offsetWidth; panel.classList.add('fade-in'); } else panel.style.display = "none"; }
         });
 
         let currentTheme = "mod";
@@ -1278,38 +1441,12 @@
         btn.onclick = (e) => switchMode(e.target.dataset.mode, e.target);
     });
 
-    // === БАЗЫ ДАННЫХ И XP ===
-    let shopItems = [{id:'m_1',title:"Скидка на повышение",desc:"Ускоряет повышение.",price:200,icon:"🎫"},{id:'m_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:400,icon:"🔥"},{id:'roulette_mod',title:"Рулетка Модерации",desc:"Испытай удачу!",price:100,icon:"🎰",action:'mod_roulette'},{id:'coin_mod',title:"Орёл или Решка",desc:"Ставка 500 XP.",price:500,icon:"🪙",action:'mod_coin'},{id:'safe_mod',title:"Три Сейфа",desc:"Найди х3 куш!",price:400,icon:"🧰",action:'mod_safes'},{id:'jw_quiz',title:"Викторина Джона Уика",desc:"Ответь и получи 3000 XP!",price:1500,icon:"🔫",action:'mod_jw'},{id:'crash_game',title:"Ракетка (Краш)",desc:"Забери до краша!",price:100,icon:"🚀",action:'mod_crash'},{id:'cases_game',title:"Кейсы",desc:"Открывай кейсы!",price:300,icon:"📦",action:'mod_cases'},{id:'dice_game',title:"Кости",desc:"Брось больше дилера.",price:150,icon:"🎲",action:'mod_dice'},{id:'mines_game',title:"Мины",desc:"Найди 3 алмаза.",price:300,icon:"💣",action:'mod_mines'},{id:'hilo_game',title:"Больше / Меньше",desc:"Угадай число.",price:100,icon:"📈",action:'mod_hilo'},{id:'wheelx_game',title:"Колесо Иксов",desc:"Вращай колесо.",price:250,icon:"🎡",action:'mod_wheelx'},{id:'shells_game',title:"Наперстки",desc:"Найди мяч.",price:200,icon:"🍵",action:'mod_shells'}];
-    let apShopItems = [{id:'ap_1',title:"Снятие преда",desc:"Снимает 1 пред.",price:15,icon:"🛡️"},{id:'ap_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:25,icon:"🔥"},{id:'roulette_ap',title:"Рулетка АП",desc:"Испытай удачу!",price:10,icon:"🎰",action:'ap_roulette'}];
-    let fsbShopItems = [{id:'fsb_1',title:"Отгул",desc:"На 1 день.",price:20,icon:"🛌"},{id:'fsb_2',title:"Снятие выговора",desc:"Снимает выговор.",price:40,icon:"📁"},{id:'fsb_3',title:"Снятие преда",desc:"Снимает пред.",price:25,icon:"⚠️"},{id:'fsb_9',title:"Рулетка ФСБ",desc:"Случайный приз.",price:30,icon:"🎰",action:'fsb_roulette_items'}];
-    
-    let modRoulettePrizes = [{id:'leg',type:'r-leg',icon:'🏆',text:'500 XP',val:500},{id:'rare',type:'r-rare',icon:'💎',text:'300 XP',val:300},{id:'fail',type:'r-fail',icon:'💀',text:'Ничего',val:0},{id:'fine',type:'r-fine',icon:'📉',text:'Штраф -100 XP',val:-100}];
-    let apRoulettePrizes = [{id:'leg',type:'r-leg',icon:'🏆',text:'50 Баллов',val:50},{id:'rare',type:'r-rare',icon:'💎',text:'30 Баллов',val:30},{id:'fail',type:'r-fail',icon:'💀',text:'Ничего',val:0},{id:'fine',type:'r-fine',icon:'📉',text:'Штраф -10 Баллов',val:-10}];
-
-    const questsData = [{id:'q1',title:'Младший Модератор',desc:'Рассмотреть 50 сообщений в тренажёре',max:50,getProgress:()=>state.resolved,reward:150},{id:'q2',title:'Активный Помощник',desc:'Ответить на 25 вопросов',max:25,getProgress:()=>supportState.resolved,reward:100},{id:'q3',title:'Детектив',desc:'Разобрать 15 жалоб',max:15,getProgress:()=>complaintState.resolved,reward:120},{id:'q4',title:'Мастер',desc:'Рассмотреть 200 сообщений',max:200,getProgress:()=>state.resolved,reward:500}];
-    let baseModMessages = [{type:"good",text:"Как купить машину?"},{type:"warn",text:"ДАЙТЕ ДЕНЕГ БЫСТРО!!!"},{type:"ban",text:"Продам вирты 1кк=50р."},{type:"good",text:"Где автосалон низкого класса?"},{type:"warn",text:"ПРОДАМ ВИРТЫ ФАСТОМ!!!!(капс)"},{type:"ban",text:"Мамку твою в кино водил."}];
-    let baseSupQuestions = [{title:"Навигация",text:"Как найти правительство?",keywords:["gps","гпс","навигатор"]},{title:"Команды",text:"Какой командой открыть инвентарь?",keywords:["inv","инв"]}];
-    let allComplaints = [{text:'Жалоба на мут за капс.',type:'reject'},{text:'Оскорбление семьи.',type:'approve'}];
-    let allFsbApps = [{text:'Заявление на стажировку. 15 лет в области.',type:'approve'},{text:'Хочу в фсб. Лвл 3.',type:'reject'}];
-    let customModMessages = [], customSupQuestions = [], hiddenChecks = [];
-
-    function getTrainingBalance() { return Math.floor(Number(state.correct) / 10) * 15; }
-    function getGameBalance() { return Math.max(0, getTrainingBalance() + gameXpMod - (shopState.gameSpent || 0)); }
-    function getRealBalance() { return Math.max(0, Number(state.reportXp || 0) + Number(state.manualXp || 0) - Number(shopState.spent || 0)); }
-    function availablePts() { return Math.max(0, Math.floor(Number(supportState.correct) / 10) * 15 + Number(supportState.manualPts || 0) - Number(shopState.apSpent || 0)); }
-    function getFsbPoints() { return Math.max(0, Math.floor(Number(fsbState.approved + fsbState.rejected) / 5) * 10 + Number(fsbState.manualPts || 0) - Number(shopState.fsbSpent || 0)); }
-
-    async function addGameXp(amount) {
-        if (!currentUser) return; gameXpMod += amount;
-        await supa.from('reports').insert([{ id: 'gxp_' + Date.now() + Math.random(), email: 'GAME_XP', link: currentUser.id, xp: amount, status: 'mod' }]);
-    }
-
+    // === ЗАГРУЗКА ДАННЫХ И SUPABASE ===
     async function loadGlobalShopAndRoulette() {
         if(!supa) return;
         const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','ADMIN_ROLE','SHOP_OVERRIDE','GAME_XP']);
         customModMessages = []; customSupQuestions = []; hiddenChecks = []; activeMods = []; activeAps = []; activeFsb = [];
-        dynamicModLeaders = []; dynamicApLeaders = []; dynamicFsbLeaders = []; let priceOverrides = {}; gameXpMod = 0;
-        
+        dynamicModLeaders = []; dynamicApLeaders = []; dynamicFsbLeaders = []; priceOverrides = {}; gameXpMod = 0;
         if (data) {
             data.forEach(row => {
                 if (row.email === 'SHOP_OVERRIDE') priceOverrides[row.link] = Number(row.xp);
@@ -1478,12 +1615,17 @@
         const item = combined[modQueue.pop()]; state.current = { ...item, user: randomFunnyNick() };
         document.getElementById("authorName").textContent = state.current.user; document.getElementById("authorMeta").textContent = "Ожидает вашей реакции"; document.getElementById("messageText").textContent = state.current.text; document.getElementById("resultHint").textContent = "Ожидание вердикта...";
     }
-    window.judge = function(action) {
+    
+    // Бинды вердиктов
+    safeClick('btnModGood', () => judge('good')); safeClick('btnModWarn', () => judge('warn')); safeClick('btnModBan', () => judge('ban'));
+    function judge(action) {
         if (!state.started || !state.current || isSpamming()) return; state.resolved++; const resEl = document.getElementById("resultHint");
         if (action === state.current.type) { state.correct++; resEl.textContent = `Верно! (${action})`; resEl.style.color = "var(--color-success)"; pushLog(`✅ Сообщение разобрано верно.`); playSound('ok'); } 
         else { state.mistakes++; resEl.textContent = `Ошибка! Правильно: ${state.current.type}`; resEl.style.color = "var(--color-error)"; pushLog(`❌ Ошибка в вердикте.`); playSound('fail'); }
         updateModStats(); updateProfileStats(); saveProgress(); randomMessage();
-    };
+    }
+
+    safeClick('btnCompReject', () => judgeComplaint('reject')); safeClick('btnCompApprove', () => judgeComplaint('approve')); safeClick('btnCompPass', () => judgeComplaint('pass'));
     function randomComplaint() {
         if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
         complaintState.current = { ...allComplaints[compQueue.pop()], user: randomFunnyNick() };
@@ -1491,27 +1633,31 @@
         if(document.getElementById("compMeta")) document.getElementById("compMeta").textContent = "Ожидает вердикта";
         if(document.getElementById("compText")) document.getElementById("compText").textContent = complaintState.current.text;
     }
-    window.judgeComplaint = function(action) {
+    function judgeComplaint(action) {
         if (!state.started || !complaintState.current || isSpamming()) return; complaintState.resolved++;
         if (action === complaintState.current.type || action === 'pass') { complaintState.correct++; playSound('ok'); pushLog(`✅ Жалоба разобрана верно.`); } 
         else { complaintState.mistakes++; playSound('fail'); pushLog(`❌ Ошибка при разборе жалобы.`); }
         updateComplaintStats(); updateProfileStats(); saveProgress(); randomComplaint();
-    };
+    }
+
+    safeClick('fsbRejectBtn', () => judgeFsb('reject')); safeClick('fsbApproveBtn', () => judgeFsb('approve'));
     function randomFsbApp() {
         if (fsbQueue.length === 0) { fsbQueue = allFsbApps.map((_, i) => i); shuffleArray(fsbQueue); }
         fsbState.current = { ...allFsbApps[fsbQueue.pop()], user: randomFunnyNick() };
         if(document.getElementById("fsbAuthor")) document.getElementById("fsbAuthor").textContent = fsbState.current.user;
         if(document.getElementById("fsbMeta")) document.getElementById("fsbMeta").textContent = "Заявление в Академию";
         if(document.getElementById("fsbText")) document.getElementById("fsbText").textContent = fsbState.current.text;
+        if(document.getElementById("fsbEvidence")) document.getElementById("fsbEvidence").textContent = "Документы: " + fsbState.current.evidence;
     }
-    window.judgeFsb = function(action) {
+    function judgeFsb(action) {
         if (!state.started || !fsbState.current || isSpamming()) return;
         const isCorrect = action === fsbState.current.type; fsbState.resolved++;
         if (action === 'approve') fsbState.approved++; else fsbState.rejected++;
         if (isCorrect) { playSound('ok'); pushLog(`✅ ФСБ: верный вердикт.`); } else { playSound('fail'); pushLog(`❌ ФСБ: ошибка в проверке!`); }
         updateFsbStats(); saveProgress(); randomFsbApp();
-    };
+    }
 
+    // === ТАЙМ АТАКА ===
     function taNextMsg() {
         let combined = [...baseModMessages, ...customModMessages]; if (taQueue.length === 0) { taQueue = combined.map((_, i) => i); shuffleArray(taQueue); }
         taState.current = { ...combined[taQueue.pop()], user: randomFunnyNick() };
@@ -1528,18 +1674,23 @@
             if(taTimeLeft <= 0) { clearInterval(taTimerInt); const reward = Math.floor(taState.score * 2); alert(`Время вышло! Счет: ${taState.score}, Ошибок: ${taState.mistakes}\nБонус: +${reward} Игрового XP!`); addGameXp(reward).then(() => { updateShopStats(); updateProfileStats(); saveProgress(); }); document.getElementById('taStartScreen').style.display = 'block'; document.getElementById('taGameScreen').style.display = 'none'; }
         }, 1000);
     });
-    safeClickAll('[data-ta-action]', (e, btn) => {
+    safeClick('taBtnGood', () => judgeTa('good')); safeClick('taBtnWarn', () => judgeTa('warn')); safeClick('taBtnBan', () => judgeTa('ban'));
+    function judgeTa(action) {
         if(!taState.current || taTimeLeft <= 0) return;
-        if(btn.dataset.taAction === taState.current.type) { taState.score++; document.getElementById('taScore').textContent=taState.score; playSound('ok'); } else { taState.mistakes++; document.getElementById('taMistakes').textContent=taState.mistakes; taTimeLeft -= 3; playSound('fail'); } taNextMsg();
-    });
+        if(action === taState.current.type) { taState.score++; document.getElementById('taScore').textContent=taState.score; playSound('ok'); } else { taState.mistakes++; document.getElementById('taMistakes').textContent=taState.mistakes; taTimeLeft -= 3; playSound('fail'); } taNextMsg();
+    }
 
+    // === АП ПОДДЕРЖКА ===
     safeClick('supportCheckBtn', () => {
         if (!state.started || supportState.currentIndex < 0 || isSpamming()) return;
         let combined = [...baseSupQuestions, ...customSupQuestions];
         const q = combined[supportState.currentIndex], ans = document.getElementById("supportAnswerInput").value.trim().toLowerCase(), resEl = document.getElementById("supportResultText");
         if (!ans) { resEl.textContent = "Напиши ответ игроку."; return; } supportState.resolved++;
-        if (q.keywords.some(k => ans.includes(k))) { supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`); } 
-        else { supportState.mistakes++; resEl.textContent = "Нет ключевых слов."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`); }
+        if (q.keywords.some(k => ans.includes(k))) {
+            supportState.correct++; resEl.textContent = "Ответ засчитан!"; resEl.style.color = "var(--color-success)"; playSound('ok'); pushLog(`🟢 АП: ответ засчитан.`);
+        } else {
+            supportState.mistakes++; resEl.textContent = "Ответ не засчитан: нет ключевых слов."; resEl.style.color = "var(--color-error)"; playSound('fail'); pushLog(`🔴 АП: ответ не засчитан.`);
+        }
         updateSupportStats(); updateProfileStats(); saveProgress();
     });
     safeClick('supportNextBtn', () => {
@@ -1548,7 +1699,7 @@
         const q = combined[supportState.currentIndex]; document.getElementById("supportQuestionTitle").textContent = q.title; document.getElementById("supportQuestionText").textContent = q.text; document.getElementById("supportAnswerInput").value = ""; document.getElementById("supportResultText").textContent = "";
     });
 
-    // === МАГАЗИН ===
+    // === МАГАЗИН И ПОКУПКИ ===
     function showCurrencyModal() {
         return new Promise((resolve) => {
             const modal = document.getElementById('currencyModal'); modal.style.display = 'flex';
@@ -1597,7 +1748,7 @@
             if (action === 'mod_coin') { openCoinGame(); return; }
             if (action === 'mod_safes') { openSafesGame(); return; }
             if (action === 'mod_jw') { openJwQuiz(); return; }
-            const modal = document.getElementById('genericGameModal'); ['ggRps','ggSlots','ggTiming','ggRocket','ggCases','ggDice','ggMines','ggHiLo','ggWheelX','ggShells'].forEach(a => { if(document.getElementById(a)) document.getElementById(a).style.display = 'none'; });
+            const modal = document.getElementById('genericGameModal'); ['ggRocket','ggCases','ggDice','ggMines','ggHiLo','ggWheelX','ggShells'].forEach(a => { if(document.getElementById(a)) document.getElementById(a).style.display = 'none'; });
             document.getElementById('ggTitle').textContent = shopItems.find(i=>i.id===id).title; document.getElementById('ggStartBetText').textContent = `Ставка: ${price} ${currencyType === 'real'?'Реальных':'Игровых'} XP`; document.getElementById('ggResult').textContent = ''; document.getElementById('closeGgBtn').style.display = 'none'; document.getElementById('ggStartOverlay').style.display = 'flex'; modal.style.display = 'flex';
             document.getElementById('ggStartActionBtn').onclick = () => {
                 document.getElementById('ggStartOverlay').style.display = 'none';
@@ -1616,7 +1767,7 @@
         if (action === 'fsb_roulette_items') alert("Рулетка ФСБ пока в разработке!"); else { await logPurchase(fsbShopItems.find(i=>i.id===id).title, false, true, price); alert("Покупка ФСБ совершена!"); }
     };
 
-    // === ИГРЫ И МИНИ-ИГРЫ (СОКРАЩЕНО) ===
+    // === ИГРЫ И МИНИ-ИГРЫ ===
     function finishInteractiveGame(winAmount, resultText) {
         document.getElementById('ggResult').textContent = resultText; const clsBtn = document.getElementById('closeGgBtn'); clsBtn.style.display = 'block';
         if (winAmount > 0) { clsBtn.onclick = async () => { clsBtn.disabled = true; if (window.currentGameCurrency === 'game') await addGameXp(winAmount); else { shopState.spent -= winAmount; } updateShopStats(); updateProfileStats(); await saveProgress(); document.getElementById('genericGameModal').style.display = 'none'; clsBtn.disabled = false; }; } 
@@ -1637,8 +1788,7 @@
         cashBtn.onclick = () => { if (crashed) return; clearInterval(rocketInt); cashBtn.disabled = true; multEl.textContent = "ЗАБРАЛ " + mult.toFixed(2) + "x"; multEl.style.color = "var(--color-success)"; finishInteractiveGame(Math.floor(bet * mult), `Успех! Выигрыш: ${Math.floor(bet * mult)} XP`); };
     }
     function openDiceGame(bet) {
-        document.getElementById('ggDice').style.display = 'flex'; const btn = document.getElementById('ggDiceBtn'), pBox = document.getElementById('dicePlayer'), dBox = document.getElementById('diceDealer');
-        pBox.textContent = '?'; dBox.textContent = '?'; btn.disabled = false;
+        document.getElementById('ggDice').style.display = 'flex'; const btn = document.getElementById('ggDiceBtn'), pBox = document.getElementById('dicePlayer'), dBox = document.getElementById('diceDealer'); pBox.textContent = '?'; dBox.textContent = '?'; btn.disabled = false;
         btn.onclick = () => { btn.disabled = true; let rolls = 0; const anim = setInterval(() => { pBox.textContent = Math.floor(Math.random() * 6) + 1; dBox.textContent = Math.floor(Math.random() * 6) + 1; rolls++; if(rolls > 15) { clearInterval(anim); const pVal = parseInt(pBox.textContent), dVal = parseInt(dBox.textContent); if(pVal > dVal) finishInteractiveGame(bet*2, `Вы победили! Выпало ${pVal} против ${dVal}.`); else if (pVal === dVal) finishInteractiveGame(bet, `Ничья! Возврат ставки.`); else finishInteractiveGame(0, `Вы проиграли! Дилер выбросил ${dVal}.`); } }, 50); };
     }
     function openMinesGame(bet) {
@@ -1682,44 +1832,35 @@
         };
     }
     function openCoinGame() {
-        const modal = document.getElementById('coinModal'), anim = document.getElementById('coinAnimation'), res = document.getElementById('coinResult');
-        modal.style.display = 'flex'; anim.style.display = 'none'; res.textContent = ''; document.getElementById('closeCoinBtn').style.display = 'none';
+        const modal = document.getElementById('coinModal'), anim = document.getElementById('coinAnimation'), res = document.getElementById('coinResult'); modal.style.display = 'flex'; anim.style.display = 'none'; res.textContent = ''; document.getElementById('closeCoinBtn').style.display = 'none';
         const play = (choice) => { anim.style.display = 'block'; anim.classList.add('flipping'); document.getElementById('btnHeads').disabled = true; document.getElementById('btnTails').disabled = true;
             setTimeout(async () => { anim.classList.remove('flipping'); const win = Math.random() > 0.5; anim.textContent = win ? (choice==='heads'?'🪙 Орёл':'🪙 Решка') : (choice==='heads'?'🪙 Решка':'🪙 Орёл');
                 if (win) { res.textContent = 'Победа! +1000 XP'; res.style.color = 'var(--color-success)'; playSound('win'); if(window.currentGameCurrency==='game') await addGameXp(1000); else shopState.spent -= 1000; } else { res.textContent = 'Поражение. -500 XP'; res.style.color = 'var(--color-error)'; playSound('fail'); } updateShopStats(); updateProfileStats(); await saveProgress(); document.getElementById('closeCoinBtn').style.display = 'block';
             }, 2000);
-        };
-        document.getElementById('btnHeads').onclick = () => play('heads'); document.getElementById('btnTails').onclick = () => play('tails');
-        document.getElementById('closeCoinBtn').onclick = () => { modal.style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false; };
+        }; document.getElementById('btnHeads').onclick = () => play('heads'); document.getElementById('btnTails').onclick = () => play('tails'); document.getElementById('closeCoinBtn').onclick = () => { modal.style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false; };
     }
     function openSafesGame() {
-        const modal = document.getElementById('safesModal'), res = document.getElementById('safesResult'), btn = document.getElementById('closeSafesBtn');
-        modal.style.display = 'flex'; res.textContent = ''; btn.style.display = 'none';
+        const modal = document.getElementById('safesModal'), res = document.getElementById('safesResult'), btn = document.getElementById('closeSafesBtn'); modal.style.display = 'flex'; res.textContent = ''; btn.style.display = 'none';
         const safes = [document.getElementById('s0'),document.getElementById('s1'),document.getElementById('s2')]; safes.forEach(s => { s.disabled = false; s.style.background = 'rgba(0,0,0,0.5)'; s.textContent = '🧰'; });
         const winIdx = Math.floor(Math.random() * 3);
         safes.forEach((s, idx) => { s.onclick = async () => { safes.forEach(ss => ss.disabled = true); if (idx === winIdx) { s.textContent = '💰'; s.style.background = 'rgba(82, 199, 123, 0.4)'; res.textContent = 'Успех! В сейфе лежал х3 куш (1200 XP).'; playSound('win'); if(window.currentGameCurrency==='game') await addGameXp(1200); else shopState.spent -= 1200; } else { s.textContent = '🕸️'; s.style.background = 'rgba(255, 107, 136, 0.4)'; res.textContent = 'Пусто! Сейф оказался пуст.'; playSound('fail'); } updateShopStats(); updateProfileStats(); await saveProgress(); btn.style.display = 'block'; }; });
         btn.onclick = () => modal.style.display = 'none';
     }
-    const jwQuizQuestions = [ { q: "Как зовут собаку Джона?", opts: ["Дейзи", "Люси", "Макс", "Белла"], ans: "Дейзи" }, { q: "Валюта в Континентале?", opts: ["Золотые монеты", "Биткоины", "Доллары", "Слитки"], ans: "Золотые монеты" }, { q: "Прозвище Джона?", opts: ["Баба Яга", "Бугимен", "Призрак", "Жнец"], ans: "Баба Яга" }, { q: "Татуировка Джона?", opts: ["Fortis Fortuna Adiuvat", "Смерть или Слава", "Баба Яга", "Без пощады"], ans: "Fortis Fortuna Adiuvat" }, { q: "Ответ на 'Ты вернулся?'", opts: ["Я думаю, да", "Я никогда не уходил", "Я пришел за машиной", "Это только начало"], ans: "Я думаю, да" } ];
     let jwCurrentQ = 0, jwCorrect = 0, jwSelectedQs = [];
     function openJwQuiz() {
         if(!currentUser) return alert("Войдите в аккаунт!"); if(localStorage.getItem(`jw_played_${currentUser.email}`)) return alert("Вы уже проходили эту викторину!");
-        document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none'; document.getElementById('jwResult').style.display = 'none';
-        jwSelectedQs = [...jwQuizQuestions].sort(() => 0.5 - Math.random()).slice(0, 5); jwCurrentQ = 0; jwCorrect = 0; renderJwQuestion();
+        document.getElementById('jwModal').style.display = 'flex'; document.getElementById('closeJwBtn').style.display = 'none'; document.getElementById('jwResult').style.display = 'none'; jwSelectedQs = [...jwQuizQuestions].sort(() => 0.5 - Math.random()).slice(0, 5); jwCurrentQ = 0; jwCorrect = 0; renderJwQuestion();
     }
     function renderJwQuestion() {
         if (jwCurrentQ >= 5) { finishJwQuiz(); return; } const qObj = jwSelectedQs[jwCurrentQ];
-        document.getElementById('jwQuestionText').innerHTML = `<span style="color:#ff6b88;">Вопрос ${jwCurrentQ + 1} из 5:</span><br>${qObj.q}`;
-        const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
+        document.getElementById('jwQuestionText').innerHTML = `<span style="color:#ff6b88;">Вопрос ${jwCurrentQ + 1} из 5:</span><br>${qObj.q}`; const optsContainer = document.getElementById('jwOptions'); optsContainer.innerHTML = '';
         [...qObj.opts].sort(() => 0.5 - Math.random()).forEach(opt => { const btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = opt; btn.onclick = () => { document.querySelectorAll('.jw-option-btn').forEach(b => { b.disabled = true; if(b.textContent === qObj.ans) b.classList.add('correct'); else b.classList.add('wrong'); }); if (opt === qObj.ans) { jwCorrect++; playSound('ok'); } else playSound('fail'); setTimeout(() => { jwCurrentQ++; renderJwQuestion(); }, 1500); }; optsContainer.appendChild(btn); });
     }
     async function finishJwQuiz() {
         const resEl = document.getElementById('jwResult'); resEl.style.display = 'block'; localStorage.setItem(`jw_played_${currentUser.email}`, 'true'); document.getElementById('jwQuestionText').innerHTML = `Викторина завершена!<br>Ваш результат: ${jwCorrect} из 5.`; document.getElementById('jwOptions').innerHTML = '';
-        if (jwCorrect >= 4) { if (window.currentGameCurrency === 'game') await addGameXp(3000); else shopState.spent -= 3000; await logPurchase(`Викторина JW: Победа (3000 XP)`); resEl.textContent = 'Потрясающе! +3000 XP'; resEl.style.color = 'var(--color-success)'; playSound('win'); } else { resEl.textContent = 'Нужно ответить минимум на 4 вопроса.'; resEl.style.color = 'var(--color-error)'; playSound('fail'); } updateShopStats(); updateModStats(); updateProfileStats(); await saveProgress();
-        document.getElementById('closeJwBtn').style.display = 'inline-block'; document.getElementById('closeJwBtn').onclick = () => document.getElementById('jwModal').style.display = 'none';
+        if (jwCorrect >= 4) { if (window.currentGameCurrency === 'game') await addGameXp(3000); else shopState.spent -= 3000; await logPurchase(`Викторина JW: Победа (3000 XP)`); resEl.textContent = 'Потрясающе! +3000 XP'; resEl.style.color = 'var(--color-success)'; playSound('win'); } else { resEl.textContent = 'Нужно ответить минимум на 4 вопроса.'; resEl.style.color = 'var(--color-error)'; playSound('fail'); } updateShopStats(); updateModStats(); updateProfileStats(); await saveProgress(); document.getElementById('closeJwBtn').style.display = 'inline-block'; document.getElementById('closeJwBtn').onclick = () => document.getElementById('jwModal').style.display = 'none';
     }
 
-    // === КВЕСТЫ И ЛИДЕРБОРД ===
     function renderQuests() {
         const cont = document.getElementById('questsContainer'); if(!cont) return; const claimed = JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) || '[]');
         cont.innerHTML = questsData.map(q => { const isClaimed = claimed.includes(q.id), prog = Math.min(q.max, q.getProgress()), isDone = prog >= q.max; return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--color-primary); font-weight:bold;">+${q.reward} Игрового XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--color-primary); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`; }).join('');
@@ -1728,6 +1869,7 @@
         if(!currentUser) return; const claimed = JSON.parse(localStorage.getItem('quests_' + currentUser.email) || '[]'); if(claimed.includes(qId)) return; claimed.push(qId); localStorage.setItem('quests_' + currentUser.email, JSON.stringify(claimed));
         await addGameXp(reward); updateShopStats(); updateModStats(); updateSupportStats(); saveProgress(); playSound('win'); alert(`✅ Квест выполнен! +${reward} Игрового XP.`); renderQuests();
     };
+
     window.loadLeaderboard = async function() {
         const list = document.getElementById('leaderboardList'); if(!list) return; list.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка...</div>';
         const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0); const { data: users } = await supa.from('user_stats').select('*'); let modArr = [], apArr = [];
@@ -1786,18 +1928,16 @@
         alert('XP успешно сохранен!'); loadCreatorPanelData();
     };
 
-    // === ТРОЛЛИНГ И ЭФФЕКТЫ ===
     safeClick('trollEffectBobo', async () => setTroll('bobo')); safeClick('trollEffectBlur', async () => setTroll('blur')); safeClick('trollEffectDrunk', async () => setTroll('drunk')); safeClick('trollEffectGhost', async () => setTroll('ghost')); safeClick('trollEffectFlip', async () => setTroll('flip')); safeClick('trollEffectRainbow', async () => setTroll('rainbow'));
     safeClick('trollEffectClear', async () => { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (!userId) return alert("Выберите пользователя!"); await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId); alert("Эффекты сняты!"); });
     async function setTroll(effect) { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!"); if (userId === creatorUserId) return alert("ОШИБКА: Нельзя применить эффект к Создателю!"); await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]); alert(`Эффект '${effect}' применен!`); }
-    safeClick('trollWipeXpBtn', async () => { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (userId === creatorUserId) return alert("Иммунитет!"); await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`XP обнулен`); loadCreatorPanelData(); });
+    safeClick('trollWipeXpBtn', async () => { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (userId === creatorUserId) return alert("Иммунитет!"); await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); loadCreatorPanelData(); });
     safeClick('trollDebtBtn', async () => { const userId = document.getElementById('creatorUserSelect').value, amount = Number(document.getElementById('trollDebtAmount').value); if (userId === creatorUserId) return alert("Иммунитет!"); const target = creatorUsersList.find(u => u.user_id === userId); if(target) { await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`Долг выдан!`); loadCreatorPanelData(); } });
     safeClick('trollRenameBtn', async () => { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (userId === creatorUserId) return alert("Иммунитет!"); const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick(); await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', userId); alert(`Ник изменен`); loadCreatorPanelData(); });
     safeClick('trollDeleteBtn', async () => { if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value; if (userId === creatorUserId) return alert("Создателя удалить невозможно!"); if(confirm("Удалить пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); loadCreatorPanelData(); } });
     safeClick('creatorAddAdminBtn', async () => { const userId = document.getElementById('creatorAdminSelect').value, role = document.getElementById('creatorAdminRole').value; if(!userId) return; await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ADMIN_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]); alert("В руководство добавлен!"); loadCreatorPanelData(); });
     safeClick('creatorRemoveAdminBtn', async () => { const userId = document.getElementById('creatorAdminSelect').value, role = document.getElementById('creatorAdminRole').value; if(userId === creatorUserId) return alert("Нельзя забрать права у Создателя!"); await supa.from('reports').delete().eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role); alert("Удален из руководства!"); loadCreatorPanelData(); });
 
-    // === ДРУГИЕ ОБРАБОТЧИКИ ПАНЕЛЕЙ ===
     safeClick('sendHiddenCheckBtn', async () => { const userId = document.getElementById('hiddenCheckUser').value, text = document.getElementById('hiddenCheckText').value.trim(), type = document.getElementById('hiddenCheckType').value; if(!userId || !text) return alert("Заполните поля!"); await supa.from('reports').insert([{ id: 'hc_' + Date.now(), email: 'HIDDEN_CHECK', link: userId, date: text, status: type, xp: 0 }]); document.getElementById('hiddenCheckText').value = ''; alert("Проверка назначена!"); loadGlobalShopAndRoulette(); });
     safeClick('addCustomModMsgBtn', async () => { const text = document.getElementById('customModText').value.trim(), type = document.getElementById('customModType').value; if(!text) return alert("Введите текст!"); await supa.from('reports').insert([{ id: 'cmm_' + Date.now(), email: 'CUSTOM_MOD_MSG', date: text, status: type, xp: 0 }]); document.getElementById('customModText').value = ''; alert("Добавлено в базу!"); loadGlobalShopAndRoulette(); });
     safeClick('addCustomApMsgBtn', async () => { const title = document.getElementById('customApTitle').value.trim(), text = document.getElementById('customApText').value.trim(), keywords = document.getElementById('customApKeywords').value.trim(); if(!title || !text || !keywords) return alert("Заполните поля!"); await supa.from('reports').insert([{ id: 'capm_' + Date.now(), email: 'CUSTOM_AP_MSG', link: title, date: text, status: keywords, xp: 0 }]); document.getElementById('customApTitle').value = ''; document.getElementById('customApText').value = ''; document.getElementById('customApKeywords').value = ''; alert("Вопрос добавлен!"); loadGlobalShopAndRoulette(); });
@@ -1809,108 +1949,57 @@
     safeClick('leadAddFsbBtn', async () => { const userId = document.getElementById('leadAddFsbSelect').value; if(!userId) return; await supa.from('reports').insert([{ id: 'fsb_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'fsb', xp: 0 }]); alert("Статус ФСБ выдан!"); loadGlobalShopAndRoulette(); });
     safeClick('changeAnyPriceBtn', async () => { const id = document.getElementById('editAnyItemId').value.trim(), price = Number(document.getElementById('editAnyItemPrice').value); if (!id || isNaN(price)) return alert("Введите ID и цену!"); await supa.from('reports').upsert([{ id: 'price_'+id, email: 'SHOP_OVERRIDE', link: id, xp: price, status: 'price_override' }]); alert("Цена изменена!"); loadGlobalShopAndRoulette(); });
 
-    // === СЖАТИЕ ФОТО ДЛЯ ОТЧЕТОВ ===
+    // === СЖАТИЕ ФОТО ===
     function compressImage(file, callback) {
         const reader = new FileReader(); reader.readAsDataURL(file);
-        reader.onload = event => {
-            const img = new Image(); img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas'); let w = img.width, h = img.height;
-                if (w > h) { if (w > 800) { h *= 800 / w; w = 800; } } else { if (h > 800) { w *= 800 / h; h = 800; } }
-                canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                callback(canvas.toDataURL('image/jpeg', 0.6));
-            };
-        };
+        reader.onload = event => { const img = new Image(); img.src = event.target.result; img.onload = () => { const canvas = document.createElement('canvas'); let w = img.width, h = img.height; if (w > h) { if (w > 800) { h *= 800 / w; w = 800; } } else { if (h > 800) { w *= 800 / h; h = 800; } } canvas.width = w; canvas.height = h; canvas.getContext('2d').drawImage(img, 0, 0, w, h); callback(canvas.toDataURL('image/jpeg', 0.6)); }; };
     }
 
     // === ОТПРАВКА ОТЧЕТОВ ===
     safeClick('submitReportBtn', async () => {
-        if (!currentUser) return;
-        const res = document.getElementById('reportResultText'), nick = document.getElementById('reportNickInput').value.trim(), work = document.getElementById('reportWorkInput').value.trim(), date = document.getElementById('reportDateInput').value, link = document.getElementById('reportLinkInput').value.trim(), fileInput = document.getElementById('reportFileInput');
-        if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; }
-        if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот!"; res.style.color = "var(--color-error)"; return; }
-        res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
-        const submitData = async (base64Image = "") => {
-            const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`;
-            const { error } = await supa.from('reports').insert([{ id: 'rep_' + Date.now(), email: currentUser.email, link: finalLink, date: combinedData, status: 'На проверке', xp: 0 }]);
-            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Отчет отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); }
-        };
+        if (!currentUser) return; const res = document.getElementById('reportResultText'), nick = document.getElementById('reportNickInput').value.trim(), work = document.getElementById('reportWorkInput').value.trim(), date = document.getElementById('reportDateInput').value, link = document.getElementById('reportLinkInput').value.trim(), fileInput = document.getElementById('reportFileInput');
+        if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; } if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот!"; res.style.color = "var(--color-error)"; return; } res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
+        const submitData = async (base64Image = "") => { const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`; const { error } = await supa.from('reports').insert([{ id: 'rep_' + Date.now(), email: currentUser.email, link: finalLink, date: combinedData, status: 'На проверке', xp: 0 }]); if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Отчет отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); } };
         if (fileInput.files.length > 0) compressImage(fileInput.files[0], submitData); else submitData("");
     });
-    
-    // ОТПРАВКА ОТЧЕТОВ ФСБ (Отдельная логика)
     safeClick('submitFsbReportBtn', async () => {
-        if (!currentUser) return;
-        const res = document.getElementById('fsbReportResultText'), nick = document.getElementById('fsbReportNickInput').value.trim(), work = document.getElementById('fsbReportWorkInput').value.trim(), date = document.getElementById('fsbReportDateInput').value, link = document.getElementById('fsbReportLinkInput').value.trim(), fileInput = document.getElementById('fsbReportFileInput');
-        if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; }
-        if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот!"; res.style.color = "var(--color-error)"; return; }
-        res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
-        const submitData = async (base64Image = "") => {
-            const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`;
-            const { error } = await supa.from('reports').insert([{ id: 'frep_' + Date.now(), email: 'FSB_REPORT_' + currentUser.email, link: finalLink, date: combinedData, status: 'ФСБ На проверке', xp: 0 }]);
-            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Отчет ФСБ отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); }
-        };
+        if (!currentUser) return; const res = document.getElementById('fsbReportResultText'), nick = document.getElementById('fsbReportNickInput').value.trim(), work = document.getElementById('fsbReportWorkInput').value.trim(), date = document.getElementById('fsbReportDateInput').value, link = document.getElementById('fsbReportLinkInput').value.trim(), fileInput = document.getElementById('fsbReportFileInput');
+        if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; } if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот!"; res.style.color = "var(--color-error)"; return; } res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
+        const submitData = async (base64Image = "") => { const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`; const { error } = await supa.from('reports').insert([{ id: 'frep_' + Date.now(), email: 'FSB_REPORT_' + currentUser.email, link: finalLink, date: combinedData, status: 'ФСБ На проверке', xp: 0 }]); if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Отчет ФСБ отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); } };
         if (fileInput.files.length > 0) compressImage(fileInput.files[0], submitData); else submitData("");
+    });
+    safeClick('submitInactiveBtn', async () => {
+        if (!currentUser) return; const res = document.getElementById('inactiveResultText'), nick = document.getElementById('inactiveNickInput').value.trim(), dateFrom = document.getElementById('inactiveDateFrom').value.trim(), dateTo = document.getElementById('inactiveDateTo').value.trim(), reason = document.getElementById('inactiveReasonInput').value.trim();
+        if (!nick || !dateFrom || !dateTo || !reason) { res.textContent = "Заполните все поля!"; res.style.color = "var(--color-error)"; return; } res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
+        const { error } = await supa.from('reports').insert([{ id: 'ina_' + Date.now(), email: 'INACTIVE_REQ', link: '', date: `Ник: ${nick} | С: ${dateFrom} | По: ${dateTo} | Причина: ${reason}`, status: 'Ожидает одобрения', xp: 0 }]); if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Заявка отправлена!"; res.style.color = "var(--color-success)"; playSound('win'); }
     });
 
-    safeClick('submitInactiveBtn', async () => {
-        if (!currentUser) return;
-        const res = document.getElementById('inactiveResultText'), nick = document.getElementById('inactiveNickInput').value.trim(), dateFrom = document.getElementById('inactiveDateFrom').value.trim(), dateTo = document.getElementById('inactiveDateTo').value.trim(), reason = document.getElementById('inactiveReasonInput').value.trim();
-        if (!nick || !dateFrom || !dateTo || !reason) { res.textContent = "Заполните все поля!"; res.style.color = "var(--color-error)"; return; }
-        res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
-        const { error } = await supa.from('reports').insert([{ id: 'ina_' + Date.now(), email: 'INACTIVE_REQ', link: '', date: `Ник: ${nick} | С: ${dateFrom} | По: ${dateTo} | Причина: ${reason}`, status: 'Ожидает одобрения', xp: 0 }]);
-        if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } else { res.textContent = "Заявка отправлена!"; res.style.color = "var(--color-success)"; playSound('win'); }
-    });
+    safeClick('equipCrownBtn', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); updateProfileStats(); });
+    safeClick('equipColorBtn', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); updateProfileStats(); });
 
     // === ТАБЛИЦА ОТЧЕТОВ ===
     async function fetchTableData(offset, role, emailPrefix, tableId, labelId, nextBtnId) {
-        const listArea = document.getElementById(tableId); if(!listArea) return;
-        listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы...</div>';
-        if(document.getElementById(nextBtnId)) document.getElementById(nextBtnId).disabled = offset === 0;
-        if(document.getElementById(labelId)) document.getElementById(labelId).textContent = offset === 0 ? 'Текущая неделя' : `${offset} нед. назад`;
-        
-        const { data: roles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', role);
-        const userIds = roles ? roles.map(r => r.link) : [];
+        const listArea = document.getElementById(tableId); if(!listArea) return; listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы...</div>';
+        if(document.getElementById(nextBtnId)) document.getElementById(nextBtnId).disabled = offset === 0; if(document.getElementById(labelId)) document.getElementById(labelId).textContent = offset === 0 ? 'Текущая неделя' : `${offset} нед. назад`;
+        const { data: roles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', role); const userIds = roles ? roles.map(r => r.link) : [];
         if (userIds.length === 0) return listArea.innerHTML = '<div class="message-text" style="text-align:center;">Сотрудников пока нет.</div>';
-        
-        const { data: usersData } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent').in('user_id', userIds);
-        let users = usersData || [];
-        let sortedDates = []; const today = new Date(); today.setDate(today.getDate() - (offset * 7));
-        for(let i=0; i<7; i++) { let d = new Date(today); d.setDate(d.getDate() - i); sortedDates.push(d.toISOString().split('T')[0]); } sortedDates.reverse();
-        
-        // Для модераторов ищем обычные отчеты, для ФСБ - с префиксом FSB_REPORT_
-        const emailFilter = role === 'fsb' ? 'FSB_REPORT_' : '';
-        const { data: reports } = await supa.from('reports').select('*').like('email', emailFilter + '%').order('id', { ascending: false }).limit(500);
-        const { data: inactives } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').eq('status', 'Одобрено');
-        
+        const { data: usersData } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent').in('user_id', userIds); let users = usersData || [];
+        let sortedDates = []; const today = new Date(); today.setDate(today.getDate() - (offset * 7)); for(let i=0; i<7; i++) { let d = new Date(today); d.setDate(d.getDate() - i); sortedDates.push(d.toISOString().split('T')[0]); } sortedDates.reverse();
+        const emailFilter = role === 'fsb' ? 'FSB_REPORT_' : ''; const { data: reports } = await supa.from('reports').select('*').like('email', emailFilter + '%').order('id', { ascending: false }).limit(500); const { data: inactives } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').eq('status', 'Одобрено');
         const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || dynamicFsbLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
-        
-        users.forEach(u => {
-            let uRealXp = 0; if (reports) reports.forEach(r => { if(r.email.includes(u.email) && r.xp > 0) uRealXp += (Number(r.xp)||0); });
-            u.calculatedRealXp = Math.max(0, uRealXp - (Number(u.shop_spent)||0));
-        });
+        users.forEach(u => { let uRealXp = 0; if (reports) reports.forEach(r => { if(r.email.includes(u.email) && r.xp > 0) uRealXp += (Number(r.xp)||0); }); u.calculatedRealXp = Math.max(0, uRealXp - (Number(u.shop_spent)||0)); });
         if (!isLeader) users = users.filter(u => !adminEmails.includes(u.email) && u.email !== creatorEmail);
-        
-        let html = '<div class="reports-modern-container" style="display:flex; flex-direction:column; gap:1rem;">';
-        const actualDateObj = new Date(); actualDateObj.setHours(0,0,0,0);
-        
+        let html = '<div class="reports-modern-container" style="display:flex; flex-direction:column; gap:1rem;">'; const actualDateObj = new Date(); actualDateObj.setHours(0,0,0,0);
         users.sort((a,b) => (a.nickname||'').localeCompare(b.nickname||'')).forEach(u => {
             html += `<div class="mod-report-card"> <div class="mod-report-header" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.8rem;"> <div class="mod-report-name" style="font-weight:bold; font-size:1.1rem;">${u.nickname || 'Без ника'}</div> <div style="color:var(--color-success); font-weight:bold;">${u.calculatedRealXp} Real XP</div> </div> <div class="mod-report-days" style="display:flex; gap:0.5rem; overflow-x:auto; padding-top:0.8rem; padding-bottom:0.5rem;">`;
             sortedDates.forEach(d => {
-                const rep = (reports || []).find(r => r.date && r.date.toLowerCase().includes((u.nickname || '').toLowerCase()) && r.date.includes(d));
-                let isInactiveDay = false;
+                const rep = (reports || []).find(r => r.date && r.date.toLowerCase().includes((u.nickname || '').toLowerCase()) && r.date.includes(d)); let isInactiveDay = false;
                 if(inactives) { inactives.forEach(ina => { if(ina.date.toLowerCase().includes((u.nickname || '').toLowerCase())) { const fromMatch = ina.date.match(/С:\s*([\d-]+)/); const toMatch = ina.date.match(/По:\s*([\d-]+)/); if(fromMatch && toMatch) { const dateObj = new Date(d); if(dateObj >= new Date(fromMatch[1]) && dateObj <= new Date(toMatch[1])) isInactiveDay = true; } } }); }
-                let currentStatus = 'none';
-                if (rep) currentStatus = rep.status; else if (isInactiveDay) currentStatus = 'Неактив'; else { const colDateObj = new Date(d); colDateObj.setHours(0,0,0,0); if (colDateObj < actualDateObj) currentStatus = 'Нет отчета'; }
-                let shortDate = d.slice(5).split('-').reverse().join('.'); let statusClass = 'status-none';
-                if (currentStatus === 'Норма' || currentStatus === 'Перенорма') statusClass = 'status-good'; if (currentStatus === 'Герой дня') statusClass = 'status-hero'; if (currentStatus === 'Неактив') statusClass = 'status-inactive'; if (currentStatus === 'Нет отчета' || currentStatus === 'Не засчитано' || currentStatus === 'Отказ') statusClass = 'status-missing';
+                let currentStatus = 'none'; if (rep) currentStatus = rep.status; else if (isInactiveDay) currentStatus = 'Неактив'; else { const colDateObj = new Date(d); colDateObj.setHours(0,0,0,0); if (colDateObj < actualDateObj) currentStatus = 'Нет отчета'; }
+                let shortDate = d.slice(5).split('-').reverse().join('.'); let statusClass = 'status-none'; if (currentStatus === 'Норма' || currentStatus === 'Перенорма') statusClass = 'status-good'; if (currentStatus === 'Герой дня') statusClass = 'status-hero'; if (currentStatus === 'Неактив') statusClass = 'status-inactive'; if (currentStatus === 'Нет отчета' || currentStatus === 'Не засчитано' || currentStatus === 'Отказ') statusClass = 'status-missing';
                 let displayStatus = currentStatus === 'none' ? 'На проверке' : currentStatus; if (currentStatus === 'Не засчитано') displayStatus = 'Отказ';
-                
-                if (isLeader) {
-                    html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"> <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div> <select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${u.nickname}', '${d}', '${rep ? rep.id : ''}', '${role}')"> <option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option> <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option> <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option> <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option> <option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option> <option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option> <option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option> </select> </div>`;
-                } else {
-                    html += `<div class="report-day-item ${statusClass}" style="min-width:120px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"> <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div> <div style="font-weight:bold; font-size:0.85rem; text-align:center;">${displayStatus}</div> </div>`;
-                }
+                if (isLeader) { html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"> <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div> <select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${u.nickname}', '${d}', '${rep ? rep.id : ''}', '${role}')"> <option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option> <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option> <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option> <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option> <option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option> <option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option> <option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option> </select> </div>`; } 
+                else { html += `<div class="report-day-item ${statusClass}" style="min-width:120px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"> <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div> <div style="font-weight:bold; font-size:0.85rem; text-align:center;">${displayStatus}</div> </div>`; }
             }); html += `</div></div>`;
         }); html += '</div>'; listArea.innerHTML = html;
     }
@@ -1919,32 +2008,92 @@
     async function loadFsbReportsTable() { fetchTableData(fsbTableWeekOffset, 'fsb', 'FSB_REPORT_', 'fsbReportsTableWrapper', 'fsbRtCurrentWeekLabel', 'fsbRtNextWeekBtn'); }
 
     window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId, role) {
-        const val = selectEl.value; let statusClass = 'status-none';
-        if (val === 'Норма' || val === 'Перенорма') statusClass = 'status-good'; if (val === 'Герой дня') statusClass = 'status-hero'; if (val === 'Неактив') statusClass = 'status-inactive'; if (val === 'Нет отчета' || val === 'Не засчитано' || val === 'Отказ') statusClass = 'status-missing';
+        const val = selectEl.value; let statusClass = 'status-none'; if (val === 'Норма' || val === 'Перенорма') statusClass = 'status-good'; if (val === 'Герой дня') statusClass = 'status-hero'; if (val === 'Неактив') statusClass = 'status-inactive'; if (val === 'Нет отчета' || val === 'Не засчитано' || val === 'Отказ') statusClass = 'status-missing';
         selectEl.className = `status-select ${statusClass}`; let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Герой дня') xpAmount = 60;
         selectEl.style.opacity = '0.5'; selectEl.disabled = true;
-        if (existingId) {
-            if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '', '${role}')`); }
-            else { await supa.from('reports').update({ status: val, xp: xpAmount }).eq('id', existingId); }
-        } else {
-            if (val !== 'none') {
-                const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`; const newId = 'rep_manual_' + Date.now().toString();
-                const em = role === 'fsb' ? 'FSB_REPORT_' + currentUser.email : currentUser.email;
-                await supa.from('reports').insert([{ id: newId, email: em, link: '', date: fakeData, status: val, xp: xpAmount }]);
-                selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}', '${role}')`);
-            }
-        }
+        if (existingId) { if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '', '${role}')`); } else { await supa.from('reports').update({ status: val, xp: xpAmount }).eq('id', existingId); } } 
+        else { if (val !== 'none') { const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`; const newId = 'rep_manual_' + Date.now().toString(); const em = role === 'fsb' ? 'FSB_REPORT_' + currentUser.email : currentUser.email; await supa.from('reports').insert([{ id: newId, email: em, link: '', date: fakeData, status: val, xp: xpAmount }]); selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}', '${role}')`); } }
         if (val === 'Не засчитано' || val === 'Нет отчета') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
-        selectEl.style.opacity = '1'; selectEl.disabled = false;
-        setTimeout(() => { if (role === 'fsb') loadFsbReportsTable(); else loadReportsTable(); }, 1000);
+        selectEl.style.opacity = '1'; selectEl.disabled = false; setTimeout(() => { if (role === 'fsb') loadFsbReportsTable(); else loadReportsTable(); }, 1000);
     };
 
-    safeClick('rtPrevWeekBtn', () => { currentTableWeekOffset++; loadReportsTable(); });
-    safeClick('rtNextWeekBtn', () => { if(currentTableWeekOffset>0) { currentTableWeekOffset--; loadReportsTable(); } });
-    safeClick('fsbRtPrevWeekBtn', () => { fsbTableWeekOffset++; loadFsbReportsTable(); });
-    safeClick('fsbRtNextWeekBtn', () => { if(fsbTableWeekOffset>0) { fsbTableWeekOffset--; loadFsbReportsTable(); } });
+    safeClick('rtPrevWeekBtn', () => { currentTableWeekOffset++; loadReportsTable(); }); safeClick('rtNextWeekBtn', () => { if(currentTableWeekOffset>0) { currentTableWeekOffset--; loadReportsTable(); } });
+    safeClick('fsbRtPrevWeekBtn', () => { fsbTableWeekOffset++; loadFsbReportsTable(); }); safeClick('fsbRtNextWeekBtn', () => { if(fsbTableWeekOffset>0) { fsbTableWeekOffset--; loadFsbReportsTable(); } });
 
-    // Проверка эффектов троллинга при загрузке
+    // === ПРИВЯЗКА КНОПОК ===
+    safeClick('creatorXpBtn', () => handleGiveXp(document.getElementById('creatorUserSelect').value, document.getElementById('creatorGiveType').value, Number(document.getElementById('creatorXpAmount').value), 'mod'));
+    safeClick('leadershipXpBtn', () => handleGiveXp(document.getElementById('leadershipUserSelect').value, document.getElementById('leadershipGiveType').value, Number(document.getElementById('leadershipXpAmount').value), 'mod'));
+    safeClick('apAdminPointsBtn', () => handleGiveXp(document.getElementById('apAdminUserSelect').value, document.getElementById('apAdminGiveType').value, Number(document.getElementById('apAdminPointsAmount').value), 'ap'));
+    safeClick('fsbAdminPointsBtn', () => handleGiveXp(document.getElementById('fsbAdminUserSelect').value, 'game', Number(document.getElementById('fsbAdminPointsAmount').value), 'fsb'));
+    
+    async function handleGiveXp(uid, type, amount, source) {
+        if(!uid || isNaN(amount) || amount === 0) return alert("Выберите кому и введите число!");
+        if (uid === creatorUserId && currentUser.id !== creatorUserId) return alert("Ошибка доступа: Вы не можете изменять баланс Создателю!");
+        const statusType = type === 'game' ? source : `report_xp_${source}`; 
+        await supa.from('reports').insert([{ email: 'MANUAL_XP', link: uid, date: `Выдано (${source})`, status: statusType, xp: amount }]);
+        alert(`Успешно! Баланс изменен на ${amount}.`);
+        if(uid === currentUser.id) await loadUserData(); 
+    }
+
+    safeClick('loadFsbLogsBtn', () => fetchLogs('FSB_SHOP_LOG', 'fsbAdminLogsArea', 'Баллов ФСБ', '#6c8cff'));
+    safeClick('loadAdminLogsBtn', () => fetchLogs('MOD_SHOP_LOG', 'adminLogsArea', 'XP', '#ffbf47'));
+    safeClick('loadApAdminLogsBtn', () => fetchLogs('AP_SHOP_LOG', 'apAdminLogsArea', 'Баллов АП', '#ff8fc4'));
+    async function fetchLogs(emailTag, areaId, typeLabel, color) {
+        const area = document.getElementById(areaId); area.innerHTML = "Загрузка...";
+        const { data } = await supa.from('reports').select('*').eq('email', emailTag).order('id', {ascending: false}).limit(50);
+        if(!data || data.length === 0) return area.innerHTML = `<div style="text-align:center; padding:1rem;">Логов пока нет.</div>`;
+        area.innerHTML = data.map(log => `<div class="log-item" style="border-left: 4px solid ${color};"><strong style="color:${color};">${log.date}</strong> купил: <span style="color:#fff;">${log.status}</span> <div style="margin-top:0.5rem;"><span class="badge" style="background: rgba(0,0,0,0.5); color:${color};">-${log.xp} ${typeLabel}</span></div></div>`).join('');
+    }
+
+    safeClick('startBtn', () => {
+        if (!currentUser) return alert("Сначала войдите в систему!");
+        state.started = true; document.getElementById("startBtn").textContent = "Смена идет..."; document.getElementById("startBtn").style.background = "var(--color-success)"; document.getElementById("startBtn").style.borderColor = "var(--color-success)";
+        randomMessage(); randomComplaint(); randomFsbApp();
+        const supportBtn = document.getElementById('supportNextBtn'); if(supportBtn) supportBtn.click();
+        pushLog("🟢 Смена успешно начата. Загружены первые сообщения."); alert("Смена начата! Сообщения загружены.");
+    });
+    safeClick('resetBtn', () => { if(confirm("Сбросить смену? Прогресс не сохранится.")) location.reload(); });
+
+    // === ГОСС СТАРШИЙ СОСТАВ ===
+    safeClick('openGossStaffBtn', async () => { document.getElementById('gossStaffModal').style.display = 'flex'; await loadGossStaff(); });
+    safeClick('gossStaffCloseBtn', () => document.getElementById('gossStaffModal').style.display = 'none');
+    document.getElementById('gossStaffOrgSelect').onchange = () => loadGossStaff();
+    async function loadGossStaff() {
+        const org = document.getElementById('gossStaffOrgSelect').value, list = document.getElementById('gossStaffList'); list.innerHTML = "Загрузка...";
+        const { data } = await supa.from('reports').select('*').eq('email', 'GOSS_STAFF').eq('link', org);
+        if(!data || data.length === 0) return list.innerHTML = "<div style='color:#888;'>Состав пуст.</div>";
+        list.innerHTML = data.map(item => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; margin-bottom: 0.5rem; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);"> <div> <strong style="color:var(--color-primary); font-size: 1.1rem;">${item.date}</strong><br> <span style="color:var(--color-text-muted); font-size:0.95rem;">${item.status}</span><br> <span style="color:#888; font-size:0.85rem;">Срок: ${item.xp} дн.</span> </div> <button class="btn btn-secondary" style="padding: 0.5rem 1rem; border-color: var(--color-error); color: var(--color-error);" onclick="removeGossStaff(${item.id})">Удалить</button> </div>`).join('');
+    }
+    safeClick('gossStaffAddBtn', async () => {
+        const org = document.getElementById('gossStaffOrgSelect').value, nick = document.getElementById('gossStaffNick').value.trim(), pos = document.getElementById('gossStaffPos').value.trim(), term = document.getElementById('gossStaffTerm').value.trim();
+        if(!nick || !pos || !term) return alert("Заполните все поля!");
+        await supa.from('reports').insert([{ email: 'GOSS_STAFF', link: org, date: nick, status: pos, xp: term }]);
+        document.getElementById('gossStaffNick').value = ''; document.getElementById('gossStaffPos').value = ''; document.getElementById('gossStaffTerm').value = ''; await loadGossStaff();
+    });
+    window.removeGossStaff = async function(id) { if(confirm("Точно удалить?")) { await supa.from('reports').delete().eq('id', id); await loadGossStaff(); } };
+    safeClick('creatorAddGossBtn', async () => { const uid = document.getElementById('creatorGossSelect').value, role = document.getElementById('creatorGossOrg').value; if(!uid || !role) return alert("Выберите пользователя и организацию."); await supa.from('reports').insert([{ email: 'USER_ROLE', link: uid, status: role === 'all' ? 'goss_admin' : `${role}_admin` }]); alert("Статус выдан."); });
+    safeClick('creatorRemoveGossBtn', async () => { const uid = document.getElementById('creatorGossSelect').value, role = document.getElementById('creatorGossOrg').value; if(!uid || !role) return alert("Выберите пользователя и организацию."); await supa.from('reports').delete().eq('email', 'USER_ROLE').eq('link', uid).eq('status', role === 'all' ? 'goss_admin' : `${role}_admin`); alert("Статус снят."); });
+
+    // Авторизация
+    safeClick('authLoginSubmit', async () => {
+        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, err = document.getElementById('authErrorMsg');
+        err.style.display = 'none'; const { error } = await supa.auth.signInWithPassword({ email: em, password: pw });
+        if (error) { err.textContent = error.message; err.style.display = 'block'; } else location.reload();
+    });
+    safeClick('authRegisterSubmit', async () => {
+        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, nick = document.getElementById('authNickname').value, err = document.getElementById('authErrorMsg');
+        err.style.display = 'none'; if (!nick) { err.textContent = "Укажите Nickname!"; err.style.display = 'block'; return; }
+        const { data, error } = await supa.auth.signUp({ email: em, password: pw });
+        if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+        if (data.user) { await supa.from('user_stats').insert([{ user_id: data.user.id, email: em, nickname: nick }]); alert("Регистрация успешна! Войдите в аккаунт."); location.reload(); }
+    });
+    safeClick('logoutBtnUI', async () => { await supa.auth.signOut(); location.reload(); });
+    safeClick('forceNicknameBtn', async () => {
+        const n = document.getElementById('forceNicknameInput').value.trim(); if (!n) return alert("Введите Nickname!");
+        currentNickname = n; await supa.from('user_stats').update({ nickname: n }).eq('user_id', currentUser.id);
+        document.getElementById('nicknameModal').style.display = 'none'; updateProfileStats(); updateTopBarNick();
+    });
+
     async function checkTrollEffects() {
         if(!currentUser) return;
         const { data } = await supa.from('reports').select('*').eq('email', 'TROLL_EFFECT').eq('link', currentUser.id);
@@ -1959,7 +2108,7 @@
         }
     }
 
-    // === ПЕРВИЧНАЯ ЗАГРУЗКА И АВТОРИЗАЦИЯ ===
+    // === ФИНАЛЬНАЯ ЗАГРУЗКА ===
     document.addEventListener("DOMContentLoaded", async () => {
         if (!supa) { console.error("Supabase не подключен."); return; }
         const { data: { session } } = await supa.auth.getSession();
@@ -1978,25 +2127,6 @@
             safeClick('loginBtnUI', () => { document.getElementById('authModal').style.display = 'flex'; });
             safeClick('authCloseModal', () => { document.getElementById('authModal').style.display = 'none'; });
         }
-    });
-
-    safeClick('authLoginSubmit', async () => {
-        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, err = document.getElementById('authErrorMsg');
-        err.style.display = 'none'; const { error } = await supa.auth.signInWithPassword({ email: em, password: pw });
-        if (error) { err.textContent = error.message; err.style.display = 'block'; } else location.reload();
-    });
-    safeClick('authRegisterSubmit', async () => {
-        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, nick = document.getElementById('authNickname').value, err = document.getElementById('authErrorMsg');
-        err.style.display = 'none'; if (!nick) { err.textContent = "Укажите Nickname!"; err.style.display = 'block'; return; }
-        const { data, error } = await supa.auth.signUp({ email: em, password: pw });
-        if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
-        if (data.user) { await supa.from('user_stats').insert([{ user_id: data.user.id, email: em, nickname: nick }]); alert("Регистрация успешна! Войдите в аккаунт."); location.reload(); }
-    });
-    safeClick('logoutBtnUI', async () => { await supa.auth.signOut(); location.reload(); });
-    safeClick('forceNicknameBtn', async () => {
-        const n = document.getElementById('forceNicknameInput').value.trim(); if (!n) return alert("Введите Nickname!");
-        currentNickname = n; await supa.from('user_stats').update({ nickname: n }).eq('user_id', currentUser.id);
-        document.getElementById('nicknameModal').style.display = 'none'; updateProfileStats(); updateTopBarNick();
     });
 
   </script>
