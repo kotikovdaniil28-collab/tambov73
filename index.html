@@ -841,14 +841,15 @@
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
         <button class="mode-btn" data-mode="government" type="button">Правительство</button>
         <button class="mode-btn" data-mode="fsb" type="button">ФСБ</button>
+        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn">Магазин ФСБ</button>
+        <button class="mode-btn" data-mode="reports_table" type="button" id="fsbTableTabBtn">Таблицы ФСБ</button>
+        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn">Руководство ФСБ</button>
         <button class="mode-btn" data-mode="gibdd" type="button">ГИБДД</button>
         <button class="mode-btn" data-mode="uvd" type="button">УМВД</button>
         <button class="mode-btn" data-mode="army" type="button">Армия</button>
         <button class="mode-btn" data-mode="hospital" type="button">Больница</button>
         <button class="mode-btn" data-mode="media" type="button">СМИ</button>
         <button class="mode-btn" data-mode="fsin" type="button">ФСИН</button>
-        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
       </div>
       
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
@@ -863,13 +864,13 @@
 
     <section class="game-wrap" id="game">
 
-      <section class="panel game-card fade-in" id="mode-government" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88">Правительство</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Правительства.</div></section>
-    <section class="panel game-card fade-in" id="mode-gibdd" style="display:none;"><div class="section-head"><h2 style="color:#ffb347">ГИБДД</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику ГИБДД.</div></section>
-    <section class="panel game-card fade-in" id="mode-uvd" style="display:none;"><div class="section-head"><h2 style="color:#7fb7ff">УМВД</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику УМВД.</div></section>
-    <section class="panel game-card fade-in" id="mode-army" style="display:none;"><div class="section-head"><h2 style="color:#8fe0a8">Армия</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Армии.</div></section>
-    <section class="panel game-card fade-in" id="mode-hospital" style="display:none;"><div class="section-head"><h2 style="color:#6bffd6">Больница</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Больницы.</div></section>
-    <section class="panel game-card fade-in" id="mode-media" style="display:none;"><div class="section-head"><h2 style="color:#ff9e6b">СМИ</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику СМИ.</div></section>
-    <section class="panel game-card fade-in" id="mode-fsin" style="display:none;"><div class="section-head"><h2 style="color:#c4a1ff">ФСИН</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику ФСИН.</div></section>
+      <section class="panel game-card fade-in" id="mode-government" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88">Правительство</h2><p>Раздел Правительства с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelGovernment"></div></section>
+    <section class="panel game-card fade-in" id="mode-gibdd" style="display:none;"><div class="section-head"><h2 style="color:#ffb347">ГИБДД</h2><p>Раздел ГИБДД с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelGibdd"></div></section>
+    <section class="panel game-card fade-in" id="mode-uvd" style="display:none;"><div class="section-head"><h2 style="color:#7fb7ff">УМВД</h2><p>Раздел УМВД с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelUvd"></div></section>
+    <section class="panel game-card fade-in" id="mode-army" style="display:none;"><div class="section-head"><h2 style="color:#8fe0a8">Армия</h2><p>Раздел Армии с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelArmy"></div></section>
+    <section class="panel game-card fade-in" id="mode-hospital" style="display:none;"><div class="section-head"><h2 style="color:#6bffd6">Больница</h2><p>Раздел Больницы с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelHospital"></div></section>
+    <section class="panel game-card fade-in" id="mode-media" style="display:none;"><div class="section-head"><h2 style="color:#ff9e6b">СМИ</h2><p>Раздел СМИ с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelMedia"></div></section>
+    <section class="panel game-card fade-in" id="mode-fsin" style="display:none;"><div class="section-head"><h2 style="color:#c4a1ff">ФСИН</h2><p>Раздел ФСИН с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelFsin"></div></section>
     <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
         <div class="section-head">
           <h2 style="color: #6c8cff;">Федеральная Служба Безопасности (ФСБ)</h2>
@@ -3326,7 +3327,7 @@
         // Подключаем кнопки
         const getEl = (id) => document.getElementById(id);
         
-        getEl('loginBtnUI').onclick = () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; };
+        getEl('loginBtnUI').onclick = () => { const m = getEl('authModal'); if (m) m.style.display = 'flex'; const e = getEl('authErrorMsg'); if (e) e.style.display = 'none'; };
         getEl('authCloseModal').onclick = () => { getEl('authModal').style.display = 'none'; };
         getEl('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); currentUser = null; await syncAuthUI(); };
         supa.auth.onAuthStateChange(async (_event, session) => { currentUser = session?.user || null; await syncAuthUI(); });
@@ -3337,10 +3338,10 @@
             err.textContent = "Загрузка..."; err.style.color = "var(--color-primary)"; err.style.display = 'block';
             const { data, error } = await supa.auth.signInWithPassword({ email, password });
             if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; return; }
-            err.textContent = "Вход выполнен успешно"; err.style.color = "var(--color-success)";
+            err.textContent = "Вход выполнен успешно"; err.style.color = "var(--color-success)"; err.style.display = 'block';
             currentUser = data?.user || (await supa.auth.getUser()).data?.user || null;
             await syncAuthUI();
-            setTimeout(() => { try { closeAuthModal(); } catch(e) {} }, 250);
+            setTimeout(() => { const m = getEl('authModal'); if (m) m.style.display = 'none'; }, 250);
         };
 
         getEl('authRegisterSubmit').onclick = async () => {
@@ -3836,7 +3837,7 @@
                 if (emailEl) emailEl.textContent = currentUser.email || 'Аккаунт';
                 if (loginBtn) loginBtn.style.display = 'none';
                 if (logoutBtn) logoutBtn.style.display = 'inline-flex';
-                getEl('authModal').style.display = 'none';
+                if (getEl('authModal')) getEl('authModal').style.display = 'none';
             } else {
                 if (emailEl) emailEl.textContent = 'Гость';
                 if (loginBtn) loginBtn.style.display = 'inline-flex';
