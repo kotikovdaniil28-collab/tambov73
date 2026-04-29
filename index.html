@@ -851,6 +851,11 @@
         <button class="mode-btn" data-mode="media" type="button">СМИ</button>
         <button class="mode-btn" data-mode="fsin" type="button">ФСИН</button>
       </div>
+      <div class="sub-nav" id="subNavOrgInner" style="display:none; margin-top:0.45rem;">
+        <button class="mode-btn" data-mode="org_main" type="button">Тренажёр</button>
+        <button class="mode-btn" data-mode="org_shop" type="button">Магазин</button>
+        <button class="mode-btn" data-mode="org_admin" type="button">Руководство</button>
+      </div>
       
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
         <button class="mode-btn" data-mode="quests" type="button">Квесты</button>
@@ -864,7 +869,19 @@
 
     <section class="game-wrap" id="game">
 
-      <section class="panel game-card fade-in" id="mode-government" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88">Правительство</h2><p>Раздел Правительства с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelGovernment"></div></section>
+      <section class="panel game-card fade-in" id="mode-org_main" style="display:none;">
+      <div class="section-head"><h2 id="orgMainTitle" style="color:#6c8cff">Тренажёр организации</h2><p id="orgMainLead">Выбери организацию и работай в её собственном мини-тренажёре.</p></div>
+      <div id="orgMainPanel"></div>
+    </section>
+    <section class="panel game-card fade-in" id="mode-org_shop" style="display:none;">
+      <div class="section-head"><h2 id="orgShopTitle" style="color:#52c77b">Магазин организации</h2><p id="orgShopLead">У каждой организации свой магазин, свои товары и своя рулетка.</p></div>
+      <div id="orgShopPanel"></div>
+    </section>
+    <section class="panel game-card fade-in" id="mode-org_admin" style="display:none;">
+      <div class="section-head"><h2 id="orgAdminTitle" style="color:#ffbf47">Руководство организации</h2><p id="orgAdminLead">Руководство может создавать товары и конструировать рулетки именно для выбранной организации.</p></div>
+      <div id="orgAdminPanel"></div>
+    </section>
+    <section class="panel game-card fade-in" id="mode-government" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88">Правительство</h2><p>Раздел Правительства с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelGovernment"></div></section>
     <section class="panel game-card fade-in" id="mode-gibdd" style="display:none;"><div class="section-head"><h2 style="color:#ffb347">ГИБДД</h2><p>Раздел ГИБДД с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelGibdd"></div></section>
     <section class="panel game-card fade-in" id="mode-uvd" style="display:none;"><div class="section-head"><h2 style="color:#7fb7ff">УМВД</h2><p>Раздел УМВД с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelUvd"></div></section>
     <section class="panel game-card fade-in" id="mode-army" style="display:none;"><div class="section-head"><h2 style="color:#8fe0a8">Армия</h2><p>Раздел Армии с общей информацией, активностью и быстрыми действиями.</p></div><div id="govPanelArmy"></div></section>
@@ -3824,6 +3841,62 @@
         renderGovPanel('govPanelArmy','Армия','#8fe0a8');
         renderGovPanel('govPanelHospital','Больница','#6bffd6');
         renderGovPanel('govPanelMedia','СМИ','#ff9e6b');
+        window.currentOrganizationKey = 'fsb';
+        const organizationCatalog = {
+            government: { title: 'Правительство', color: '#ff6b88', icon: '🏛️' },
+            fsb: { title: 'ФСБ', color: '#6c8cff', icon: '🛡️' },
+            gibdd: { title: 'ГИБДД', color: '#ffb347', icon: '🚓' },
+            uvd: { title: 'УМВД', color: '#7fb7ff', icon: '👮' },
+            army: { title: 'Армия', color: '#8fe0a8', icon: '🪖' },
+            hospital: { title: 'Больница', color: '#6bffd6', icon: '🏥' },
+            media: { title: 'СМИ', color: '#ff9e6b', icon: '📰' },
+            fsin: { title: 'ФСИН', color: '#c4a1ff', icon: '🔒' }
+        };
+
+        function renderOrganizationInnerPanels() {
+            const org = organizationCatalog[window.currentOrganizationKey] || organizationCatalog.fsb;
+            const main = document.getElementById('orgMainPanel');
+            const shop = document.getElementById('orgShopPanel');
+            const admin = document.getElementById('orgAdminPanel');
+            const setText = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+            setText('orgMainTitle', `${org.icon} Тренажёр — ${org.title}`);
+            setText('orgMainLead', `Отдельный тренажёр для ${org.title}, почти как во ФСБ, но в рамках выбранной организации.`);
+            setText('orgShopTitle', `${org.icon} Магазин — ${org.title}`);
+            setText('orgShopLead', `У ${org.title} свой магазин, свои товары и своя рулетка.`);
+            setText('orgAdminTitle', `${org.icon} Руководство — ${org.title}`);
+            setText('orgAdminLead', `Руководство ${org.title} может создавать товары и конструировать рулетки.`);
+            if (main) main.innerHTML = `<div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" style="font-size:1.25rem;color:${org.color}">${org.title}</div></div><div class="stat"><span class="stat-label">Формат</span><div class="stat-value" style="font-size:1.05rem">Тренажёр кейсов</div></div><div class="stat"><span class="stat-label">Вердикты</span><div class="stat-value" style="font-size:1.05rem">Одобрить / Отклонить</div></div></div><div class="rule-list" style="margin-top:1rem"><div class="rule-item"><div class="rule-icon ok">${org.icon}</div><div class="rule-copy"><strong>${org.title}: отдельный тренажёр</strong><span>Эта вкладка подготовлена как отдельный режим для организации. При желании её можно дальше довести до полного клона ФСБ-логики под каждую организацию.</span></div></div></div>`;
+            if (shop) shop.innerHTML = `<div class="stats-grid"><div class="stat"><span class="stat-label">Магазин</span><div class="stat-value" style="font-size:1.05rem;color:${org.color}">${org.title}</div></div><div class="stat"><span class="stat-label">Товары</span><div class="stat-value" style="font-size:1.05rem">Свои позиции</div></div><div class="stat"><span class="stat-label">Рулетка</span><div class="stat-value" style="font-size:1.05rem">Свои призы</div></div></div><div class="message-text" style="margin-top:1rem">Для ${org.title} подготовлен отдельный магазинный режим. Руководство может добавлять товары и настраивать рулетку через раздел руководства.</div>`;
+            if (admin) admin.innerHTML = `<div style="display:grid;gap:1rem"><div class="stats-grid"><div class="stat"><span class="stat-label">Панель</span><div class="stat-value" style="font-size:1.05rem;color:${org.color}">${org.title}</div></div><div class="stat"><span class="stat-label">Товары</span><div class="stat-value" style="font-size:1.05rem">Конструктор</div></div><div class="stat"><span class="stat-label">Рулетка</span><div class="stat-value" style="font-size:1.05rem">Настройка слотов</div></div></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.8rem"><input id="orgCustomItemTitle" class="support-input" placeholder="Название товара" /><input id="orgCustomItemPrice" class="support-input" placeholder="Цена" /><input id="orgCustomRouletteText" class="support-input" placeholder="Текст приза рулетки" /><input id="orgCustomRouletteVal" class="support-input" placeholder="Значение приза" /></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem"><button id="orgCreateItemBtn" class="btn btn-primary" type="button">Создать товар для ${org.title}</button><button id="orgCreateRouletteBtn" class="btn btn-secondary" type="button">Обновить рулетку ${org.title}</button></div><div class="message-text" id="orgAdminResult">Здесь руководство ${org.title} может настраивать свои товары и свою рулетку.</div></div>`;
+            bindOrganizationAdminButtons();
+        }
+
+        function bindOrganizationAdminButtons() {
+            const itemBtn = document.getElementById('orgCreateItemBtn');
+            const roulBtn = document.getElementById('orgCreateRouletteBtn');
+            const result = document.getElementById('orgAdminResult');
+            if (itemBtn) itemBtn.onclick = async () => {
+                const title = document.getElementById('orgCustomItemTitle')?.value?.trim();
+                const price = Number(document.getElementById('orgCustomItemPrice')?.value);
+                if (!title || isNaN(price)) { if(result) result.textContent = 'Заполни название товара и цену.'; return; }
+                try {
+                    await supa.from('reports').insert({ id: 'org_shop_' + Date.now(), email: 'SHOPMOD', date: `[${window.currentOrganizationKey}] ${title}`, status: 'Создано из панели организации', xp: price, link: '🧩' });
+                    if(result) result.textContent = `Товар для ${organizationCatalog[window.currentOrganizationKey].title} создан.`;
+                    await loadGlobalShopAndRoulette();
+                } catch(e) { if(result) result.textContent = 'Ошибка при создании товара.'; }
+            };
+            if (roulBtn) roulBtn.onclick = async () => {
+                const txt = document.getElementById('orgCustomRouletteText')?.value?.trim();
+                const val = Number(document.getElementById('orgCustomRouletteVal')?.value);
+                if (!txt || isNaN(val)) { if(result) result.textContent = 'Заполни текст и значение приза.'; return; }
+                try {
+                    await supa.from('reports').insert({ id: 'org_roulette_' + Date.now(), email: 'ROULETTEMOD', link: 'org_' + window.currentOrganizationKey, date: `[${window.currentOrganizationKey}] ${txt}`, xp: val, status: 'roulette' });
+                    if(result) result.textContent = `Рулетка для ${organizationCatalog[window.currentOrganizationKey].title} обновлена.`;
+                    await loadGlobalShopAndRoulette();
+                } catch(e) { if(result) result.textContent = 'Ошибка при обновлении рулетки.'; }
+            };
+        }
+
         renderGovPanel('govPanelFsin','ФСИН','#c4a1ff');
         bindModerationVerdicts();
         
