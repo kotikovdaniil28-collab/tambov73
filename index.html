@@ -161,10 +161,10 @@
     html[data-site-theme="complaints"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 61, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 107, 136, 0.15), transparent 55%), linear-gradient(160deg, #120505, #180408 45%, #0d0202 100%); border-color: rgba(255, 107, 136, 0.35); }
     html[data-site-theme="complaints"] .panel:hover { border-color: rgba(255, 107, 136, 0.6); }
     
-    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
+    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="quests"] .panel:hover { border-color: rgba(180, 150, 255, 0.6); }
     
-    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
+    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); border-color: rgba(255, 191, 71, 0.4); }
     html[data-site-theme="timeattack"] .panel:hover { border-color: rgba(255, 191, 71, 0.65); }
     
     html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); border-color: rgba(255, 107, 136, 0.4); }
@@ -774,7 +774,6 @@
       <button id="closeJwBtn" class="btn btn-secondary" style="display: none; width: 100%;">Закончить игру</button>
     </div>
   </div>
-
   <main class="page">
     <header class="topbar animate-top">
       <div class="brand">
@@ -910,8 +909,8 @@
             <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
           </article>
           <div class="controls">
-            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
-            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')">✅ Одобрить (Годен)</button>
+            <button class="action-btn warn-btn" type="button" data-fsb-action="reject">❌ Отказать (НонРП/Ошибки)</button>
+            <button class="action-btn skip-btn" type="button" data-fsb-action="approve">✅ Одобрить (Годен)</button>
           </div>
         </div>
       </section>
@@ -1653,7 +1652,7 @@
 
     let modQueue = [], supQueue = [], compQueue = [], fsbQueue = [], taQueue = [];
     let taTimerInt = null, taTimeLeft = 60, spamLockTimeout = null, lastActionTime = 0, currentTableWeekOffset = 0;
-    let gameXpMod = 0; // Дополнительный Game XP от выигрышей
+    let gameXpMod = 0; 
     let currentGameCurrency = 'game';
 
     let activeCosmetics = JSON.parse(localStorage.getItem('userCosmetics') || '{"crown":false,"color":false}');
@@ -1689,23 +1688,20 @@
         isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔕';
     });
 
-    // Безопасный клик для мобилок и ПК
+    // === БЕЗОПАСНЫЙ И НАДЁЖНЫЙ КЛИК ДЛЯ ТЕЛЕФОНОВ И ПК ===
+    // Используем прямое присвоение .onclick, чтобы не плодить дубли и не ломать DOM
     function safeClick(id, handler) {
         const el = document.getElementById(id);
         if(!el) return;
-        el.replaceWith(el.cloneNode(true));
-        document.getElementById(id).addEventListener('click', (e) => { e.preventDefault(); handler(e); });
+        el.onclick = (e) => { e.preventDefault(); handler(e); };
     }
     function safeClickAll(selector, handler) {
         document.querySelectorAll(selector).forEach(el => {
-            el.replaceWith(el.cloneNode(true));
-        });
-        document.querySelectorAll(selector).forEach(el => {
-            el.addEventListener('click', (e) => { e.preventDefault(); handler(e, el); });
+            el.onclick = (e) => { e.preventDefault(); handler(e, el); };
         });
     }
 
-    // Защита от автокликеров
+    // Защита от спам-кликов
     function isSpamming() {
         if (spamLockTimeout) return true;
         const now = Date.now();
@@ -1729,7 +1725,7 @@
         lastActionTime = now; return false;
     }
 
-    // === БАЗЫ ДАННЫХ (СЖАТЫЕ МАССИВЫ) ===
+    // === БАЗЫ ДАННЫХ ===
     let defaultShopItems = [{id:'m_1',title:"Скидка на повышение (ММ-М)",desc:"Ускоряет повышение.",price:200,icon:"🎫"},{id:'m_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:400,icon:"🔥"},{id:'roulette_mod',title:"Рулетка Модерации",desc:"Испытай удачу!",price:100,icon:"🎰",action:'mod_roulette'},{id:'coin_mod',title:"Орёл или Решка",desc:"Ставка 500 XP.",price:500,icon:"🪙",action:'mod_coin'},{id:'safe_mod',title:"Три Сейфа",desc:"Найди х3 куш!",price:400,icon:"🧰",action:'mod_safes'},{id:'jw_quiz',title:"Викторина Джона Уика",desc:"Ответь и получи 3000 XP!",price:1500,icon:"🔫",action:'mod_jw'},{id:'crash_game',title:"Ракетка (Краш)",desc:"Забери до краша!",price:100,icon:"🚀",action:'mod_crash'},{id:'cases_game',title:"Кейсы",desc:"Открывай кейсы!",price:300,icon:"📦",action:'mod_cases'},{id:'dice_game',title:"Кости",desc:"Брось больше дилера.",price:150,icon:"🎲",action:'mod_dice'},{id:'mines_game',title:"Мины",desc:"Найди 3 алмаза.",price:300,icon:"💣",action:'mod_mines'},{id:'hilo_game',title:"Больше / Меньше",desc:"Угадай число.",price:100,icon:"📈",action:'mod_hilo'},{id:'wheelx_game',title:"Колесо Иксов",desc:"Вращай колесо.",price:250,icon:"🎡",action:'mod_wheelx'},{id:'shells_game',title:"Наперстки",desc:"Найди мяч.",price:200,icon:"🍵",action:'mod_shells'}];
     let defaultApShopItems = [{id:'ap_1',title:"Снятие преда",desc:"Снимает 1 пред.",price:15,icon:"🛡️"},{id:'ap_2',title:"Снятие выговора",desc:"Снимает 1 выговор.",price:25,icon:"🔥"},{id:'roulette_ap',title:"Рулетка АП",desc:"Испытай удачу!",price:10,icon:"🎰",action:'ap_roulette'}];
     let defaultFsbShopItems = [{id:'fsb_1',title:"Отгул",desc:"На 1 день.",price:20,icon:"🛌"},{id:'fsb_2',title:"Снятие выговора",desc:"Снимает выговор.",price:40,icon:"📁"},{id:'fsb_3',title:"Снятие преда",desc:"Снимает пред.",price:25,icon:"⚠️"},{id:'fsb_9',title:"Рулетка ФСБ",desc:"Случайный приз.",price:30,icon:"🎰",action:'fsb_roulette_items'}];
@@ -1793,6 +1789,13 @@
         fsbShopItems = [...defaultFsbShopItems].map(item => { if (priceOverrides[item.id]) item.price = priceOverrides[item.id]; return item; });
     }
 
+    function updateTopBarNick() {
+        const emailEl = document.getElementById('userEmailDisplay');
+        if (emailEl && currentUser) {
+            emailEl.textContent = currentNickname || currentUser.email;
+        }
+    }
+
     async function loadUserData() {
         if (!currentUser || !supa) return;
         const { data: userStats } = await supa.from('user_stats').select('*').eq('user_id', currentUser.id).single();
@@ -1820,7 +1823,7 @@
                 }
             });
         }
-        updateModStats(); updateSupportStats(); updateComplaintStats(); updateFsbStats(); updateShopStats(); updateProfileStats();
+        updateModStats(); updateSupportStats(); updateComplaintStats(); updateFsbStats(); updateShopStats(); updateProfileStats(); updateTopBarNick();
         if (!currentNickname && document.getElementById('nicknameModal')) document.getElementById('nicknameModal').style.display = 'flex';
     }
 
@@ -2365,7 +2368,7 @@
                 const clsBtn = document.getElementById('closeFortuneBtn'); clsBtn.style.display = 'block';
                 clsBtn.onclick = async () => {
                     clsBtn.disabled = true;
-                    if (isAp) { if (winPrize.val !== 0) { await addGameXp(0); /* AP logic goes to report */ await supa.from('reports').insert([{ email: 'MANUAL_XP', link: currentUser.id, date: `Рулетка АП`, status: 'ap', xp: winPrize.val }]); } }
+                    if (isAp) { if (winPrize.val !== 0) { await supa.from('reports').insert([{ email: 'MANUAL_XP', link: currentUser.id, date: `Рулетка АП`, status: 'ap', xp: winPrize.val }]); } }
                     else { if (winPrize.val !== 0) { if (window.currentGameCurrency === 'game' && winPrize.val > 0) await addGameXp(winPrize.val); else await supa.from('reports').insert([{ email: 'MANUAL_XP', link: currentUser.id, date: `Рулетка`, status: 'mod', xp: winPrize.val }]); } }
                     await loadUserData(); modal.style.display = 'none'; clsBtn.disabled = false;
                 };
@@ -2531,15 +2534,28 @@
     };
 
     // === ТРОЛЛИНГ И ЭФФЕКТЫ ===
-    safeClickAll('#trollEffectBobo, #trollEffectBlur, #trollEffectDrunk, #trollEffectGhost, #trollEffectFlip, #trollEffectRainbow, #trollEffectClear', async (e, btn) => {
+    safeClick('trollEffectBobo', async () => setTroll('bobo'));
+    safeClick('trollEffectBlur', async () => setTroll('blur'));
+    safeClick('trollEffectDrunk', async () => setTroll('drunk'));
+    safeClick('trollEffectGhost', async () => setTroll('ghost'));
+    safeClick('trollEffectFlip', async () => setTroll('flip'));
+    safeClick('trollEffectRainbow', async () => setTroll('rainbow'));
+    safeClick('trollEffectClear', async () => {
         if (!currentUser || currentUser.email !== creatorEmail) return;
-        const effectMap = { 'trollEffectBobo': 'bobo', 'trollEffectBlur': 'blur', 'trollEffectDrunk': 'drunk', 'trollEffectGhost': 'ghost', 'trollEffectFlip': 'flip', 'trollEffectRainbow': 'rainbow', 'trollEffectClear': 'clear' };
-        const effect = effectMap[btn.id], userId = document.getElementById('creatorUserSelect').value;
-        if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-        if (userId === creatorUserId) return alert("ОШИБКА: Нельзя применить эффект к Создателю (John Wick)!");
-        if (effect === 'clear') { await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId); alert("Все эффекты сняты с пользователя!"); }
-        else { await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]); alert(`Эффект '${effect}' успешно применен! Он активируется при его следующей загрузке страницы.`); }
+        const userId = document.getElementById('creatorUserSelect').value;
+        if (!userId) return alert("Выберите пользователя!");
+        await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId); alert("Все эффекты сняты с пользователя!");
     });
+    
+    async function setTroll(effect) {
+        if (!currentUser || currentUser.email !== creatorEmail) return;
+        const userId = document.getElementById('creatorUserSelect').value;
+        if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
+        if (userId === creatorUserId) return alert("ОШИБКА: Нельзя применить эффект к Создателю!");
+        await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]); 
+        alert(`Эффект '${effect}' успешно применен!`);
+    }
+
     safeClick('trollWipeXpBtn', async () => {
         if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value;
         if (userId === creatorUserId) return alert("У Создателя полный иммунитет!");
@@ -2560,7 +2576,7 @@
     safeClick('trollDeleteBtn', async () => {
         if (!currentUser || currentUser.email !== creatorEmail) return; const userId = document.getElementById('creatorUserSelect').value;
         if (userId === creatorUserId) return alert("Создателя удалить невозможно!");
-        if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы статистики!'); loadCreatorPanelData(); }
+        if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы!'); loadCreatorPanelData(); }
     });
 
     safeClick('creatorAddAdminBtn', async () => {
@@ -2576,12 +2592,12 @@
         alert("Пользователь удален из руководства!"); loadCreatorPanelData();
     });
 
-    // === ДРУГИЕ ОБРАБОТЧИКИ ПАНЕЛЕЙ И ДОБАВЛЕНИЯ В БАЗУ ===
+    // === ДРУГИЕ ОБРАБОТЧИКИ ПАНЕЛЕЙ ===
     safeClick('sendHiddenCheckBtn', async () => {
         const userId = document.getElementById('hiddenCheckUser').value, text = document.getElementById('hiddenCheckText').value.trim(), type = document.getElementById('hiddenCheckType').value;
         if(!userId || !text) return alert("Заполните все поля!");
         await supa.from('reports').insert([{ id: 'hc_' + Date.now(), email: 'HIDDEN_CHECK', link: userId, date: text, status: type, xp: 0 }]);
-        document.getElementById('hiddenCheckText').value = ''; alert("Скрытая проверка успешно назначена!"); loadGlobalShopAndRoulette();
+        document.getElementById('hiddenCheckText').value = ''; alert("Скрытая проверка назначена!"); loadGlobalShopAndRoulette();
     });
     safeClick('addCustomModMsgBtn', async () => {
         const text = document.getElementById('customModText').value.trim(), type = document.getElementById('customModType').value;
@@ -2596,7 +2612,6 @@
         document.getElementById('customApTitle').value = ''; document.getElementById('customApText').value = ''; document.getElementById('customApKeywords').value = ''; alert("Вопрос добавлен!"); loadGlobalShopAndRoulette();
     });
     
-    // Кнопки добавления/обновления товаров и рулеток (аналогичным образом)
     safeClick('addModShopItemBtn', async () => {
         const title = document.getElementById('modShopItemTitle').value.trim(), desc = document.getElementById('modShopItemDesc').value.trim(), price = Number(document.getElementById('modShopItemPrice').value), icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
         if(!title || !desc || isNaN(price)) return alert("Заполните все поля!");
@@ -2604,7 +2619,7 @@
     });
     safeClick('editModShopItemBtn', async () => {
         const title = document.getElementById('modShopItemTitle').value.trim(), price = Number(document.getElementById('modShopItemPrice').value);
-        if(!title || isNaN(price)) return alert("Введите название товара и новую цену!");
+        if(!title || isNaN(price)) return alert("Введите название и новую цену!");
         const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
         if(item) { await supa.from('reports').update({ xp: price }).eq('id', item.id); alert("Цена обновлена!"); loadGlobalShopAndRoulette(); } else alert("Товар не найден!");
     });
@@ -2613,32 +2628,32 @@
         if(!text || isNaN(val)) return alert("Заполните текст приза и значение!");
         const { data } = await supa.from('reports').select('id').eq('email', 'ROULETTE_MOD').eq('link', slotId);
         if (data && data.length > 0) await supa.from('reports').update({ date: text, xp: val }).eq('id', data[0].id); else await supa.from('reports').insert([{ id: 'rmod_' + Date.now(), email: 'ROULETTE_MOD', link: slotId, date: text, xp: val, status: 'roulette' }]);
-        alert("Рулетка модерации обновлена!"); loadGlobalShopAndRoulette();
+        alert("Рулетка обновлена!"); loadGlobalShopAndRoulette();
     });
 
     safeClick('leadAddModBtn', async () => {
         const userId = document.getElementById('leadAddModSelect').value; if(!userId) return;
         await supa.from('reports').insert([{ id: 'mod_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'moderator', xp: 0 }]);
-        alert("Статус Модератора успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+        alert("Статус Модератора выдан!"); loadGlobalShopAndRoulette();
     });
     safeClick('leadAddApBtn', async () => {
         const userId = document.getElementById('leadAddApSelect').value; if(!userId) return;
         await supa.from('reports').insert([{ id: 'ap_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'ap', xp: 0 }]);
-        alert("Статус АП успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+        alert("Статус АП выдан!"); loadGlobalShopAndRoulette();
     });
     safeClick('leadAddFsbBtn', async () => {
         const userId = document.getElementById('leadAddFsbSelect').value; if(!userId) return;
         await supa.from('reports').insert([{ id: 'fsb_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'fsb', xp: 0 }]);
-        alert("Статус ФСБ успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+        alert("Статус ФСБ выдан!"); loadGlobalShopAndRoulette();
     });
     safeClick('changeAnyPriceBtn', async () => {
         const id = document.getElementById('editAnyItemId').value.trim(), price = Number(document.getElementById('editAnyItemPrice').value);
-        if (!id || isNaN(price)) return alert("Введите корректный ID и цену!");
+        if (!id || isNaN(price)) return alert("Введите ID и цену!");
         await supa.from('reports').upsert([{ id: 'price_'+id, email: 'SHOP_OVERRIDE', link: id, xp: price, status: 'price_override' }]);
-        alert("Цена успешно изменена для всех!"); loadGlobalShopAndRoulette();
+        alert("Цена изменена!"); loadGlobalShopAndRoulette();
     });
 
-    // СЖАТИЕ ФОТО ДЛЯ ОТЧЕТОВ
+    // === СЖАТИЕ ФОТО ДЛЯ ОТЧЕТОВ ===
     function compressImage(file, callback) {
         const reader = new FileReader(); reader.readAsDataURL(file);
         reader.onload = event => {
@@ -2652,18 +2667,18 @@
         };
     }
 
-    // ОТПРАВКА ОТЧЕТОВ И НЕАКТИВОВ
+    // === ОТПРАВКА ОТЧЕТОВ И НЕАКТИВОВ ===
     safeClick('submitReportBtn', async () => {
         if (!currentUser) return;
         const res = document.getElementById('reportResultText'), nick = document.getElementById('reportNickInput').value.trim(), work = document.getElementById('reportWorkInput').value.trim(), date = document.getElementById('reportDateInput').value, link = document.getElementById('reportLinkInput').value.trim(), fileInput = document.getElementById('reportFileInput');
         if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; }
-        if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот напрямую!"; res.style.color = "var(--color-error)"; return; }
-        res.textContent = "Обработка и отправка..."; res.style.color = "var(--color-text-muted)";
+        if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот!"; res.style.color = "var(--color-error)"; return; }
+        res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
         const submitData = async (base64Image = "") => {
             const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`;
             const { error } = await supa.from('reports').insert([{ id: 'rep_' + Date.now(), email: currentUser.email, link: finalLink, date: combinedData, status: 'На проверке', xp: 0 }]);
             if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } 
-            else { res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); }
+            else { res.textContent = "Отчет отправлен!"; res.style.color = "var(--color-success)"; playSound('win'); }
         };
         if (fileInput.files.length > 0) compressImage(fileInput.files[0], submitData); else submitData("");
     });
@@ -2674,12 +2689,12 @@
         res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
         const { error } = await supa.from('reports').insert([{ id: 'ina_' + Date.now(), email: 'INACTIVE_REQ', link: '', date: `Ник: ${nick} | С: ${dateFrom} | По: ${dateTo} | Причина: ${reason}`, status: 'Ожидает одобрения', xp: 0 }]);
         if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; } 
-        else { res.textContent = "Заявка успешно отправлена!"; res.style.color = "var(--color-success)"; playSound('win'); }
+        else { res.textContent = "Заявка отправлена!"; res.style.color = "var(--color-success)"; playSound('win'); }
     });
 
     // === КОСМЕТИКА ===
-    safeClick('equipCrownBtn', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
-    safeClick('equipColorBtn', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
+    safeClick('equipCrownBtn', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); updateProfileStats(); });
+    safeClick('equipColorBtn', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); updateProfileStats(); });
 
     // === ТАБЛИЦА ЛИДЕРОВ ===
     safeClick('lbBtnMod', () => { document.getElementById('leaderboardList').innerHTML = window.lbModHTML || '<div class="message-text">Топ пуст.</div>'; document.getElementById('lbBtnMod').className="btn btn-primary"; document.getElementById('lbBtnAp').className="btn btn-secondary"; });
@@ -2694,7 +2709,7 @@
         
         const { data: modRoles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', 'moderator');
         const modIds = modRoles ? modRoles.map(r => r.link) : [];
-        if (modIds.length === 0) return listArea.innerHTML = '<div class="message-text" style="text-align:center;">Модераторов пока нет. Выдайте кому-нибудь роль.</div>';
+        if (modIds.length === 0) return listArea.innerHTML = '<div class="message-text" style="text-align:center;">Модераторов пока нет.</div>';
         
         const { data: usersData } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent').in('user_id', modIds);
         let mods = usersData || [];
@@ -2775,6 +2790,100 @@
         }
     }
 
+    // === ПЕРЕКЛЮЧЕНИЕ ТЕМАТИК И ВКЛАДОК ===
+    function setSiteTheme(theme) {
+        document.documentElement.setAttribute('data-site-theme', theme);
+        const logos = document.querySelectorAll('.logo svg');
+        logos.forEach(svg => {
+            if(theme === 'support' || theme === 'ap_admin' || theme === 'ap_shop') svg.innerHTML = '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>';
+            else if(theme === 'shop') svg.innerHTML = '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path>';
+            else svg.innerHTML = '<path d="M4 18.5V6.8C4 5.8 4.8 5 5.8 5h4.4"></path><rect x="9" y="3.5" width="11" height="8" rx="2"></rect><path d="M8 12.5 12 7l4 5.5"></path><path d="M4 21h9.5"></path>';
+        });
+    }
+
+    document.querySelectorAll('.main-cat-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active');
+            const cat = e.target.dataset.cat; document.querySelectorAll('.sub-nav').forEach(sn => sn.style.display = 'none');
+            if(cat === 'moderation') { document.getElementById('subNavModeration').style.display = 'flex'; document.querySelector('[data-mode="moderation"]').click(); }
+            else if(cat === 'support') { document.getElementById('subNavSupport').style.display = 'flex'; document.querySelector('[data-mode="support"]').click(); }
+            else if(cat === 'general') { document.getElementById('subNavGeneral').style.display = 'flex'; document.querySelector('[data-mode="quests"]').click(); }
+            else if(cat === 'organizations') { document.getElementById('subNavOrganizations').style.display = 'flex'; document.querySelector('[data-mode="fsb"]').click(); }
+        };
+    });
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            const mode = e.target.dataset.mode; if(!mode) return;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active');
+            document.querySelectorAll('.game-card').forEach(c => c.style.display = 'none'); const targetCard = document.getElementById('mode-' + mode);
+            if(targetCard) targetCard.style.display = 'grid'; setSiteTheme(mode);
+            if (mode === 'shop') renderShopItems();
+            if (mode === 'ap_shop') renderApShopItems();
+            if (mode === 'fsb_shop') renderFsbShopItems();
+            if (mode === 'leaderboard') loadLeaderboard();
+        };
+    });
+
+    // Привязываем кнопки выдачи XP и логирования
+    safeClick('creatorXpBtn', () => handleGiveXp(document.getElementById('creatorUserSelect').value, document.getElementById('creatorGiveType').value, Number(document.getElementById('creatorXpAmount').value), 'mod'));
+    safeClick('leadershipXpBtn', () => handleGiveXp(document.getElementById('leadershipUserSelect').value, document.getElementById('leadershipGiveType').value, Number(document.getElementById('leadershipXpAmount').value), 'mod'));
+    safeClick('apAdminPointsBtn', () => handleGiveXp(document.getElementById('apAdminUserSelect').value, document.getElementById('apAdminGiveType').value, Number(document.getElementById('apAdminPointsAmount').value), 'ap'));
+    safeClick('fsbAdminPointsBtn', () => handleGiveXp(document.getElementById('fsbAdminUserSelect').value, 'game', Number(document.getElementById('fsbAdminPointsAmount').value), 'fsb'));
+    
+    async function handleGiveXp(uid, type, amount, source) {
+        if(!uid || isNaN(amount) || amount === 0) return alert("Выберите кому и введите число!");
+        if (uid === creatorUserId && currentUser.id !== creatorUserId) return alert("Ошибка доступа: Вы не можете изменять баланс Создателю!");
+        const statusType = type === 'game' ? source : `report_xp_${source}`; 
+        await supa.from('reports').insert([{ email: 'MANUAL_XP', link: uid, date: `Выдано (${source})`, status: statusType, xp: amount }]);
+        alert(`Успешно! Баланс изменен на ${amount}.`);
+        if(uid === currentUser.id) await loadUserData(); 
+    }
+
+    safeClick('loadFsbLogsBtn', () => fetchLogs('FSB_SHOP_LOG', 'fsbAdminLogsArea', 'Баллов ФСБ', '#6c8cff'));
+    safeClick('loadAdminLogsBtn', () => fetchLogs('MOD_SHOP_LOG', 'adminLogsArea', 'XP', '#ffbf47'));
+    safeClick('loadApAdminLogsBtn', () => fetchLogs('AP_SHOP_LOG', 'apAdminLogsArea', 'Баллов АП', '#ff8fc4'));
+    
+    async function fetchLogs(emailTag, areaId, typeLabel, color) {
+        const area = document.getElementById(areaId); area.innerHTML = "Загрузка...";
+        const { data } = await supa.from('reports').select('*').eq('email', emailTag).order('id', {ascending: false}).limit(50);
+        if(!data || data.length === 0) return area.innerHTML = `<div style="text-align:center; padding:1rem;">Логов пока нет.</div>`;
+        area.innerHTML = data.map(log => `<div class="log-item" style="border-left: 4px solid ${color};"><strong style="color:${color};">${log.date}</strong> купил: <span style="color:#fff;">${log.status}</span> <div style="margin-top:0.5rem;"><span class="badge" style="background: rgba(0,0,0,0.5); color:${color};">-${log.xp} ${typeLabel}</span></div></div>`).join('');
+    }
+
+    safeClick('startBtn', () => {
+        if (!currentUser) return alert("Сначала войдите в систему!");
+        state.started = true; document.getElementById("startBtn").textContent = "Смена идет..."; document.getElementById("startBtn").style.background = "var(--color-success)"; document.getElementById("startBtn").style.borderColor = "var(--color-success)";
+        randomMessage(); randomComplaint(); randomFsbApp();
+        const supportBtn = document.getElementById('supportNextBtn'); if(supportBtn) supportBtn.click();
+        pushLog("🟢 Смена успешно начата. Загружены первые сообщения."); alert("Смена начата! Сообщения загружены.");
+    });
+    safeClick('resetBtn', () => { if(confirm("Сбросить смену? Прогресс не сохранится.")) location.reload(); });
+
+    safeClickAll('[data-action]', (e, el) => window.judge(el.dataset.action));
+    safeClickAll('[data-comp-action]', (e, el) => window.judgeComplaint(el.dataset.compAction));
+    safeClickAll('[data-fsb-action]', (e, el) => window.judgeFsb(el.dataset.fsbAction));
+
+    // Авторизация
+    safeClick('authLoginSubmit', async () => {
+        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, err = document.getElementById('authErrorMsg');
+        err.style.display = 'none'; const { error } = await supa.auth.signInWithPassword({ email: em, password: pw });
+        if (error) { err.textContent = error.message; err.style.display = 'block'; } else location.reload();
+    });
+    safeClick('authRegisterSubmit', async () => {
+        const em = document.getElementById('authEmail').value, pw = document.getElementById('authPassword').value, nick = document.getElementById('authNickname').value, err = document.getElementById('authErrorMsg');
+        err.style.display = 'none'; if (!nick) { err.textContent = "Укажите Nickname!"; err.style.display = 'block'; return; }
+        const { data, error } = await supa.auth.signUp({ email: em, password: pw });
+        if (error) { err.textContent = error.message; err.style.display = 'block'; return; }
+        if (data.user) { await supa.from('user_stats').insert([{ user_id: data.user.id, email: em, nickname: nick }]); alert("Регистрация успешна! Войдите в аккаунт."); location.reload(); }
+    });
+    safeClick('logoutBtnUI', async () => { await supa.auth.signOut(); location.reload(); });
+    safeClick('forceNicknameBtn', async () => {
+        const n = document.getElementById('forceNicknameInput').value.trim(); if (!n) return alert("Введите Nickname!");
+        currentNickname = n; await supa.from('user_stats').update({ nickname: n }).eq('user_id', currentUser.id);
+        document.getElementById('nicknameModal').style.display = 'none'; updateProfileStats(); updateTopBarNick();
+    });
+
     // === ФИНАЛЬНАЯ ЗАГРУЗКА ===
     document.addEventListener("DOMContentLoaded", async () => {
         if (!supa) { console.error("Supabase не подключен."); return; }
@@ -2783,7 +2892,6 @@
             currentUser = session.user;
             document.getElementById('loginBtnUI').style.display = 'none';
             document.getElementById('logoutBtnUI').style.display = 'block';
-            document.getElementById('userEmailDisplay').textContent = currentUser.email;
             
             await loadGlobalShopAndRoulette();
             await loadUserData();
@@ -2798,3 +2906,5 @@
     });
 
   </script>
+</body>
+</html>
