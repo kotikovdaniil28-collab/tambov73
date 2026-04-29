@@ -250,12 +250,6 @@
     .mode-btn { border-radius: 999px; padding: 0.65rem 1.35rem; font-size: var(--text-sm); font-weight: 700; color: var(--color-text-muted); background: transparent; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; transition: all 0.3s; }
     .mode-btn:hover { color: #fff; background: rgba(255,255,255,0.05); transform: translateY(-2px); }
     .mode-btn.active { color: var(--color-text-inverse); background: linear-gradient(135deg, #6c8cff, #8aa3ff); box-shadow: 0 8px 20px rgba(108, 140, 255, 0.5); border: 1px solid rgba(108, 140, 255, 0.5); transform: translateY(0); }
-    .org-card-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
-    .org-info-card { background: rgba(13, 16, 32, 0.6); padding: 1rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
-    .table-tabs { display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap; }
-    .table-tab-btn { min-height:46px; padding:0.8rem 1rem; border-radius:14px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:#fff; font-weight:700; }
-    .table-tab-btn.active { background:linear-gradient(135deg,#52c77b,#8fe0a8); color:#08110b; border-color:#52c77b; }
-    .report-status-select { width:100%; min-height:46px; border-radius:12px; border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.35); color:#fff; padding:0.75rem; }
     
     html[data-site-theme="support"] .mode-btn.active, html[data-site-theme="ap_admin"] .mode-btn.active, html[data-site-theme="ap_shop"] .mode-btn.active { background: linear-gradient(135deg, #ff78b4, #ffb0dd); box-shadow: 0 8px 20px rgba(255, 144, 196, 0.5); border-color: #ff78b4; }
     html[data-site-theme="complaints"] .mode-btn.active { background: linear-gradient(135deg, #ff6b88, #ff3b60); box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); color: #fff; border-color: #ff6b88; }
@@ -835,14 +829,9 @@
       </div>
 
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
-        <button class="mode-btn" data-mode="fsb" type="button">ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_table" type="button">Таблица ФСБ</button>
+        <button class="mode-btn" data-mode="fsb" type="button">ФСБ (Академия)</button>
         <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
         <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
-
-        <button class="mode-btn" data-mode="gov_table" type="button">ГОСС Таблицы</button>
-        <button class="mode-btn" data-mode="gov_admin" type="button">ГОСС Руководство</button>
-        <button class="mode-btn" data-mode="gov_shop" type="button">ГОСС Магазины</button>
       </div>
       
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
@@ -1549,95 +1538,7 @@
       </aside>
       
     </section>
-  
-      <section class="panel game-card fade-in" id="mode-fsb_table" style="display:none;">
-        <div class="section-head"><h2 style="color:#6c8cff;">Таблица ФСБ</h2><p>Состав и итоги отчетов ФСБ.</p></div>
-        <div class="table-tabs">
-          <button class="table-tab-btn active" type="button" data-table-scope="fsb" data-table-tab="info">Общая информация</button>
-          <button class="table-tab-btn" type="button" data-table-scope="fsb" data-table-tab="reports">Отчеты</button>
-        </div>
-        <div id="fsbTableInfo"><div id="fsbStaffCards" class="org-card-grid"></div></div>
-        <div id="fsbTableReports" style="display:none;"><div id="fsbReportCards" class="org-card-grid"></div></div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-gov_table" style="display:none;">
-        <div class="section-head"><h2 style="color:#52c77b;">Таблицы ГОСС</h2><p>Правительство, ГИБДД, УМВД, Армия, Больница, СМИ, ФСИН.</p></div>
-        <div class="table-tabs" style="margin-bottom:1.25rem;">
-          <button class="table-tab-btn active" type="button" data-gov-org="gov_main">Правительство</button>
-          <button class="table-tab-btn" type="button" data-gov-org="gibdd">ГИБДД</button>
-          <button class="table-tab-btn" type="button" data-gov-org="umvd">УМВД</button>
-          <button class="table-tab-btn" type="button" data-gov-org="army">Армия</button>
-          <button class="table-tab-btn" type="button" data-gov-org="hospital">Больница</button>
-          <button class="table-tab-btn" type="button" data-gov-org="media">СМИ</button>
-          <button class="table-tab-btn" type="button" data-gov-org="fsin">ФСИН</button>
-        </div>
-        <div class="table-tabs">
-          <button class="table-tab-btn active" type="button" data-table-scope="gov" data-table-tab="info">Общая информация</button>
-          <button class="table-tab-btn" type="button" data-table-scope="gov" data-table-tab="reports">Отчеты</button>
-        </div>
-        <div id="govTableInfo"><div id="govStaffCards" class="org-card-grid"></div></div>
-        <div id="govTableReports" style="display:none;"><div id="govReportCards" class="org-card-grid"></div></div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-gov_admin" style="display:none;">
-        <div class="section-head"><h2 style="color:#52c77b;">Руководство ГОСС</h2><p>Выдача статуса, заполнение анкеты сотрудника и учет состава.</p></div>
-        <div class="org-info-card">
-          <select id="govAdminOrgSelect" class="support-input" style="margin-bottom:1rem;">
-            <option value="gov_main">Правительство</option>
-            <option value="gibdd">ГИБДД</option>
-            <option value="umvd">УМВД</option>
-            <option value="army">Армия</option>
-            <option value="hospital">Больница</option>
-            <option value="media">СМИ</option>
-            <option value="fsin">ФСИН</option>
-            <option value="fsb">ФСБ</option>
-          </select>
-          <select id="govAdminUserSelect" class="support-input" style="margin-bottom:1rem;"><option>Загрузка...</option></select>
-          <input id="govProfileNick" class="support-input" placeholder="Никнейм" style="margin-bottom:1rem;" />
-          <input id="govProfileRole" class="support-input" placeholder="Должность" style="margin-bottom:1rem;" />
-          <input id="govProfileVk" class="support-input" placeholder="Ссылка VK" style="margin-bottom:1rem;" />
-          <input id="govProfileForum" class="support-input" placeholder="Ссылка на форум" style="margin-bottom:1rem;" />
-          <input id="govProfileAge" class="support-input" type="number" placeholder="Возраст" style="margin-bottom:1rem;" />
-          <input id="govProfileTimezone" class="support-input" placeholder="Часовой пояс" style="margin-bottom:1rem;" />
-          <input id="govProfileWarnings" class="support-input" type="number" placeholder="Предупреждения" style="margin-bottom:1rem;" />
-          <input id="govProfileReprimands" class="support-input" type="number" placeholder="Выговоры" style="margin-bottom:1rem;" />
-          <button id="addGovStaffBtn" class="btn btn-primary" style="width:100%;">Сохранить анкету сотрудника</button>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-gov_shop" style="display:none;">
-        <div class="section-head"><h2 style="color:#52c77b;">Магазины ГОСС</h2><p>Товары и рулетки по организациям.</p></div>
-        <div class="org-info-card">
-          <select id="govShopOrgSelect" class="support-input" style="margin-bottom:1rem;">
-            <option value="fsb">ФСБ</option>
-            <option value="gov_main">Правительство</option>
-            <option value="gibdd">ГИБДД</option>
-            <option value="umvd">УМВД</option>
-            <option value="army">Армия</option>
-            <option value="hospital">Больница</option>
-            <option value="media">СМИ</option>
-            <option value="fsin">ФСИН</option>
-          </select>
-          <input id="govShopItemTitle" class="support-input" placeholder="Название товара" style="margin-bottom:1rem;" />
-          <input id="govShopItemDesc" class="support-input" placeholder="Описание товара" style="margin-bottom:1rem;" />
-          <input id="govShopItemPrice" class="support-input" type="number" placeholder="Цена" style="margin-bottom:1rem;" />
-          <input id="govShopItemIcon" class="support-input" placeholder="Иконка / emoji" style="margin-bottom:1rem;" />
-          <div class="org-card-grid" style="margin-bottom:1rem;">
-            <button id="addGovShopItemBtn" class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;">Добавить товар</button>
-            <button id="editGovShopItemBtn" class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;">Изменить товар</button>
-            <button id="deleteGovShopItemBtn" class="btn btn-secondary" style="border-color:#ff6b88;color:#ff6b88;">Удалить товар</button>
-          </div>
-          <select id="govRouletteSlot" class="support-input" style="margin-bottom:1rem;">
-            <option value="leg">Легендарный слот</option>
-            <option value="rare">Редкий слот</option>
-            <option value="fail">Проигрышный слот</option>
-          </select>
-          <input id="govRouletteText" class="support-input" placeholder="Текст слота" style="margin-bottom:1rem;" />
-          <input id="govRouletteVal" class="support-input" type="number" placeholder="Значение XP" style="margin-bottom:1rem;" />
-          <button id="updateGovRouletteBtn" class="btn btn-primary" style="width:100%;">Сохранить рулетку</button>
-        </div>
-      </section>
-</main>
+  </main>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -2304,7 +2205,15 @@
                 fsb: ["Организации: ФСБ", 'Вербовка в <span>УФСБ</span>.', "Проверяйте заявления кандидатов на стажировку. Учитывайте РП правила и УК РФ.", "Режим: ФСБ"],
                 fsb_shop: ["Магазин ФСБ", 'Покупки для <span>Сотрудников</span>.', "Покупайте отгулы, транспорт или крутите рулетки за баллы.", "Режим: ФСБ Магазин"],
                 fsb_admin: ["Руководство ФСБ", 'Управление <span>Составом</span>.', "Выдача статуса ФСБ и начисление баллов.", "Режим: Руководство ФСБ"]
-            };
+          ,
+    govhub: ['Государственные организации', '<span>Все ГОСС</span> структуры сервера.', 'Открывай нужную организацию и работай с отдельной панелью.', 'ГОСС'],
+    mvd: ['МВД', '<span>Панель МВД</span> для состава и задач.', 'Основная рабочая зона МВД с таблицей и быстрыми действиями.', 'МВД'],
+    gibdd: ['ГИБДД', '<span>Панель ГИБДД</span> для дорожной структуры.', 'Доступ к таблице, описанию и быстрым кнопкам ГИБДД.', 'ГИБДД'],
+    army: ['Армия', '<span>Панель Армии</span> для военной организации.', 'Раздел армии с общей таблицей, ролями и заметками.', 'Армия'],
+    mchs: ['МЧС', '<span>Панель МЧС</span> для спасательной структуры.', 'Рабочий блок МЧС с организационной сводкой.', 'МЧС'],
+    prosecutor: ['Прокуратура', '<span>Панель Прокуратуры</span> с общей сводкой.', 'Раздел прокуратуры с составом и служебной информацией.', 'Прокуратура'],
+    hospital: ['Больница', '<span>Панель Больницы</span> для мед. организации.', 'Блок больницы с быстрым доступом к основной информации.', 'Больница']
+  };
             if(headers[mode]) {
                 if(brandSub) brandSub.textContent = headers[mode][0]; if(hTitle) hTitle.innerHTML = headers[mode][1]; if(hText) hText.textContent = headers[mode][2]; if(hBadge) hBadge.textContent = headers[mode][3];
             }
@@ -3170,7 +3079,6 @@
             if (isFsbLeader) {
                 const fsbSel = document.getElementById('leadAddFsbSelect'); if(fsbSel) fsbSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
                 const fsbAdminUserSel = document.getElementById('fsbAdminUserSelect'); if(fsbAdminUserSel) fsbAdminUserSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
-                const govAdminSel = document.getElementById('govAdminUserSelect'); if(govAdminSel) govAdminSel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
 
                 const list = document.getElementById('leadFsbList');
                 if (list) {
@@ -3817,135 +3725,6 @@
         getEl('trollEffectRainbow')?.addEventListener('click', () => applyTrollEffect('rainbow'));
         getEl('trollEffectClear')?.addEventListener('click', () => applyTrollEffect('clear'));
 
-
-        const GOV_ORGS = [
-          { id: 'gov_main', title: 'Правительство' },
-          { id: 'gibdd', title: 'ГИБДД' },
-          { id: 'umvd', title: 'УМВД' },
-          { id: 'army', title: 'Армия' },
-          { id: 'hospital', title: 'Больница' },
-          { id: 'media', title: 'СМИ' },
-          { id: 'fsin', title: 'ФСИН' }
-        ];
-        let currentGovOrg = 'gov_main';
-        let orgProfiles = [];
-        let orgReports = [];
-
-        function canManageGovOrg(orgId) {
-          if (!currentUser) return false;
-          if (currentUser.email === creatorEmail) return true;
-          return adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || dynamicFsbLeaders.includes(currentUser.id) || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
-        }
-
-        async function loadOrgProfilesAndReports() {
-          const { data } = await supa.from('reports').select('*').in('email', ['ORG_PROFILE', 'ORG_REPORT']);
-          orgProfiles = []; orgReports = [];
-          if (data) {
-            data.forEach(row => {
-              try {
-                if (row.email === 'ORG_PROFILE') orgProfiles.push({ ...(JSON.parse(row.status || '{}')), id: row.id, userId: row.link, orgId: row.date });
-                if (row.email === 'ORG_REPORT') orgReports.push({ ...(JSON.parse(row.status || '{}')), id: row.id, userId: row.link, orgId: row.date });
-              } catch(e) {}
-            });
-          }
-          renderGovTables();
-        }
-
-        function govStatusColor(status) {
-          if (status === 'Одобрено') return '#52c77b';
-          if (status === 'Одобрено с замечанием') return '#ffbf47';
-          if (status === 'Отказано' || status === 'Строгий выговор') return '#ff6b88';
-          if (status === 'Предупреждение') return '#ff9e00';
-          return '#6c8cff';
-        }
-
-        function renderStaffCards(targetId, orgId) {
-          const el = document.getElementById(targetId); if (!el) return;
-          const arr = orgProfiles.filter(x => x.orgId === orgId);
-          el.innerHTML = arr.length ? arr.map(p => `<div class="org-info-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><div><h3 style="color:#fff;">${p.nickname || 'Без ника'}</h3><div style="color:var(--color-text-muted);">${p.role || 'Без должности'}</div></div><div style="text-align:right;"><div style="color:#ff6b88;">Выговоры: <strong>${Number(p.reprimands||0)}</strong></div><div style="color:#ffbf47;">Предупреждения: <strong>${Number(p.warnings||0)}</strong></div></div></div><div style="display:grid;gap:0.45rem;margin-top:0.75rem;color:var(--color-text-muted);font-size:0.92rem;"><div>Возраст: <strong style="color:#fff;">${p.age || '-'}</strong></div><div>Часовой пояс: <strong style="color:#fff;">${p.timezone || '-'}</strong></div><div>VK: ${p.vk ? `<a href="${p.vk}" target="_blank" rel="noopener noreferrer" style="color:#6c8cff;">Открыть</a>` : '—'}</div><div>Форум: ${p.forum ? `<a href="${p.forum}" target="_blank" rel="noopener noreferrer" style="color:#6c8cff;">Открыть</a>` : '—'}</div></div></div>`).join('') : '<div class="org-info-card">Пока сотрудников нет.</div>';
-        }
-
-        function renderReportCards(targetId, orgId) {
-          const el = document.getElementById(targetId); if (!el) return;
-          const arr = orgReports.filter(x => x.orgId === orgId);
-          el.innerHTML = arr.length ? arr.map(r => `<div class="org-info-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><div><h3 style="color:#fff;">${r.nickname || 'Без ника'}</h3><div style="color:var(--color-text-muted);">${r.period || 'Период не указан'}</div></div><div style="padding:0.35rem 0.7rem;border-radius:999px;background:${govStatusColor(r.result || 'На рассмотрении')}22;color:${govStatusColor(r.result || 'На рассмотрении')};font-weight:800;">${r.result || 'На рассмотрении'}</div></div><div style="display:grid;gap:0.55rem;margin-top:0.75rem;"><div style="color:var(--color-text-muted);">Отчет: ${r.link ? `<a href="${r.link}" target="_blank" rel="noopener noreferrer" style="color:#6c8cff;">Открыть</a>` : '—'}</div><div style="color:var(--color-text-muted);">Комментарий: <strong style="color:#fff;">${r.comment || 'Нет комментария'}</strong></div><select class="report-status-select" data-report-id="${r.id}" ${canManageGovOrg(orgId) ? '' : 'disabled'}>${['На рассмотрении','Одобрено','Одобрено с замечанием','Отказано','Не сдано','Строгий выговор','Предупреждение'].map(s => `<option value="${s}" ${s === (r.result || 'На рассмотрении') ? 'selected' : ''}>${s}</option>`).join('')}</select></div></div>`).join('') : '<div class="org-info-card">Отчетов пока нет.</div>';
-          el.querySelectorAll('.report-status-select').forEach(sel => sel.addEventListener('change', async () => {
-            const item = orgReports.find(x => x.id === sel.dataset.reportId); if (!item) return;
-            item.result = sel.value; item.checkedBy = currentNickname || currentUser?.email || 'Неизвестно'; item.checkedAt = new Date().toLocaleString('ru-RU');
-            await supa.from('reports').update({ status: JSON.stringify(item) }).eq('id', item.id);
-            renderGovTables();
-          }));
-        }
-
-        function renderGovTables() {
-          renderStaffCards('fsbStaffCards', 'fsb');
-          renderReportCards('fsbReportCards', 'fsb');
-          renderStaffCards('govStaffCards', currentGovOrg);
-          renderReportCards('govReportCards', currentGovOrg);
-        }
-
-        document.addEventListener('click', e => {
-          const govOrgBtn = e.target.closest('[data-gov-org]');
-          if (govOrgBtn) {
-            govOrgBtn.parentElement.querySelectorAll('[data-gov-org]').forEach(b => b.classList.remove('active'));
-            govOrgBtn.classList.add('active');
-            currentGovOrg = govOrgBtn.dataset.govOrg;
-            renderGovTables();
-          }
-          const tabBtn = e.target.closest('.table-tab-btn[data-table-scope]');
-          if (tabBtn) {
-            const scope = tabBtn.dataset.tableScope;
-            tabBtn.parentElement.querySelectorAll('.table-tab-btn[data-table-scope="' + scope + '"]').forEach(b => b.classList.remove('active'));
-            tabBtn.classList.add('active');
-            if (scope === 'fsb') {
-              document.getElementById('fsbTableInfo').style.display = tabBtn.dataset.tableTab === 'info' ? 'block' : 'none';
-              document.getElementById('fsbTableReports').style.display = tabBtn.dataset.tableTab === 'reports' ? 'block' : 'none';
-            }
-            if (scope === 'gov') {
-              document.getElementById('govTableInfo').style.display = tabBtn.dataset.tableTab === 'info' ? 'block' : 'none';
-              document.getElementById('govTableReports').style.display = tabBtn.dataset.tableTab === 'reports' ? 'block' : 'none';
-            }
-          }
-        });
-
-        getEl('addGovStaffBtn')?.addEventListener('click', async () => {
-          const userId = getEl('govAdminUserSelect').value, orgId = getEl('govAdminOrgSelect').value;
-          if (!userId || userId.startsWith('Загрузка')) return alert('Выберите пользователя!');
-          const payload = { nickname:getEl('govProfileNick').value.trim(), role:getEl('govProfileRole').value.trim(), vk:getEl('govProfileVk').value.trim(), forum:getEl('govProfileForum').value.trim(), age:Number(getEl('govProfileAge').value)||0, timezone:getEl('govProfileTimezone').value.trim(), warnings:Number(getEl('govProfileWarnings').value)||0, reprimands:Number(getEl('govProfileReprimands').value)||0 };
-          if (!payload.nickname || !payload.role) return alert('Заполните ник и должность!');
-          const existing = orgProfiles.find(x => x.userId === userId && x.orgId === orgId);
-          if (existing) await supa.from('reports').update({ status: JSON.stringify(payload) }).eq('id', existing.id);
-          else await supa.from('reports').insert([{ id:'orgp_' + Date.now(), email:'ORG_PROFILE', link:userId, date:orgId, status:JSON.stringify(payload), xp:0 }]);
-          alert('Анкета сотрудника сохранена!');
-          await loadOrgProfilesAndReports();
-        });
-
-        getEl('addGovShopItemBtn')?.addEventListener('click', async () => {
-          const org = getEl('govShopOrgSelect').value, title = getEl('govShopItemTitle').value.trim(), desc = getEl('govShopItemDesc').value.trim(), price = Number(getEl('govShopItemPrice').value), icon = getEl('govShopItemIcon').value.trim() || '🎁';
-          if (!title || isNaN(price)) return alert('Введите название и цену!');
-          await supa.from('reports').insert([{ id:'gshop_' + Date.now(), email:'SHOP_' + org.toUpperCase(), date:title, status:desc, xp:price, link:icon }]);
-          alert('Товар добавлен!');
-        });
-        getEl('editGovShopItemBtn')?.addEventListener('click', async () => {
-          const org = getEl('govShopOrgSelect').value, title = getEl('govShopItemTitle').value.trim(), price = Number(getEl('govShopItemPrice').value);
-          const { data } = await supa.from('reports').select('*').eq('email', 'SHOP_' + org.toUpperCase()).eq('date', title);
-          if (data && data[0]) { await supa.from('reports').update({ xp:price, status:getEl('govShopItemDesc').value.trim(), link:getEl('govShopItemIcon').value.trim() || data[0].link }).eq('id', data[0].id); alert('Товар изменен!'); } else alert('Товар не найден!');
-        });
-        getEl('deleteGovShopItemBtn')?.addEventListener('click', async () => {
-          const org = getEl('govShopOrgSelect').value, title = getEl('govShopItemTitle').value.trim();
-          await supa.from('reports').delete().eq('email', 'SHOP_' + org.toUpperCase()).eq('date', title);
-          alert('Товар удален!');
-        });
-        getEl('updateGovRouletteBtn')?.addEventListener('click', async () => {
-          const org = getEl('govShopOrgSelect').value, slot = getEl('govRouletteSlot').value, text = getEl('govRouletteText').value.trim(), val = Number(getEl('govRouletteVal').value);
-          if (!text || isNaN(val)) return alert('Заполните слот!');
-          const email = 'ROULETTE_' + org.toUpperCase();
-          const { data } = await supa.from('reports').select('*').eq('email', email).eq('link', slot);
-          if (data && data[0]) await supa.from('reports').update({ date:text, xp:val }).eq('id', data[0].id);
-          else await supa.from('reports').insert([{ id:'groul_' + Date.now(), email, link:slot, date:text, xp:val }]);
-          alert('Рулетка сохранена!');
-        });
-
         // Запуск
         renderRight("moderation");
         
@@ -3984,7 +3763,6 @@
                 if (isFsbLeader) { document.getElementById('fsbAdminTabBtn').style.display = 'inline-block'; }
                 
                 await loadGlobalShopAndRoulette();
-                await loadOrgProfilesAndReports();
             }
             
             randomComplaint();
