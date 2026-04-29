@@ -91,7 +91,7 @@
     @keyframes modeFade { from { opacity: 0; transform: translateY(15px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; border: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
+    button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
     button:hover { transform: translateY(-3px); }
     button:active { transform: translateY(1px) scale(0.97); }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
@@ -829,20 +829,9 @@
       </div>
 
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
-        <button class="mode-btn" data-mode="fsb" type="button">&#128272; ФСБ</button>
+        <button class="mode-btn" data-mode="fsb" type="button">ФСБ (Академия)</button>
         <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
         <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_shop_logs" type="button" id="fsbShopLogsTabBtn" style="display:none;">&#128221; Логи Магазин ФСБ</button>
-        <button class="mode-btn" data-mode="org_gibdd" type="button">&#128664; ГИБДД</button>
-        <button class="mode-btn" data-mode="org_mchs" type="button">&#128293; МЧС</button>
-        <button class="mode-btn" data-mode="org_army" type="button">&#128481; Армия</button>
-        <button class="mode-btn" data-mode="org_police" type="button">&#128110; Полиция</button>
-        <button class="mode-btn" data-mode="org_dps" type="button">&#128657; ДПС</button>
-        <button class="mode-btn" data-mode="org_prosecutor" type="button">&#9878; Прокуратура</button>
-        <button class="mode-btn" data-mode="org_rosgvardia" type="button">&#128737; Росгвардия</button>
-        <button class="mode-btn" data-mode="org_nalog" type="button">&#128203; Налоговая</button>
-        <button class="mode-btn" data-mode="org_sud" type="button">&#9878; Суд</button>
-        <button class="mode-btn" data-mode="org_mzd" type="button">&#127973; Минздрав</button>
       </div>
       
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
@@ -878,8 +867,8 @@
             <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
           </article>
           <div class="controls">
-            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')" ontouchend="event.preventDefault();judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
-            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')" ontouchend="event.preventDefault();judgeFsb('approve')">✅ Одобрить (Годен)</button>
+            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
+            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')">✅ Одобрить (Годен)</button>
           </div>
         </div>
       </section>
@@ -915,216 +904,7 @@
         </div>
       </section>
 
-      
-      <section class="panel game-card fade-in" id="mode-fsb_shop_logs" style="display:none;">
-        <div class="section-head"><h2 style="color:#6c8cff;">&#128221; Логи Магазина ФСБ</h2><p>История покупок в магазине ФСБ.</p></div>
-        <div id="fsbShopLogsContainer" style="display:flex; flex-direction:column; gap:0.5rem;">
-          <p style="color:var(--color-text-muted); text-align:center;">Загрузка...</p>
-        </div>
-      </section>
-      <!-- ===== ГОС ОРГАНИЗАЦИИ ===== -->
-
-      <!-- ГИБДД -->
-      <section class="panel game-card fade-in" id="mode-org_gibdd" style="display:none;">
-        <div class="section-head"><h2 style="color:#52c77b;">&#128664; ГИБДД</h2><p>Государственная Инспекция Безопасности Дорожного Движения</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(82,199,123,0.08);border:1px solid rgba(82,199,123,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#52c77b;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">ГИБДД занимается контролем дорожного движения, выдачей штрафов, проверкой документов и регистрацией транспортных средств на сервере Black Russia.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128657;</div><div style="font-weight:700;color:#52c77b;">Транспорт</div><div style="color:var(--color-text-muted);font-size:0.85em;">Проверка ТС</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128203;</div><div style="font-weight:700;color:#52c77b;">Документы</div><div style="color:var(--color-text-muted);font-size:0.85em;">Права / Страховка</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128268;</div><div style="font-weight:700;color:#52c77b;">Патруль</div><div style="color:var(--color-text-muted);font-size:0.85em;">Дорожный контроль</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(82,199,123,0.06);border:1px solid rgba(82,199,123,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#52c77b;margin-bottom:0.8rem;">&#128081; Руководство ГИБДД</h3>
-            <div id="gibddLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- МЧС -->
-      <section class="panel game-card fade-in" id="mode-org_mchs" style="display:none;">
-        <div class="section-head"><h2 style="color:#ff6b35;">&#128293; МЧС</h2><p>Министерство Чрезвычайных Ситуаций</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ff6b35;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">МЧС реагирует на чрезвычайные ситуации, пожары, ДТП и оказывает первую медицинскую помощь на сервере Black Russia.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128293;</div><div style="font-weight:700;color:#ff6b35;">Пожаротушение</div><div style="color:var(--color-text-muted);font-size:0.85em;">Тушение пожаров</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128657;</div><div style="font-weight:700;color:#ff6b35;">ДТП</div><div style="color:var(--color-text-muted);font-size:0.85em;">Реагирование на ДТП</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#127973;</div><div style="font-weight:700;color:#ff6b35;">Медпомощь</div><div style="color:var(--color-text-muted);font-size:0.85em;">Первая помощь</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ff6b35;margin-bottom:0.8rem;">&#128081; Руководство МЧС</h3>
-            <div id="mchsLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- АРМИЯ -->
-      <section class="panel game-card fade-in" id="mode-org_army" style="display:none;">
-        <div class="section-head"><h2 style="color:#8bc34a;">&#128481; Армия РФ</h2><p>Вооружённые Силы Российской Федерации</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(139,195,74,0.08);border:1px solid rgba(139,195,74,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#8bc34a;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Армия РФ — военная организация сервера, занимается охраной государственных объектов, проведением военных операций и поддержанием государственной безопасности.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128737;</div><div style="font-weight:700;color:#8bc34a;">Охрана</div><div style="color:var(--color-text-muted);font-size:0.85em;">Гос. объекты</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#9992;</div><div style="font-weight:700;color:#8bc34a;">Операции</div><div style="color:var(--color-text-muted);font-size:0.85em;">Военные операции</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#127826;</div><div style="font-weight:700;color:#8bc34a;">Безопасность</div><div style="color:var(--color-text-muted);font-size:0.85em;">Нац. безопасность</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(139,195,74,0.06);border:1px solid rgba(139,195,74,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#8bc34a;margin-bottom:0.8rem;">&#128081; Руководство Армии</h3>
-            <div id="armyLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ПОЛИЦИЯ -->
-      <section class="panel game-card fade-in" id="mode-org_police" style="display:none;">
-        <div class="section-head"><h2 style="color:#6c8cff;">&#128110; Полиция</h2><p>МВД — Министерство Внутренних Дел</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(108,140,255,0.08);border:1px solid rgba(108,140,255,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#6c8cff;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Полиция МВД занимается охраной правопорядка, задержанием преступников, расследованием преступлений и обеспечением безопасности граждан.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128110;</div><div style="font-weight:700;color:#6c8cff;">Патруль</div><div style="color:var(--color-text-muted);font-size:0.85em;">Охрана порядка</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128274;</div><div style="font-weight:700;color:#6c8cff;">Задержание</div><div style="color:var(--color-text-muted);font-size:0.85em;">Арест нарушителей</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128269;</div><div style="font-weight:700;color:#6c8cff;">Следствие</div><div style="color:var(--color-text-muted);font-size:0.85em;">Расследование</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(108,140,255,0.06);border:1px solid rgba(108,140,255,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#6c8cff;margin-bottom:0.8rem;">&#128081; Руководство Полиции</h3>
-            <div id="policeLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ДПС -->
-      <section class="panel game-card fade-in" id="mode-org_dps" style="display:none;">
-        <div class="section-head"><h2 style="color:#29b6f6;">&#128657; ДПС</h2><p>Дорожно-Патрульная Служба</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(41,182,246,0.08);border:1px solid rgba(41,182,246,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#29b6f6;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">ДПС — Дорожно-Патрульная Служба, осуществляет надзор за соблюдением правил дорожного движения, проверку документов водителей и контроль транспортных средств.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128268;</div><div style="font-weight:700;color:#29b6f6;">Патруль</div><div style="color:var(--color-text-muted);font-size:0.85em;">Трассы и посты</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128203;</div><div style="font-weight:700;color:#29b6f6;">Документы</div><div style="color:var(--color-text-muted);font-size:0.85em;">Проверка водителей</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#127988;</div><div style="font-weight:700;color:#29b6f6;">Штрафы</div><div style="color:var(--color-text-muted);font-size:0.85em;">Нарушения ПДД</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(41,182,246,0.06);border:1px solid rgba(41,182,246,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#29b6f6;margin-bottom:0.8rem;">&#128081; Руководство ДПС</h3>
-            <div id="dpsLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ПРОКУРАТУРА -->
-      <section class="panel game-card fade-in" id="mode-org_prosecutor" style="display:none;">
-        <div class="section-head"><h2 style="color:#ab47bc;">&#9878; Прокуратура</h2><p>Надзор за соблюдением законов</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(171,71,188,0.08);border:1px solid rgba(171,71,188,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ab47bc;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Прокуратура осуществляет надзор за соблюдением законов, расследует коррупцию и злоупотребления, поддерживает государственное обвинение в суде.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#9878;</div><div style="font-weight:700;color:#ab47bc;">Надзор</div><div style="color:var(--color-text-muted);font-size:0.85em;">Законность</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128269;</div><div style="font-weight:700;color:#ab47bc;">Расследование</div><div style="color:var(--color-text-muted);font-size:0.85em;">Коррупция</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128196;</div><div style="font-weight:700;color:#ab47bc;">Обвинение</div><div style="color:var(--color-text-muted);font-size:0.85em;">Гос. обвинитель</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(171,71,188,0.06);border:1px solid rgba(171,71,188,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ab47bc;margin-bottom:0.8rem;">&#128081; Руководство Прокуратуры</h3>
-            <div id="prosecutorLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- РОСГВАРДИЯ -->
-      <section class="panel game-card fade-in" id="mode-org_rosgvardia" style="display:none;">
-        <div class="section-head"><h2 style="color:#ef5350;">&#128737; Росгвардия</h2><p>Федеральная Служба Войск Национальной Гвардии</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(239,83,80,0.08);border:1px solid rgba(239,83,80,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ef5350;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Росгвардия охраняет государственную границу, особо важные объекты и оказывает поддержку полиции при массовых беспорядках.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128737;</div><div style="font-weight:700;color:#ef5350;">Охрана</div><div style="color:var(--color-text-muted);font-size:0.85em;">Важные объекты</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128512;</div><div style="font-weight:700;color:#ef5350;">Поддержка</div><div style="color:var(--color-text-muted);font-size:0.85em;">Поддержка МВД</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#127945;</div><div style="font-weight:700;color:#ef5350;">Граница</div><div style="color:var(--color-text-muted);font-size:0.85em;">Охрана границы</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(239,83,80,0.06);border:1px solid rgba(239,83,80,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ef5350;margin-bottom:0.8rem;">&#128081; Руководство Росгвардии</h3>
-            <div id="rosgvardiaLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- НАЛОГОВАЯ -->
-      <section class="panel game-card fade-in" id="mode-org_nalog" style="display:none;">
-        <div class="section-head"><h2 style="color:#ffca28;">&#128203; Налоговая</h2><p>Федеральная Налоговая Служба</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(255,202,40,0.08);border:1px solid rgba(255,202,40,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ffca28;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">ФНС контролирует уплату налогов, проводит проверки организаций и физических лиц, борется с уклонением от уплаты налогов.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128203;</div><div style="font-weight:700;color:#ffca28;">Проверки</div><div style="color:var(--color-text-muted);font-size:0.85em;">Налоговый аудит</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128181;</div><div style="font-weight:700;color:#ffca28;">Налоги</div><div style="color:var(--color-text-muted);font-size:0.85em;">Сбор налогов</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128269;</div><div style="font-weight:700;color:#ffca28;">Контроль</div><div style="color:var(--color-text-muted);font-size:0.85em;">Финансовый надзор</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(255,202,40,0.06);border:1px solid rgba(255,202,40,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#ffca28;margin-bottom:0.8rem;">&#128081; Руководство Налоговой</h3>
-            <div id="nalogLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- СУД -->
-      <section class="panel game-card fade-in" id="mode-org_sud" style="display:none;">
-        <div class="section-head"><h2 style="color:#80cbc4;">&#9878; Суд</h2><p>Судебная система</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(128,203,196,0.08);border:1px solid rgba(128,203,196,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#80cbc4;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Суд рассматривает уголовные и гражданские дела, выносит приговоры и решения по спорам между игроками и организациями.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#9878;</div><div style="font-weight:700;color:#80cbc4;">Заседания</div><div style="color:var(--color-text-muted);font-size:0.85em;">Судебные дела</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128196;</div><div style="font-weight:700;color:#80cbc4;">Приговоры</div><div style="color:var(--color-text-muted);font-size:0.85em;">Вынесение решений</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#9878;</div><div style="font-weight:700;color:#80cbc4;">Апелляции</div><div style="color:var(--color-text-muted);font-size:0.85em;">Пересмотр дел</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(128,203,196,0.06);border:1px solid rgba(128,203,196,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#80cbc4;margin-bottom:0.8rem;">&#128081; Руководство Суда</h3>
-            <div id="sudLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- МИНЗДРАВ -->
-      <section class="panel game-card fade-in" id="mode-org_mzd" style="display:none;">
-        <div class="section-head"><h2 style="color:#e91e63;">&#127973; Минздрав</h2><p>Министерство Здравоохранения</p></div>
-        <div style="display:grid;gap:1rem;">
-          <div style="background:rgba(233,30,99,0.08);border:1px solid rgba(233,30,99,0.3);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#e91e63;margin-bottom:0.8rem;">&#127937; О Организации</h3>
-            <p style="color:var(--color-text-muted);line-height:1.7;">Минздрав оказывает медицинскую помощь гражданам, работает в больницах, проводит хирургические операции и реабилитацию.</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:1rem;">
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#127973;</div><div style="font-weight:700;color:#e91e63;">Больница</div><div style="color:var(--color-text-muted);font-size:0.85em;">Лечение игроков</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128138;</div><div style="font-weight:700;color:#e91e63;">Операции</div><div style="color:var(--color-text-muted);font-size:0.85em;">Хирургия</div></div>
-              <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:1rem;text-align:center;"><div style="font-size:1.8rem;">&#128137;</div><div style="font-weight:700;color:#e91e63;">Скорая</div><div style="color:var(--color-text-muted);font-size:0.85em;">Экстренная помощь</div></div>
-            </div>
-          </div>
-          <div style="background:rgba(233,30,99,0.06);border:1px solid rgba(233,30,99,0.2);border-radius:16px;padding:1.5rem;">
-            <h3 style="color:#e91e63;margin-bottom:0.8rem;">&#128081; Руководство Минздрава</h3>
-            <div id="mzdLeadersList" style="color:var(--color-text-muted);">Информация обновляется...</div>
-          </div>
-        </div>
-      </section>
-
-<section class="panel game-card fade-in" id="mode-profile" style="display:none;">
+      <section class="panel game-card fade-in" id="mode-profile" style="display:none;">
         <div class="section-head">
           <h2>Личный Профиль</h2>
           <p>Ваша статистика, баланс и визуальная косметика.</p>
@@ -1208,39 +988,7 @@
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
           <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
           <input type="number" id="trollDebtAmount" class="support-input" placeholder="Сумма долга (напр. 5000)" style="margin-bottom: 1rem; width: 100%;">
-          
-          <!-- GOS LEADERSHIP PANEL -->
-          <div style="background:rgba(255,191,71,0.06);border:1px solid rgba(255,191,71,0.3);border-radius:16px;padding:1.5rem;margin-bottom:1rem;">
-            <h3 style="color:#ffbf47;margin-bottom:1rem;">&#127963; Выдача Статуса Руководства ГОС</h3>
-            <div style="display:grid;gap:0.8rem;">
-              <select id="gosLeaderOrgSelect" class="support-input" style="background:rgba(0,0,0,0.4);">
-                <option value="all">&#127963; Все ГОС организации</option>
-                <option value="fsb">&#128272; ФСБ</option>
-                <option value="gibdd">&#128664; ГИБДД</option>
-                <option value="mchs">&#128293; МЧС</option>
-                <option value="army">&#128481; Армия РФ</option>
-                <option value="police">&#128110; Полиция МВД</option>
-                <option value="dps">&#128657; ДПС</option>
-                <option value="prosecutor">&#9878; Прокуратура</option>
-                <option value="rosgvardia">&#128737; Росгвардия</option>
-                <option value="nalog">&#128203; Налоговая ФНС</option>
-                <option value="sud">&#9878; Суд</option>
-                <option value="mzd">&#127973; Минздрав</option>
-              </select>
-              <select id="gosLeaderUserSelect" class="support-input" style="background:rgba(0,0,0,0.4);">
-                <option value="">Выберите пользователя...</option>
-              </select>
-              <select id="gosLeaderRankSelect" class="support-input" style="background:rgba(0,0,0,0.4);">
-                <option value="leader">&#128081; Руководитель</option>
-                <option value="deputy">&#129309; Заместитель</option>
-                <option value="staff">&#128100; Сотрудник</option>
-                <option value="remove">&#10060; Снять статус</option>
-              </select>
-              <button id="gosLeaderGiveBtn" class="btn btn-primary" style="touch-action:manipulation;">&#127963; Выдать статус руководства</button>
-            </div>
-            <div id="gosLeaderCurrentList" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.4rem;max-height:200px;overflow-y:auto;"></div>
-          </div>
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <button id="trollDebtBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🤡 Влепить огромный долг XP</button>
             <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
             <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
@@ -2432,8 +2180,6 @@
             if(mode === 'leadership' || mode === 'ap_admin' || mode === 'fsb_admin') loadUsersForAdmin();
             if(mode === 'profile') renderProfileData();
             if(mode === 'reports_table') loadReportsTable();
-            if(mode === 'fsb_shop_logs') loadFsbShopLogs();
-            if(mode.startsWith('org_')) loadGosOrgInfo(mode.replace('org_',''));
             
             const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");
             const headers = {
@@ -2503,12 +2249,12 @@
 
         let lastActionTime = 0, spamWarnings = 0, spamTimerInterval = null;
         function isSpamming() {
-            const now = Date.now(), blockUntil = window._spamBlockUntil || 0;
+            const now = Date.now(), blockUntil = localStorage.getItem('spam_block_until');
             if (blockUntil && now < blockUntil) return true;
             if (now - lastActionTime < 1000) {
                 spamWarnings++;
                 if (spamWarnings >= 3) {
-                    window._spamBlockUntil = now + 60000;
+                    localStorage.setItem('spam_block_until', now + 60000);
                     showSpamModalWithTimer(); spamWarnings = 0; return true;
                 }
             } else { spamWarnings = Math.max(0, spamWarnings - 1); }
@@ -2516,14 +2262,14 @@
         }
 
         function showSpamModalWithTimer() {
-            const blockUntil = window._spamBlockUntil || 0; if (!blockUntil) return;
+            const blockUntil = localStorage.getItem('spam_block_until'); if (!blockUntil) return;
             const modal = document.getElementById('spamModal'), closeBtn = document.getElementById('closeSpamModal');
             modal.style.display = 'flex'; closeBtn.disabled = true; closeBtn.style.opacity = '0.5'; closeBtn.style.cursor = 'not-allowed';
             let timeLeft = Math.ceil((blockUntil - Date.now()) / 1000); if (timeLeft < 0) timeLeft = 60;
             closeBtn.textContent = `Блокировка: ${timeLeft} сек...`; clearInterval(spamTimerInterval);
             spamTimerInterval = setInterval(() => {
                 timeLeft--;
-                if (timeLeft <= 0) { clearInterval(spamTimerInterval); window._spamBlockUntil = 0; closeBtn.disabled = false; closeBtn.style.opacity = '1'; closeBtn.style.cursor = 'pointer'; closeBtn.textContent = 'Я понял, больше не буду'; } 
+                if (timeLeft <= 0) { clearInterval(spamTimerInterval); localStorage.removeItem('spam_block_until'); closeBtn.disabled = false; closeBtn.style.opacity = '1'; closeBtn.style.cursor = 'pointer'; closeBtn.textContent = 'Я понял, больше не буду'; } 
                 else closeBtn.textContent = `Блокировка: ${timeLeft} сек...`;
             }, 1000);
         }
@@ -2677,10 +2423,9 @@
             });
         }
 
-        async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0, forceType = null) {
+        async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0) {
             if (!currentUser) return;
-            const logType = forceType || (isAp ? 'ap_shop' : 'mod_shop');
-            await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: logType, status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]);
+            await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: isAp ? 'ap_shop' : 'mod_shop', status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]);
             updateTicker();
         }
 
@@ -2690,22 +2435,10 @@
             let bal = getRealBalance();
 
             if (isGame) {
-                         await new Promise((resolve) => {
-                    const modal = document.getElementById('currencyModal');
-                    const gameBal = getTrainingBalance() + getGameNetBalance();
-                    const realBal = getRealBalance();
-                    document.getElementById('currencyGameAmt').textContent = gameBal;
-                    document.getElementById('currencyRealAmt').textContent = realBal;
-                    modal.style.display = 'flex';
-                    const btnGame = document.getElementById('currencyBtnGame');
-                    const btnReal = document.getElementById('currencyBtnReal');
-                    const btnCancel = document.getElementById('currencyBtnCancel');
-                    function cleanup() { modal.style.display = 'none'; btnGame.onclick = null; btnReal.onclick = null; btnCancel.onclick = null; }
-                    btnGame.onclick = () => { currencyType = 'game'; bal = gameBal; cleanup(); resolve(); };
-                    btnReal.onclick = () => { currencyType = 'real'; bal = realBal; cleanup(); resolve(); };
-                    btnCancel.onclick = () => { currencyType = null; cleanup(); resolve(); };
-                });
-                if (!currencyType) return;
+                const choice = prompt(`Выберите валюту для ставки:\n1 - Игровой XP (Доступно: ${getTrainingBalance() + getGameNetBalance()})\n2 - Реальный XP (Доступно: ${getRealBalance()})\nВведите 1 (Игровой) или 2 (Реальный):`, "1");
+                if (choice === "1") { currencyType = 'game'; bal = getTrainingBalance() + getGameNetBalance(); } 
+                else if (choice === "2") { currencyType = 'real'; bal = getRealBalance(); } 
+                else return;
             }
 
             if (bal >= price) {
@@ -2773,7 +2506,7 @@
                 shopState.fsbSpent = (shopState.fsbSpent || 0) + price;
                 playSound('ok'); updateShopStats(); await saveProgress();
                 const item = fsbShopItems.find(i => i.id === id);
-                await logPurchase(`Покупка ФСБ: ${item.title}`, false, false, price, 'fsb_shop'); 
+                await logPurchase(`Покупка ФСБ: ${item.title}`, false, false, price); 
                 alert(`Успешно куплено: ${item.title}. Ожидайте выдачи от Лидера/Следящего ФСБ.`);
             } else playSound('fail');
         };
@@ -3206,8 +2939,6 @@
             if (users && users.length > 0) { 
                 creatorUsersList = users; 
                 if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join(''); 
-                const gosSel = getEl('gosLeaderUserSelect');
-                if (gosSel) gosSel.innerHTML = '<option value="">Выберите пользователя...</option>' + users.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
             }
 
             const adminSel = document.getElementById('creatorAdminSelect'); if (adminSel && creatorUsersList.length > 0) { adminSel.innerHTML = creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
@@ -3388,34 +3119,6 @@
                 const inactivePanel = document.getElementById('adminPanelAreaInactives'); if(inactivePanel) inactivePanel.style.display = 'none';
                 const rBtn = document.getElementById('reportsTableBtn'); if(rBtn) rBtn.style.display = 'none';
             }
-        }
-
-        async function loadGosOrgInfo(org) {
-            const orgNames = { fsb:'ФСБ', gibdd:'ГИБДД', mchs:'МЧС', army:'Армия РФ', police:'Полиция', dps:'ДПС', prosecutor:'Прокуратура', rosgvardia:'Росгвардия', nalog:'Налоговая', sud:'Суд', mzd:'Минздрав' };
-            const contId = org + 'LeadersList';
-            const cont = document.getElementById(contId); if (!cont) return;
-            cont.innerHTML = '<p style="color:var(--color-text-muted);">Загрузка...</p>';
-            const { data } = await supa.from('user_stats').select('nickname,email,gos_leader').not('gos_leader','is',null);
-            const leaders = (data||[]).filter(u => u.gos_leader && u.gos_leader[org]);
-            if (!leaders.length) { cont.innerHTML = '<p style="color:var(--color-text-muted);">Руководство не назначено</p>'; return; }
-            const rankLabels = { leader:'&#128081; Руководитель', deputy:'&#129309; Заместитель', staff:'&#128100; Сотрудник' };
-            cont.innerHTML = leaders.map(u => `<div style="display:flex;align-items:center;gap:0.8rem;background:rgba(255,255,255,0.04);border-radius:12px;padding:0.8rem 1rem;">
-                <span style="font-size:1.5rem;">&#128100;</span>
-                <div><div style="font-weight:700;">${u.nickname||u.email}</div><div style="color:var(--color-text-muted);font-size:0.85em;">${rankLabels[u.gos_leader[org]]||u.gos_leader[org]}</div></div>
-            </div>`).join('');
-        }
-
-        async function loadFsbShopLogs() {
-            const cont = document.getElementById('fsbShopLogsContainer'); if (!cont) return;
-            cont.innerHTML = '<p style="color:var(--color-text-muted);text-align:center;">Загрузка...</p>';
-            const { data: logs } = await supa.from('admin_logs').select('*').eq('type','fsb_shop').order('created_at',{ascending:false}).limit(100);
-            if (!logs || !logs.length) { cont.innerHTML = '<p style="color:var(--color-text-muted);text-align:center;">Логов нет</p>'; return; }
-            cont.innerHTML = logs.map(l => `<div style="background:rgba(108,140,255,0.08);border:1px solid rgba(108,140,255,0.2);border-radius:12px;padding:0.8rem 1rem;display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;justify-content:space-between;">
-                <span style="font-weight:700;color:#6c8cff;">${l.nickname || l.user_email}</span>
-                <span style="color:var(--color-text-muted);font-size:0.85em;">${l.item_name}</span>
-                <span style="color:#ffbf47;font-size:0.85em;">-${l.cost} баллов</span>
-                <span style="color:var(--color-text-faint);font-size:0.75em;">${new Date(l.created_at).toLocaleString('ru')}</span>
-            </div>`).join('');
         }
 
         async function loadReportsTable() {
@@ -3602,17 +3305,11 @@
             if(!state.started && getEl("authorName")?.textContent === "System") startGame();
         });
 
-        document.querySelectorAll('[data-action]').forEach(btn => {
-            btn.onclick = () => judge(btn.dataset.action);
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); judge(btn.dataset.action); }, {passive: false});
-        });
-        document.querySelectorAll('[data-comp-action]').forEach(btn => {
-            btn.onclick = () => judgeComplaint(btn.dataset.compAction);
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); judgeComplaint(btn.dataset.compAction); }, {passive: false});
-        });
+        document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => judge(btn.dataset.action); });
+        document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => judgeComplaint(btn.dataset.compAction); });
         
-        const sb = getEl('startBtn'); if (sb) { sb.onclick = startGame; sb.addEventListener('touchend', (e) => { e.preventDefault(); startGame(); }, {passive: false}); }
-        const rb = getEl('resetBtn'); if (rb) { rb.onclick = resetGame; rb.addEventListener('touchend', (e) => { e.preventDefault(); resetGame(); }, {passive: false}); }
+        const sb = getEl('startBtn'); if (sb) sb.onclick = startGame;
+        const rb = getEl('resetBtn'); if (rb) rb.onclick = resetGame;
         
         const themeBtn = document.querySelector('[data-theme-toggle]');
         if(themeBtn) { 
@@ -3656,14 +3353,12 @@
         });
 
         document.querySelectorAll('[data-ta-action]').forEach(btn => {
-            function doTaAction() {
+            btn.addEventListener('click', () => {
                 if(!taState.current || taTimeLeft <= 0) return;
                 const action = btn.dataset.taAction;
                 if(action === taState.current.type) { taState.score++; playSound('ok'); } else { taState.mistakes++; taTimeLeft -= 3; playSound('fail'); const timerEl = getEl('taTimer'); timerEl.classList.add('danger'); setTimeout(() => timerEl.classList.remove('danger'), 500); }
                 taNextMsg(); updateTaUI();
-            }
-            btn.addEventListener('click', doTaAction);
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); doTaAction(); }, {passive: false});
+            });
         });
 
         getEl('submitReportBtn')?.addEventListener('click', async () => {
@@ -3803,12 +3498,8 @@
              if (type === 'game') {
                  await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
              } else {
-                 if (amount > 0) {
-                     await supa.from('reports').insert([{ id: 'manual_xp_' + Date.now(), email: targetUser.email, link: 'manual', date: 'Выдача XP создателем', status: 'manual', xp: amount }]);
-                 } else {
-                     const newSpent = (Number(targetUser.shop_spent) || 0) + Math.abs(amount);
-                     await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId);
-                 }
+                 const newSpent = (Number(targetUser.shop_spent) || 0) - amount; 
+                 await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); 
              }
              alert(`Успешно! Баланс изменен.`); loadCreatorPanelData();
         });
@@ -3821,57 +3512,7 @@
             await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); loadCreatorPanelData();
         });
 
-        getEl('
-        // === GOS LEADERSHIP PANEL ===
-        getEl('gosLeaderUserSelect') && (() => {
-            // Populate user dropdown when creator panel loads
-            function populateGosUsers() {
-                const sel = getEl('gosLeaderUserSelect');
-                if (!sel || !creatorUsersList) return;
-                sel.innerHTML = '<option value="">Выберите пользователя...</option>' + creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join('');
-            }
-            // Load current GOS leaders from DB
-            async function loadGosLeaders() {
-                const cont = getEl('gosLeaderCurrentList'); if (!cont) return;
-                const { data } = await supa.from('user_stats').select('user_id,nickname,email,gos_leader').not('gos_leader','is',null).limit(50);
-                if (!data || !data.length) { cont.innerHTML = '<p style="color:var(--color-text-muted);font-size:0.85em;">Нет назначенных руководителей</p>'; return; }
-                cont.innerHTML = data.map(u => `<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,191,71,0.08);border-radius:10px;padding:0.5rem 0.8rem;font-size:0.85em;">
-                    <span style="color:#ffbf47;">${u.nickname||u.email}</span>
-                    <span style="color:var(--color-text-muted);">${JSON.stringify(u.gos_leader||{})}</span>
-                </div>`).join('');
-            }
-            document.addEventListener('creatorPanelLoaded', () => { populateGosUsers(); loadGosLeaders(); });
-            // Also populate on select change
-            getEl('gosLeaderUserSelect').onfocus = populateGosUsers;
-        })();
-
-        getEl('gosLeaderGiveBtn')?.addEventListener('click', async () => {
-            const org = getEl('gosLeaderOrgSelect')?.value;
-            const userId = getEl('gosLeaderUserSelect')?.value;
-            const rank = getEl('gosLeaderRankSelect')?.value;
-            if (!userId) return alert('Выберите пользователя!');
-            const targetUser = creatorUsersList?.find(u => u.user_id === userId);
-            if (!targetUser) return alert('Пользователь не найден!');
-
-            const orgs = org === 'all' ? ['fsb','gibdd','mchs','army','police','dps','prosecutor','rosgvardia','nalog','sud','mzd'] : [org];
-            let gosLeader = targetUser.gos_leader || {};
-
-            for (const o of orgs) {
-                if (rank === 'remove') { delete gosLeader[o]; }
-                else { gosLeader[o] = rank; }
-            }
-
-            await supa.from('user_stats').update({ gos_leader: gosLeader }).eq('user_id', userId);
-            await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname, item_name: `ГОС статус: ${org} = ${rank} → ${targetUser.nickname||targetUser.email}`, cost: 0, type: 'creator_gos', status: 'Выдано создателем' }]);
-            alert(`✅ Статус "${rank}" для организации "${org}" выдан: ${targetUser.nickname||targetUser.email}`);
-
-            // Refresh
-            const cont = getEl('gosLeaderCurrentList');
-            if (cont) { const { data } = await supa.from('user_stats').select('user_id,nickname,email,gos_leader').not('gos_leader','is',null).limit(50); if (data) cont.innerHTML = data.map(u => `<div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,191,71,0.08);border-radius:10px;padding:0.5rem 0.8rem;font-size:0.85em;"><span style="color:#ffbf47;">${u.nickname||u.email}</span><span style="color:var(--color-text-muted);font-size:0.8em;">${Object.entries(u.gos_leader||{}).map(([k,v])=>`${k}:${v}`).join(', ')}</span></div>`).join(''); }
-            loadCreatorPanelData();
-        });
-
-trollDebtBtn')?.addEventListener('click', async () => {
+        getEl('trollDebtBtn')?.addEventListener('click', async () => {
             const userId = getEl('creatorUserSelect').value, amount = Number(getEl('trollDebtAmount').value);
             if (!userId || isNaN(amount) || amount <= 0) return alert("Введите сумму!");
             const target = creatorUsersList.find(u => u.user_id === userId);
@@ -4016,17 +3657,13 @@ trollDebtBtn')?.addEventListener('click', async () => {
             const type = getEl('leadershipGiveType').value;
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             
-            if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
+            if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
 
             if (type === 'game') {
                 await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
             } else {
-                if (amount > 0) {
-                    await supa.from('reports').insert([{ id: 'manual_xp_' + Date.now(), email: targetUser.email, link: 'manual', date: 'Выдача XP руководством', status: 'manual', xp: amount }]);
-                } else {
-                    const newSpent = (Number(targetUser.shop_spent) || 0) + Math.abs(amount);
-                    await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId);
-                }
+                const newSpent = (Number(targetUser.shop_spent) || 0) - amount; 
+                await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId); 
             }
             alert('Успешно выполнено (Модерация)!');
             loadUsersForAdmin();
@@ -4044,7 +3681,7 @@ trollDebtBtn')?.addEventListener('click', async () => {
             const type = getEl('apAdminGiveType').value;
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             
-            if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
+            if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
 
             if (type === 'game') {
                 await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
@@ -4059,7 +3696,7 @@ trollDebtBtn')?.addEventListener('click', async () => {
         getEl('fsbAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = getEl('fsbAdminUserSelect').value, amount = Number(getEl('fsbAdminPointsAmount').value);
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-            if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
+            if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
             // Для ФСБ баллы считаем через уменьшение fsbSpent в локальном стейте
             alert('Успешно выполнено (ФСБ)!');
             loadUsersForAdmin();
@@ -4115,7 +3752,7 @@ trollDebtBtn')?.addEventListener('click', async () => {
                 if (isCreator) document.getElementById('creatorTabBtn').style.display = 'inline-block';
                 if (isModLeader) { document.getElementById('leadershipTabBtn').style.display = 'inline-block'; document.getElementById('adminLogTabBtn').style.display = 'inline-block'; document.getElementById('reportsTableBtn').style.display = 'inline-block'; }
                 if (isApLeader) { document.getElementById('apAdminTabBtn').style.display = 'inline-block'; document.getElementById('apAdminLogTabBtn').style.display = 'inline-block'; }
-                if (isFsbLeader) { document.getElementById('fsbAdminTabBtn').style.display = 'inline-block'; document.getElementById('fsbShopLogsTabBtn').style.display = 'inline-block'; }
+                if (isFsbLeader) { document.getElementById('fsbAdminTabBtn').style.display = 'inline-block'; }
                 
                 await loadGlobalShopAndRoulette();
             }
@@ -4125,19 +3762,3 @@ trollDebtBtn')?.addEventListener('click', async () => {
         });
     });
   </script>
-
-<!-- CURRENCY MODAL -->
-<div id="currencyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:99999; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:var(--color-surface); border:1px solid rgba(255,191,71,0.4); border-radius:20px; padding:2rem; max-width:380px; width:100%; display:flex; flex-direction:column; gap:1.2rem; text-align:center;">
-    <h3 style="margin:0; color:#ffbf47; font-family:var(--font-display); font-size:1.3rem;">&#128176; Выберите валюту</h3>
-    <p style="color:var(--color-text-muted); font-size:var(--text-sm); margin:0;">Какими баллами вы хотите оплатить?</p>
-    <button id="currencyBtnGame" class="btn btn-primary" style="padding:1rem; font-size:1rem; border-radius:14px; touch-action:manipulation;">
-      &#127918; Игровой XP <span style="opacity:0.7; font-size:0.85em;">(Доступно: <span id="currencyGameAmt">0</span>)</span>
-    </button>
-    <button id="currencyBtnReal" class="btn" style="padding:1rem; font-size:1rem; border-radius:14px; background:rgba(108,140,255,0.15); border:1px solid rgba(108,140,255,0.5); color:#6c8cff; touch-action:manipulation;">
-      &#128142; Реальный XP <span style="opacity:0.7; font-size:0.85em;">(Доступно: <span id="currencyRealAmt">0</span>)</span>
-    </button>
-    <button id="currencyBtnCancel" class="btn btn-secondary" style="padding:0.7rem; font-size:0.9rem; border-radius:12px; opacity:0.7; touch-action:manipulation;">Отмена</button>
-  </div>
-</div>
-</html>
