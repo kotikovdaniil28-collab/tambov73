@@ -6,9 +6,8 @@
   <meta name="referrer" content="no-referrer">
   
   <title>Сайт Модерации Tambov 73</title>
-  <meta property="og:title" content="Сайт Модерации Tambov 73">
-  <meta property="og:description" content="Официальный сайт модерации сервера Tambov 73">
-  <link rel="icon" href="https://i.imgur.com/b9pY3qT.png" type="image/png"> <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" href="https://i.imgur.com/b9pY3qT.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
@@ -161,10 +160,10 @@
     html[data-site-theme="complaints"] .panel { background: radial-gradient(circle at top left, rgba(255, 61, 61, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 107, 136, 0.15), transparent 55%), linear-gradient(160deg, #120505, #180408 45%, #0d0202 100%); border-color: rgba(255, 107, 136, 0.35); }
     html[data-site-theme="complaints"] .panel:hover { border-color: rgba(255, 107, 136, 0.6); }
     
-    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.15), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
+    html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="quests"] .panel:hover { border-color: rgba(180, 150, 255, 0.6); }
     
-    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); border-color: rgba(255, 191, 71, 0.4); }
+    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.16), transparent 55%), linear-gradient(155deg, rgba(25, 15, 8, 0.98), rgba(15, 8, 4, 1)); border-color: rgba(255, 191, 71, 0.4); }
     html[data-site-theme="timeattack"] .panel:hover { border-color: rgba(255, 191, 71, 0.65); }
     
     html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); border-color: rgba(255, 107, 136, 0.4); }
@@ -245,6 +244,10 @@
     .main-cat-btn[data-cat="organizations"].active { background: linear-gradient(135deg, #ff6b88, #ff3b60); color: #fff; }
 
     .sub-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; background: rgba(4, 6, 12, 0.85); border: 1px solid rgba(191, 198, 255, 0.2); padding: 0.4rem; border-radius: 999px; width: fit-content; animation: fadeIn 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.4); backdrop-filter: blur(10px); }
+    
+    /* 3-й УРОВЕНЬ НАВИГАЦИИ (ДЛЯ ФСБ И ГОСС) */
+    .sub-sub-nav { border-radius: 16px; border-style: dashed; padding: 0.6rem; animation: slideDown 0.3s ease; }
+    
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
     .mode-btn { border-radius: 999px; padding: 0.65rem 1.35rem; font-size: var(--text-sm); font-weight: 700; color: var(--color-text-muted); background: transparent; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; transition: all 0.3s; }
@@ -401,7 +404,6 @@
     .shop-buy-btn:hover:not(:disabled) { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 35px rgba(82, 199, 123, 0.6); }
     .shop-buy-btn:disabled { background: rgba(255, 255, 255, 0.05); color: #888; box-shadow: none; cursor: not-allowed; border: 1px solid rgba(255,255,255,0.1); }
 
-    /* Специфичные стили для Магазина АП */
     .ap-shop-card { border-color: rgba(255, 143, 196, 0.4); background: linear-gradient(145deg, rgba(35, 10, 26, 0.9), rgba(16, 4, 12, 0.95)); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 143, 196, 0.05); }
     .ap-shop-card:hover { border-color: rgba(255, 143, 196, 0.8); box-shadow: 0 20px 50px rgba(255, 143, 196, 0.25); }
     .ap-shop-card h3 { color: #ff8fc4; text-shadow: 0 0 15px rgba(255,143,196,0.3); }
@@ -430,20 +432,15 @@
     .r-fine { background: radial-gradient(circle, rgba(255, 107, 136, 0.2) 0%, transparent 70%); border-bottom: 4px solid #ff6b88; }
     .r-fine span { color: #ff9fb4; }
 
-    /* === ОРЁЛ И РЕШКА === */
     @keyframes coinFlipAnim { 0% { transform: scaleY(1); } 50% { transform: scaleY(0); } 100% { transform: scaleY(1); } }
     .flipping { animation: coinFlipAnim 0.15s infinite; }
-
-    /* === ТРИ СЕЙФА === */
     .safe-btn:hover:not(:disabled) { transform: scale(1.15) translateY(-5px); box-shadow: 0 15px 30px rgba(162, 108, 255, 0.5); }
     
-    /* === ВИКТОРИНА === */
     .jw-option-btn { width: 100%; padding: 1.2rem; border-radius: 14px; background: rgba(255, 107, 136, 0.15); border: 2px solid rgba(255, 107, 136, 0.4); color: #fff; font-weight: 800; font-size: 1.1rem; transition: 0.3s ease; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; }
     .jw-option-btn:hover:not(:disabled) { background: rgba(255, 107, 136, 0.35); border-color: #ff6b88; transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 25px rgba(255, 107, 136, 0.4); }
     .jw-option-btn.correct { background: rgba(82, 199, 123, 0.3) !important; border-color: #52c77b !important; color: #8df0ae !important; box-shadow: 0 0 20px rgba(82, 199, 123, 0.5); }
     .jw-option-btn.wrong { background: rgba(255, 107, 136, 0.4) !important; border-color: #ff6b88 !important; color: #ffb1c1 !important; }
 
-    /* === ИНТЕРАКТИВНЫЕ МИНИ-ИГРЫ === */
     .gg-btn { padding: 1.5rem; font-size: 3rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.15); border-radius: 18px; cursor: pointer; transition: 0.3s ease; flex: 1; text-align: center; }
     .gg-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); transform: scale(1.08) translateY(-5px); border-color: var(--color-primary); box-shadow: 0 15px 35px rgba(108,140,255,0.4); }
     
@@ -454,7 +451,6 @@
     .timing-zone { position: absolute; left: 40%; width: 20%; height: 100%; background: linear-gradient(90deg, #3da860, #52c77b, #3da860); box-shadow: 0 0 25px #52c77b; }
     .timing-cursor { position: absolute; left: 0; width: 10px; height: 100%; background: #fff; box-shadow: 0 0 20px #fff; border-radius: 5px; z-index: 2; }
 
-    /* === ROCKET И КЕЙСЫ === */
     .rocket-graph { height: 250px; width: 100%; background: linear-gradient(to top, #0f2027, #203a43, #2c5364); border: 2px solid var(--color-primary); border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.9); margin-bottom: 1rem; }
     .rocket-multiplier { font-family: var(--font-display); font-size: 4rem; color: #fff; text-shadow: 0 0 20px var(--color-primary); z-index: 4; transition: color 0.2s; position: relative; }
     .rocket-emoji { font-size: 4rem; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); transition: bottom 0.1s linear; z-index: 3; filter: drop-shadow(0 10px 10px rgba(255,100,50,0.8)); }
@@ -465,7 +461,6 @@
     .case-box.silver { border-color: #c0c0c0; box-shadow: 0 10px 30px rgba(192,192,192,0.3); }
     .case-box.gold { border-color: #ffd700; box-shadow: 0 10px 30px rgba(255,215,0,0.3); }
 
-    /* НОВЫЕ ИГРЫ CSS */
     .dice-container, .hilo-container, .wheelx-container, .shells-container { display: flex; gap: 1rem; justify-content: center; align-items: center; margin-bottom: 1rem; width: 100%; flex-wrap: wrap; }
     .dice-box { width: 100px; height: 100px; background: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 900; color: #000; box-shadow: inset 0 0 15px rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.5); }
     
@@ -491,6 +486,9 @@
     .support-answer-row { display: flex; flex-direction: column; gap: 0.8rem; }
     .support-answer-row-inner { display: flex; gap: 1rem; align-items: stretch; }
 
+    /* 3-й УРОВЕНЬ НАВИГАЦИИ (ДЛЯ ФСБ И ГОСС) */
+    .sub-sub-nav { border-radius: 16px; border-style: dashed; padding: 0.6rem; animation: fadeIn 0.3s ease; }
+
     @media (max-width: 900px) {
       .page { padding: 1rem 0.5rem 2rem; }
       .hero, .game-wrap { grid-template-columns: 1fr; gap: 1rem; }
@@ -507,11 +505,9 @@
       .admin-action-grid { grid-template-columns: 1fr !important; }
       .shop-grid { grid-template-columns: 1fr; }
       .slot-item { width: 70px; height: 70px; font-size: 2.5rem; }
-      .main-nav { justify-content: center; width: 100%; }
-      .sub-nav { justify-content: center; width: 100%; }
+      .main-nav, .sub-nav, .sub-sub-nav { justify-content: center; width: 100%; }
       .badge-row { justify-content: center; }
-      .hero h1 { text-align: center; margin: 0 auto; }
-      .hero p { text-align: center; }
+      .hero h1, .hero p { text-align: center; margin: 0 auto; }
       .hero-actions { justify-content: center; }
       .message-card { padding: 1.2rem; border-radius: 16px; }
     }
@@ -862,18 +858,14 @@
       </div>
 
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
-        <button class="mode-btn" data-mode="gov" type="button">Правительство</button>
-        <button class="mode-btn" data-mode="fsb" type="button">ФСБ</button>
-        <button class="mode-btn" data-mode="umvd" type="button">УМВД</button>
-        <button class="mode-btn" data-mode="gibdd" type="button">ГИБДД</button>
-        <button class="mode-btn" data-mode="army" type="button">Армия (ВМФ)</button>
-        <button class="mode-btn" data-mode="med" type="button">ЦБ</button>
-        <button class="mode-btn" data-mode="news" type="button">СМИ</button>
-        <button class="mode-btn" data-mode="fsin" type="button">ФСИН</button>
-        
-        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_log" type="button" id="fsbLogTabBtn" style="display:none;">Логи ФСБ</button>
+        <button class="mode-btn" data-org="gov" type="button">Правительство</button>
+        <button class="mode-btn" data-org="fsb" type="button">ФСБ</button>
+        <button class="mode-btn" data-org="umvd" type="button">УМВД</button>
+        <button class="mode-btn" data-org="gibdd" type="button">ГИБДД</button>
+        <button class="mode-btn" data-org="army" type="button">Армия (ВМФ)</button>
+        <button class="mode-btn" data-org="med" type="button">ЦБ</button>
+        <button class="mode-btn" data-org="news" type="button">СМИ</button>
+        <button class="mode-btn" data-org="fsin" type="button">ФСИН</button>
       </div>
       
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
@@ -883,6 +875,13 @@
         <button class="mode-btn" data-mode="guide" type="button">Руководство</button>
         <button class="mode-btn" data-mode="about" type="button">О команде</button>
         <button class="mode-btn" data-mode="profile" type="button">Профиль</button>
+      </div>
+
+      <div class="sub-sub-nav" id="subSubNavFsb" style="display:none; border-color: #6c8cff; margin-top: 0.5rem; justify-content: center; display: flex; flex-wrap: wrap; gap: 0.4rem; background: rgba(4, 6, 12, 0.85); backdrop-filter: blur(10px); width: fit-content;">
+        <button class="mode-btn active" data-mode="fsb" type="button" style="color:#6c8cff;">Тренажёр ФСБ</button>
+        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none; color:#6c8cff;">Магазин ФСБ</button>
+        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none; color:#6c8cff;">Руководство ФСБ</button>
+        <button class="mode-btn" data-mode="fsb_log" type="button" id="fsbLogTabBtn" style="display:none; color:#6c8cff;">Логи ФСБ</button>
       </div>
     </div>
 
@@ -1689,7 +1688,6 @@
     });
 
     // === БЕЗОПАСНЫЙ И НАДЁЖНЫЙ КЛИК ДЛЯ ТЕЛЕФОНОВ И ПК ===
-    // Используем прямое присвоение .onclick, чтобы не плодить дубли и не ломать DOM
     function safeClick(id, handler) {
         const el = document.getElementById(id);
         if(!el) return;
@@ -1866,7 +1864,10 @@
 
         document.getElementById('shopTabBtn').style.display = isModerator ? 'inline-block' : 'none';
         document.getElementById('apShopTabBtn').style.display = isAp ? 'inline-block' : 'none';
+        
+        // ФСБ скрытые кнопки для 3-го уровня
         document.getElementById('fsbShopTabBtn').style.display = isFsbUser ? 'inline-block' : 'none';
+        document.getElementById('fsbLogTabBtn').style.display = isFsbUser ? 'inline-block' : 'none';
         
         if (isModerator) {
             document.getElementById('reportTabBtn').style.display = 'inline-block';
@@ -2801,23 +2802,55 @@
         });
     }
 
+    // Обработчик главных вкладок
     document.querySelectorAll('.main-cat-btn').forEach(btn => {
         btn.onclick = (e) => {
-            document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active');
-            const cat = e.target.dataset.cat; document.querySelectorAll('.sub-nav').forEach(sn => sn.style.display = 'none');
+            document.querySelectorAll('.main-cat-btn').forEach(b => b.classList.remove('active')); 
+            e.target.classList.add('active');
+            
+            const cat = e.target.dataset.cat; 
+            document.querySelectorAll('.sub-nav').forEach(sn => sn.style.display = 'none');
+            document.getElementById('subSubNavFsb').style.display = 'none'; // Скрываем 3-й уровень
+            
             if(cat === 'moderation') { document.getElementById('subNavModeration').style.display = 'flex'; document.querySelector('[data-mode="moderation"]').click(); }
             else if(cat === 'support') { document.getElementById('subNavSupport').style.display = 'flex'; document.querySelector('[data-mode="support"]').click(); }
             else if(cat === 'general') { document.getElementById('subNavGeneral').style.display = 'flex'; document.querySelector('[data-mode="quests"]').click(); }
-            else if(cat === 'organizations') { document.getElementById('subNavOrganizations').style.display = 'flex'; document.querySelector('[data-mode="fsb"]').click(); }
+            else if(cat === 'organizations') { document.getElementById('subNavOrganizations').style.display = 'flex'; document.querySelector('[data-org="fsb"]').click(); }
         };
     });
 
-    document.querySelectorAll('.mode-btn').forEach(btn => {
+    // Обработчик второго уровня (Организации)
+    document.querySelectorAll('[data-org]').forEach(btn => {
+        btn.onclick = (e) => {
+            const org = e.target.dataset.org;
+            document.querySelectorAll('#subNavOrganizations .mode-btn').forEach(b => b.classList.remove('active')); 
+            e.target.classList.add('active');
+            
+            if(org === 'fsb') {
+                document.getElementById('subSubNavFsb').style.display = 'flex';
+                document.querySelector('#subSubNavFsb [data-mode="fsb"]').click();
+            } else {
+                document.getElementById('subSubNavFsb').style.display = 'none';
+                document.querySelectorAll('.game-card').forEach(c => c.style.display = 'none');
+                const targetCard = document.getElementById('mode-' + org);
+                if(targetCard) targetCard.style.display = 'grid';
+                setSiteTheme(org);
+            }
+        };
+    });
+
+    // Обработчик обычных вкладок
+    document.querySelectorAll('[data-mode]').forEach(btn => {
         btn.onclick = (e) => {
             const mode = e.target.dataset.mode; if(!mode) return;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); e.target.classList.add('active');
-            document.querySelectorAll('.game-card').forEach(c => c.style.display = 'none'); const targetCard = document.getElementById('mode-' + mode);
-            if(targetCard) targetCard.style.display = 'grid'; setSiteTheme(mode);
+            document.querySelectorAll('.sub-nav:not(#subNavOrganizations) .mode-btn, .sub-sub-nav .mode-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            document.querySelectorAll('.game-card').forEach(c => c.style.display = 'none'); 
+            const targetCard = document.getElementById('mode-' + mode);
+            if(targetCard) targetCard.style.display = 'grid'; 
+            setSiteTheme(mode);
+            
             if (mode === 'shop') renderShopItems();
             if (mode === 'ap_shop') renderApShopItems();
             if (mode === 'fsb_shop') renderFsbShopItems();
@@ -2825,7 +2858,7 @@
         };
     });
 
-    // Привязываем кнопки выдачи XP и логирования
+    // === ПРИВЯЗКА КНОПОК ===
     safeClick('creatorXpBtn', () => handleGiveXp(document.getElementById('creatorUserSelect').value, document.getElementById('creatorGiveType').value, Number(document.getElementById('creatorXpAmount').value), 'mod'));
     safeClick('leadershipXpBtn', () => handleGiveXp(document.getElementById('leadershipUserSelect').value, document.getElementById('leadershipGiveType').value, Number(document.getElementById('leadershipXpAmount').value), 'mod'));
     safeClick('apAdminPointsBtn', () => handleGiveXp(document.getElementById('apAdminUserSelect').value, document.getElementById('apAdminGiveType').value, Number(document.getElementById('apAdminPointsAmount').value), 'ap'));
@@ -2859,6 +2892,11 @@
         pushLog("🟢 Смена успешно начата. Загружены первые сообщения."); alert("Смена начата! Сообщения загружены.");
     });
     safeClick('resetBtn', () => { if(confirm("Сбросить смену? Прогресс не сохранится.")) location.reload(); });
+
+    safeClick('closeSpamModal', () => {
+        document.getElementById('spamModal').style.display = 'none';
+        if(spamLockTimeout) { clearInterval(spamLockTimeout); spamLockTimeout = null; }
+    });
 
     safeClickAll('[data-action]', (e, el) => window.judge(el.dataset.action));
     safeClickAll('[data-comp-action]', (e, el) => window.judgeComplaint(el.dataset.compAction));
