@@ -839,7 +839,14 @@
       </div>
 
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
-        <button class="mode-btn" data-mode="fsb" type="button">ФСБ (Академия)</button>
+        <button class="mode-btn" data-mode="government" type="button">Правительство</button>
+        <button class="mode-btn" data-mode="fsb" type="button">ФСБ</button>
+        <button class="mode-btn" data-mode="gibdd" type="button">ГИБДД</button>
+        <button class="mode-btn" data-mode="uvd" type="button">УМВД</button>
+        <button class="mode-btn" data-mode="army" type="button">Армия</button>
+        <button class="mode-btn" data-mode="hospital" type="button">Больница</button>
+        <button class="mode-btn" data-mode="media" type="button">СМИ</button>
+        <button class="mode-btn" data-mode="fsin" type="button">ФСИН</button>
         <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
         <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
       </div>
@@ -856,7 +863,14 @@
 
     <section class="game-wrap" id="game">
 
-      <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
+      <section class="panel game-card fade-in" id="mode-government" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88">Правительство</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Правительства.</div></section>
+    <section class="panel game-card fade-in" id="mode-gibdd" style="display:none;"><div class="section-head"><h2 style="color:#ffb347">ГИБДД</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику ГИБДД.</div></section>
+    <section class="panel game-card fade-in" id="mode-uvd" style="display:none;"><div class="section-head"><h2 style="color:#7fb7ff">УМВД</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику УМВД.</div></section>
+    <section class="panel game-card fade-in" id="mode-army" style="display:none;"><div class="section-head"><h2 style="color:#8fe0a8">Армия</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Армии.</div></section>
+    <section class="panel game-card fade-in" id="mode-hospital" style="display:none;"><div class="section-head"><h2 style="color:#6bffd6">Больница</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику Больницы.</div></section>
+    <section class="panel game-card fade-in" id="mode-media" style="display:none;"><div class="section-head"><h2 style="color:#ff9e6b">СМИ</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику СМИ.</div></section>
+    <section class="panel game-card fade-in" id="mode-fsin" style="display:none;"><div class="section-head"><h2 style="color:#c4a1ff">ФСИН</h2><p>Раздел государственной организации подключён.</p></div><div class="message-text">Здесь можно развивать отдельную логику ФСИН.</div></section>
+    <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
         <div class="section-head">
           <h2 style="color: #6c8cff;">Федеральная Служба Безопасности (ФСБ)</h2>
           <p>Рассмотрение заявлений в Академию ФСБ и проверка по УК РФ.</p>
@@ -3314,8 +3328,8 @@
         
         getEl('loginBtnUI').onclick = () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; };
         getEl('authCloseModal').onclick = () => { getEl('authModal').style.display = 'none'; };
-        getEl('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
-        supa.auth.onAuthStateChange((_event, session) => { if (session?.user) currentUser = session.user; });
+        getEl('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); currentUser = null; await syncAuthUI(); };
+        supa.auth.onAuthStateChange(async (_event, session) => { currentUser = session?.user || null; await syncAuthUI(); });
 
         getEl('authLoginSubmit').onclick = async () => {
             const email = getEl('authEmail').value.trim(), password = getEl('authPassword').value, err = getEl('authErrorMsg');
@@ -3325,7 +3339,8 @@
             if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; return; }
             err.textContent = "Вход выполнен успешно"; err.style.color = "var(--color-success)";
             currentUser = data?.user || (await supa.auth.getUser()).data?.user || null;
-            setTimeout(() => window.location.reload(), 400);
+            await syncAuthUI();
+            setTimeout(() => { try { closeAuthModal(); } catch(e) {} }, 250);
         };
 
         getEl('authRegisterSubmit').onclick = async () => {
@@ -3575,7 +3590,7 @@
              const type = getEl('creatorGiveType').value;
              if (!userId || isNaN(amount)) return; 
              const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-             if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Неприкосновенность Создателя!");
+             if (targetUser.email === creatorEmail && currentUser?.email !== creatorEmail) return alert("Нельзя менять XP создателю с другого аккаунта!");
              
              if (type === 'game') {
                  await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
@@ -3811,8 +3826,27 @@
         renderGovPanel('govPanelFsin','ФСИН','#c4a1ff');
         bindModerationVerdicts();
         
+        async function syncAuthUI() {
+            const { data: { session } } = await supa.auth.getSession();
+            currentUser = session?.user || null;
+            const emailEl = getEl('userEmailDisplay');
+            const loginBtn = getEl('loginBtnUI');
+            const logoutBtn = getEl('logoutBtnUI');
+            if (currentUser) {
+                if (emailEl) emailEl.textContent = currentUser.email || 'Аккаунт';
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+                getEl('authModal').style.display = 'none';
+            } else {
+                if (emailEl) emailEl.textContent = 'Гость';
+                if (loginBtn) loginBtn.style.display = 'inline-flex';
+                if (logoutBtn) logoutBtn.style.display = 'none';
+            }
+        }
+
         supa.auth.getSession().then(async ({ data: { session } }) => { 
             currentUser = session?.user || null;
+            await syncAuthUI();
             if (currentUser) {
                 const { data: trollData } = await supa.from('reports').select('status').eq('email', 'TROLL_EFFECT').eq('link', currentUser.id).maybeSingle();
                 if (trollData) {
