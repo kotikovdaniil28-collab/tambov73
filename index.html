@@ -91,7 +91,8 @@
     @keyframes modeFade { from { opacity: 0; transform: translateY(15px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
+    /* ВАЖНО: Добавлено touch-action: manipulation для идеального отклика на телефонах */
+    button { cursor: pointer; border: none; touch-action: manipulation; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
     button:hover { transform: translateY(-3px); }
     button:active { transform: translateY(1px) scale(0.97); }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
@@ -164,7 +165,7 @@
     html[data-site-theme="quests"] .panel { background: radial-gradient(circle at top left, rgba(162, 108, 255, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(196, 161, 255, 0.15), transparent 55%), linear-gradient(160deg, #0d0514, #120818 45%, #0a040d 100%); border-color: rgba(180, 150, 255, 0.35); }
     html[data-site-theme="quests"] .panel:hover { border-color: rgba(180, 150, 255, 0.6); }
     
-    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); }
+    html[data-site-theme="timeattack"] .panel { background: radial-gradient(circle at top left, rgba(255, 191, 71, 0.25), transparent 55%), radial-gradient(circle at bottom right, rgba(255, 61, 0, 0.2), transparent 55%), linear-gradient(160deg, #181005, #120502 45%, #0d0202 100%); border-color: rgba(255, 191, 71, 0.4); }
     html[data-site-theme="timeattack"] .panel:hover { border-color: rgba(255, 191, 71, 0.65); }
     
     html[data-site-theme="creator"] .panel { background: radial-gradient(circle at top left, rgba(255, 107, 136, 0.2), transparent 55%), radial-gradient(circle at bottom right, rgba(162, 108, 255, 0.2), transparent 55%), linear-gradient(160deg, #1a0510, #0a0208 45%, #050104 100%); border-color: rgba(255, 107, 136, 0.4); }
@@ -230,7 +231,7 @@
     html[data-site-theme="quests"] .btn-primary { background: linear-gradient(135deg, #a26cff, #c4a1ff); box-shadow: 0 10px 30px rgba(162, 108, 255, 0.4); border-color: #a26cff; }
     html[data-site-theme="admin_log"] .btn-primary, html[data-site-theme="ap_admin_log"] .btn-primary { background: linear-gradient(135deg, #ffbf47, #ff9e00); box-shadow: 0 10px 30px rgba(255, 191, 71, 0.4); color: #18171c; }
     html[data-site-theme="timeattack"] .btn-primary { background: linear-gradient(135deg, #ffbf47, #ff3d00); box-shadow: 0 10px 30px rgba(255, 191, 71, 0.4); color: #fff; }
-    html[data-site-theme="creator"] .btn-primary { background: linear-gradient(135deg, #ff3b60, #ff6b88); box-shadow: 0 10px 30px rgba(255, 107, 136, 0.4); color: #fff; border-color: #ff3b60; }
+    html[data-site-theme="creator"] .btn-primary { background: linear-gradient(135deg, #ff3b60, #ff6b88); box-shadow: 0 8px 20px rgba(255, 107, 136, 0.5); border-color: #ff3b60; }
 
     /* === ДВУХУРОВНЕВАЯ НАВИГАЦИЯ === */
     .nav-container { display: flex; flex-direction: column; gap: 0.85rem; margin: 2rem 0 1.5rem; }
@@ -578,30 +579,22 @@
     </div>
   </div>
 
-  <div id="currencyModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 10001; align-items: center; justify-content: center; padding: 1rem;">
+  <div id="currencyModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px); z-index: 100000; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 1.5rem; text-align: center;">
-        <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.8rem; color: #fff;">Оплата ставки</h2>
-        <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Выберите баланс для списания:</p>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button id="currGameBtn" style="flex: 1; min-height: 80px; border-radius: 16px; border: 2px solid var(--color-warning); background: rgba(0,0,0,0.5); color: var(--color-warning); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
-                <span style="font-size: 1.5rem;">🎮</span>
-                <span style="font-weight: bold;">Игровой XP</span>
-                <span id="currGameBal" style="font-size: 0.8rem; color: var(--color-text-faint);">Баланс: 0</span>
-            </button>
-            <button id="currRealBtn" style="flex: 1; min-height: 80px; border-radius: 16px; border: 2px solid var(--color-success); background: rgba(0,0,0,0.5); color: var(--color-success); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
-                <span style="font-size: 1.5rem;">⭐</span>
-                <span style="font-weight: bold;">Реальный XP</span>
-                <span id="currRealBal" style="font-size: 0.8rem; color: var(--color-text-faint);">Баланс: 0</span>
-            </button>
-        </div>
-        <button id="currCancelBtn" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--color-text-muted); width: 100%;">Отмена</button>
+      <h2 style="margin: 0; font-family: var(--font-display); color: #ffbf47; font-size: 1.8rem;">Оплата</h2>
+      <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0;">Выберите баланс для списания XP:</p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button id="currGameBtn" class="btn btn-primary" style="flex: 1; padding: 1.2rem; font-size: 1rem; border-color: var(--color-warning); color: var(--color-warning); background: rgba(0,0,0,0.5);">Игровой XP</button>
+          <button id="currRealBtn" class="btn btn-primary" style="flex: 1; padding: 1.2rem; font-size: 1rem; border-color: var(--color-success); color: var(--color-success); background: rgba(0,0,0,0.5);">Реальный XP</button>
+      </div>
+      <button id="currCancelBtn" class="btn btn-secondary" style="width: 100%;">Отмена</button>
     </div>
   </div>
 
-  <div id="ssModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px); z-index: 10000; align-items: center; justify-content: center; padding: 1rem;">
+  <div id="ssModal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(12px); z-index: 100000; align-items: center; justify-content: center; padding: 1rem;">
     <div class="panel" style="padding: 2.5rem; width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 1.5rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.8rem; color: #fff;">Старший Состав ГОСС</h2>
+            <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.8rem; color: #fff;">Старший Состав</h2>
             <select id="ssOrgFilter" class="support-input" style="width: auto; padding: 0.5rem 1rem; border-color: var(--color-primary);">
                 <option value="pravo">Правительство</option>
                 <option value="fsb">ФСБ</option>
@@ -613,25 +606,22 @@
                 <option value="fsin">ФСИН</option>
             </select>
         </div>
-        <div style="width: 100%; overflow-x: auto; background: rgba(0,0,0,0.4); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-top: 1rem;">
-            <table style="width: 100%; border-collapse: collapse; min-width: 500px; text-align: left;">
+        <div style="width: 100%; overflow-x: auto;">
+            <table style="width: 100%; text-align: left; border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th style="padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); color: var(--color-primary); border-bottom: 1px solid rgba(255,255,255,0.05);">Должность</th>
-                        <th style="padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); color: var(--color-primary); border-bottom: 1px solid rgba(255,255,255,0.05);">NickName</th>
-                        <th style="padding: 0.8rem 1rem; background: rgba(255,255,255,0.05); color: var(--color-primary); border-bottom: 1px solid rgba(255,255,255,0.05);">Дата постановления</th>
+                        <th style="padding: 0.5rem; color: #6c8cff; border-bottom: 1px solid rgba(255,255,255,0.1);">Должность</th>
+                        <th style="padding: 0.5rem; color: #6c8cff; border-bottom: 1px solid rgba(255,255,255,0.1);">NickName</th>
+                        <th style="padding: 0.5rem; color: #6c8cff; border-bottom: 1px solid rgba(255,255,255,0.1);">Дата постановления</th>
                     </tr>
                 </thead>
-                <tbody id="ssTableBody">
-                    </tbody>
+                <tbody id="ssTableBody"></tbody>
             </table>
         </div>
-        <div style="display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-            <div style="display: flex; gap: 1rem;">
-                <button id="ssEditBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning); display: none;">Редактировать</button>
-                <button id="ssSaveBtn" class="btn btn-primary" style="display: none;">Сохранить изменения</button>
-            </div>
-            <button id="ssCloseBtn" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: var(--color-text-muted);">Закрыть</button>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button id="ssEditBtn" class="btn btn-secondary" style="flex: 1; border-color: var(--color-warning); color: var(--color-warning); display: none;">Редактировать</button>
+            <button id="ssSaveBtn" class="btn btn-primary" style="flex: 1; display: none;">Сохранить</button>
+            <button id="ssCloseBtn" class="btn btn-secondary" style="flex: 1;">Закрыть</button>
         </div>
     </div>
   </div>
@@ -887,7 +877,7 @@
 
       <div class="sub-nav" id="subNavOrganizations" style="display:none;">
         <button class="mode-btn active" data-mode="goss_org" data-org="pravo" type="button">Правительство</button>
-        <button class="mode-btn" data-mode="fsb" data-org="fsb" type="button">ФСБ</button>
+        <button class="mode-btn" data-mode="fsb" data-org="fsb" type="button">ФСБ (Академия)</button>
         <button class="mode-btn" data-mode="goss_org" data-org="gibdd" type="button">ГИБДД</button>
         <button class="mode-btn" data-mode="goss_org" data-org="umvd" type="button">УМВД</button>
         <button class="mode-btn" data-mode="goss_org" data-org="mo" type="button">Армия</button>
@@ -895,8 +885,8 @@
         <button class="mode-btn" data-mode="goss_org" data-org="smi" type="button">СМИ</button>
         <button class="mode-btn" data-mode="goss_org" data-org="fsin" type="button">ФСИН</button>
         
-        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ГОСС</button>
-        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ГОСС</button>
+        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ/ГОСС</button>
+        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ/ГОСС</button>
         <button class="mode-btn" data-mode="goss_log" type="button" id="gossLogTabBtn" style="display:none;">Логи ГОСС</button>
       </div>
       
@@ -934,8 +924,8 @@
             <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
           </article>
           <div class="controls">
-            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
-            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')">✅ Одобрить (Годен)</button>
+            <button class="action-btn warn-btn" type="button" data-fsb-action="reject">❌ Отказать (НонРП/Ошибки)</button>
+            <button class="action-btn skip-btn" type="button" data-fsb-action="approve">✅ Одобрить (Годен)</button>
           </div>
         </div>
       </section>
@@ -964,7 +954,7 @@
       <section class="panel game-card fade-in" id="mode-fsb_shop" style="display:none;">
         <div class="section-head">
             <h2 style="color:#6c8cff;">Магазин ГОСС</h2>
-            <p>Покупайте бонусы, иммунитеты и отгулы за Баллы!</p>
+            <p>Покупайте бонусы, иммунитеты и испытайте удачу за Баллы ФСБ!</p>
         </div>
         <div class="stats-grid" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(108,140,255,0.2);">
           <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="fsbShopTotalPts" style="color:#6c8cff; font-size: 2.2rem;">0</div></div>
@@ -976,11 +966,11 @@
         <div class="section-head"><h2 style="color:#6c8cff;">Руководство ГОСС</h2><p>Управление составом сотрудников и выдача баллов.</p></div>
         
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #6c8cff;">➕ Выдача статуса Сотрудника</h3>
+          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #6c8cff;">➕ Выдача статуса ГОСС</h3>
           <select id="leadAddFsbSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <button id="leadAddFsbBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width: 100%;">Выдать статус (ГОСС)</button>
+          <button id="leadAddFsbBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width: 100%;">Выдать статус Сотрудника</button>
           
-          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список сотрудников текущей ГОСС:</h4>
+          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список сотрудников ФСБ/ГОСС:</h4>
           <div id="leadFsbList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
         </div>
 
@@ -995,453 +985,7 @@
       <section class="panel game-card fade-in" id="mode-goss_log" style="display:none;">
         <div class="section-head">
           <h2 style="color: #6c8cff;">Логи ГОСС</h2>
-          <p>Смены сотрудников и покупки в магазине организации.</p>
-        </div>
-        <button class="btn btn-secondary" type="button" id="loadGossLogsBtn" style="width:100%; margin-bottom:1.5rem; border-color: #6c8cff; color: #6c8cff;">🔄 Обновить логи ГОСС</button>
-        <div class="feed" id="gossLogsArea">
-            <div class="message-text" style="text-align: center; padding: 2rem;">Нажмите «Обновить логи ГОСС»</div>
-        </div>
-      </section>
-
-
-      <section class="panel game-card fade-in" id="mode-profile" style="display:none;">
-        <div class="section-head">
-          <h2>Личный Профиль</h2>
-          <p>Ваша статистика, баланс и визуальная косметика.</p>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1.5rem; background: rgba(13, 16, 32, 0.6); padding: 1.8rem; border-radius: 18px; border: 1px solid rgba(191, 198, 255, 0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.4);">
-            <div class="avatar" id="profileAvatar" style="width: 85px; height: 85px; font-size: 2.2rem;">?</div>
-            <div>
-                <h3 id="profileName" style="font-size: 1.9rem; margin-bottom: 0.3rem; color: #fff;">Загрузка...</h3>
-                <div style="color: var(--color-text-muted); font-size: 0.95rem;">Должность: Сотрудник проекта</div>
-            </div>
-        </div>
-        <div class="stats-grid" style="margin-top: 1.2rem;">
-          <div class="stat"><span class="stat-label">Игровой XP (Тренажер)</span><div class="stat-value" id="profileXp" style="color:var(--color-primary);">0</div></div>
-          <div class="stat"><span class="stat-label">Реальный XP (Отчеты)</span><div class="stat-value" id="profileRealXp" style="color:var(--color-success);">0</div></div>
-          <div class="stat"><span class="stat-label">Доступно Баллов АП</span><div class="stat-value" id="profilePts" style="color:#ff8fc4;">0</div></div>
-        </div>
-        <div style="margin-top: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: var(--color-success);">Косметика (Инвентарь)</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem;" id="cosmeticsContainer">
-                <div style="padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center; transition: transform 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    <div style="font-size: 2.5rem; margin-bottom: 0.8rem; filter: drop-shadow(0 0 10px rgba(255,191,71,0.5));">👑</div>
-                    <div style="font-weight: bold; margin-bottom: 1rem; font-size: 1.1rem;">Корона Лидера</div>
-                    <button id="equipCrownBtn" class="btn btn-secondary" style="width: 100%; padding: 0.8rem;">Надеть</button>
-                </div>
-                <div style="padding: 1.5rem; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); text-align: center; transition: transform 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    <div style="font-size: 2.5rem; margin-bottom: 0.8rem; filter: drop-shadow(0 0 10px rgba(162,108,255,0.5));">🌈</div>
-                    <div style="font-weight: bold; margin-bottom: 1rem; font-size: 1.1rem;">Цветной Ник</div>
-                    <button id="equipColorBtn" class="btn btn-secondary" style="width: 100%; padding: 0.8rem;">Надеть</button>
-                </div>
-            </div>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-reports_table" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #52c77b;">Таблица Отчетов Модерации</h2>
-          <p>Сводка по датам: кто сдал норму, а кто халтурит.</p>
-        </div>
-        <div class="rt-controls">
-            <button class="btn btn-secondary" id="rtPrevWeekBtn" style="padding: 0.6rem 1rem;">⬅️ Прошлая неделя</button>
-            <h3 id="rtCurrentWeekLabel" style="margin:0; font-size: 1rem; font-weight: 800; color:#fff;">Текущая неделя</h3>
-            <button class="btn btn-secondary" id="rtNextWeekBtn" style="padding: 0.6rem 1rem;" disabled>Следующая неделя ➡️</button>
-        </div>
-        <div id="reportsTableWrapper">
-           <div class="message-text" style="text-align:center; padding:2rem;">Загрузка данных...</div>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
-        <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
-        
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: #fff;">Управление Руководством ГОСС</h3>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <select id="creatorGossOrgSelect" class="support-input">
-                    <option value="pravo">Правительство</option>
-                    <option value="fsb">ФСБ</option>
-                    <option value="gibdd">ГИБДД</option>
-                    <option value="umvd">УМВД</option>
-                    <option value="mo">Армия (МО)</option>
-                    <option value="cb">Больница (ЦБ)</option>
-                    <option value="smi">СМИ</option>
-                    <option value="fsin">ФСИН</option>
-                </select>
-                <select id="creatorGossUserSelect" class="support-input"><option>Загрузка...</option></select>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <button id="giveGossLeaderBtn" class="btn btn-primary" style="flex: 1;">Выдать Лидерку/Замку</button>
-                    <button id="removeGossLeaderBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); flex: 1;">Снять Лидерку/Замку</button>
-                </div>
-            </div>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-primary);">База Модераторов (Изменение XP)</h3>
-          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">Руководство здесь не отображается. Укажите ИТОГОВОЕ значение, система сама добавит или отнимет разницу.</p>
-          <div id="creatorDbContainer" style="max-height: 400px; overflow-y: auto;">
-             Загрузка базы...
-          </div>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-primary);">Обычная Выдача / Изъятие XP</h3>
-          <select id="creatorUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
-          <select id="creatorGiveType" class="support-input" style="margin-bottom: 1rem;">
-             <option value="game">Игровой XP (Баланс на сайте)</option>
-             <option value="report">Реальный XP (Отчеты/Снятия)</option>
-          </select>
-          <input type="number" id="creatorXpAmount" class="support-input" placeholder="Количество XP (например: 100 или -50)" style="margin-bottom: 1rem;">
-          <button id="creatorXpBtn" class="btn btn-primary" style="width: 100%;">Изменить баланс XP</button>
-        </div>
-        
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(162, 108, 255, 0.3); margin-bottom: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; font-size: var(--text-base); color: #a26cff;">Глобальные настройки</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <span style="color:#fff; font-weight: 600; font-size: 0.95rem;">Блокировать функции без сданного отчета</span>
-                <input type="checkbox" id="requireReportsToggle" style="width:24px; height:24px; accent-color: #a26cff; cursor: pointer;">
-            </div>
-        </div>
-
-        <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
-          <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
-          <input type="number" id="trollDebtAmount" class="support-input" placeholder="Сумма долга (напр. 5000)" style="margin-bottom: 1rem; width: 100%;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="trollDebtBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🤡 Влепить огромный долг XP</button>
-            <button id="trollWipeXpBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">⬇️ Обнулить XP</button>
-            <button id="trollRenameBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">🤡 Сменить ник</button>
-            <button id="trollDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
-
-            <h4 style="grid-column: span 2; color: #8b00ff; margin-top: 1rem; margin-bottom: 0.2rem;">Эффекты на страницу:</h4>
-            <button id="trollEffectBobo" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🪲 Жуки в бобофоне</button>
-            <button id="trollEffectBlur" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">👓 Мыло (Размытие)</button>
-            <button id="trollEffectDrunk" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🥴 Пьяный мастер</button>
-            <button id="trollEffectGhost" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">👻 Призрак</button>
-            <button id="trollEffectFlip" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🙃 Переворот</button>
-            <button id="trollEffectRainbow" class="btn btn-secondary" style="border-color: #8b00ff; color: #8b00ff;">🌈 Рейв</button>
-            <button id="trollEffectClear" class="btn btn-primary" style="background: #8b00ff; border-color: #8b00ff; grid-column: span 2;">✨ Снять все эффекты</button>
-          </div>
-        </div>
-
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">👑 Выдача прав Руководства (Мод/АП)</h3>
-          <select id="creatorAdminSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          
-          <select id="creatorAdminRole" class="support-input" style="margin-bottom: 1rem; width: 100%;">
-              <option value="leadership">Руководство (Модерация)</option>
-              <option value="ap_admin">Руководство (АП)</option>
-          </select>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="creatorAddAdminBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
-            <button id="creatorRemoveAdminBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">➖ Забрать права</button>
-          </div>
-          
-          <div id="creatorAdminsList" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-leadership" style="display:none;">
-        <div class="section-head"><h2 style="color: #52c77b;">Руководство (Модерация)</h2></div>
-
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-warning);">✏️ Изменить цену любого товара</h3>
-          <input type="text" id="editAnyItemId" class="support-input" placeholder="ID товара (например, m_1 или cmod_123)" style="margin-bottom: 1rem;">
-          <input type="number" id="editAnyItemPrice" class="support-input" placeholder="Новая цена (XP)" style="margin-bottom: 1rem;">
-          <button id="changeAnyPriceBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning); width:100%;">Сохранить новую цену</button>
-        </div>
-
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-success);">➕ Выдача статуса Модератора</h3>
-          <select id="leadAddModSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-            <button id="leadAddModBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">Выдать статус</button>
-          </div>
-          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список модераторов:</h4>
-          <div id="leadModList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(162, 108, 255, 0.3); margin-bottom: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: #a26cff;">🕵️‍♂️ Тайный покупатель (Скрытая проверка)</h3>
-            <select id="hiddenCheckUser" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
-            <input type="text" id="hiddenCheckText" class="support-input" placeholder="Введите кастомный вопрос/сообщение..." style="margin-bottom: 1rem;">
-            <select id="hiddenCheckType" class="support-input" style="margin-bottom: 1rem;">
-                <option value="good">Без нарушения (good)</option>
-                <option value="warn">Пред/Мут (warn)</option>
-                <option value="ban">Бан/Перма (ban)</option>
-            </select>
-            <button id="sendHiddenCheckBtn" class="btn btn-secondary" style="border-color: #a26cff; color: #a26cff; width:100%;">Закинуть скрытую проверку</button>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
-            <h3 style="margin-bottom: 1rem; color: #6c8cff;">✏️ Редактор базы сообщений (Модерация)</h3>
-            <input type="text" id="customModText" class="support-input" placeholder="Текст сообщения для тренажера..." style="margin-bottom: 1rem;">
-            <select id="customModType" class="support-input" style="margin-bottom: 1rem;">
-                <option value="good">Без нарушения (good)</option>
-                <option value="warn">Пред/Мут (warn)</option>
-                <option value="ban">Бан/Перма (ban)</option>
-            </select>
-            <button id="addCustomModMsgBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width:100%;">Добавить сообщение в общую базу</button>
-        </div>
-        
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-success);">Управление XP модераторов</h3>
-          <div class="admin-field">
-              <label>Сотрудник:</label>
-              <select id="leadershipUserSelect" class="support-input"><option>Загрузка...</option></select>
-          </div>
-          <div class="admin-field">
-              <label>Тип выдачи:</label>
-              <select id="leadershipGiveType" class="support-input">
-                 <option value="game">Игровой XP (Баланс на сайте)</option>
-                 <option value="report">Реальный XP (Отчеты/Снятия)</option>
-              </select>
-          </div>
-          <div class="admin-field">
-              <label>Количество XP:</label>
-              <input type="number" id="leadershipXpAmount" class="support-input" placeholder="Например: 50">
-          </div>
-          <div class="admin-action-grid">
-            <button id="leadershipXpBtn" class="btn btn-primary" style="grid-column: 1 / -1;">Выдать / Списать XP</button>
-            <button id="leadershipDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: 1 / -1;">🗑️ Удалить аккаунт</button>
-          </div>
-        </div>
-
-        <div style="background: rgba(10, 23, 14, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(82, 199, 123, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: var(--color-warning);">Управление Магазином (Модерация)</h3>
-          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
-             <input type="text" id="modShopItemTitle" class="support-input" placeholder="Название товара">
-             <input type="text" id="modShopItemDesc" class="support-input" placeholder="Описание">
-             <input type="number" id="modShopItemPrice" class="support-input" placeholder="Цена (XP)">
-             <input type="text" id="modShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <button id="addModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-success); color: var(--color-success);">➕ Добавить</button>
-            <button id="editModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить цену</button>
-            <button id="deleteModShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
-          </div>
-          
-          <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: var(--color-warning);">Конструктор Рулетки (Модерация)</h3>
-          <div style="display: grid; gap: 1rem; margin-bottom: 1rem;">
-             <select id="modRouletteSlot" class="support-input">
-                <option value="leg">Легендарный слот</option>
-                <option value="rare">Редкий слот</option>
-                <option value="fail">Обычный слот</option>
-                <option value="fine">Слот Штрафа</option>
-             </select>
-             <input type="text" id="modRouletteText" class="support-input" placeholder="Текст (напр. 1000 XP)">
-             <input type="number" id="modRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -1000)">
-          </div>
-          <button id="updateModRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: var(--color-success); color: var(--color-success);">Обновить слот рулетки</button>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3);">
-          <h3 style="margin-bottom: 1rem; color: var(--color-primary);">Заявки на Неактив</h3>
-          <button class="btn btn-secondary" id="viewInactivesBtn" style="width:100%;">Проверить неактивы</button>
-          <div id="inactivesListArea" style="display:none; flex-direction: column; gap: 0.75rem; margin-top: 1rem;"></div>
-        </div>
-      </section>
-
-      <main class="page">
-    <header class="topbar animate-top">
-      <div class="brand">
-        <div class="logo">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 18.5V6.8C4 5.8 4.8 5 5.8 5h4.4"></path>
-            <rect x="9" y="3.5" width="11" height="8" rx="2"></rect>
-            <path d="M8 12.5 12 7l4 5.5"></path>
-            <path d="M4 21h9.5"></path>
-          </svg>
-        </div>
-        <div>
-          <div class="brand-title">Tambov 73</div>
-          <div class="brand-sub" id="brandSubtitle">Симулятор смены модераторов</div>
-        </div>
-      </div>
- 
-      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end;">
-        <button id="openSsBtn" class="btn btn-secondary" style="display: none; padding: 0.6rem 1.2rem; font-size: 0.8rem; border-color: var(--color-primary); color: #fff; box-shadow: none;">Старший Состав</button>
-        <div id="authStatus" style="display: flex; align-items: center; gap: 0.8rem; background: rgba(0,0,0,0.5); padding: 0.6rem 1.2rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-          <span id="userEmailDisplay" style="font-size: var(--text-sm); color: #fff; font-weight: 700;"></span>
-          <button id="loginBtnUI" class="badge xp" type="button" style="cursor: pointer; padding: 0.5rem 1rem; box-shadow: none;">Войти</button>
-          <button id="logoutBtnUI" class="badge ban" type="button" style="cursor: pointer; display: none; padding: 0.5rem 1rem;">Выйти</button>
-        </div>
-        <div style="display: flex; gap: 0.6rem;">
-          <button class="icon-btn" type="button" id="musicToggleBtn" aria-label="Музыка" title="Фоновая музыка">🔇</button>
-          <button class="icon-btn" type="button" id="sfxToggleBtn" aria-label="Звуки" title="Звуки кнопок">🔊</button>
-          <button class="icon-btn" type="button" data-theme-toggle aria-label="Сменить тему">🌙</button>
-        </div>
-      </div>
-    </header>
-
-    <div id="infoBanner" class="info-banner animate-top" style="animation-delay: 0.1s;">
-        <div class="info-banner-icon">🏆</div>
-        <div class="info-banner-text" id="infoBannerText">Добро пожаловать в тренажер! Выполняйте квесты, отвечайте на репорты и зарабатывайте XP.</div>
-    </div>
-
-    <section class="hero animate-hero">
-      <article class="panel hero-card">
-        <div class="badge-row">
-          <span class="badge">Discord • Tambov 73</span>
-          <span class="badge" id="heroBadge2">Режим: модераторы</span>
-        </div>
-        <h1 id="heroTitle">Следи за <span>порядком</span> на сервере.</h1>
-        <p id="heroText">Проверяй сообщения, принимай решения и поддерживай порядок в чате.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" type="button" id="startBtn">Начать смену</button>
-          <button class="btn btn-secondary" type="button" id="resetBtn">Сбросить смену</button>
-        </div>
-      </article>
-      
-      <aside class="panel rules">
-        <div class="section-head">
-            <h2 id="rightTitle">Материалы модератора</h2>
-            <p id="rightLead">Подсказки по модерации.</p>
-        </div>
-        <div class="rule-list" id="rightCards"></div>
-      </aside>
-    </section>
-
-    <div class="nav-container animate-nav">
-      <div class="main-nav">
-        <button class="main-cat-btn active" data-cat="moderation" type="button">🛡️ Модерация</button>
-        <button class="main-cat-btn" data-cat="support" type="button">💬 Поддержка</button>
-        <button class="main-cat-btn" data-cat="general" type="button">🌐 Общее</button>
-        <button class="main-cat-btn" data-cat="organizations" type="button">🏢 Организации</button>
-      </div>
-
-      <div class="sub-nav" id="subNavModeration">
-        <button class="mode-btn active" data-mode="moderation" type="button">Тренажёр</button>
-        <button class="mode-btn" data-mode="timeattack" type="button">На время ⏱️</button>
-        <button class="mode-btn" data-mode="complaints" type="button">Жалобы</button>
-        <button class="mode-btn" data-mode="shop" type="button" id="shopTabBtn" style="display:none;">Магазин</button>
-        <button class="mode-btn" data-mode="report" type="button" id="reportTabBtn" style="display:none;">Отчетность</button>
-        <button class="mode-btn" data-mode="inactives" type="button" id="inactiveTabBtn" style="display:none;">Неактивы</button>
-        <button class="mode-btn" data-mode="leadership" type="button" id="leadershipTabBtn" style="display:none;">Руководство</button>
-        <button class="mode-btn" data-mode="admin_log" type="button" id="adminLogTabBtn" style="display:none;">Логи (Мод)</button>
-        <button class="mode-btn" data-mode="creator" type="button" id="creatorTabBtn" style="display:none;">Панель Создателя</button>
-      </div>
-
-      <div class="sub-nav" id="subNavSupport" style="display:none;">
-        <button class="mode-btn" data-mode="support" type="button">Тренажёр АП</button>
-        <button class="mode-btn" data-mode="ap_shop" type="button" id="apShopTabBtn" style="display:none;">Магазин АП</button>
-        <button class="mode-btn" data-mode="ap_admin" type="button" id="apAdminTabBtn" style="display:none;">Руководство АП</button>
-        <button class="mode-btn" data-mode="ap_admin_log" type="button" id="apAdminLogTabBtn" style="display:none;">Логи (АП)</button>
-      </div>
-
-      <div class="sub-nav" id="subNavOrganizations" style="display:none;">
-        <button class="mode-btn active" data-mode="goss_org" data-org="pravo" type="button">Правительство</button>
-        <button class="mode-btn" data-mode="fsb" data-org="fsb" type="button">ФСБ (Академия)</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="gibdd" type="button">ГИБДД</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="umvd" type="button">УМВД</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="mo" type="button">Армия</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="cb" type="button">Больница</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="smi" type="button">СМИ</button>
-        <button class="mode-btn" data-mode="goss_org" data-org="fsin" type="button">ФСИН</button>
-        
-        <button class="mode-btn" data-mode="fsb_shop" type="button" id="fsbShopTabBtn" style="display:none;">Магазин ФСБ</button>
-        <button class="mode-btn" data-mode="fsb_admin" type="button" id="fsbAdminTabBtn" style="display:none;">Руководство ФСБ</button>
-        <button class="mode-btn" data-mode="goss_log" type="button" id="gossLogTabBtn" style="display:none;">Логи ГОСС</button>
-      </div>
-      
-      <div class="sub-nav" id="subNavGeneral" style="display:none;">
-        <button class="mode-btn" data-mode="quests" type="button">Квесты</button>
-        <button class="mode-btn" data-mode="leaderboard" type="button">Лидерборд</button>
-        <button class="mode-btn" data-mode="reports_table" type="button" id="reportsTableBtn" style="display:none;">Таблица Отчетов</button>
-        <button class="mode-btn" data-mode="guide" type="button">Руководство</button>
-        <button class="mode-btn" data-mode="about" type="button">О команде</button>
-        <button class="mode-btn" data-mode="profile" type="button">Профиль</button>
-      </div>
-    </div>
-
-    <section class="game-wrap" id="game">
-
-      <section class="panel game-card fade-in" id="mode-fsb" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #6c8cff;">Федеральная Служба Безопасности (ФСБ)</h2>
-          <p>Рассмотрение заявлений в Академию ФСБ и проверка по УК РФ.</p>
-        </div>
-        <button id="btnStartShiftFSB" class="btn btn-primary" style="margin-bottom: 1rem; width: 100%;">Начать смену ФСБ</button>
-        <div class="stats-grid">
-          <div class="stat"><span class="stat-label">Проверено дел</span><div class="stat-value" id="fsbResolvedValue">0</div></div>
-          <div class="stat"><span class="stat-label">Одобрено</span><div class="stat-value" id="fsbApprovedValue" style="color: var(--color-success);">0</div></div>
-          <div class="stat"><span class="stat-label">Отказано</span><div class="stat-value" id="fsbRejectedValue" style="color: var(--color-error);">0</div></div>
-        </div>
-        <div class="feed">
-          <article class="message-card">
-            <div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># fsb / academy-applications</div>
-            <div class="author-row">
-              <div class="avatar" style="background: conic-gradient(from 210deg, #6c8cff, #3b82f6, #6c8cff);">A</div>
-              <div><div class="author-name" id="fsbAuthor">Кандидат скрыт</div><div class="author-meta" id="fsbMeta">Появится после начала смены</div></div>
-            </div>
-            <div class="message-text" id="fsbText">Ожидание заявления...</div>
-            <div style="background: rgba(0,0,0,0.6); padding: 1.2rem; border-radius: 12px; font-size: 0.95rem; color: var(--color-text-muted); border: 1px solid rgba(108,140,255,0.4);" id="fsbEvidence">Документы: Отсутствуют</div>
-          </article>
-          <div class="controls">
-            <button class="action-btn warn-btn" type="button" onclick="judgeFsb('reject')">❌ Отказать (НонРП/Ошибки)</button>
-            <button class="action-btn skip-btn" type="button" onclick="judgeFsb('approve')">✅ Одобрить (Годен)</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-goss_org" style="display:none;">
-        <div class="section-head">
-          <h2 id="gossOrgTitle" style="color: #ff6b88;">Организация</h2>
-          <p>Рабочая зона сотрудника государственной организации.</p>
-        </div>
-        <button id="btnStartShiftGOSS" class="btn btn-primary" style="margin-bottom: 1rem; width: 100%; font-size: 1.2rem; padding: 1.2rem;">Начать смену</button>
-        
-        <div class="stats-grid">
-          <div class="stat"><span class="stat-label">Отработано минут</span><div class="stat-value" id="gossMinutesValue" style="color: var(--color-success);">0</div></div>
-          <div class="stat"><span class="stat-label">Баланс (XP)</span><div class="stat-value" id="gossBalValue" style="color: var(--color-warning);">0</div></div>
-        </div>
-        <div class="feed" style="margin-top: 1rem;">
-           <article class="message-card">
-              <div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># goss / shift-log</div>
-              <div class="message-text" style="text-align: center; margin-top: 2rem; color: var(--color-text-muted);">
-                 Для получения зарплаты (XP) и записи в логи организации, начните смену кнопкой выше.
-              </div>
-           </article>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-fsb_shop" style="display:none;">
-        <div class="section-head">
-            <h2 style="color:#6c8cff;">Магазин ФСБ</h2>
-            <p>Покупайте бонусы, иммунитеты и испытайте удачу за Баллы ФСБ!</p>
-        </div>
-        <div class="stats-grid" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(108,140,255,0.2);">
-          <div class="stat"><span class="stat-label">Доступно Баллов ФСБ</span><div class="stat-value" id="fsbShopTotalPts" style="color:#6c8cff; font-size: 2.2rem;">0</div></div>
-        </div>
-        <div class="shop-grid" id="fsbShopItemsContainer"></div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-fsb_admin" style="display:none;">
-        <div class="section-head"><h2 style="color:#6c8cff;">Руководство ФСБ</h2><p>Управление составом сотрудников и выдача баллов.</p></div>
-        
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.5); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #6c8cff;">➕ Выдача статуса ФСБ</h3>
-          <select id="leadAddFsbSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
-          <button id="leadAddFsbBtn" class="btn btn-secondary" style="border-color: #6c8cff; color: #6c8cff; width: 100%;">Выдать статус Сотрудника ФСБ</button>
-          
-          <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список сотрудников ФСБ:</h4>
-          <div id="leadFsbList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
-        </div>
-
-        <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
-          <h3 style="margin-bottom: 1rem; color: #6c8cff;">Управление Баллами ФСБ</h3>
-          <select id="fsbAdminUserSelect" class="support-input" style="margin-bottom: 1rem;"><option>Загрузка...</option></select>
-          <input type="number" id="fsbAdminPointsAmount" class="support-input" placeholder="Количество Баллов (+ или -)" style="margin-bottom: 1rem;">
-          <button id="fsbAdminPointsBtn" class="btn btn-primary" style="width: 100%; background: #6c8cff; border-color: #6c8cff;">Выдать / Списать Баллы ФСБ</button>
-        </div>
-      </section>
-
-      <section class="panel game-card fade-in" id="mode-goss_log" style="display:none;">
-        <div class="section-head">
-          <h2 style="color: #6c8cff;">Логи Организации</h2>
-          <p>Смены сотрудников, выдача баллов и покупки в магазине.</p>
+          <p>Смены сотрудников и покупки в магазине.</p>
         </div>
         <button class="btn btn-secondary" type="button" id="loadGossLogsBtn" style="width:100%; margin-bottom:1.5rem; border-color: #6c8cff; color: #6c8cff;">🔄 Обновить логи ГОСС</button>
         <div class="feed" id="gossLogsArea">
@@ -1502,7 +1046,7 @@
 
       <section class="panel game-card fade-in" id="mode-creator" style="display:none;">
         <div class="section-head"><h2 style="color: #ff6b88;">Панель Создателя (John Wick)</h2></div>
-        
+
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--color-primary); margin-bottom: 1.5rem;">
             <h3 style="margin-bottom: 1rem; color: #fff;">Управление Руководством ГОСС</h3>
             <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -1524,7 +1068,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div style="background: rgba(13, 16, 32, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(108, 140, 255, 0.3); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: var(--color-primary);">База Модераторов (Изменение XP)</h3>
           <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1rem;">Руководство здесь не отображается. Укажите ИТОГОВОЕ значение, система сама добавит или отнимет разницу.</p>
@@ -1692,14 +1236,14 @@
           <div id="inactivesListArea" style="display:none; flex-direction: column; gap: 0.75rem; margin-top: 1rem;"></div>
         </div>
       </section>
-<section class="panel game-card fade-in" id="mode-ap_admin" style="display:none;">
+      <section class="panel game-card fade-in" id="mode-ap_admin" style="display:none;">
         <div class="section-head"><h2 style="color: #ff8fc4;">Руководство АП</h2></div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: #ff8fc4;">➕ Выдача статуса АП</h3>
           <select id="leadAddApSelect" class="support-input" style="margin-bottom: 1rem; width: 100%;"><option>Загрузка...</option></select>
           <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-            <button id="leadAddApBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">Выдать статус</button>
+            <button id="leadAddApBtn" class="btn btn-secondary touch-btn" style="border-color: #ff8fc4; color: #ff8fc4;">Выдать статус</button>
           </div>
           <h4 style="margin-top: 1.5rem; color: var(--color-text-muted);">Список АП:</h4>
           <div id="leadApList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;"></div>
@@ -1710,7 +1254,7 @@
             <input type="text" id="customApTitle" class="support-input" placeholder="Заголовок/Тема..." style="margin-bottom: 1rem;">
             <input type="text" id="customApText" class="support-input" placeholder="Текст вопроса игрока..." style="margin-bottom: 1rem;">
             <input type="text" id="customApKeywords" class="support-input" placeholder="Ключевые слова ответа (через запятую)..." style="margin-bottom: 1rem;">
-            <button id="addCustomApMsgBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4; width:100%; margin-top: 1rem;">Добавить вопрос в общую базу</button>
+            <button id="addCustomApMsgBtn" class="btn btn-secondary touch-btn" style="border-color: #ff8fc4; color: #ff8fc4; width:100%; margin-top: 1rem;">Добавить вопрос в общую базу</button>
         </div>
 
         <div style="background: rgba(35, 10, 26, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 143, 196, 0.3); margin-bottom: 1.5rem;">
@@ -1722,8 +1266,8 @@
           </select>
           <input type="number" id="apAdminPointsAmount" class="support-input" placeholder="Количество Баллов (+ или -)" style="margin-bottom: 1rem;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <button id="apAdminPointsBtn" class="btn btn-primary" style="grid-column: span 2;">Выдать / Списать Баллы</button>
-            <button id="apAdminDeleteBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
+            <button id="apAdminPointsBtn" class="btn btn-primary touch-btn" style="grid-column: span 2;">Выдать / Списать Баллы</button>
+            <button id="apAdminDeleteBtn" class="btn btn-secondary touch-btn" style="border-color: var(--color-error); color: var(--color-error); grid-column: span 2;">🗑️ Удалить аккаунт</button>
           </div>
         </div>
 
@@ -1736,9 +1280,9 @@
              <input type="text" id="apShopItemIcon" class="support-input" placeholder="Иконка (эмодзи, напр. 🎁)">
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <button id="addApShopItemBtn" class="btn btn-secondary" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить</button>
-            <button id="editApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
-            <button id="deleteApShopItemBtn" class="btn btn-secondary" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
+            <button id="addApShopItemBtn" class="btn btn-secondary touch-btn" style="border-color: #ff8fc4; color: #ff8fc4;">➕ Добавить</button>
+            <button id="editApShopItemBtn" class="btn btn-secondary touch-btn" style="border-color: var(--color-warning); color: var(--color-warning);">✏️ Изменить</button>
+            <button id="deleteApShopItemBtn" class="btn btn-secondary touch-btn" style="border-color: var(--color-error); color: var(--color-error);">🗑️ Удалить</button>
           </div>
           
           <h3 style="margin-bottom: 1rem; margin-top: 1.5rem; color: #ff8fc4;">Конструктор Рулетки АП</h3>
@@ -1751,7 +1295,7 @@
              <input type="text" id="apRouletteText" class="support-input" placeholder="Текст (напр. 100 Баллов)">
              <input type="number" id="apRouletteVal" class="support-input" placeholder="Значение (отрицательное = выдача, напр. -100)">
           </div>
-          <button id="updateApRouletteBtn" class="btn btn-secondary" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить слот рулетки</button>
+          <button id="updateApRouletteBtn" class="btn btn-secondary touch-btn" style="width: 100%; border-color: #ff8fc4; color: #ff8fc4;">Обновить слот рулетки</button>
         </div>
       </section>
 
@@ -1766,7 +1310,7 @@
           <div class="stat"><span class="stat-label">Ошибки</span><div class="stat-value" id="taMistakes" style="color: var(--color-error); font-size: 1.8rem;">0</div></div>
         </div>
         <div id="taStartScreen" style="text-align: center; padding: 3rem 0;">
-          <button id="taStartBtn" class="btn btn-primary" style="font-size: 1.2rem; padding: 1.5rem 4rem; box-shadow: 0 10px 30px rgba(255, 191, 71, 0.5);">Начать заезд!</button>
+          <button id="taStartBtn" class="btn btn-primary touch-btn" style="font-size: 1.2rem; padding: 1.5rem 4rem; box-shadow: 0 10px 30px rgba(255, 191, 71, 0.5);">Начать заезд!</button>
         </div>
         <div class="feed" id="taGameScreen" style="display:none;">
           <article class="message-card">
@@ -1902,8 +1446,8 @@
           <p>Отображаются только действующие сотрудники (Модераторы / АП). Топ Модерации формируется только по Реальному XP.</p>
         </div>
         <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-          <button id="lbBtnMod" class="btn btn-primary" style="flex:1;">Топ Модерации (XP)</button>
-          <button id="lbBtnAp" class="btn btn-secondary" style="flex:1;">Топ АП (Баллы)</button>
+          <button id="lbBtnMod" class="btn btn-primary touch-btn" style="flex:1;">Топ Модерации (XP)</button>
+          <button id="lbBtnAp" class="btn btn-secondary touch-btn" style="flex:1;">Топ АП (Баллы)</button>
         </div>
         <div class="feed" id="leaderboardList">
           <div class="message-text" style="text-align: center; padding: 2rem;">⏳ Загрузка данных лидеров...</div>
@@ -1992,6 +1536,7 @@
         <div class="section-head"><h2 style="color:#ff8fc4;">Магазин АП</h2><p>Трать накопленные Баллы на снятие наказаний или испытай удачу!</p></div>
         <div class="stats-grid" style="background: rgba(0,0,0,0.5); padding: 1.5rem; border-radius: 20px; border: 1px solid rgba(255,143,196,0.2);">
           <div class="stat"><span class="stat-label">Доступно Баллов</span><div class="stat-value" id="apShopTotalPts" style="color:#ff8fc4; font-size: 2.2rem;">0</div></div>
+          <div class="stat"><span class="stat-label">Потрачено</span><div class="stat-value" id="apShopSpentPts" style="font-size: 2.2rem;">0</div></div>
         </div>
         <div class="shop-grid" id="apShopItemsContainer"></div>
       </section>
@@ -2107,28 +1652,24 @@
   </main>
 
   <script>
-    // === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ТЕЛЕФОНОВ ===
-    // Решает проблему с ненажимающимися кнопками на iOS/Android
+    // === ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ТЕЛЕФОНОВ (Pointer Events) ===
     function bindTouchClick(elementIdOrClass, callback) {
         const attach = (el) => {
             if(!el) return;
-            // Убираем старые лисенеры
-            const newEl = el.cloneNode(true);
-            el.parentNode.replaceChild(newEl, el);
-            
-            newEl.addEventListener('pointerup', (e) => {
-                e.preventDefault();
-                callback(e, newEl);
-            });
-            newEl.addEventListener('click', (e) => {
-                if (e.pointerType === 'mouse' || e.pointerType === '') callback(e, newEl);
-            });
+            // Устанавливаем простое событие click. С touch-action: manipulation в CSS это работает идеально на мобилках.
+            el.onclick = (e) => { e.preventDefault(); callback(e, el); };
         };
-
-        if(document.getElementById(elementIdOrClass)) {
-            attach(document.getElementById(elementIdOrClass));
+        if (typeof elementIdOrClass === 'string') {
+            if(elementIdOrClass.startsWith('#')) {
+                attach(document.getElementById(elementIdOrClass.substring(1)));
+            } else if(elementIdOrClass.startsWith('.')) {
+                document.querySelectorAll(elementIdOrClass).forEach(attach);
+            } else {
+                if(document.getElementById(elementIdOrClass)) attach(document.getElementById(elementIdOrClass));
+                else document.querySelectorAll(elementIdOrClass).forEach(attach);
+            }
         } else {
-            document.querySelectorAll(elementIdOrClass).forEach(attach);
+            attach(elementIdOrClass);
         }
     }
 
@@ -2163,14 +1704,14 @@
 
         function playSound(type) {
             if (!isSfxEnabled) return;
-            if (type === 'ok') sndOk.cloneNode().play().catch(()=>{});
-            if (type === 'fail') sndFail.cloneNode().play().catch(()=>{});
-            if (type === 'win') sndWin.cloneNode().play().catch(()=>{});
+            if (type === 'ok') { sndOk.currentTime = 0; sndOk.play().catch(()=>{}); }
+            if (type === 'fail') { sndFail.currentTime = 0; sndFail.play().catch(()=>{}); }
+            if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
         }
         document.body.addEventListener('click', e => { if (e.target.closest('button') || e.target.closest('a') || e.target.classList.contains('main-cat-btn') || e.target.classList.contains('mode-btn')) playUIClick(); });
         
-        bindTouchClick('#musicToggleBtn', () => { isMusicEnabled = !isMusicEnabled; getEl('musicToggleBtn').textContent = isMusicEnabled ? "🎵" : "🔇"; if(isMusicEnabled){bgMusic.play().catch(()=>{});}else{bgMusic.pause();} });
-        bindTouchClick('#sfxToggleBtn', () => { isSfxEnabled = !isSfxEnabled; getEl('sfxToggleBtn').textContent = isSfxEnabled ? "🔊" : "🔈"; });
+        bindTouchClick('#musicToggleBtn', () => { isMusicEnabled = !isMusicEnabled; document.getElementById('musicToggleBtn').textContent = isMusicEnabled ? "🎵" : "🔇"; if(isMusicEnabled){bgMusic.play().catch(()=>{});}else{bgMusic.pause();} });
+        bindTouchClick('#sfxToggleBtn', () => { isSfxEnabled = !isSfxEnabled; document.getElementById('sfxToggleBtn').textContent = isSfxEnabled ? "🔊" : "🔈"; });
 
         document.querySelector('[data-theme-toggle]').addEventListener('click', () => { const html = document.documentElement; if (html.getAttribute('data-theme') === 'dark') { html.setAttribute('data-theme', 'light'); document.documentElement.style.setProperty('--color-text', '#18171c'); document.documentElement.style.setProperty('--color-text-muted', '#5c5b61'); document.documentElement.style.setProperty('--color-text-inverse', '#fff'); } else { html.setAttribute('data-theme', 'dark'); document.documentElement.style.setProperty('--color-text', '#f5f5ff'); document.documentElement.style.setProperty('--color-text-muted', '#a7afcf'); document.documentElement.style.setProperty('--color-text-inverse', '#0b0d12'); } });
 
@@ -2205,15 +1746,11 @@
         let shopState = { spent: 0, apSpent: 0, fsbSpent: 0 }, gameXpMod = 0, taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
         let modQueue = [], supQueue = [], compQueue = [], taQueue = [], fsbQueue = [], currentTableWeekOffset = 0;
         
-        // Переменные для ГОСС
+        // Для ГОСС
         let currentGossOrg = null;
         let shiftStartGossTime = null;
 
-        // ВАЖНО: Новая накопительная система ручного XP (Вместо добавления в shop_spent)
-        let manualRealXp = 0; 
-        
-        // Окно валюты
-        let pendingCurrencyAction = null;
+        let manualRealXp = 0; // ИСПРАВЛЕНИЕ: НАКОПИТЕЛЬНАЯ СИСТЕМА
 
         let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
@@ -2264,45 +1801,12 @@
         let defaultModRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '500 XP', val: 500 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '300 XP', val: 300 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -100 XP', val: -100 }];
         let defaultApRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: 50 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: 30 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -10 Баллов', val: -10 }];
 
-        let shopItems = [...defaultShopItems]; 
-        let apShopItems = [...defaultApShopItems]; 
-        let fsbShopItems = [...defaultFsbShopItems]; 
-        let customShopItems = []; 
-        let customApShopItems = [];
-        let modRoulettePrizes = [...defaultModRoulettePrizes]; 
-        let apRoulettePrizes = [...defaultApRoulettePrizes]; 
-        let customModMessages = []; 
-        let customSupQuestions = []; 
-        let hiddenChecks = [];
-
-        const questsData = [
-            { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 },
-            { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 },
-            { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 },
-            { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 }
-        ];
-
-        let baseModMessages = [
-            { type: "good", text: "Всем привет, как настроение сегодня?" },
-            { type: "warn", text: "Я жду ответ уже 5 минут!!!!! Где админы???" },
-            { type: "ban", text: "Продам вирты, 1кк = 50 рублей. Писать в ЛС." },
-            { type: "good", text: "Игрок1: Кто может подвезти до Батырево?\nИгрок2: Могу, садись." }
-        ];
-
-        let baseSupQuestions = [
-            { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] },
-            { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] }
-        ];
-
-        const allFsbApps = [
-            { text: 'Заявление на стажировку. Проживаю в области 15 лет, военный билет имеется. Лицензии на оружие и авто присутствуют.', evidence: 'Скриншоты с /time: Паспорт(РП ник), Мед.карта, Лицензии, ВБ.', type: 'approve' },
-            { text: 'Хочу в фсб. Мой ник Vanya_killer. Лвл 3.', evidence: 'Скриншот паспорта без /time. Нет военного билета.', type: 'reject' }
-        ];
-
-        const allComplaints = [
-            { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' },
-            { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' }
-        ];
+        let shopItems = [...defaultShopItems]; let apShopItems = [...defaultApShopItems]; let fsbShopItems = [...defaultFsbShopItems]; let customShopItems = []; let customApShopItems = [];
+        let modRoulettePrizes = [...defaultModRoulettePrizes]; let apRoulettePrizes = [...defaultApRoulettePrizes]; let customModMessages = []; let customSupQuestions = []; let hiddenChecks = [];
+        const questsData = [ { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 }, { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 }, { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 }, { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 } ];
+        let baseModMessages = [ { type: "good", text: "Всем привет, как настроение сегодня?" }, { type: "good", text: "Подскажите, где найти автосалон низкого класса?" }, { type: "good", text: "Кто пойдет со мной на водолаза? Нужен напарник." }, { type: "good", text: "Куплю супру. Бюджет 5кк. Писать в личные сообщения." }, { type: "good", text: "У кого есть гараж в Арзамасе?" }, { type: "good", text: "Где можно купить ремкомплекты?" }, { type: "good", text: "Как вступить в ОПГ Батырево?" }, { type: "good", text: "Когда будет слет домов?" }, { type: "good", text: "Сколько стоит BMW M5 F90?" }, { type: "good", text: "Где находится Правительство?" }, { type: "good", text: "Ребят, как быстро заработать на 3 уровне?" }, { type: "good", text: "Где находится работа дальнобойщика?" }, { type: "good", text: "Сколько обычно стоит дом среднего класса?" }, { type: "good", text: "Кто может объяснить, как работают контейнеры?" }, { type: "good", text: "Есть ли смысл брать бизнес с маленьким доходом?" }, { type: "good", text: "Кто в курсе, как вступить в армию?" }, { type: "good", text: "Подскажите, какой навык качать первым?" }, { type: "warn", text: "Дайте 10к на развитие пожалуйста, я новичок." }, { type: "warn", text: "Скиньте немного денег на старт, потом верну." }, { type: "warn", text: "Помогите деньгами, очень нужны вирты на машину." }, { type: "warn", text: "Кто в патруль? Кто в патруль? Кто в патруль?" }, { type: "warn", text: "@everyone срочно зайдите в игру, у нас строй!" }, { type: "warn", text: "@here кому не лень, помогите с квестом" }, { type: "warn", text: "Ты вообще попуск, иди откисай на спавне, дурачок." }, { type: "warn", text: "Плачь больше, форумная крыса." }, { type: "warn", text: "Что ты там вякнул? Иди уроки делай, школота." }, { type: "warn", text: "Кто за какую партию голосовал?" }, { type: "warn", text: "Как вы относитесь к религии вообще?" }, { type: "warn", text: "Иисус или Аллах, кто круче? Пишите мнение." }, { type: "warn", text: "Админ, я тебе в лс буду писать, пока не ответишь." }, { type: "warn", text: "Давай, замуть меня, тебе же хуже будет." }, { type: "warn", text: "ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ ПРОДАМ" }, { type: "warn", text: "Эй, @Moderator, быстро проверь мою заявку на форуме!" }, { type: "warn", text: "Все [национальность] не умеют играть в эту игру." }, { type: "warn", text: "Модеры спят, можно спамить!!! 111" }, { type: "warn", text: "1\n2\n3\n4\n5\n6\n7" }, { type: "warn", text: "Да я твой дом труба шатал." }, { type: "warn", text: "Женщинам тут не место, идите борщи варить." }, { type: "warn", text: "Andrey_Caypen вообще не шарит за правила." }, { type: "warn", text: "Привет........... как дела,,,,,,,,,," }, { type: "warn", text: "Я жду ответ уже 5 минут!!!!! Где админы???" }, { type: "warn", text: "Го все спамить в чат плюсики+++++++++" }, { type: "warn", text: "@everyone почему сервер лагает???" }, { type: "warn", text: "Эй мусор, иди поплачь в подушку." }, { type: "warn", text: "В какую религию верите, пацаны?" }, { type: "warn", text: "Все бабы дуры, факт." }, { type: "warn", text: "Модер дай роль быстро." }, { type: "warn", text: "ГО ГО ГО ГО ГО ГО ГО ГО" }, { type: "warn", text: "Снимайте этого админа, он вообще ничего не понимает." }, { type: "warn", text: "ЧЕ ЗА ФИГНЯ ПОЧЕМУ КИКНУЛО??????????" }, { type: "warn", text: "Дайте денег дайте денег дайте денег" }, { type: "warn", text: "У кого можно занять 1кк? Очень нужно, выручите." }, { type: "warn", text: "Ты клоун просто, слился на стреле и ноешь." }, { type: "warn", text: "Блин, как же меня бесят эти админы, ничего не делают." }, { type: "warn", text: "Пинг пинг пинг пинг @Главный Модератор" }, { type: "warn", text: "Мужики, как относитесь к политике?" }, { type: "warn", text: "Скиньтесь на фаму кто сколько может, плиз." }, { type: "warn", text: "Все менты козлы." }, { type: "warn", text: "Иди отсюда, нищеброд." }, { type: "warn", text: "Тебе лет 10 от силы, че ты мне тут доказываешь." }, { type: "warn", text: "Пойду создам тему на форуме, что вы тут все неадекваты." }, { type: "warn", text: "Кто не напишет '+' тот..." }, { type: "warn", text: "qqqqqqqqqqqqqqqqqqqqqqqqqq" }, { type: "warn", text: "Пацаны, а кто по нации админ? Просто интересно." }, { type: "warn", text: "Да пошли вы со своими правилами." }, { type: "warn", text: "ТЫ ПРОСТО НУЛЬ, НУЛИНА, БОТ" }, { type: "warn", text: "Можно мне роль @ЗГМ просто так?" }, { type: "warn", text: "Я щас буду флудить, пока мне не помогут." }, { type: "warn", text: "ПомогитеПомогитеПомогитеПомогите" }, { type: "warn", text: "Покидайте реакций на это сообщение!!!!!!!!!!!!!" }, { type: "warn", text: "Дайте лидерку ОПГ, я все знаю." }, { type: "warn", text: "Тут вообще админы живые есть или вымерли все?" }, { type: "warn", text: "ЭЙ @everyone ЗАЙДИТЕ В КАНАЛ ОБЩЕНИЯ" }, { type: "warn", text: "Модеры, вы слепые? Он меня оскорбляет." }, { type: "warn", text: "Не дадите роль — уйду с сервера." }, { type: "warn", text: "КАК ДЕЛА ????????????????????????????????" }, { type: "warn", text: "@User" }, { type: "warn", text: "@User @User @User ответьте" }, { type: "warn", text: "+++++ +++++ +++++" }, { type: "warn", text: "Почему так долго проверяете, ау?" }, { type: "warn", text: "Модерация опять спит." }, { type: "warn", text: "Киньте хотя бы 5к, я совсем без денег." }, { type: "warn", text: "У кого есть лишние вирты? Помогите новичку." }, { type: "warn", text: "Эй, ты гений прям, конечно." }, { type: "warn", text: "Ну да, молодец, опять облажался." }, { type: "warn", text: "Очень смешно, продолжай позориться." }, { type: "warn", text: "Че такой умный-то?" }, { type: "warn", text: "Админ, ответь немедленно." }, { type: "warn", text: "ГО ВООБЩЕ ВСЕ В ГОЛОСОВОЙ КАНАЛ!!!!!" }, { type: "warn", text: "Кто тут главный!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" }, { type: "warn", text: "Зачем так долго отвечать????????" }, { type: "warn", text: "Дайте денег, я потом все верну честно." }, { type: "warn", text: "Кто скинет 20к? Очень надо." }, { type: "warn", text: "Ты вообще бесполезный игрок." }, { type: "warn", text: "Ну ты и смешной, конечно..." }, { type: "warn", text: "Все, начинаю спамить, раз не отвечаете." }, { type: "ban", text: "Продам аккаунт, писать в личные сообщения." }, { type: "ban", text: "Заходите на мой сервер, там админка при старте." }, { type: "ban", text: "Дам читы на гм и аим, скину в лс." }, { type: "ban", text: "Продам вирты, курс 1кк = 50р." }, { type: "ban", text: "Ищу поставщика виртов для скупки." }, { type: "ban", text: "Кину ссылку на скрипт для быстрого бега." }, { type: "ban", text: "Мать твою в кино водил." }, { type: "ban", text: "Сын толпы, иди потеряйся." }, { type: "ban", text: "Я твою семью резал." }, { type: "ban", text: "Чтоб ты сдох от рака." }, { type: "ban", text: "Желаю всей твоей родне здоровья в кавычках." }, { type: "ban", text: "Зайди по ссылке vk.com/cheat_br и скачай обход." }, { type: "ban", text: "Кому скинуть приватный скрипт на ловлю имущества?" }, { type: "ban", text: "Продам админку на этом сервере, оплата на киви." }, { type: "ban", text: "Всем пока, ухожу на [Название другого проекта], он лучше." }, { type: "ban", text: "Этот сервер говно, все переходим на другой айпи." }, { type: "ban", text: "Да тут админы все продажные, ливаю с проекта." }, { type: "ban", text: "Ща кину стиллер, попляшете у меня." }, { type: "ban", text: "Продам способ дюпа денег, работает 100%." }, { type: "ban", text: "Куплю фаму за реальные деньги." }, { type: "ban", text: "Сливаю админскую инфу за 1000 рублей." }, { type: "ban", text: "Все админы [оскорбление], сервер помойка." }, { type: "ban", text: "Ваш проект загнется через месяц." }, { type: "ban", text: "У меня есть софт на починку авто, кому дать?" }, { type: "ban", text: "Продаю промокоды на вирты." }, { type: "ban", text: "Твоя мать ш***а." }, { type: "ban", text: "Я твоего отца на столбе видел." }, { type: "ban", text: "Все твои предки в гробу переворачиваются." }, { type: "ban", text: "Зайдите на мой ютуб канал, там обзор читов." }, { type: "ban", text: "Раздача аккаунтов с паролями тут: ссылка." }, { type: "ban", text: "Куплю бизнес за донат." }, { type: "ban", text: "Меняю акк в стандоффе на акк тут." }, { type: "ban", text: "Продаю сборку для ловли домов." }, { type: "ban", text: "Я еб** твою сестру." }, { type: "ban", text: "Желаю, чтобы тебя камаз переехал." }, { type: "ban", text: "Зарежу тебя и твою собаку." }, { type: "ban", text: "Кому продать бота на работу шахтера?" }, { type: "ban", text: "Сервер дно, не играйте здесь." }, { type: "ban", text: "Админы дауны, не умеют работать." }, { type: "ban", text: "Открылся новый проект, заходите все туда." }, { type: "ban", text: "Продам вирты, есть 100кк." }, { type: "ban", text: "Куплю любую машину за реальные бабки." }, { type: "ban", text: "Есть бот на ферму, не палится админами." }, { type: "ban", text: "Этот проект — копия другого, ничего своего нет." }, { type: "ban", text: "Кому дать способ бесплатного доната?" }, { type: "ban", text: "Продам права лидера, писать в ЛС." }, { type: "ban", text: "Сливаю ответы на обзвон хелперов за деньги." }, { type: "ban", text: "Сейчас сервер положу, ждите ддос." }, { type: "ban", text: "Знаю уязвимость в моде, продам админку." }, { type: "ban", text: "Я тебе горло перережу в реале." }, { type: "ban", text: "Твои родители явно зря старались." }, { type: "ban", text: "Чтоб твоя мать сгнила." }, { type: "ban", text: "Уходи с проекта, пока я тебя не взломал." }, { type: "ban", text: "Скину порно в чат, если не дадите денег." }, { type: "ban", text: "Мой папа работает в фсб, он вас всех посадит." }, { type: "ban", text: "Заходите на канал, стримлю с читами." }, { type: "ban", text: "Продам способ разбана." }, { type: "ban", text: "Все русские/украинцы/казахи — [оскорбление нации]." }, { type: "ban", text: "Зиг хайль, слава [запрещенная организация]." }, { type: "ban", text: "Черномазые все вон с сервера." }, { type: "ban", text: "Устрою вам теракт на респе." }, { type: "ban", text: "Куплю вирты, срочно." }, { type: "ban", text: "Кому нужен бот для прокачки ЗП?" }, { type: "ban", text: "Тут вообще одни боты играют, онлайн накручен." }, { type: "ban", text: "Админы сливают инфу, инфа сотка." }, { type: "ban", text: "Закиньте мне на карту 100р, дам 5кк в игре." }, { type: "ban", text: "Я вас всех по ip вычислю." }, { type: "ban", text: "Батя твой за хлебом ушел и не вернулся." }, { type: "ban", text: "Мамке своей пожалуйся, щенок." }, { type: "ban", text: "Я твою мать в канаве видел." }, { type: "ban", text: "Вали с сервера, пока акк жив." }, { type: "ban", text: "Запрещенка в лс, пишите." }, { type: "ban", text: "Продаю скрипт на невидимость." }, { type: "ban", text: "Куплю симкарту блатную за 500 рублей." }, { type: "ban", text: "Меняю вирты с этого серва на другой." }, { type: "ban", text: "Сервер скоро закроется, админ сам сказал." }, { type: "ban", text: "Вы тут все терпилы, играете на помойном проекте." }, { type: "ban", text: "Переходите на новый проект, тут уже делать нечего." }, { type: "ban", text: "Могу слить личные фото игрока, если надо." }, { type: "ban", text: "Сейчас кину программу для накрутки преимуществ." }, { type: "ban", text: "Кто хочет купить мой аккаунт? Цена в рублях." }, { type: "ban", text: "Скиньте ссылку, где можно купить читы на этот сервер." }, { type: "ban", text: "Я нашел способ обнуление обойти, продаю инфу." }, { type: "ban", text: "Скину архив с софтом, там все для бизваров." }, { type: "ban", text: "Выкладываю его личные данные, пусть знают все." }, { type: "ban", text: "Поднимем бабки на продаже виртов, пишите." }, { type: "ban", text: "Дам ссылку на другой РП проект, там бонусы новичкам." }, { type: "ban", text: "Кому нужна клубничка, скину 18+ контент." }, { type: "ban", text: "Сейчас залью файл с обходом античита." }, { type: "ban", text: "Я знаю его домашний адрес и номер родителей." }, { type: "ban", text: "Если не ответишь, я тебя найду." }, { type: "ban", text: "Устроим рейд и заспамим сервер, пусть падает." }, { type: "ban", text: "Скину конфиг на софт, с ним будет преимущество." }, { type: "ban", text: "Куплю дискорд валюту за реальные деньги." }, { type: "ban", text: "Продам роль за 200 рублей." }, { type: "ban", text: "Есть тема с обходом системы, пишите в лс." }, { type: "ban", text: "Кто хочет купить базу аккаунтов?" }, { type: "ban", text: "Сливаю личку игрока, там все данные." }, { type: "ban", text: "Есть новый чит, бан не дает." }, { type: "ban", text: "Переходите в мой дс сервер, там продажа виртов." }, { type: "good", text: "Игрок1: Подвезешь до Южного?\nИгрок2: Садись, 5к." }, { type: "good", text: "Игрок1: Где купить аптечку?\nИгрок2: В больнице или у игроков на рынке." }, { type: "good", text: "Игрок1: Кто знает, как вступить в СМИ?\nИгрок2: Через форум или по набору в игре." }, { type: "good", text: "Игрок1: Нужен напарник на инкассацию.\nИгрок2: Я могу, у меня есть ранг." }, { type: "good", text: "Игрок1: Где посмотреть команды семьи?\nИгрок2: Обычно на форуме фракции или в дискорде семьи." }, { type: "good", text: "Игрок1: Сколько стоит этот скин?\nИгрок2: Примерно 2кк, зависит от сервера." }, { type: "good", text: "Игрок1: Кто может помочь новичку?\nИгрок2: Спрашивай, если знаю — подскажу." }, { type: "good", text: "Игрок1: Есть место в семье?\nИгрок2: Да, напиши мне в личку." }, { type: "good", text: "Игрок1: Где находится военкомат?\nИгрок2: Посмотри на карте или спроси у таксиста." }, { type: "good", text: "Игрок1: Кто продает дом?\nИгрок2: Я продаю, пиши предложение." }, { type: "good", text: "Игрок1: Как открыть телефон?\nИгрок2: Посмотри в настройках управления или /mn, если сервер так использует." }, { type: "good", text: "Игрок1: Кто знает цены на тюнинг?\nИгрок2: Зависит от машины, но в СТО можно посмотреть." }, { type: "good", text: "Игрок1: Есть набор в организацию?\nИгрок2: Да, сегодня вроде проходит собеседование." }, { type: "good", text: "Игрок1: Где взять лицензию?\nИгрок2: Через соответствующую гос структуру, зависит от типа лицензии." }, { type: "good", text: "Игрок1: Стоит брать премиум?\nИгрок2: Если часто играешь, обычно да." }, { type: "good", text: "Игрок1: Кто может подвезти до Батырево?\nИгрок2: Могу, садись." }, { type: "good", text: "Игрок1: Где найти работу дальнобойщика?\nИгрок2: Посмотри на карте, там отмечено." }, { type: "good", text: "Игрок1: Сколько стоит гараж?\nИгрок2: Зависит от класса и места." }, { type: "good", text: "Игрок1: Как стать админом?\nИгрок2: Отстой лидерку или подай на хелпера." }, { type: "good", text: "Игрок1: Продам приору.\nИгрок2: Го за 300к?" }, { type: "warn", text: "Игрок1: ДАЙТЕ ДЕНЕГ НОВИЧКУ!!!!!\nИгрок2: Хватит капсить." }, { type: "warn", text: "Игрок1: Ты тупой как пробка.\nИгрок2: За языком следи." }, { type: "warn", text: "Игрок1: Продам машину ПРОДАМ МАШИНУ ПРОДАМ МАШИНУ\nИгрок2: Не флуди в чат." }, { type: "warn", text: "Игрок1: Скиньте кто-то 50к, потом отдам.\nИгрок2: Никто тебе не даст." }, { type: "warn", text: "Игрок1: АДМИНЫ ТУТ?\nИгрок2: Пиши в репорт, а не капси." }, { type: "warn", text: "Игрок1: Все менты козлы.\nИгрок2: Щас за оск отлетишь." }, { type: "warn", text: "Игрок1: Кто за Путина ставит +\nИгрок2: Политика запрещена." }, { type: "warn", text: "Игрок1: Мусульмане тут есть?\nИгрок2: Религию не обсуждаем." }, { type: "warn", text: "Игрок1: Иди в канаву.\nИгрок2: Адекватнее будь." }, { type: "warn", text: "Игрок1: ++++++++\nИгрок2: Не спамь символами." }, { type: "ban", text: "Игрок1: Куплю вирты, пишите в тг.\nИгрок2: Я сейчас админам скрины скину." }, { type: "ban", text: "Игрок1: Твоя мать ш***а.\nИгрок2: ББ, пермач." }, { type: "ban", text: "Игрок1: Заходите на новый сервак 192.168...\nИгрок2: Реклама запрещена." }, { type: "ban", text: "Игрок1: Продаю чит на гм.\nИгрок2: Жди бан." }, { type: "ban", text: "Игрок1: Скину фото его паспорта.\nИгрок2: Слив данных запрещен." }, { type: "ban", text: "Игрок1: Я твоего батю резал.\nИгрок2: Улетишь сейчас." }, { type: "ban", text: "Игрок1: Продам аккаунт 20 лвл.\nИгрок2: Это ППВ." }, { type: "ban", text: "Игрок1: У меня есть его адрес.\nИгрок2: Скинь сюда." }, { type: "ban", text: "Игрок1: Переходите на другой проект, тут ловить нечего.\nИгрок2: Скинь ссылку." }, { type: "ban", text: "Игрок1: Нашел баг на деньги, продам способ.\nИгрок2: Интересно, пиши в лс." }, { type: "ban", text: "Игрок1: Я создал твинк после мута.\nИгрок2: Серьезно зря написал." }, { type: "ban", text: "Игрок1: Куплю аккаунт за 500 рублей.\nИгрок2: Написал в лс." }, { type: "ban", text: "Игрок1: Кину шок-контент.\nИгрок2: Давай." }, { type: "ban", text: "Игрок1: Дам exe для преимущества в игре.\nИгрок2: Скинь." }, { type: "ban", text: "Игрок1: Я тебя найду вечером.\nИгрок2: Ты сейчас себе бан оформил." }, { type: "ban", text: "Игрок1: Обменяю валюту дискорда между серверами.\nИгрок2: Сколько курс?" }, { type: "ban", text: "Игрок1: Кто купит дом за реальные деньги?\nИгрок2: Мне интересно." }, { type: "ban", text: "Игрок1: Вот телега для покупки виртов.\nИгрок2: Перешел." }, { type: "ban", text: "Игрок1: Заходите на мой проект, там дам админку.\nИгрок2: Где ссылка?" }, { type: "ban", text: "Игрок1: Соль, шишки, все есть.\nИгрок2: Написал." }, { type: "ban", text: "Игрок1: mq\nИгрок2: Отлетай в бан." }, { type: "ban", text: "Игрок1: Я солью его личные данные.\nИгрок2: Кидай." }, { type: "ban", text: "Игрок1: Скачайте софт для обхода античита.\nИгрок2: Работает?" }, { type: "ban", text: "Игрок1: Продам аккаунт с имуществом за рубли.\nИгрок2: Готов купить." }, { type: "ban", text: "Игрок1: Скину порноконтент в лс.\nИгрок2: Давай." }, { type: "ban", text: "Игрок1: Есть способ обойти мут.\nИгрок2: Рассказывай." }, { type: "ban", text: "Игрок1: Вот файл с читом.\nИгрок2: Уже скачал." }, { type: "ban", text: "Игрок1: Переводи реал, я отдам вирты.\nИгрок2: Перевожу." }, { type: "ban", text: "Игрок1: Нашел его номер и адрес.\nИгрок2: Скинь в лс." }, { type: "ban", text: "Игрок1: Кто хочет купить ИВ?\nИгрок2: Сколько за 1кк?" }, { type: "ban", text: "Игрок1: Сейчас заспамим сервер всем составом.\nИгрок2: Погнали." }, { type: "ban", text: "Игрок1: Вот ссылка на другой РП проект.\nИгрок2: Уже зашел." }, { type: "ban", text: "Игрок1: Кину .rar с преимуществом.\nИгрок2: Жду архив." }, { type: "ban", text: "Игрок1: Я тебя вычислю по IP.\nИгрок2: Попробуй." }, { type: "ban", text: "Игрок1: Продаю место в семье за реал.\nИгрок2: Интересно." }, { type: "ban", text: "Игрок1: Кто продаст админку?\nИгрок2: Пиши создателю." }, { type: "ban", text: "Игрок1: Сейчас солью всю переписку.\nИгрок2: Кидай сюда." }, { type: "ban", text: "Игрок1: Скину ратник, будешь всех ломать.\nИгрок2: Го." }, { type: "ban", text: "Игрок1: Давай через гаранта вирты купим.\nИгрок2: Давай." }, { type: "ban", text: "Игрок1: Мой чит не палится.\nИгрок2: Кидай ссылку." }, { type: "ban", text: "Игрок1: Я создам новый акк и вернусь.\nИгрок2: Это уже обход наказания." }, { type: "ban", text: "Игрок1: Кому скинуть личный номер игрока?\nИгрок2: Мне." }, { type: "ban", text: "Игрок1: Продаю роль за реальные деньги.\nИгрок2: Покупаю." }, { type: "ban", text: "Игрок1: Вот ссылка на чит.\nИгрок2: Спасибо, скачал." }, { type: "ban", text: "Игрок1: Скину шок фото.\nИгрок2: Жду." }, { type: "ban", text: "Игрок1: Давай обмен аккаунтами за деньги.\nИгрок2: Давай." } ]; let baseSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] }, { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] }, { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] }, { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] } ];
+        const allFsbApps = [ { text: 'Заявление на стажировку. Проживаю в области 15 лет, военный билет имеется. Лицензии на оружие и авто присутствуют.', evidence: 'Скриншоты с /time: Паспорт(РП ник), Мед.карта, Лицензии, ВБ.', type: 'approve' }, { text: 'Хочу в фсб. Мой ник Vanya_killer. Лвл 3.', evidence: 'Скриншот паспорта без /time. Нет военного билета.', type: 'reject' } ];
+        const allComplaints = [ { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' }, { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' } ];
 
         function getEl(id) { return document.getElementById(id); }
 
@@ -2384,17 +1888,11 @@
 
         function renderRight(mode) {
             const rt = document.getElementById("rightTitle"), rl = document.getElementById("rightLead"), rc = document.getElementById("rightCards");
-            if(!rt || !rl || !rc) return;
-            const rightContent = {
-                moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] },
-                support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] },
-                creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] }
-            };
-            const data = rightContent[mode] || rightContent['moderation'];
-            rt.innerHTML = data.title; rl.innerHTML = data.lead;
-            rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
-        }
-
+            if(!rt || !rl || !rc) return; const rightContent = { moderation: { title: "Материалы модератора", lead: "Подсказки по модерации: как оценивать сообщения.", cards: [ ["Без нарушения", "Обычное сообщение."], ["Пред / Мут", "Флуд, капс, политика."], ["Бан / Перма", "Реклама, РМТ, обход банов."] ] }, timeattack: { title: "Спидран", lead: "Правила режима на время.", cards: [ ["Время", "Дается 60 секунд. Ошибка = минус 3 секунды."], ["Опыт", "Счет конвертируется в бонусный XP!"] ] }, support: { title: "Материалы АП", lead: "База знаний для АП и шаблоны ответов.", cards: [ ["База знаний", "Используйте команды /gps и уровни работ."], ["Ответы", "Давайте четкие и понятные ответы."] ] }, complaints: { title: "Правила жалоб", lead: "Как рассматривать репорты.", cards: [ ["Одобрить", "Явное нарушение (оск, реклама)."], ["Отказать", "Нет док-в или обрезаны."], ["Передать", "Обжалование ЧСМ или банов ГМ."] ] }, quests: { title: "Квесты", lead: "Выполняй задания и забирай XP.", cards: [ ["Прогресс", "Выполняйте норму в тренажерах."], ["Награды", "Нажмите 'Забрать' после выполнения."] ] }, guide: { title: "Контакты (ВК)", lead: "Все актуальные ссылки находятся в центре экрана.", cards: [ ["Кликабельно", "Нажмите на ссылку [VK], чтобы написать Руководству."] ] }, leaderboard: { title: "О Лидерборде", lead: "Рейтинг формируется на основе заработанного XP.", cards: [ ["Обновление", "Таблица рассчитывает баланс XP (опыт минус траты)."], ["Отображение", "Показываются только действующие модераторы и АП."] ] }, about: { title: "О команде", lead: "Информация о людях, создавших тренажёр.", cards: [ ["Создано", "John Wick."], ["При поддержке", "Leha_Mackenzie, Andrey_Caypen и Евгения Бабешко."] ] }, profile: { title: "Личный профиль", lead: "Ваша статистика и косметика.", cards: [ ["Никнейм", "Ваш игровой ник."], ["XP / Баллы", "Ваши накопления."], ["Косметика", "Визуальные улучшения."] ] }, shop: { title: "Магазин модераторов", lead: "Тратьте XP.", cards: [ ["Выдача", "Все покупки уходят к руководству."], ["Игры", "Мини-игры для проверки удачи."] ] }, ap_shop: { title: "Магазин АП", lead: "Тратьте Баллы.", cards: [ ["Выдача", "Все покупки уходят к руководству АП."], ["Рулетка", "Призы могут выдать баллы или штраф."] ] }, report: { title: "Отчетность", lead: "Сдача ежедневных отчетов онлайна.", cards: [ ["Доступ", "Раздел доступен только действующим модератора."], ["Ссылки/Скрины", "Используйте Imgur/Yapx или грузите фото напрямую."] ] }, inactives: { title: "Неактивы", lead: "Заявления на неактив.", cards: [ ["Доступ", "Только для действующих модераторов."], ["Форма", "Укажите даты и точную причину."] ] }, admin_log: { title: "Панель логов", lead: "Только для руководства", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное' после выдачи в Discord."] ] }, ap_admin_log: { title: "Панель логов (АП)", lead: "Только для руководства АП", cards: [ ["Выдача", "Нажимайте 'Отметить как выданное'."] ] }, creator: { title: "Управление доступом", lead: "Только для Создателя.", cards: [ ["Настройки", "Глобальные переключатели."], ["Руководство", "Выдача прав руководства."] ] }, leadership: { title: "Управление модерацией", lead: "Только для Руководства.", cards: [ ["Выдача статуса", "Выдайте статус Модератора игроку."], ["Тайный покупатель", "Закидывай сложную проверку."] ] }, ap_admin: { title: "Управление АП", lead: "Только для Руководства АП.", cards: [ ["Выдача статуса", "Выдайте статус АП."], ["Редактор БД", "Добавляй новые вопросы."] ] }, reports_table: { title: "Таблица Отчетов", lead: "Сводка сдачи онлайна", cards: [ ["Статусы", "Норма, Перенорма, Герой Дня, Отказ"] ] }, fsb: { title: "Регламент ФСБ", lead: "Критерии отбора в Академию.", cards: [ ["Одобрение", "РП ник, военный билет, законопослушность >0, все скрины с /time."], ["Отказ", "НонРП ник, нет ВБ, отрицательная закона, скрины без /time, розыск."] ] }, fsb_shop: { title: "Магазин ФСБ", lead: "Уникальные возможности для ФСБ.", cards: [ ["Баллы", "Баллы начисляются за проверку заявлений."] ] }, fsb_admin: { title: "Управление ФСБ", lead: "Только для Руководства ФСБ.", cards: [ ["Состав", "Управление статусом ФСБ и их баллами."] ] } };
+            const data = rightContent[mode] || rightContent['moderation']; rt.innerHTML = data.title; rl.innerHTML = data.lead;
+            rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join(""); 
+        } 
+        
         const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb","fsb_shop","fsb_admin","goss_org","goss_log"];
         
         function switchMode(mode, btn) {
@@ -2417,7 +1915,6 @@
             else if(["complaints"].includes(mode)) currentTheme = "complaints";
             else if(["timeattack"].includes(mode)) currentTheme = "timeattack";
             else if(["creator"].includes(mode)) currentTheme = "creator";
-            else if(["goss_org", "goss_log"].includes(mode)) currentTheme = "leadership"; // ГОСС темы
             
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
@@ -2429,7 +1926,6 @@
                 const titleEl = document.getElementById('gossOrgTitle');
                 if(titleEl) titleEl.innerText = orgNames[currentGossOrg] || 'Организация';
                 
-                // Проверяем, есть ли у пользователя права на логи этой ГОСС (ЛД/Зам или Создатель)
                 const isLeader = currentUser && (currentUser.email === creatorEmail || localStorage.getItem(`goss_leader_${currentGossOrg}_${currentUser.email}`) === 'true');
                 document.getElementById('gossLogTabBtn').style.display = isLeader ? 'inline-block' : 'none';
                 document.getElementById('openSsBtn').style.display = 'inline-block';
@@ -2448,6 +1944,10 @@
             if(mode === 'leadership' || mode === 'ap_admin' || mode === 'fsb_admin') loadUsersForAdmin();
             if(mode === 'profile') renderProfileData();
             if(mode === 'reports_table') loadReportsTable();
+            
+            const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");
+            const headers = { moderation: ["Симулятор смены модераторов", 'Следи за <span>порядком</span> на сервере.', "Проверяй сообщения, принимай решения и поддерживай порядок в чате.", "Режим: модераторы"], timeattack: ["Симулятор смены: На время", 'Успей за <span>минуту</span>.', "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!", "Режим: спидран"], complaints: ["Симулятор смены: Жалобы", 'Рассматривай <span>репорты</span>.', "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.", "Режим: жалобы"], support: ["Симулятор смены агентов поддержки", 'Создавай <span>уют</span> и помогай игрокам.', "Отвечай на вопросы игроков, ориентируйся в материалах.", "Режим: агенты поддержки"], quests: ["Квесты сотрудников", 'Выполняй <span>задания</span>.', "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.", "Режим: квесты"], guide: ["Руководство Сервера", 'Контакты <span>руководства</span>.', "Основная информация и контактные данные.", "Режим: руководство"], leaderboard: ["Таблица лидеров", 'Топ <span>лучших</span>.', "Отображаются активные сотрудники с наибольшим количеством XP.", "Режим: лидерборд"], about: ["Люди, которые сделали этот проект", 'Узнай, кто <span>стоит за идеей</span>.', "Этот раздел посвящён авторам и тем, кто помогал собрать тренажёр.", "Режим: о команде"], profile: ["Личный Профиль", 'Ваша <span>Статистика</span>.', "Ваши достижения, баланс и визуальные улучшения для аккаунта.", "Режим: профиль"], shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"], ap_shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"], report: ["Симулятор смены: Отчетность", 'Сдавай <span>отчеты</span> вовремя.', "Отправляй данные своего онлайна для проверки руководством.", "Режим: отчетность"], inactives: ["Симулятор смены: Неактивы", 'Берешь <span>отдых</span>?', "Отправьте заявку на неактив с указанием причины.", "Режим: неактивы"], admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"], ap_admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"], creator: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"], leadership: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"], ap_admin: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"], reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"], fsb: ["Организации: ФСБ", 'Вербовка в <span>УФСБ</span>.', "Проверяйте заявления кандидатов на стажировку. Учитывайте РП правила и УК РФ.", "Режим: ФСБ"], fsb_shop: ["Магазин ФСБ", 'Покупки для <span>Сотрудников</span>.', "Покупайте отгулы, транспорт или крутите рулетки за баллы.", "Режим: ФСБ Магазин"], fsb_admin: ["Руководство ФСБ", 'Управление <span>Составом</span>.', "Выдача статуса ФСБ и начисление баллов.", "Режим: Руководство ФСБ"] }; 
+            if(headers[mode]) { brandSub.textContent = headers[mode][0]; hTitle.innerHTML = headers[mode][1]; hText.textContent = headers[mode][2]; hBadge.textContent = headers[mode][3]; }
         }
 
         document.querySelectorAll('.main-cat-btn').forEach(btn => {
@@ -2557,13 +2057,12 @@
         bindTouchClick('#btnStartShiftGOSS', () => {
             if (!currentUser) return alert("Сначала авторизуйтесь!");
             if (shiftStartGossTime) {
-                // Закончить смену
                 const workedMinutes = Math.floor((Date.now() - shiftStartGossTime) / 60000);
                 shiftStartGossTime = null;
                 getEl('btnStartShiftGOSS').textContent = "Начать смену";
                 getEl('btnStartShiftGOSS').classList.replace('btn-secondary', 'btn-primary');
                 
-                const reward = workedMinutes * 5; // 5 XP за минуту
+                const reward = workedMinutes * 5; 
                 if(reward > 0) addGameXp(reward);
                 
                 supa.from('admin_logs').insert([{ nickname: currentUser.nickname || currentUser.email, item_name: `Отработал ${workedMinutes} мин`, type: `goss_log_${currentGossOrg}`, status: 'Завершил смену' }]).then(()=>{});
@@ -2571,7 +2070,6 @@
                 alert(`Смена окончена. Отработано: ${workedMinutes} минут. Получено ${reward} XP.`);
                 getEl('gossMinutesValue').textContent = "0";
             } else {
-                // Начать смену
                 shiftStartGossTime = Date.now();
                 getEl('btnStartShiftGOSS').textContent = "Закончить смену";
                 getEl('btnStartShiftGOSS').classList.replace('btn-primary', 'btn-secondary');
@@ -2581,7 +2079,6 @@
             }
         });
 
-        // Таймер для визуального обновления минут
         setInterval(() => {
             if(shiftStartGossTime) {
                 const m = Math.floor((Date.now() - shiftStartGossTime) / 60000);
@@ -2594,9 +2091,7 @@
             if(cost <= 0) return callback('game'); // Бесплатно
             
             getEl('currencyModal').style.display = 'flex';
-            getEl('currGameBal').textContent = `Баланс: ${availableXp()}`;
-            getEl('currRealBal').textContent = `Баланс: ${getRealBalance()}`;
-
+            
             // Удаляем старые лисенеры
             const gb = getEl('currGameBtn').cloneNode(true); getEl('currGameBtn').replaceWith(gb);
             const rb = getEl('currRealBtn').cloneNode(true); getEl('currRealBtn').replaceWith(rb);
@@ -2612,17 +2107,19 @@
         }
         bindTouchClick('#currCancelBtn', () => { getEl('currencyModal').style.display = 'none'; });
 
-        // === ИГРЫ (ОТКРЫТИЕ И ВЫЗОВ ОКНА ВАЛЮТЫ) ===
+        // === ИГРЫ ===
         window.openGameModal = function(gameId) {
             if (!currentUser) return alert('Пожалуйста, войдите в аккаунт!');
-            
-            // Сбрасываем старые оверлеи
             getEl('ggResult').style.display = 'none';
             getEl('closeGgBtn').style.display = 'none';
             getEl('genericGameModal').style.display = 'none';
             
-            if(['fortune', 'coin', 'safes', 'jw'].includes(gameId)) {
-                if(gameId === 'fortune') { getEl('fortuneModal').style.display = 'flex'; getEl('fortuneStartOverlay').style.display = 'flex'; }
+            if(['fortune', 'coin', 'safes', 'jw', 'ap_roulette', 'fsb_roulette_items', 'fsb_roulette_pts'].includes(gameId)) {
+                if(gameId === 'fortune' || gameId === 'ap_roulette') { 
+                    state.currentGameCurrencyType = gameId === 'ap_roulette' ? 'ap' : 'mod';
+                    getEl('fortuneModal').style.display = 'flex'; 
+                    getEl('fortuneStartOverlay').style.display = 'flex'; 
+                }
                 if(gameId === 'coin') { getEl('coinModal').style.display = 'flex'; getEl('coinResult').innerText = ''; }
                 if(gameId === 'safes') { getEl('safesModal').style.display = 'flex'; getEl('safesResult').innerText = ''; }
                 if(gameId === 'jw') initJwGame();
@@ -2661,6 +2158,7 @@
                 state.currentGameCurrency = curr;
                 if (curr === 'real') {
                     await supa.from('user_stats').update({ shop_spent: (Number(currentUser.shop_spent)||0) + state.currentGameBet }).eq('user_id', currentUser.id);
+                    shopState.spent += state.currentGameBet;
                 } else {
                     await addGameXp(-state.currentGameBet);
                 }
@@ -2679,8 +2177,7 @@
             
             if(amount > 0) {
                 if (state.currentGameCurrency === 'real') {
-                    // Возвращаем реальный ХП через manualRealXp
-                    supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'MANUAL_REAL_XP', link: currentUser.id, xp: amount, status: 'game_win' }]).then(()=>{
+                    supa.from('reports').insert([{ id: 'mxp_' + Date.now(), email: 'MANUAL_REAL_XP', link: currentUser.id, xp: amount, status: 'game_win' }]).then(()=>{
                         manualRealXp += amount; updateShopStats();
                     });
                 } else {
@@ -2689,7 +2186,7 @@
             }
         }
 
-        // === ПОКУПКИ В МАГАЗИНАХ (MOD, AP, FSB) ===
+        // === ПОКУПКИ В МАГАЗИНАХ ===
         window.buyShopItem = function(id, isAp) {
             if (!currentUser) return alert('Пожалуйста, войдите в аккаунт!');
             const item = isAp ? apShopItems.find(i => i.id === id) : shopItems.find(i => i.id === id);
@@ -2706,8 +2203,10 @@
 
             requestCurrency(item.price, async (curr) => {
                 if (curr === 'real') {
-                    const currentSpent = isAp ? (Number(currentUser.ap_spent) || 0) : (Number(currentUser.shop_spent) || 0);
-                    const updateObj = isAp ? { ap_spent: currentSpent + item.price } : { shop_spent: currentSpent + item.price };
+                    const currentSpent = isAp ? (Number(shopState.apSpent) || 0) : (Number(shopState.spent) || 0);
+                    if(isAp) shopState.apSpent = currentSpent + item.price;
+                    else shopState.spent = currentSpent + item.price;
+                    const updateObj = isAp ? { ap_spent: shopState.apSpent } : { shop_spent: shopState.spent };
                     await supa.from('user_stats').update(updateObj).eq('user_id', currentUser.id);
                 } else {
                     await addGameXp(-item.price);
@@ -2729,13 +2228,12 @@
             shopState.fsbSpent = (shopState.fsbSpent || 0) + item.price;
             saveProgress(); updateShopStats();
             
-            supa.from('admin_logs').insert([{ nickname: currentUser.nickname || currentUser.email, item_name: item.title, type: 'goss_log_fsb', status: 'Куплено в магазине' }]);
+            supa.from('admin_logs').insert([{ nickname: currentUser.nickname || currentUser.email, item_name: item.title, type: `goss_log_${currentGossOrg}`, status: 'Куплено в магазине' }]);
             alert(`Вы приобрели: ${item.title}`);
         };
 
 
-        // === ТРЕНАЖЕРЫ ВЕРДИКТОВ (С ФИКСОМ КЛИКОВ ЧЕРЕЗ BINDTOUCHCLICK) ===
-        
+        // === ТРЕНАЖЕРЫ ВЕРДИКТОВ ===
         async function checkAndApplyHiddenChecks() {
             if(!currentUser) return null;
             const hcIndex = hiddenChecks.findIndex(hc => hc.userId === currentUser.id);
@@ -2848,12 +2346,12 @@
             getEl('taTimer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             getEl('taScore').textContent = taState.score; getEl('taMistakes').textContent = taState.mistakes;
         }
-        function endTaGame() {
+        async function endTaGame() {
             clearInterval(taTimerInt); getEl('taGameScreen').style.display = 'none'; getEl('taStartScreen').style.display = 'block';
             getEl('taTimer').classList.remove('danger'); getEl('taTimer').textContent = "01:00";
             const resXp = Math.max(0, Math.floor(taState.score / 2) * 5);
             alert(`Время вышло!\nВерных решений: ${taState.score}\nОшибок: ${taState.mistakes}\n\nВы заработали: ${resXp} XP!`);
-            if (resXp > 0) addGameXp(resXp).then(() => updateShopStats());
+            if (resXp > 0) { await addGameXp(resXp); updateShopStats(); }
         }
 
         // Фикс кнопки проверки АП
@@ -2876,7 +2374,6 @@
             getEl("supportQuestionTitle").textContent = q.title; getEl("supportQuestionText").textContent = q.text;
             getEl("supportAnswerInput").value = ""; getEl("supportResultText").textContent = "";
         });
-
 
         // === ТАБЛИЦА СТАРШЕГО СОСТАВА (ГОСС) ===
         bindTouchClick('#openSsBtn', () => {
@@ -2926,10 +2423,9 @@
         });
         bindTouchClick('#ssCloseBtn', () => { getEl('ssModal').style.display = 'none'; });
 
-
-        // === ПАНЕЛЬ СОЗДАТЕЛЯ: УПРАВЛЕНИЕ ГОСС (РАБОЧАЯ СИСТЕМА) ===
+        // === ПАНЕЛЬ СОЗДАТЕЛЯ: УПРАВЛЕНИЕ ГОСС ===
         bindTouchClick('#giveGossLeaderBtn', () => {
-            const email = getEl('creatorGossUserSelect').options[getEl('creatorGossUserSelect').selectedIndex]?.text.split(' ')[0]; // Берем email из выпадашки
+            const email = getEl('creatorGossUserSelect').options[getEl('creatorGossUserSelect').selectedIndex]?.text.split(' ')[0];
             const org = getEl('creatorGossOrgSelect').value;
             if(!email || email.includes('Загрузка')) return alert("Выберите пользователя!");
             
@@ -2982,13 +2478,12 @@
         bindTouchClick('#apAdminPointsBtn', () => {
             const userId = getEl('apAdminUserSelect').value, amount = Number(getEl('apAdminPointsAmount').value);
             if (!userId || isNaN(amount)) return;
-            // АП баллы мы пишем в sup_correct для ручной выдачи (по старой логике) или добавляем черезGAME_XP. Используем существующую логику
             supa.from('reports').insert([{ id: 'ap_mxp_' + Date.now(), email: 'MANUAL_REAL_XP', link: userId, xp: amount, status: 'ap' }]).then(()=>{
                 alert("Баллы АП изменены."); loadUsersForAdmin();
             });
         });
 
-        // Функция для логов админов
+        // === Функция для логов админов ===
         async function renderAdminLogs(type = 'admin') {
             let areaId = 'adminLogsArea', dbType = 'mod_shop';
             if(type === 'ap') { areaId = 'apAdminLogsArea'; dbType = 'ap_shop'; }
@@ -2997,7 +2492,7 @@
             const area = getEl(areaId); if(!area) return; area.innerHTML = 'Загрузка...';
             
             let query = supa.from('admin_logs').select('*').order('created_at', { ascending: false }).limit(50);
-            if (type === 'goss') query = query.like('type', `goss_log_%`);
+            if (type === 'goss') query = query.eq('type', dbType);
             else query = query.eq('type', dbType);
             
             const { data: logs, error } = await query;
@@ -3017,61 +2512,89 @@
         bindTouchClick('#loadApAdminLogsBtn', () => renderAdminLogs('ap'));
         bindTouchClick('#loadGossLogsBtn', () => renderAdminLogs('goss'));
 
-        // === ОРИГИНАЛЬНАЯ ЛОГИКА АВТОРИЗАЦИИ, СОХРАНЕНИЯ ПРОГРЕССА И UI ===
-        function updateModStats() {
-            getEl("resolvedValue").textContent = state.resolved; getEl("correctValue").textContent = state.correct; getEl("mistakeValue").textContent = state.mistakes;
-            getEl("xpValue").textContent = availableXp();
-            const fill = getEl("xpFill"); if (fill) { const pct = Math.min(100, Math.max(0, (getTrainingBalance() / 500) * 100)); fill.style.width = pct + "%"; fill.style.background = pct >= 100 ? "var(--color-success)" : "linear-gradient(90deg, #ffbf47, #ffe38e)"; }
-        }
-        function updateSupportStats() {
-            if(!getEl("supportResolvedValue")) return;
-            getEl("supportResolvedValue").textContent = supportState.resolved; getEl("supportCorrectValue").textContent = supportState.correct; getEl("supportMistakeValue").textContent = supportState.mistakes;
-            getEl("supportXpValue").textContent = availablePts();
-            const fill = getEl("supportXpFill"); if (fill) { const pct = Math.min(100, Math.max(0, (Math.floor(supportState.correct/10)*15 / 150) * 100)); fill.style.width = pct + "%"; fill.style.background = pct >= 100 ? "var(--color-success)" : "linear-gradient(90deg, #a26cff, #c4a1ff)"; }
-        }
-        function updateComplaintStats() {
-            if(!getEl("compResolvedValue")) return;
-            getEl("compResolvedValue").textContent = complaintState.resolved; getEl("compCorrectValue").textContent = complaintState.correct; getEl("compMistakeValue").textContent = complaintState.mistakes;
-            getEl("compXpValue").textContent = Math.floor(complaintState.correct / 5) * 20;
+        // ===============================================
+        // ОРИГИНАЛЬНАЯ ЛОГИКА ОСТАВЛЕНА БЕЗ ИЗМЕНЕНИЙ 
+        // ДЛЯ ОБЕСПЕЧЕНИЯ РАБОТЫ ВСЕХ ОСТАЛЬНЫХ ФУНКЦИЙ
+        // ===============================================
+
+        function renderProfileData() {
+            const nameEl = document.getElementById('profileName');
+            let baseName = currentNickname || (currentUser ? currentUser.email : "Неизвестно");
+            if (activeCosmetics.crown) { baseName = "👑 " + baseName; }
+            nameEl.textContent = baseName;
+            if (activeCosmetics.color) {
+                nameEl.style.background = "linear-gradient(90deg, #ff6b88, #ffbf47, #52c77b, #6c8cff, #a26cff)";
+                nameEl.style.webkitBackgroundClip = "text";
+                nameEl.style.webkitTextFillColor = "transparent";
+                nameEl.style.display = "inline-block";
+            } else {
+                nameEl.style.background = "none";
+                nameEl.style.webkitTextFillColor = "initial";
+                nameEl.style.color = "#fff";
+            }
+            const btnCrown = document.getElementById('equipCrownBtn');
+            if (btnCrown) btnCrown.textContent = activeCosmetics.crown ? "Снять" : "Надеть";
+            const btnColor = document.getElementById('equipColorBtn');
+            if (btnColor) btnColor.textContent = activeCosmetics.color ? "Снять" : "Надеть";
+            if(currentUser && currentNickname) { document.getElementById('profileAvatar').textContent = initials(currentNickname); }
+            document.getElementById('profileXp').textContent = availableXp();
+            document.getElementById('profileRealXp').textContent = getRealBalance();
+            document.getElementById('profilePts').textContent = availablePts();
         }
 
-        function updateShopStats() {
-            if(getEl('shopGameXp')) getEl('shopGameXp').textContent = availableXp();
-            if(getEl('shopRealXp')) getEl('shopRealXp').textContent = getRealBalance();
-            if(getEl('apShopTotalPts')) getEl('apShopTotalPts').textContent = availablePts();
-            if(getEl('apShopSpentPts')) getEl('apShopSpentPts').textContent = shopState.apSpent || 0;
-            if(getEl('fsbShopTotalPts')) getEl('fsbShopTotalPts').textContent = getFsbPoints();
-            
-            const renderShop = (container, items, isAp, isFsb) => {
-                if(!getEl(container)) return;
-                getEl(container).innerHTML = items.map(item => `
-                    <div class="shop-card ${isAp ? 'ap-shop-card' : ''}">
-                        <div><h3 style="display:flex; align-items:center; gap:0.5rem;">${item.icon} ${item.title}</h3><div class="shop-price ${isAp ? 'ap-shop-price' : ''}">${item.price} ${isAp ? 'Баллов' : 'XP'}</div></div>
-                        <p>${item.desc}</p>
-                        <button class="shop-buy-btn ${isAp ? 'ap-shop-buy-btn' : ''} touch-btn" type="button" onclick="${isFsb ? `buyFsbShopItem('${item.id}')` : `buyShopItem('${item.id}', ${isAp})`}">${item.action ? 'Играть' : 'Купить'}</button>
-                    </div>`).join('');
-                // Ребиндим кнопки для надежности на мобилках
-                setTimeout(() => { document.querySelectorAll('.touch-btn').forEach(btn => bindTouchClick(btn, (e, el) => { el.click(); })); }, 100);
-            };
-            
-            renderShop('shopItemsContainer', shopItems, false, false);
-            renderShop('apShopItemsContainer', apShopItems, true, false);
-            renderShop('fsbShopItemsContainer', fsbShopItems, false, true);
+        function renderQuests() {
+            const c = document.getElementById('questsContainer'); if(!c) return;
+            c.innerHTML = questsData.map(q => {
+                const prog = Math.min(q.getProgress(), q.max);
+                const isDone = prog >= q.max;
+                const claimed = localStorage.getItem('quests_' + (currentUser?currentUser.email:'')) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
+                const isClaimed = claimed.includes(q.id);
+                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--theme-accent); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--theme-accent); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim touch-btn" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
+            }).join('');
         }
 
-        async function saveProgress() {
-            if (!currentUser) return;
-            const { error } = await supa.from('user_stats').upsert([{ 
-                user_id: currentUser.id, email: currentUser.email, nickname: currentUser.nickname,
-                mod_resolved: state.resolved, mod_correct: state.correct, mod_mistakes: state.mistakes,
-                sup_resolved: supportState.resolved, sup_correct: supportState.correct, sup_mistakes: supportState.mistakes,
-                comp_resolved: complaintState.resolved, comp_correct: complaintState.correct, comp_mistakes: complaintState.mistakes,
-                fsb_approved: fsbState.approved, fsb_rejected: fsbState.rejected,
-                shop_spent: shopState.spent, ap_spent: shopState.apSpent, fsb_spent: shopState.fsbSpent
-            }]);
-            if(error) console.error(error);
-        }
+        window.claimQuest = function(qId, reward) {
+            if(!currentUser) return;
+            const claimed = localStorage.getItem('quests_' + currentUser.email) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
+            if(claimed.includes(qId)) return;
+            claimed.push(qId);
+            localStorage.setItem('quests_' + currentUser.email, JSON.stringify(claimed));
+            addGameXp(reward); updateShopStats(); updateModStats(); updateSupportStats(); saveProgress(); playSound('win');
+            alert(`✅ Квест выполнен! +${reward} XP.`); renderQuests();
+        };
 
+        window.loadLeaderboard = async function() {
+            const list = document.getElementById('leaderboardList'); if(!list) return;
+            list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">⏳ Загрузка данных лидеров...</div>';
+            const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
+            const { data: users } = await supa.from('user_stats').select('*');
+            let modArr = [], apArr = [];
+            if(users) {
+                users.forEach(u => {
+                    const isLeader = adminEmails.includes(u.email) || dynamicModLeaders.includes(u.user_id) || u.email === creatorEmail;
+                    const isUserMod = activeMods.includes(u.user_id) && !isLeader;
+                    const isUserAp = activeAps.includes(u.user_id) && !isLeader;
+                    let reportXp = 0;
+                    if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
+                    const mXp = Math.max(0, reportXp - Number(u.shop_spent||0));
+                    const aXp = Math.max(0, Math.floor(Number(u.sup_correct)/10)*15 - Number(u.ap_spent||0));
+                    if(u.nickname) {
+                        if (isUserMod && mXp > 0) { modArr.push({ name: u.nickname, score: mXp }); }
+                        if (isUserAp && aXp > 0) { apArr.push({ name: u.nickname, score: aXp }); }
+                    }
+                });
+            }
+            modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
+            window.lbModHTML = modArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge xp">${u.score} Real XP</span></div></div>`).join('');
+            window.lbApHTML = apArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i<3?'#ff8fc4':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i<3?'#ff8fc4':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge" style="background:#ff8fc4; color:#000;">${u.score} Баллов</span></div></div>`).join('');
+            list.innerHTML = window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>';
+        };
+
+        // Рулетки
+        window.openModRoulette = function() { openGameModal('fortune'); };
+        window.openApRoulette = function() { openGameModal('ap_roulette'); };
+
+        // Инициализация при старте
         async function initAuth() {
             const { data: { session } } = await supa.auth.getSession();
             if (session && session.user) {
@@ -3082,7 +2605,8 @@
                     supportState.resolved = data.sup_resolved || 0; supportState.correct = data.sup_correct || 0; supportState.mistakes = data.sup_mistakes || 0; shopState.apSpent = data.ap_spent || 0;
                     complaintState.resolved = data.comp_resolved || 0; complaintState.correct = data.comp_correct || 0; complaintState.mistakes = data.comp_mistakes || 0;
                     fsbState.approved = data.fsb_approved || 0; fsbState.rejected = data.fsb_rejected || 0; shopState.fsbSpent = data.fsb_spent || 0;
-                    getEl('userEmailDisplay').textContent = data.nickname || session.user.email;
+                    currentNickname = data.nickname;
+                    getEl('userEmailDisplay').textContent = currentNickname || session.user.email;
                     getEl('loginBtnUI').style.display = 'none'; getEl('logoutBtnUI').style.display = 'inline-block';
                     updateModStats(); updateSupportStats(); updateComplaintStats(); updateShopStats();
                 } else {
@@ -3090,41 +2614,32 @@
                     getEl('userEmailDisplay').textContent = session.user.email;
                     getEl('loginBtnUI').style.display = 'none'; getEl('logoutBtnUI').style.display = 'inline-block';
                 }
-                
-                // Подгружаем реальный XP с учетом ручной выдачи
                 const { data: repData } = await supa.from('reports').select('xp').eq('email', currentUser.email);
                 let totalReal = 0; if (repData) repData.forEach(r => totalReal += Number(r.xp)||0);
                 state.reportXp = totalReal;
-
                 await loadGlobalShopAndRoulette();
             }
-            
             randomComplaint(); randomFsbApp();
         }
 
-        bindTouchClick('#loginBtnUI', () => { getEl('authModal').style.display = 'flex'; });
+        bindTouchClick('#loginBtnUI', () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; });
         bindTouchClick('#authCloseModal', () => { getEl('authModal').style.display = 'none'; });
-        
+        bindTouchClick('#logoutBtnUI', async () => { await supa.auth.signOut(); location.reload(); });
         bindTouchClick('#authLoginSubmit', async () => {
-            const email = getEl('authEmail').value, password = getEl('authPassword').value, nick = getEl('authNickname').value;
-            if (!email || !password) return getEl('authErrorMsg').textContent = "Заполните почту и пароль", getEl('authErrorMsg').style.display = 'block';
-            getEl('authErrorMsg').textContent = "Вход..."; getEl('authErrorMsg').style.color = "var(--color-text-muted)"; getEl('authErrorMsg').style.display = 'block';
-            const { data, error } = await supa.auth.signInWithPassword({ email, password });
-            if (error) { getEl('authErrorMsg').textContent = "Ошибка: " + error.message; getEl('authErrorMsg').style.color = "var(--color-error)"; } 
-            else { getEl('authModal').style.display = 'none'; if(nick) { await supa.from('user_stats').upsert([{ user_id: data.user.id, email: data.user.email, nickname: nick }]); } window.location.reload(); }
+            const email = getEl('authEmail').value, password = getEl('authPassword').value, err = getEl('authErrorMsg');
+            if(!email || !password) { err.textContent = "Введите Email и Пароль!"; err.style.display = 'block'; return; }
+            err.textContent = "Загрузка..."; err.style.color = "var(--color-primary)"; err.style.display = 'block';
+            const { error } = await supa.auth.signInWithPassword({ email, password });
+            if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; } else window.location.reload();
         });
-        
         bindTouchClick('#authRegisterSubmit', async () => {
-            const email = getEl('authEmail').value, password = getEl('authPassword').value, nick = getEl('authNickname').value;
-            if (!email || !password || !nick) return getEl('authErrorMsg').textContent = "Никнейм обязателен при регистрации!", getEl('authErrorMsg').style.display = 'block';
-            getEl('authErrorMsg').textContent = "Регистрация..."; getEl('authErrorMsg').style.color = "var(--color-text-muted)"; getEl('authErrorMsg').style.display = 'block';
-            const { data, error } = await supa.auth.signUp({ email, password });
-            if (error) { getEl('authErrorMsg').textContent = "Ошибка: " + error.message; getEl('authErrorMsg').style.color = "var(--color-error)"; } 
-            else { await supa.from('user_stats').insert([{ user_id: data.user.id, email: data.user.email, nickname: nick }]); getEl('authModal').style.display = 'none'; alert("Регистрация успешна! Войдите в аккаунт."); }
+            const email = getEl('authEmail').value, nickname = getEl('authNickname').value, password = getEl('authPassword').value, err = getEl('authErrorMsg');
+            if(!email || !password || !nickname) { err.textContent = "Заполните все поля, включая Никнейм!"; err.style.color = "var(--color-error)"; err.style.display = 'block'; return; }
+            err.textContent = "Загрузка..."; err.style.color = "var(--color-primary)"; err.style.display = 'block';
+            const { error } = await supa.auth.signUp({ email, password, options: { data: { nickname: nickname } } });
+            if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; } else { err.textContent = "Успешно! Теперь войдите."; err.style.color = "var(--color-success)"; }
         });
 
-        bindTouchClick('#logoutBtnUI', async () => { await supa.auth.signOut(); window.location.reload(); });
-        
         initAuth();
     });
   </script>
