@@ -94,6 +94,7 @@
     button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
     button:hover { transform: translateY(-3px); }
     button:active { transform: translateY(1px) scale(0.97); }
+    @media (hover: none) { button:hover, .btn:hover, .action-btn:hover, .shop-buy-btn:hover, .mode-btn:hover, .main-cat-btn:hover { transform:none; } }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
     .page { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; padding: 1.5rem 0 3rem; }
@@ -391,6 +392,14 @@
     .quest-btn.claim:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 15px 40px rgba(162, 108, 255, 0.6); }
     .quest-btn.in-progress { background: rgba(108, 140, 255, 0.1); color: #8aa3ff; border: 1px solid rgba(108, 140, 255, 0.3); cursor: not-allowed; }
     .quest-btn.completed { background: rgba(82, 199, 123, 0.1); color: #52c77b; border: 1px solid rgba(82, 199, 123, 0.3); cursor: not-allowed; }
+
+    .choice-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(10px); display:none; align-items:center; justify-content:center; z-index: 9999; padding: 1rem; }
+    .choice-modal { width:min(520px,100%); background: linear-gradient(160deg, rgba(18,22,38,0.98), rgba(6,7,16,1)); border:1px solid rgba(191,198,255,0.22); border-radius: 24px; box-shadow: 0 30px 90px rgba(0,0,0,0.8); padding:1.4rem; display:grid; gap:1rem; }
+    .choice-title { font-size:1.25rem; font-weight:900; color:#fff; }
+    .choice-copy { color: var(--color-text-muted); font-size: var(--text-sm); }
+    .choice-actions { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    .choice-actions .btn { width:100%; min-height:56px; }
+    @media (max-width: 640px){ .choice-actions { grid-template-columns:1fr; } }
 
     /* === МАГАЗИН === */
     .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
@@ -3086,9 +3095,31 @@
             }
         }
 
+        async function addXpCreditLog(targetUser, amount, source, org = 'moderation') {
+            if (!targetUser || !amount || amount <= 0) return;
+            try { await supa.from('reports').insert({ email: 'REAL_XP_GIVEN', nickname: source || 'SYSTEM', text: `Выдано ${amount} XP`, status: org, xp: amount, link: targetUser.id || targetUser.user_id || '' }); } catch(e) {}
+        }
+
+        async function logFsbShopPurchase(nickname, itemName, status = 'Ожидает выдачи') {
+            try { await supa.from('admin_logs').insert({ nickname: nickname || 'Неизвестно', item_name: itemName || 'Неизвестный предмет', status, type: 'fsb_shop' }); } catch(e) {}
+        }
+
+        function getRealBalance(reportXp = 0, spent = 0, extraXp = 0) { return Math.max(0, Number(reportXp || 0) + Number(extraXp || 0) - Number(spent || 0)); }
+
+        function openCurrencyChoiceModal(item, onChoose) {
+            const modal = document.getElementById('currencyChoiceModal'), textEl = document.getElementById('currencyChoiceText'), gameBtn = document.getElementById('currencyChoiceGameBtn'), realBtn = document.getElementById('currencyChoiceRealBtn'), cancelBtn = document.getElementById('currencyChoiceCancelBtn');
+            if (!modal || !gameBtn || !realBtn || !cancelBtn) return;
+            textEl.textContent = `Выбери способ оплаты для покупки: ${item?.name || 'предмет'}.`;
+            modal.style.display = 'flex'; modal.setAttribute('aria-hidden', 'false');
+            const close = () => { modal.style.display = 'none'; modal.setAttribute('aria-hidden', 'true'); gameBtn.onclick = null; realBtn.onclick = null; cancelBtn.onclick = null; };
+            gameBtn.onclick = () => { close(); onChoose('game'); };
+            realBtn.onclick = () => { close(); onChoose('real'); };
+            cancelBtn.onclick = () => close();
+        }
+
         async function renderAdminLogs(isAp = false) {
             const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea'); if(!area) return; area.innerHTML = 'Загрузка...';
-            const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
+            const { data: logs, error } = await supa.from('admin_logs').select('*').in('type', isAp ? ['ap_shop'] : ['mod_shop','fsb_shop']).order('created_at', { ascending: false }).limit(80);
             if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
 
             if(logs && logs.length > 0) {
@@ -3267,7 +3298,10 @@
         };
 
         window.processReport = async function(id, statusText, xpAmount) { 
-            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); document.getElementById('viewReportsBtn').click(); setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
+            const { data: reportRow } = await supa.from('reports').select('*').eq('id', id).maybeSingle();
+            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id);
+            if (statusText && /одобр|принят|засчитан/i.test(statusText) && Number(xpAmount || 0) > 0 && reportRow?.link) await addXpCreditLog({ id: reportRow.link }, Number(xpAmount), currentNickname || currentUser?.email || 'REPORT_SYSTEM', 'moderation');
+            document.getElementById('viewReportsBtn').click(); setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
         };
         
         window.processInactive = async function(id, statusText) { 
@@ -3280,13 +3314,17 @@
         getEl('loginBtnUI').onclick = () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; };
         getEl('authCloseModal').onclick = () => { getEl('authModal').style.display = 'none'; };
         getEl('logoutBtnUI').onclick = async () => { await supa.auth.signOut(); location.reload(); };
+        supa.auth.onAuthStateChange((_event, session) => { if (session?.user) currentUser = session.user; });
 
         getEl('authLoginSubmit').onclick = async () => {
-            const email = getEl('authEmail').value, password = getEl('authPassword').value, err = getEl('authErrorMsg');
+            const email = getEl('authEmail').value.trim(), password = getEl('authPassword').value, err = getEl('authErrorMsg');
             if(!email || !password) { err.textContent = "Введите Email и Пароль!"; err.style.display = 'block'; return; }
             err.textContent = "Загрузка..."; err.style.color = "var(--color-primary)"; err.style.display = 'block';
-            const { error } = await supa.auth.signInWithPassword({ email, password });
-            if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; } else { window.location.reload(); }
+            const { data, error } = await supa.auth.signInWithPassword({ email, password });
+            if(error) { err.textContent = error.message; err.style.color = "var(--color-error)"; return; }
+            err.textContent = "Вход выполнен успешно"; err.style.color = "var(--color-success)";
+            currentUser = data?.user || (await supa.auth.getUser()).data?.user || null;
+            setTimeout(() => window.location.reload(), 400);
         };
 
         getEl('authRegisterSubmit').onclick = async () => {
@@ -3307,6 +3345,49 @@
 
         document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => judge(btn.dataset.action); });
         document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => judgeComplaint(btn.dataset.compAction); });
+
+        const govOrganizations = [
+            { key:'government', name:'Правительство', accent:'#ffd36b' },
+            { key:'fsb', name:'ФСБ', accent:'#6c8cff' },
+            { key:'gibdd', name:'ГИБДД', accent:'#ffd36b' },
+            { key:'uvd', name:'УМВД', accent:'#7fb7ff' },
+            { key:'army', name:'Армия', accent:'#8fe0a8' },
+            { key:'hospital', name:'Больница', accent:'#6bffd6' },
+            { key:'media', name:'СМИ', accent:'#ff9e6b' },
+            { key:'fsin', name:'ФСИН', accent:'#c4a1ff' }
+        ];
+
+        function renderGovHubCards(){
+            const wrap = getEl('govHubCards');
+            if(!wrap) return;
+            wrap.innerHTML = govOrganizations.map(org => `<div class="shop-card" style="border-color:${org.accent}66"><div><h3 style="color:${org.accent}">${org.name}</h3><div class="shop-price" style="color:${org.accent}; border-color:${org.accent}66">ГОСС</div></div><p>Отдельный раздел организации.</p><button class="shop-buy-btn" type="button" data-open-gov="${org.key}" style="background:${org.accent}; color:#111">Открыть</button></div>`).join('');
+            wrap.querySelectorAll('[data-open-gov]').forEach(btn => {
+                const open = () => {
+                    const mode = btn.dataset.openGov;
+                    const targetBtn = document.querySelector(`.mode-btn[data-mode="${mode}"]`);
+                    switchMode(mode, targetBtn || null);
+                };
+                btn.addEventListener('click', open);
+                btn.addEventListener('touchend', e => { e.preventDefault(); open(); }, { passive:false });
+            });
+        }
+
+        function renderGovPanel(id, title, accent){
+            const el = getEl(id);
+            if(!el) return;
+            el.innerHTML = `<div class="stats-grid" style="margin-bottom:1rem"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" style="font-size:1.15rem;color:${accent}">${title}</div></div><div class="stat"><span class="stat-label">Статус</span><div class="stat-value" style="font-size:1.15rem;color:var(--color-success)">Активна</div></div><div class="stat"><span class="stat-label">Тип</span><div class="stat-value" style="font-size:1rem">ГОСС</div></div></div><article class="message-card" style="border-color:${accent}66"><div class="channel"><span class="channel-dot" style="background:${accent}"></span>${title.toLowerCase()} • отдельный раздел</div><div class="author-row"><div class="avatar" style="background:conic-gradient(from 210deg, ${accent}, #ffffff33, ${accent})">${title[0]}</div><div><div class="author-name">${title}</div><div class="author-meta">Отдельная панель организации</div></div></div><div class="message-text">Теперь этот раздел не должен открывать ФСБ вместо другой организации.</div></article>`;
+        }
+
+        function bindModerationVerdicts(){
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                if(btn.dataset.boundAction === '1') return;
+                btn.dataset.boundAction = '1';
+                const action = () => judge(btn.dataset.action);
+                btn.addEventListener('click', action);
+                btn.addEventListener('touchend', e => { e.preventDefault(); action(); }, { passive:false });
+            });
+        }
+
         
         const sb = getEl('startBtn'); if (sb) sb.onclick = startGame;
         const rb = getEl('resetBtn'); if (rb) rb.onclick = resetGame;
@@ -3719,6 +3800,15 @@
 
         // Запуск
         renderRight("moderation");
+        renderGovHubCards();
+        renderGovPanel('govPanelGovernment','Правительство','#ffd36b');
+        renderGovPanel('govPanelGibdd','ГИБДД','#ffd36b');
+        renderGovPanel('govPanelUvd','УМВД','#7fb7ff');
+        renderGovPanel('govPanelArmy','Армия','#8fe0a8');
+        renderGovPanel('govPanelHospital','Больница','#6bffd6');
+        renderGovPanel('govPanelMedia','СМИ','#ff9e6b');
+        renderGovPanel('govPanelFsin','ФСИН','#c4a1ff');
+        bindModerationVerdicts();
         
         supa.auth.getSession().then(async ({ data: { session } }) => { 
             currentUser = session?.user || null;
@@ -3760,5 +3850,6 @@
             randomComplaint();
             randomFsbApp();
         });
+        window.__fullPatchedBuild = true;
     });
   </script>
