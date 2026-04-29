@@ -1605,18 +1605,19 @@
             if (type === 'win') { sndWin.currentTime = 0; sndWin.play().catch(()=>{}); }
         }
 
-        // Фикс для мобильных: используем e.target.closest
+        // Фикс для мобильных: ловим клики на document
         document.addEventListener('click', (e) => { 
             if (audioCtx.state === 'suspended') audioCtx.resume(); 
             if (e.target.closest('button') || e.target.closest('a')) playUIClick(); 
         });
 
         document.getElementById('musicToggleBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
             isMusicEnabled = !isMusicEnabled;
             if (isMusicEnabled) { e.target.textContent = '⏳'; bgMusic.play().then(() => e.target.textContent = '🎵').catch(() => { isMusicEnabled = false; e.target.textContent = '🔇'; }); } 
             else { e.target.textContent = '🔇'; bgMusic.pause(); }
         });
-        document.getElementById('sfxToggleBtn')?.addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
+        document.getElementById('sfxToggleBtn')?.addEventListener('click', (e) => { e.preventDefault(); isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
 
         function compressImage(file, callback) {
             const reader = new FileReader(); reader.readAsDataURL(file);
@@ -1652,6 +1653,7 @@
         let fsbState = { resolved: 0, approved: 0, rejected: 0, current: null, started: false };
         let shopState = { spent: 0, apSpent: 0, fsbSpent: 0 }, gameXpMod = 0, taTimerInt = null, taTimeLeft = 60, taState = { score: 0, mistakes: 0, current: null };
         let modQueue = [], supQueue = [], compQueue = [], taQueue = [], fsbQueue = [], currentTableWeekOffset = 0; 
+        let currentGameCurrency = 'game'; 
 
         // === МАССИВЫ (БЕЗ ОБРЕЗАНИЙ) ===
         let defaultShopItems = [
@@ -1861,7 +1863,7 @@
         { type: "warn", text: "+++++ +++++ +++++" },
         { type: "warn", text: "Почему так долго проверяете, ау?" },
         { type: "warn", text: "Модерация опять спит." },
-        { type: "warn", text: "Киньте хотя бы 5к, я совсем без денег." },
+        { type: "warn", text: "Кинь хотя бы 5к, я совсем без денег." },
         { type: "warn", text: "У кого есть лишние вирты? Помогите новичку." },
         { type: "warn", text: "Эй, ты гений прям, конечно." },
         { type: "warn", text: "Ну да, молодец, опять облажался." },
@@ -2127,7 +2129,7 @@
             });
         }
         
-        document.getElementById('loadFsbAdminLogsBtn')?.addEventListener('click', () => window.renderAdminLogsFSB());
+        document.getElementById('loadFsbAdminLogsBtn')?.addEventListener('click', (e) => { e.preventDefault(); window.renderAdminLogsFSB(); });
 
         const sb = document.getElementById('startBtn'); 
         if (sb) sb.addEventListener('click', (e) => { e.preventDefault(); startGame(); });
@@ -2219,13 +2221,14 @@
         };
 
         // ПАНЕЛЬ СОЗДАТЕЛЯ И РУКОВОДСТВА (ИСПРАВЛЕННАЯ ЛОГИКА XP)
-        document.getElementById('creatorXpBtn')?.addEventListener('click', async () => {
+        document.getElementById('creatorXpBtn')?.addEventListener('click', async (e) => {
+             e.preventDefault();
              const userId = document.getElementById('creatorUserSelect').value, amount = Number(document.getElementById('creatorXpAmount').value);
              const type = document.getElementById('creatorGiveType').value;
              if (!userId || isNaN(amount)) return; 
              const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
              
-             // Создатель может выдать себе!
+             // ИСПРАВЛЕНИЕ: Проверяем, пытаются ли выдать Создателю. Если это делает сам Создатель — разрешаем!
              if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) {
                  return alert("Неприкосновенность Создателя! Только он сам может выдать себе.");
              }
@@ -2233,14 +2236,15 @@
              if (type === 'game') {
                  await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
              } else {
-                 // ВЫДАЕМ ПРЯМО В ОТЧЕТЫ (Не считаем разницу!)
+                 // ИСПРАВЛЕНИЕ: Выдаем реальный XP НАПРЯМУЮ, как отчет! А не через вычитание shop_spent
                  const fakeData = `Ник: ${targetUser.nickname || targetUser.email} | Дата: ${new Date().toISOString().split('T')[0]} | Работа: Выдано руководством`;
                  await supa.from('reports').insert([{ id: 'rep_manual_' + Date.now() + Math.random().toString().slice(2,8), email: targetUser.email, link: '', date: fakeData, status: 'Норма', xp: amount }]);
              }
              alert(`Успешно! Баланс изменен (XP начислен напрямую).`); loadCreatorPanelData();
         });
 
-        document.getElementById('leadershipXpBtn')?.addEventListener('click', async () => {
+        document.getElementById('leadershipXpBtn')?.addEventListener('click', async (e) => {
+            e.preventDefault();
             const userId = document.getElementById('leadershipUserSelect').value, amount = Number(document.getElementById('leadershipXpAmount').value);
             const type = document.getElementById('leadershipGiveType').value;
             if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
@@ -2257,10 +2261,12 @@
             loadUsersForAdmin();
         });
 
-        document.getElementById('creatorAddAdminBtn')?.addEventListener('click', async () => {
+        document.getElementById('creatorAddAdminBtn')?.addEventListener('click', async (e) => {
+            e.preventDefault();
             const userId = document.getElementById('creatorAdminSelect').value, role = document.getElementById('creatorAdminRole').value;
             if(!userId || userId.startsWith("Загрузка")) return;
             
+            // Если выбрали ВСЕ ГОСС, нужно добавить массив ролей
             let rolesToAdd = [];
             if (role === 'all_goss_admin') {
                 rolesToAdd = ['gov_admin', 'umvd_admin', 'gibdd_admin', 'mo_admin', 'cb_admin', 'smi_admin', 'fsin_admin', 'fsb_admin'];
@@ -2283,6 +2289,7 @@
             customShopItems = []; customApShopItems = []; customModMessages = []; customSupQuestions = []; hiddenChecks = []; activeMods = []; activeAps = []; activeFsb = [];
             modRoulettePrizes = [...defaultModRoulettePrizes]; apRoulettePrizes = [...defaultApRoulettePrizes]; gameXpMod = 0; let priceOverrides = {};
             
+            // Сброс лидеров ГОСС
             gossLeaders = { fsb: [], gov: [], umvd: [], gibdd: [], mo: [], cb: [], smi: [], fsin: [], all: [] };
             dynamicModLeaders = []; dynamicApLeaders = [];
 
@@ -2333,9 +2340,10 @@
                 document.getElementById('userEmailDisplay').textContent = currentNickname || currentUser.email; 
                 document.getElementById('loginBtnUI').style.display = 'none'; document.getElementById('logoutBtnUI').style.display = 'flex'; document.getElementById('authModal').style.display = 'none'; 
           
-                await loadGlobalShopAndRoulette(); 
-                
                 const isCreator = currentUser.email === creatorEmail;
+                
+                await loadGlobalShopAndRoulette(); // Загрузит все роли
+                
                 const isModLeader = isCreator || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id);
                 const isApLeader = isCreator || apLeadershipEmails.includes(currentUser.email) || dynamicApLeaders.includes(currentUser.id);
                 const isFsbLeader = isCreator || adminEmails.includes(currentUser.email) || gossLeaders.fsb.includes(currentUser.id);
@@ -2364,7 +2372,7 @@
             randomFsbApp();
         });
 
-        // Остальные функции интерфейса, логов и графики
+        // Остальные функции интерфейса
         function updateShopStats() {
             let real = getRealBalance(), gameBal = getTrainingBalance() + getGameNetBalance();
             if (gameBal < 0) { real += gameBal; gameBal = 0; }
@@ -2391,680 +2399,5 @@
             if(!currentUser) return;
             await supa.from('user_stats').upsert({ user_id: currentUser.id, email: currentUser.email, nickname: currentNickname || currentUser.user_metadata?.nickname || currentUser.email.split('@')[0], mod_resolved: Number(state.resolved), mod_correct: Number(state.correct), mod_mistakes: Number(state.mistakes), sup_resolved: Number(supportState.resolved), sup_correct: Number(supportState.correct), sup_mistakes: Number(supportState.mistakes), shop_spent: Number(shopState.spent), ap_spent: Number(shopState.apSpent) });
         }
-    // === 9. КВЕСТЫ И ЛИДЕРБОРД ===
-        function renderQuests() {
-            const cont = document.getElementById('questsContainer'); if(!cont) return;
-            const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ? JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
-            cont.innerHTML = questsData.map(q => {
-                const isClaimed = claimed.includes(q.id); const prog = Math.min(q.max, q.getProgress()); const isDone = prog >= q.max;
-                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--theme-accent); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--theme-accent); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
-            }).join('');
-        }
-        
-        window.claimQuest = function(qId, reward) {
-            if(!currentUser) return;
-            const claimed = localStorage.getItem('quests_' + currentUser.email) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
-            if(claimed.includes(qId)) return; claimed.push(qId); localStorage.setItem('quests_' + currentUser.email, JSON.stringify(claimed));
-            addGameXp(reward); updateShopStats(); updateModStats(); updateSupportStats(); saveProgress(); playSound('win'); alert(`✅ Квест выполнен! +${reward} XP.`); renderQuests();
-        };
-
-        window.loadLeaderboard = async function() {
-            const list = document.getElementById('leaderboardList'); if(!list) return;
-            list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">⏳ Загрузка данных лидеров...</div>';
-
-            const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
-            const { data: users } = await supa.from('user_stats').select('*');
-            
-            let modArr = [], apArr = [];
-            if(users) {
-                users.forEach(u => {
-                    const isLeader = adminEmails.includes(u.email) || dynamicModLeaders.includes(u.user_id) || u.email === creatorEmail;
-                    const isUserMod = activeMods.includes(u.user_id) && !isLeader;
-                    const isUserAp = activeAps.includes(u.user_id) && !isLeader;
-
-                    let reportXp = 0; if (repData) repData.forEach(r => { if(r.email === u.email) reportXp += (Number(r.xp)||0); });
-                    
-                    const mXp = Math.max(0, reportXp - Number(u.shop_spent||0)); // Только реальный XP
-                    const aXp = Math.max(0, Math.floor(Number(u.sup_correct)/10)*15 - Number(u.ap_spent||0));
-
-                    if(u.nickname) { 
-                        if (isUserMod && mXp > 0) { modArr.push({ name: u.nickname, score: mXp }); }
-                        if (isUserAp && aXp > 0) { apArr.push({ name: u.nickname, score: aXp }); }
-                    }
-                });
-            }
-
-            modArr.sort((a,b)=>b.score-a.score); apArr.sort((a,b)=>b.score-a.score);
-            window.lbModHTML = modArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge xp">${u.score} Real XP</span></div></div>`).join('');
-            window.lbApHTML = apArr.slice(0,10).map((u, i) => `<div class="rule-item" style="border-color: ${i<3?'#ff8fc4':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i<3?'#ff8fc4':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center;"><strong>${u.name}</strong><span class="badge" style="background:#ff8fc4; color:#000;">${u.score} Баллов</span></div></div>`).join('');
-            const isApTab = document.getElementById('lbBtnAp')?.classList.contains('btn-primary');
-            list.innerHTML = isApTab ? (window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>') : (window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>');
-        };
-
-        // === 10. ФОРМЫ ОТЧЕТОВ И НЕАКТИВОВ ===
-        document.getElementById('submitReportBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!currentUser || !isModerator) return; 
-            const res = document.getElementById('reportResultText'), nick = document.getElementById('reportNickInput').value.trim(), work = document.getElementById('reportWorkInput').value.trim(), date = document.getElementById('reportDateInput').value, link = document.getElementById('reportLinkInput').value.trim(), fileInput = document.getElementById('reportFileInput');
-            
-            if (!nick || !work || !date) { res.textContent = "Заполните Ник, Работу и Дату!"; res.style.color = "var(--color-error)"; return; }
-            if (!link && fileInput.files.length === 0) { res.textContent = "Прикрепите ссылку ИЛИ скриншот напрямую!"; res.style.color = "var(--color-error)"; return; }
-
-            res.textContent = "Обработка и отправка..."; res.style.color = "var(--color-text-muted)";
-            
-            const submitData = async (base64Image = "") => {
-                const finalLink = link ? link : base64Image, combinedData = `Ник: ${nick} | Дата: ${date} | Работа: ${work}`;
-                const { error } = await supa.from('reports').insert([{ id: 'rep_' + Date.now().toString(), email: currentUser.email, link: finalLink, date: combinedData, status: 'На проверке', xp: 0 }]);
-
-                if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
-                res.textContent = "Отчет успешно отправлен!"; res.style.color = "var(--color-success)";
-                
-                document.getElementById('reportNickInput').value = ''; document.getElementById('reportWorkInput').value = ''; document.getElementById('reportDateInput').value = ''; document.getElementById('reportLinkInput').value = ''; fileInput.value = ''; playSound('win');
-            };
-            if (fileInput.files.length > 0) compressImage(fileInput.files[0], submitData); else submitData("");
-        });
-
-        document.getElementById('submitInactiveBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!currentUser || !isModerator) return; 
-            const nick = document.getElementById('inactiveNickInput').value.trim(), dateFrom = document.getElementById('inactiveDateFrom').value.trim(), dateTo = document.getElementById('inactiveDateTo').value.trim(), reason = document.getElementById('inactiveReasonInput').value.trim(), res = document.getElementById('inactiveResultText');
-            
-            if (!nick || !dateFrom || !dateTo || !reason) { res.textContent = "Заполните все текстовые поля!"; res.style.color = "var(--color-error)"; return; } 
-            res.textContent = "Отправка..."; res.style.color = "var(--color-text-muted)";
-            
-            const combinedData = `Ник: ${nick} | С: ${dateFrom} | По: ${dateTo} | Причина: ${reason}`;
-            const { error } = await supa.from('reports').insert([{ id: 'ina_' + Date.now().toString(), email: 'INACTIVE_REQ', link: '', date: combinedData, status: 'Ожидает одобрения', xp: 0 }]);
-
-            if (error) { res.textContent = "Ошибка: " + error.message; res.style.color = "var(--color-error)"; return; } 
-            res.textContent = "Заявка успешно отправлена!"; res.style.color = "var(--color-success)";
-            
-            document.getElementById('inactiveNickInput').value = ''; document.getElementById('inactiveDateFrom').value = ''; document.getElementById('inactiveDateTo').value = ''; document.getElementById('inactiveReasonInput').value = ''; playSound('win');
-        });
-
-        document.getElementById('viewReportsBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const listArea = document.getElementById('reportsListArea'); if(!listArea) return; 
-            if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
-            listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
-            
-            try {
-                const { data: reports, error } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP")').order('id', { ascending: false }).limit(30);
-                if (error) throw error;
-                if(reports && reports.length > 0) { 
-                    reports.sort((a,b) => {
-                        let da = a.date.match(/Дата: ([\d-]+)/); let db = b.date.match(/Дата: ([\d-]+)/);
-                        let ta = da ? new Date(da[1]).getTime() : 0; let tb = db ? new Date(db[1]).getTime() : 0;
-                        if(tb !== ta) return tb - ta;
-                        return b.id.localeCompare(a.id);
-                    });
-                    listArea.innerHTML = reports.map(r => `
-                    <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.5rem;">
-                            <strong>${r.email || 'Неизвестно'}</strong><span style="color:var(--color-text-faint); font-size: 0.8rem;">Данные формы: ${r.date || ''}</span>
-                        </div>
-                        <div style="margin-bottom: 0.5rem;">
-                            ${r.link && r.link.startsWith('data:image') ? `<img src="${r.link}" style="max-width: 100%; max-height: 150px; border-radius: 8px; cursor: zoom-in; border: 2px solid var(--theme-accent);" onclick="document.getElementById('imageModal').style.display='flex'; document.getElementById('imageModalSrc').src='${r.link}'">` : r.link ? `<a href="${r.link}" target="_blank" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">📸 Открыть ссылку на док-во</a>` : ''}
-                        </div>
-                        <div style="display:flex; flex-direction: column; gap: 0.5rem;">
-                            <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
-                            ${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `
-                            <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
-                            </div>` : ''}
-                        </div>
-                    </div>`).join('');
-                } else { listArea.innerHTML = '<div class="message-text">Отчетов пока нет</div>'; }
-            } catch (err) { listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`; }
-        });
-
-        document.getElementById('viewInactivesBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const listArea = document.getElementById('inactivesListArea'); if(!listArea) return; 
-            if(listArea.style.display === 'flex') { listArea.style.display = 'none'; return; } 
-            listArea.style.display = 'flex'; listArea.innerHTML = '<div class="message-text">Загрузка данных...</div>';
-            try {
-                const { data: reports, error } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').order('id', { ascending: false }).limit(30);
-                if (error) throw error;
-                if(reports && reports.length > 0) { 
-                    reports.sort((a,b) => {
-                        let da = a.date.match(/С: ([\d-]+)/); let db = b.date.match(/С: ([\d-]+)/);
-                        let ta = da ? new Date(da[1]).getTime() : 0; let tb = db ? new Date(db[1]).getTime() : 0;
-                        if(tb !== ta) return tb - ta;
-                        return b.id.localeCompare(a.id);
-                    });
-                    listArea.innerHTML = reports.map(r => `
-                    <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2);">
-                        <div style="margin-bottom: 0.5rem; font-size: 0.9rem; color: #fff;">${r.date || ''}</div>
-                        <div style="display:flex; flex-direction: column; gap: 0.5rem;">
-                            <span style="font-weight: bold; color: ${r.status === 'Одобрено' ? 'var(--color-success)' : r.status === 'Отказано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'}</span>
-                            ${(r.status === 'Ожидает одобрения') ? `
-                            <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processInactive('${r.id}', 'Одобрено')">Одобрить</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processInactive('${r.id}', 'Отказано')">Отказать</button>
-                            </div>` : ''}
-                        </div>
-                    </div>`).join('');
-                } else { listArea.innerHTML = '<div class="message-text">Заявок на неактив пока нет</div>'; }
-            } catch (err) { listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`; }
-        });
-
-        window.processReport = async function(id, statusText, xpAmount) { 
-            await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); document.getElementById('viewReportsBtn').click(); setTimeout(() => document.getElementById('viewReportsBtn').click(), 100); 
-        };
-        
-        window.processInactive = async function(id, statusText) { 
-            await supa.from('reports').update({ status: statusText }).eq('id', id); document.getElementById('viewInactivesBtn').click(); setTimeout(() => document.getElementById('viewInactivesBtn').click(), 100); 
-        };
-
-        // === 11. ТАБЛИЦА ОТЧЕТОВ ===
-        document.getElementById('rtPrevWeekBtn')?.addEventListener('click', (e) => { e.preventDefault(); currentTableWeekOffset++; loadReportsTable(); });
-        document.getElementById('rtNextWeekBtn')?.addEventListener('click', (e) => { e.preventDefault(); if(currentTableWeekOffset > 0) { currentTableWeekOffset--; loadReportsTable(); } });
-
-        async function loadReportsTable() {
-            const listArea = document.getElementById('reportsTableWrapper');
-            if(!listArea) return;
-            listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы модераторов...</div>';
-            
-            const nextBtn = document.getElementById('rtNextWeekBtn');
-            if(nextBtn) { nextBtn.disabled = currentTableWeekOffset === 0; }
-            
-            const lbl = document.getElementById('rtCurrentWeekLabel');
-            if(lbl) { lbl.textContent = currentTableWeekOffset === 0 ? 'Текущая неделя' : `${currentTableWeekOffset} нед. назад`; }
-
-            const { data: modRoles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', 'moderator');
-            const modIds = modRoles ? modRoles.map(r => r.link) : [];
-            
-            if (modIds.length === 0) { listArea.innerHTML = '<div class="message-text" style="text-align:center;">Модераторы не найдены. Выдайте кому-нибудь роль.</div>'; return; }
-
-            const { data: usersData } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent').in('user_id', modIds);
-            let mods = usersData || [];
-
-            let sortedDates = [];
-            const today = new Date();
-            today.setDate(today.getDate() - (currentTableWeekOffset * 7));
-            for(let i=0; i<7; i++) {
-                let d = new Date(today);
-                d.setDate(d.getDate() - i);
-                sortedDates.push(d.toISOString().split('T')[0]);
-            }
-            sortedDates.reverse();
-
-            const { data: reports } = await supa.from('reports').select('*').not('email', 'in', '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","SHOP_OVERRIDE","USER_ROLE","GAME_XP","INACTIVE_REQ")').order('id', { ascending: false }).limit(500);
-            const { data: inactives } = await supa.from('reports').select('*').eq('email', 'INACTIVE_REQ').eq('status', 'Одобрено');
-            
-            const isLeader = currentUser && (adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id) || currentUser.email === creatorEmail);
-
-            mods.forEach(mod => {
-                let userRealXp = 0;
-                if (reports) reports.forEach(r => { if(r.email === mod.email && r.xp > 0) userRealXp += (Number(r.xp)||0); });
-                mod.calculatedRealXp = Math.max(0, userRealXp - (Number(mod.shop_spent)||0));
-            });
-
-            if (!isLeader) {
-                mods = mods.filter(m => !adminEmails.includes(m.email) && m.email !== creatorEmail && !dynamicModLeaders.includes(m.user_id));
-            }
-
-            let html = '<div class="reports-modern-container" style="display:flex; flex-direction:column; gap:1rem;">';
-            const actualDateObj = new Date(); actualDateObj.setHours(0,0,0,0);
-
-            mods.sort((a,b) => (a.nickname||'').localeCompare(b.nickname||'')).forEach(mod => {
-                html += `<div class="mod-report-card">
-                            <div class="mod-report-header" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:0.8rem;">
-                                <div class="mod-report-name" style="font-weight:bold; font-size:1.1rem;">${mod.nickname || 'Без ника'}</div>
-                                <div style="color:var(--color-success); font-weight:bold;">${mod.calculatedRealXp} Real XP</div>
-                            </div>
-                            <div class="mod-report-days" style="display:flex; gap:0.5rem; overflow-x:auto; padding-top:0.8rem; padding-bottom:0.5rem;">`;
-                
-                sortedDates.forEach(d => {
-                    const rep = (reports || []).find(r => r.date && r.date.toLowerCase().includes((mod.nickname || '').toLowerCase()) && r.date.includes(d));
-                    
-                    let isInactiveDay = false;
-                    if(inactives) {
-                        inactives.forEach(ina => {
-                            if(ina.date.toLowerCase().includes((mod.nickname || '').toLowerCase())) {
-                                const fromMatch = ina.date.match(/С:\s*([\d-]+)/); const toMatch = ina.date.match(/По:\s*([\d-]+)/);
-                                if(fromMatch && toMatch) {
-                                    const dateObj = new Date(d);
-                                    if(dateObj >= new Date(fromMatch[1]) && dateObj <= new Date(toMatch[1])) isInactiveDay = true;
-                                }
-                            }
-                        });
-                    }
-                    
-                    let currentStatus = 'none';
-                    if (rep) currentStatus = rep.status;
-                    else if (isInactiveDay) currentStatus = 'Неактив';
-                    else {
-                        const colDateObj = new Date(d); colDateObj.setHours(0,0,0,0);
-                        if (colDateObj < actualDateObj) currentStatus = 'Нет отчета';
-                    }
-
-                    let shortDate = d.slice(5).split('-').reverse().join('.');
-                    let statusClass = 'status-none';
-                    if (currentStatus === 'Норма' || currentStatus === 'Перенорма') statusClass = 'status-good';
-                    if (currentStatus === 'Герой дня') statusClass = 'status-hero';
-                    if (currentStatus === 'Неактив') statusClass = 'status-inactive';
-                    if (currentStatus === 'Нет отчета' || currentStatus === 'Не засчитано' || currentStatus === 'Отказ') statusClass = 'status-missing';
-
-                    let displayStatus = currentStatus === 'none' ? 'На проверке' : currentStatus;
-                    if (currentStatus === 'Не засчитано') displayStatus = 'Отказ';
-                    
-                    if (isLeader) {
-                        html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);">
-                                    <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div>
-                                    <select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${mod.nickname}', '${d}', '${rep ? rep.id : ''}')">
-                                        <option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option>
-                                        <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option>
-                                        <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option>
-                                        <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option>
-                                        <option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option>
-                                        <option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option>
-                                        <option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option>
-                                    </select>
-                                 </div>`;
-                    } else {
-                        html += `<div class="report-day-item ${statusClass}" style="min-width:120px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);">
-                                    <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div>
-                                    <div style="font-weight:bold; font-size:0.85rem; text-align:center;">${displayStatus}</div>
-                                 </div>`;
-                    }
-                });
-                html += `</div></div>`;
-            });
-            html += '</div>'; listArea.innerHTML = html;
-        }
-
-        window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId) {
-            const val = selectEl.value; 
-            
-            let statusClass = 'status-none';
-            if (val === 'Норма' || val === 'Перенорма') statusClass = 'status-good';
-            if (val === 'Герой дня') statusClass = 'status-hero';
-            if (val === 'Неактив') statusClass = 'status-inactive';
-            if (val === 'Нет отчета' || val === 'Не засчитано' || val === 'Отказ') statusClass = 'status-missing';
-            selectEl.className = `status-select ${statusClass}`;
-            
-            let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Герой дня') xpAmount = 60;
-            
-            selectEl.style.opacity = '0.5'; selectEl.disabled = true;
-
-            if (existingId) {
-                if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '')`); } 
-                else { await supa.from('reports').update({ status: val, xp: xpAmount }).eq('id', existingId); }
-            } else {
-                if (val !== 'none') {
-                    const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
-                    const newId = 'rep_manual_' + Date.now().toString();
-                    await supa.from('reports').insert([{ id: newId, email: currentUser.email, link: '', date: fakeData, status: val, xp: xpAmount }]);
-                    selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}')`);
-                }
-            }
-            if (val === 'Не засчитано' || val === 'Нет отчета') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
-            selectEl.style.opacity = '1'; selectEl.disabled = false;
-            
-            setTimeout(() => { loadReportsTable(); }, 1000);
-        };
-
-        // === 12. ПАНЕЛЬ СОЗДАТЕЛЯ (УПРАВЛЕНИЕ БАЗОЙ И ПОЛЬЗОВАТЕЛЯМИ) ===
-        let creatorUsersList = [];
-        
-        window.saveUserDb = async function(userId, oldGame, oldReal) {
-            const newGame = Number(document.getElementById('db_game_' + userId).value);
-            const newReal = Number(document.getElementById('db_real_' + userId).value);
-            const target = creatorUsersList.find(u => u.user_id === userId);
-            
-            if (newGame !== oldGame) {
-                const diff = newGame - oldGame;
-                await supa.from('reports').insert([{ id: 'gxp_' + Date.now() + Math.random(), email: 'GAME_XP', link: userId, xp: diff, status: 'mod' }]);
-            }
-            if (newReal !== oldReal) {
-                const diff = newReal - oldReal;
-                if (diff > 0) {
-                    await supa.from('reports').insert([{ id: 'rep_manual_' + Date.now(), email: target.email, link: '', date: 'Выставлено Создателем', status: 'Норма', xp: diff }]);
-                } else {
-                    const newSpent = (Number(target.shop_spent) || 0) + Math.abs(diff);
-                    await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', userId);
-                }
-            }
-            alert('XP успешно сохранен!');
-            loadCreatorPanelData();
-        };
-
-        async function loadCreatorPanelData() {
-            if (!currentUser || currentUser.email !== creatorEmail) return;
-            const toggle = document.getElementById('requireReportsToggle');
-            if (toggle) { toggle.checked = isReportsRequired; toggle.onchange = () => { isReportsRequired = toggle.checked; localStorage.setItem('require_reports', isReportsRequired); alert("Настройки обновлены (локально)!"); } }
-
-            const sel = document.getElementById('creatorUserSelect'); if (sel) sel.innerHTML = '<option>Загрузка...</option>';
-            const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent, mod_correct');
-            if (users && users.length > 0) { 
-                creatorUsersList = users; 
-                if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join(''); 
-            }
-
-            const adminSel = document.getElementById('creatorAdminSelect'); if (adminSel && creatorUsersList.length > 0) { adminSel.innerHTML = creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
-
-            const dbContainer = document.getElementById('creatorDbContainer');
-            if (dbContainer) {
-                const { data: repData } = await supa.from('reports').select('link, email, xp').gt('xp', 0).neq('email', 'GAME_XP');
-                const { data: gameData } = await supa.from('reports').select('link, xp').eq('email', 'GAME_XP');
-                
-                let dbHtml = '<div style="display:flex; flex-direction:column; gap:0.5rem;">';
-                creatorUsersList.forEach(u => {
-                    const isLd = adminEmails.includes(u.email) || dynamicModLeaders.includes(u.user_id) || u.email === creatorEmail;
-                    if (activeMods.includes(u.user_id) && !isLd) {
-                        let userRealXp = 0;
-                        if (repData) repData.forEach(r => { if(r.email === u.email) userRealXp += (Number(r.xp)||0); });
-                        userRealXp = Math.max(0, userRealXp - (Number(u.shop_spent)||0));
-                        
-                        let userGameXp = 0;
-                        if (gameData) gameData.forEach(g => { if(g.link === u.user_id) userGameXp += (Number(g.xp)||0); });
-                        userGameXp = Math.max(0, Math.floor(Number(u.mod_correct)/10)*15 + userGameXp);
-                        
-                        dbHtml += `
-                        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.4); padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-                            <div style="font-weight:bold;">${u.nickname || u.email}</div>
-                            <div style="display:flex; gap: 0.5rem; align-items:center;">
-                                <div style="text-align:center;">
-                                    <div style="font-size:0.7rem; color:var(--color-text-faint);">Игровой XP</div>
-                                    <input type="number" id="db_game_${u.user_id}" value="${userGameXp}" class="support-input" style="width:80px; padding:0.4rem; text-align:center;">
-                                </div>
-                                <div style="text-align:center;">
-                                    <div style="font-size:0.7rem; color:var(--color-text-faint);">Реальный XP</div>
-                                    <input type="number" id="db_real_${u.user_id}" value="${userRealXp}" class="support-input" style="width:80px; padding:0.4rem; text-align:center;">
-                                </div>
-                                <button onclick="saveUserDb('${u.user_id}', ${userGameXp}, ${userRealXp})" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-top: 15px;">Сохранить</button>
-                            </div>
-                        </div>`;
-                    }
-                });
-                dbHtml += '</div>';
-                dbContainer.innerHTML = dbHtml;
-            }
-
-            const adminList = document.getElementById('creatorAdminsList');
-            if (adminList) {
-                const { data: admins } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
-                if (admins && admins.length > 0) {
-                    adminList.innerHTML = admins.map(a => {
-                        const u = creatorUsersList.find(user => user.user_id === a.link), name = u ? (u.nickname || u.email) : 'ID: ' + a.link;
-                        let roleName = a.status;
-                        if(roleName==='leadership') roleName='Модерация';
-                        if(roleName==='ap_admin') roleName='АП';
-                        if(roleName==='fsb_admin') roleName='ФСБ';
-                        if(roleName==='gov_admin') roleName='Правительство';
-                        if(roleName==='umvd_admin') roleName='УМВД';
-                        if(roleName==='gibdd_admin') roleName='ГИБДД';
-                        if(roleName==='mo_admin') roleName='МО';
-                        if(roleName==='cb_admin') roleName='ЦБ';
-                        if(roleName==='smi_admin') roleName='СМИ';
-                        if(roleName==='fsin_admin') roleName='ФСИН';
-                        
-                        return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success);">${name}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${roleName})</span></div></div>`;
-                    }).join('');
-                } else { adminList.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">В руководстве пока никого нет</div>'; }
-            }
-        }
-
-        // === 13. ПАНЕЛЬ ТРОЛЛИНГА ===
-        async function applyTrollEffect(effect) {
-            if (!currentUser || currentUser.email !== creatorEmail) return;
-            const userId = document.getElementById('creatorUserSelect').value;
-            if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("ОШИБКА: Нельзя применить эффект к Создателю (John Wick)!");
-
-            if (effect === 'clear') {
-                await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId);
-                alert("Все эффекты сняты с пользователя!");
-            } else {
-                await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]);
-                alert(`Эффект '${effect}' успешно применен к пользователю! Он активируется при его следующей загрузке страницы.`);
-            }
-        }
-
-        document.getElementById('trollEffectBobo')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('bobo'); });
-        document.getElementById('trollEffectBlur')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('blur'); });
-        document.getElementById('trollEffectDrunk')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('drunk'); });
-        document.getElementById('trollEffectGhost')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('ghost'); });
-        document.getElementById('trollEffectFlip')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('flip'); });
-        document.getElementById('trollEffectRainbow')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('rainbow'); });
-        document.getElementById('trollEffectClear')?.addEventListener('click', (e) => { e.preventDefault(); applyTrollEffect('clear'); });
-
-        document.getElementById('trollWipeXpBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!currentUser || currentUser.email !== creatorEmail) return; 
-            const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
-            await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); loadCreatorPanelData();
-        });
-
-        document.getElementById('trollDebtBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('creatorUserSelect').value, amount = Number(document.getElementById('trollDebtAmount').value);
-            if (!userId || isNaN(amount) || amount <= 0) return alert("Введите сумму!");
-            const target = creatorUsersList.find(u => u.user_id === userId);
-            if(target) { 
-                if (target.email === creatorEmail) return alert("У Создателя полный иммунитет!");
-                await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`🤡 Троллинг: Игроку выдан долг ${amount} XP!`); loadCreatorPanelData(); 
-            }
-        });
-
-        document.getElementById('trollRenameBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!currentUser || currentUser.email !== creatorEmail) return; 
-            const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
-            const targetNick = document.getElementById('trollCustomNick').value.trim() || randomFunnyNick();
-            await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', userId); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); loadCreatorPanelData();
-        });
-
-        document.getElementById('trollDeleteBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            if (!currentUser || currentUser.email !== creatorEmail) return; 
-            const userId = document.getElementById('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы статистики!'); loadCreatorPanelData(); }
-        });
-
-        // === 14. ЛОГИ РУКОВОДСТВА И НАСТРОЙКИ МАГАЗИНА ===
-        async function renderAdminLogs(isAp = false) {
-            const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea'); if(!area) return; area.innerHTML = 'Загрузка...';
-            const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
-            if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
-
-            if(logs && logs.length > 0) {
-                area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
-            } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
-        }
-
-        window.markLogIssued = async function(id, isAp) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); renderAdminLogs(isAp); };
-        
-        document.getElementById('loadAdminLogsBtn')?.addEventListener('click', (e) => { e.preventDefault(); renderAdminLogs(false); }); 
-        document.getElementById('loadApAdminLogsBtn')?.addEventListener('click', (e) => { e.preventDefault(); renderAdminLogs(true); });
-
-        document.getElementById('changeAnyPriceBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editAnyItemId').value.trim(), price = Number(document.getElementById('editAnyItemPrice').value);
-            if (!id || isNaN(price)) return alert("Введите корректный ID и цену!");
-            await supa.from('reports').upsert([{ id: 'price_'+id, email: 'SHOP_OVERRIDE', link: id, xp: price, status: 'price_override' }]);
-            alert("Цена успешно изменена для всех!"); window.location.reload(); // Перезагрузка для обновления UI
-        });
-
-        document.getElementById('deleteModShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('modShopItemTitle').value.trim(); if(!title) return alert("Введите точное название товара для удаления!");
-            const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар удален у всех!"); window.location.reload(); } else alert("Пользовательский товар с таким названием не найден!");
-        });
-        
-        document.getElementById('deleteApShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('apShopItemTitle').value.trim(); if(!title) return alert("Введите точное название товара для удаления!");
-            const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар АП удален у всех!"); window.location.reload(); } else alert("Пользовательский товар с таким названием не найден!");
-        });
-
-        document.getElementById('sendHiddenCheckBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('hiddenCheckUser').value, text = document.getElementById('hiddenCheckText').value.trim(), type = document.getElementById('hiddenCheckType').value;
-            if(!userId || userId.startsWith("Загрузка") || !text) return alert("Заполните все поля для скрытой проверки!");
-            document.getElementById('sendHiddenCheckBtn').disabled = true;
-            const { error } = await supa.from('reports').insert([{ id: 'hc_' + Date.now(), email: 'HIDDEN_CHECK', link: userId, date: text, status: type, xp: 0 }]);
-            document.getElementById('sendHiddenCheckBtn').disabled = false;
-            if(!error) { document.getElementById('hiddenCheckText').value = ''; alert("Скрытая проверка успешно назначена сотруднику!"); } else alert("Ошибка при создании проверки.");
-        });
-
-        document.getElementById('addCustomModMsgBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const text = document.getElementById('customModText').value.trim(), type = document.getElementById('customModType').value;
-            if(!text) return alert("Введите текст сообщения!");
-            document.getElementById('addCustomModMsgBtn').disabled = true;
-            const { error } = await supa.from('reports').insert([{ id: 'cmm_' + Date.now(), email: 'CUSTOM_MOD_MSG', date: text, status: type, xp: 0 }]);
-            document.getElementById('addCustomModMsgBtn').disabled = false;
-            if(!error) { document.getElementById('customModText').value = ''; alert("Сообщение успешно добавлено в общую базу модерации!"); } else alert("Ошибка при добавлении.");
-        });
-
-        document.getElementById('addCustomApMsgBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('customApTitle').value.trim(), text = document.getElementById('customApText').value.trim(), keywords = document.getElementById('customApKeywords').value.trim();
-            if(!title || !text || !keywords) return alert("Заполните все поля для вопроса АП!");
-            document.getElementById('addCustomApMsgBtn').disabled = true;
-            const { error } = await supa.from('reports').insert([{ id: 'capm_' + Date.now(), email: 'CUSTOM_AP_MSG', link: title, date: text, status: keywords, xp: 0 }]);
-            document.getElementById('addCustomApMsgBtn').disabled = false;
-            if(!error) { document.getElementById('customApTitle').value = ''; document.getElementById('customApText').value = ''; document.getElementById('customApKeywords').value = ''; alert("Вопрос успешно добавлен в общую базу АП!"); } else alert("Ошибка при добавлении.");
-        });
-
-        document.getElementById('addModShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('modShopItemTitle').value.trim(), desc = document.getElementById('modShopItemDesc').value.trim(), price = Number(document.getElementById('modShopItemPrice').value), icon = document.getElementById('modShopItemIcon').value.trim() || "🎁";
-            if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            await supa.from('reports').insert([{ id: 'cmod_' + Date.now(), email: 'SHOP_MOD', date: title, status: desc, xp: price, link: icon }]); alert("Товар добавлен для всех!"); window.location.reload();
-        });
-
-        document.getElementById('editModShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('modShopItemTitle').value.trim(), price = Number(document.getElementById('modShopItemPrice').value);
-            if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
-            const item = customShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').update({ xp: price }).eq('id', item.id); alert("Цена успешно обновлена для всех!"); window.location.reload(); } else alert("Пользовательский товар с таким названием не найден!");
-        });
-
-        document.getElementById('updateModRouletteBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const slotId = document.getElementById('modRouletteSlot').value, text = document.getElementById('modRouletteText').value.trim(), val = Number(document.getElementById('modRouletteVal').value);
-            if(!text || isNaN(val)) return alert("Заполните текст приза и значение для баланса!");
-            const { data: existing } = await supa.from('reports').select('id').eq('email', 'ROULETTE_MOD').eq('link', slotId);
-            if (existing && existing.length > 0) { await supa.from('reports').update({ date: text, xp: val }).eq('id', existing[0].id); } 
-            else { await supa.from('reports').insert([{ id: 'rmod_' + Date.now(), email: 'ROULETTE_MOD', link: slotId, date: text, xp: val, status: 'roulette' }]); }
-            alert("Рулетка модерации обновлена для всех!"); window.location.reload();
-        });
-
-        document.getElementById('addApShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('apShopItemTitle').value.trim(), desc = document.getElementById('apShopItemDesc').value.trim(), price = Number(document.getElementById('apShopItemPrice').value), icon = document.getElementById('apShopItemIcon').value.trim() || "🎁";
-            if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
-            await supa.from('reports').insert([{ id: 'cap_' + Date.now(), email: 'SHOP_AP', date: title, status: desc, xp: price, link: icon }]); alert("Товар АП добавлен для всех!"); window.location.reload();
-        });
-
-        document.getElementById('editApShopItemBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const title = document.getElementById('apShopItemTitle').value.trim(), price = Number(document.getElementById('apShopItemPrice').value);
-            if(!title || isNaN(price)) return alert("Введите точное название товара и новую цену!");
-            const item = customApShopItems.find(i => i.title.toLowerCase() === title.toLowerCase());
-            if(item) { await supa.from('reports').update({ xp: price }).eq('id', item.id); alert("Цена успешно обновлена для всех!"); window.location.reload(); } else alert("Пользовательский товар с таким названием не найден!");
-        });
-
-        document.getElementById('updateApRouletteBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const slotId = document.getElementById('apRouletteSlot').value, text = document.getElementById('apRouletteText').value.trim(), val = Number(document.getElementById('apRouletteVal').value);
-            if(!text || isNaN(val)) return alert("Заполните текст приза и значение для баланса!");
-            const { data: existing } = await supa.from('reports').select('id').eq('email', 'ROULETTE_AP').eq('link', slotId);
-            if (existing && existing.length > 0) { await supa.from('reports').update({ date: text, xp: val }).eq('id', existing[0].id); } 
-            else { await supa.from('reports').insert([{ id: 'rap_' + Date.now(), email: 'ROULETTE_AP', link: slotId, date: text, xp: val, status: 'roulette' }]); }
-            alert("Рулетка АП обновлена для всех!"); window.location.reload();
-        });
-
-        // Управление АП, Модерацией, ФСБ
-        document.getElementById('leadAddModBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('leadAddModSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'moderator');
-            if(existing && existing.length > 0) return alert("Этот пользователь уже является модератором!");
-            await supa.from('reports').insert([{ id: 'mod_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'moderator', xp: 0 }]);
-            alert("Статус Модератора успешно выдан!"); window.location.reload();
-        });
-
-        document.getElementById('leadAddApBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('leadAddApSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'ap');
-            if(existing && existing.length > 0) return alert("Этот пользователь уже является АП!");
-            await supa.from('reports').insert([{ id: 'ap_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'ap', xp: 0 }]);
-            alert("Статус АП успешно выдан!"); window.location.reload();
-        });
-
-        document.getElementById('leadAddFsbBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('leadAddFsbSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'fsb');
-            if(existing && existing.length > 0) return alert("Этот пользователь уже является сотрудником ФСБ!");
-            await supa.from('reports').insert([{ id: 'fsb_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'fsb', xp: 0 }]);
-            alert("Статус Сотрудника ФСБ успешно выдан!"); window.location.reload();
-        });
-
-        document.getElementById('apAdminPointsBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('apAdminUserSelect').value, amount = Number(document.getElementById('apAdminPointsAmount').value);
-            const type = document.getElementById('apAdminGiveType').value;
-            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-            
-            if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
-
-            if (type === 'game') {
-                await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]);
-            } else {
-                const newSpent = (Number(targetUser.ap_spent) || 0) - amount; 
-                await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId);
-            }
-            alert('Успешно выполнено (АП)!'); window.location.reload();
-        });
-
-        document.getElementById('fsbAdminPointsBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('fsbAdminUserSelect').value, amount = Number(document.getElementById('fsbAdminPointsAmount').value);
-            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-            
-            if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
-            
-            // Временно вычитаем из ap_spent для баллов ФСБ (так как БД не менялась)
-            const newSpent = (Number(targetUser.ap_spent) || 0) - amount; 
-            await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId);
-            
-            alert('Успешно выполнено (ФСБ)!'); window.location.reload();
-        });
-
-        document.getElementById('apAdminDeleteBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('apAdminUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = adminUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Удалить пользователя из базы статистики АП?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); window.location.reload(); }
-        });
-        
-        document.getElementById('leadershipDeleteBtn')?.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const userId = document.getElementById('leadershipUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = adminUsersList.find(u => u.user_id === userId);
-            if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Удалить пользователя из базы статистики модераторов?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); window.location.reload(); }
-        });
-    
     });
   </script>
