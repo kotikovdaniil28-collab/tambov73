@@ -1617,8 +1617,10 @@
   </main>
 
 <script>
+  // ВСТАВЬ СВОИ КЛЮЧИ SUPABASE СЮДА, ЕСЛИ ОНИ СБИЛИСЬ!
   const SUPABASE_URL = 'https://icfihnroblyjjflsfepq.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+  
   let supa;
   try { supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.warn("Supabase err"); }
 
@@ -1646,7 +1648,7 @@
   const q = (sel) => document.querySelector(sel);
   const qAll = (sel) => document.querySelectorAll(sel);
 
-  // АУДИО
+  // АУДИО (ИСПРАВЛЕНО)
   let isMusicEnabled = false, isSfxEnabled = true;    
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playUIClick() {
@@ -1673,14 +1675,16 @@
   }
 
   document.addEventListener('click', (e) => { if (audioCtx.state === 'suspended') audioCtx.resume(); if (e.target.closest('button') || e.target.closest('a')) playUIClick(); });
-  getEl('musicToggleBtn')?.addEventListener('click', (e) => {
+  
+  // ИСПРАВЛЕНЫ КНОПКИ ЗВУКА
+  q('#musicToggleBtn')?.addEventListener('click', (e) => {
       isMusicEnabled = !isMusicEnabled;
       if (isMusicEnabled) { e.target.textContent = '⏳'; bgMusic.play().then(() => e.target.textContent = '🎵').catch(() => { isMusicEnabled = false; e.target.textContent = '🔇'; }); } 
       else { e.target.textContent = '🔇'; bgMusic.pause(); }
   });
-  getEl('sfxToggleBtn')?.addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
+  q('#sfxToggleBtn')?.addEventListener('click', (e) => { isSfxEnabled = !isSfxEnabled; e.target.textContent = isSfxEnabled ? '🔊' : '🔈'; });
 
-  // === МАССИВЫ (БЕЗ ОБРЕЗАНИЯ) ===
+  // === МАССИВЫ ===
   let defaultShopItems = [ { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" }, { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" }, { id: 'sm_1', title: "СМ: Скидка -1 день", desc: "Ускоряет повышение Старшего Модератора (СМ → ЗГМ).", price: 300, icon: "⏳" }, { id: 'bonus_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 200, icon: "🛡️" }, { id: 'bonus_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" }, { id: 'bonus_3', title: "Иммунитет на предупреждение", desc: "Защищает от 1 предупреждения в будущем.", price: 300, icon: "🛡️" }, { id: 'bonus_4', title: "Иммунитет на выговор", desc: "Защищает от 1 выговора в будущем.", price: 500, icon: "👑" }, { id: 'roulette_mod', title: "Рулетка Модерации", desc: "Испытай удачу! Выиграй до 500 XP.", price: 100, icon: "🎰", action: 'mod_roulette' }, { id: 'coin_mod', title: "Орёл или Решка", desc: "Ставка 500 XP. Угадай и удвой!", price: 500, icon: "🪙", action: 'mod_coin' }, { id: 'safe_mod', title: "Три Сейфа", desc: "Ставка 400 XP. Найди х3 куш!", price: 400, icon: "🧰", action: 'mod_safes' }, { id: 'jw_quiz', title: "Викторина Джона Уика", desc: "Сыграй 1 раз. Ответь и получи 3000 XP!", price: 1500, icon: "🔫", action: 'mod_jw' }, { id: 'crash_game', title: "Ракетка (Краш)", desc: "Ставка 100 XP. Забери до краша!", price: 100, icon: "🚀", action: 'mod_crash' }, { id: 'cases_game', title: "Кейсы", desc: "Ставка 300 XP. Открывай кейсы!", price: 300, icon: "📦", action: 'mod_cases' }, { id: 'dice_game', title: "Кости", desc: "Ставка 150 XP. Брось больше дилера (х2).", price: 150, icon: "🎲", action: 'mod_dice' }, { id: 'mines_game', title: "Мины (Алмазы)", desc: "Ставка 300 XP. Найди 3 алмаза (х2).", price: 300, icon: "💣", action: 'mod_mines' }, { id: 'hilo_game', title: "Больше / Меньше", desc: "Ставка 100 XP. Угадай число (х2).", price: 100, icon: "📈", action: 'mod_hilo' }, { id: 'wheelx_game', title: "Колесо Иксов", desc: "Ставка 250 XP. Множитель от 0 до 5x.", price: 250, icon: "🎡", action: 'mod_wheelx' }, { id: 'shells_game', title: "Наперстки", desc: "Ставка 200 XP. Найди мяч (х2.5).", price: 200, icon: "🍵", action: 'mod_shells' } ];
   let defaultApShopItems = [ { id: 'ap_1', title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" }, { id: 'ap_2', title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" }, { id: 'ap_3', title: "Иммунитет на выговор", desc: "Защищает от получения 1 выговора.", price: 40, icon: "👑" }, { id: 'ap_4', title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 10, icon: "🛌" }, { id: 'ap_roulette', title: "Рулетка АП", desc: "Испытай удачу! Выиграй до 50 баллов.", price: 10, icon: "🎰", action: 'ap_roulette' } ];
   let defaultFsbShopItems = [ { id: 'fsb_1', title: "Снятие выговора", desc: "Неограниченно", price: 40, icon: "📁" }, { id: 'fsb_2', title: "Снятие предупреждения", desc: "Неограниченно", price: 25, icon: "⚠️" }, { id: 'fsb_3', title: "Иммунитет на выговор", desc: "Неограниченно", price: 15, icon: "🛡️" }, { id: 'fsb_4', title: "Иммунитет на предупреждение", desc: "Неограниченно", price: 10, icon: "🛡️" }, { id: 'fsb_5', title: "Любой транспорт на сутки", desc: "Неограниченно", price: 25, icon: "🚗" }, { id: 'fsb_6', title: "Танк на 30 минут", desc: "1 раз", price: 55, icon: "🛡️" }, { id: 'fsb_7', title: "Отпуск 7 дней", desc: "1 раз в мес", price: 30, icon: "🏖️" }, { id: 'fsb_8', title: "250к валюты", desc: "1 раз в нед", price: 25, icon: "💰" }, { id: 'fsb_10', title: "Освобождение от норматива", desc: "3 раза в нед", price: 20, icon: "✅" }, { id: 'fsb_12', title: "Неактив", desc: "2 раза в нед", price: 15, icon: "🛌" }, { id: 'fsb_13', title: "Роспись от Лидера ФСБ", desc: "1 раз", price: 15, icon: "✍️" } ];
@@ -2086,7 +2090,7 @@
   function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
   function initials(name) { return name.split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase(); }
 
-  // === ВЕРДИКТЫ И ОЦЕНКИ (ИСПРАВЛЕНО) ===
+  // === ВЕРДИКТЫ И ОЦЕНКИ ===
   window.judge = async function(action) {
       if (!state.started) return alert("Сначала нажми 'Начать смену'!");
       if (isSpamming() || !state.current) return;
@@ -2129,9 +2133,9 @@
           currencyResolve = resolve;
       });
   }
-  q('#currBtnGame').addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve('game'); });
-  q('#currBtnReal').addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve('real'); });
-  q('#currCloseModal').addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve(null); });
+  q('#currBtnGame')?.addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve('game'); });
+  q('#currBtnReal')?.addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve('real'); });
+  q('#currCloseModal')?.addEventListener('click', () => { q('#currencyModal').style.display = 'none'; if(currencyResolve) currencyResolve(null); });
 
   function getTrainingBalance() { return Math.floor(Number(state.correct) / 10) * 15; }
   function getRealBalance() { return Math.max(0, Number(state.reportXp || 0) - Number(shopState.spent || 0)); }
@@ -2322,7 +2326,6 @@
   async function logPurchase(itemName, isAutoLog, isAp = false, cost = 0, typeName = null) {
       if (!currentUser) return;
       await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName, cost: cost, type: typeName ? typeName : (isAp ? 'ap_shop' : 'mod_shop'), status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]);
-      updateTicker();
   }
 
   window.buyItem = async function(id, price, action) {
@@ -2379,7 +2382,7 @@
       } else playSound('fail');
   };
 
-  // === ВСЕ ИГРЫ ОСТАЛИСЬ КАК БЫЛИ (БЕЗ ИЗМЕНЕНИЙ) ===
+  // ИГРЫ
   let rocketInt = null;
   function openRocketGame(bet) {
       q('#ggRocket').style.display = 'flex';
@@ -2577,7 +2580,6 @@
       updateShopStats(); updateModStats(); q('#closeJwBtn').style.display = 'inline-block';
   }
 
-  // === КВЕСТЫ И ЛИДЕРБОРД ===
   function renderQuests() {
       const cont = q('#questsContainer'); if(!cont) return;
       const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ? JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
@@ -2612,7 +2614,7 @@
       const isApTab = q('#lbBtnAp')?.classList.contains('btn-primary'); list.innerHTML = isApTab ? (window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>') : (window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>');
   };
 
-  // === ПАНЕЛЬ СОЗДАТЕЛЯ ===
+  // === ПАНЕЛЬ СОЗДАТЕЛЯ И АДМИНА ===
   let creatorUsersList = [];
   async function loadCreatorPanelData() {
       if (!currentUser || currentUser.email !== creatorEmail) return;
@@ -2673,15 +2675,6 @@
       alert('XP успешно сохранен!'); loadCreatorPanelData();
   };
 
-  async function applyTrollEffect(effect) {
-      if (!currentUser || currentUser.email !== creatorEmail) return;
-      const userId = q('#creatorUserSelect').value; if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-      const targetUser = creatorUsersList.find(u => u.user_id === userId); if (targetUser && targetUser.email === creatorEmail) return alert("ОШИБКА: Нельзя применить к Создателю!");
-      if (effect === 'clear') { await supa.from('reports').delete().eq('email', 'TROLL_EFFECT').eq('link', userId); alert("Все эффекты сняты с пользователя!"); } 
-      else { await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]); alert(`Эффект '${effect}' применен!`); }
-  }
-
-  // === ПАНЕЛЬ АДМИНА ===
   let adminUsersList = [];
   async function loadUsersForAdmin() {
       if(!currentUser) return;
@@ -2767,35 +2760,6 @@
       }
   }
 
-  // === ГОСС ЛОГИКА ===
-  window.openGoss = function(gossId) {
-      currentGoss = gossId;
-      qAll('.mode-btn[data-goss]').forEach(btn => btn.classList.remove('active'));
-      const act = q(`.mode-btn[data-goss="${gossId}"]`); if(act) act.classList.add('active');
-
-      const subSub = q('#subSubNavGoss'); if(subSub) subSub.style.display = 'flex';
-      const titles = { pravo: "Правительство", fsb: "ФСБ", gibdd: "ГИБДД", umvd: "УМВД", mo: "Армия", cgb: "Больница", smi: "СМИ", fsin: "ФСИН" };
-      
-      if(q('#gossAcademyTitle')) q('#gossAcademyTitle').textContent = `${titles[gossId]}: Академия`;
-      if(q('#gossTableTitle')) q('#gossTableTitle').textContent = `${titles[gossId]}: Таблица СС`;
-      if(q('#gossShopTitle')) q('#gossShopTitle').textContent = `Магазин ${titles[gossId]}`;
-      if(q('#gossAdminTitle')) q('#gossAdminTitle').textContent = `Руководство ${titles[gossId]}`;
-      if(q('#gossLogTitle')) q('#gossLogTitle').textContent = `Логи выдачи (${titles[gossId]})`;
-
-      switchMode('goss_table');
-  }
-
-  function renderGossTable() {
-      const tbody = q('#gossTableBody'); if(!tbody) return; tbody.innerHTML = '';
-      const data = gossRoster[currentGoss] || [];
-      if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #a7afcf;">В данной организации пока нет Старшего Состава.</td></tr>`; return; }
-      data.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td><strong style="color:#fff;">${item.name}</strong><br><span style="font-size:0.8rem;">${item.rank}</span></td><td>${item.date}</td><td><span class="tag ${item.warns > 0 ? 'tag-orange' : 'tag-green'}">${item.warns}/3</span></td><td><span class="tag ${item.vigs > 0 ? 'tag-red' : 'tag-green'}">${item.vigs}/3</span></td><td><a href="${item.vk}" target="_blank">VKontakte</a></td>`;
-          tbody.appendChild(tr);
-      });
-  }
-
   async function loadReportsTable() {
       const listArea = q('#reportsTableWrapper'); if(!listArea) return; listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы модераторов...</div>';
       const { data: modRoles } = await supa.from('reports').select('link').eq('email', 'USER_ROLE').eq('status', 'moderator');
@@ -2844,12 +2808,9 @@
       selectEl.style.opacity = '1'; selectEl.disabled = false; setTimeout(() => { loadReportsTable(); loadCreatorPanelData(); }, 1000);
   };
 
-  window.processReport = async function(id, statusText, xpAmount) { await supa.from('reports').update({ status: statusText, xp: xpAmount }).eq('id', id); q('#viewReportsBtn').click(); setTimeout(() => q('#viewReportsBtn').click(), 100); };
-  window.processInactive = async function(id, statusText) { await supa.from('reports').update({ status: statusText }).eq('id', id); q('#viewInactivesBtn').click(); setTimeout(() => q('#viewInactivesBtn').click(), 100); };
-
   // === ОСНОВНЫЕ СЛУШАТЕЛИ ===
   document.addEventListener("DOMContentLoaded", () => {
-      // Кнопки модалок через AddEventListener (для мобилок)
+      // Кнопки модалок (надежные слушатели для мобилок)
       q('#authCloseModal')?.addEventListener('click', () => q('#authModal').style.display = 'none');
       q('#closeGgBtn')?.addEventListener('click', () => q('#genericGameModal').style.display = 'none');
       q('#closeFortuneBtn')?.addEventListener('click', () => q('#fortuneModal').style.display = 'none');
@@ -2901,12 +2862,11 @@
       q('#equipCrownBtn')?.addEventListener('click', () => { activeCosmetics.crown = !activeCosmetics.crown; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
       q('#equipColorBtn')?.addEventListener('click', () => { activeCosmetics.color = !activeCosmetics.color; localStorage.setItem('userCosmetics', JSON.stringify(activeCosmetics)); renderProfileData(); });
 
-      // ОСТАЛЬНЫЕ ПАНЕЛЬНЫЕ КНОПКИ (Без самовыдачи)
+      // ПАНЕЛЬНЫЕ КНОПКИ (С запретом самовыдачи, кроме Создателя)
       q('#creatorXpBtn')?.addEventListener('click', async () => {
            const userId = q('#creatorUserSelect').value, amount = Number(q('#creatorXpAmount').value), type = q('#creatorGiveType').value;
            if (!userId || isNaN(amount)) return; 
            const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-           if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Неприкосновенность Создателя!");
            if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать XP самому себе!");
            
            if (type === 'game') { await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]); } 
@@ -2917,7 +2877,7 @@
       q('#leadershipXpBtn')?.addEventListener('click', async () => {
           const userId = q('#leadershipUserSelect').value, amount = Number(q('#leadershipXpAmount').value), type = q('#leadershipGiveType').value;
           if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-          if (targetUser.email === creatorEmail) return alert("Создатель неприкосновенен!");
+          if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель неприкосновенен!");
           if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать XP самому себе!");
 
           if (type === 'game') { await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]); } 
@@ -2928,8 +2888,8 @@
       q('#apAdminPointsBtn')?.addEventListener('click', async () => {
           const userId = q('#apAdminUserSelect').value, amount = Number(q('#apAdminPointsAmount').value), type = q('#apAdminGiveType').value;
           if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-          if (targetUser.email === creatorEmail) return alert("Создатель неприкосновенен!");
-          if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать XP самому себе!");
+          if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель неприкосновенен!");
+          if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать Баллы самому себе!");
 
           if (type === 'game') { await supa.from('reports').insert([{ id: 'gxp_' + Date.now(), email: 'GAME_XP', link: userId, xp: amount, status: 'mod' }]); } 
           else { await supa.from('reports').insert([{ id: 'rep_manual_' + Date.now(), email: targetUser.email, link: '', date: 'Выставлено Руководством АП', status: 'Норма', xp: amount }]); }
@@ -2939,9 +2899,9 @@
       q('#fsbAdminPointsBtn')?.addEventListener('click', async () => {
           const userId = q('#fsbAdminUserSelect').value, amount = Number(q('#fsbAdminPointsAmount').value);
           if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
-          if (targetUser.email === creatorEmail) return alert("Создатель неприкосновенен!");
-          if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать XP самому себе!");
-          // Для ФСБ выдача идет через уменьшение трат (так как баллы начисляются с академии)
+          if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Создатель неприкосновенен!");
+          if (userId === currentUser.id && currentUser.email !== creatorEmail) return alert("Нельзя выдавать баллы самому себе!");
+
           const newSpent = (Number(targetUser.fsb_spent) || 0) - amount; 
           await supa.from('user_stats').update({ fsb_spent: newSpent }).eq('user_id', userId);
           alert('Успешно выполнено (ФСБ)!'); loadUsersForAdmin();
@@ -3024,4 +2984,5 @@
               await loadGlobalShopAndRoulette();
           }
       });
+  });
 </script>
