@@ -91,6 +91,7 @@
     @keyframes modeFade { from { opacity: 0; transform: translateY(15px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     button, input, select, textarea { font: inherit; }
+    .mode-btn, .action-btn, .btn, .main-cat-btn, [data-action], [data-comp-action] { pointer-events:auto !important; touch-action:manipulation; -webkit-tap-highlight-color: transparent; }
     button { cursor: pointer; border: none; transition: transform var(--transition), background var(--transition), box-shadow var(--transition), opacity var(--transition), border-color var(--transition); }
     button:hover { transform: translateY(-3px); }
     button:active { transform: translateY(1px) scale(0.97); }
