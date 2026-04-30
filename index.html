@@ -11133,6 +11133,354 @@
         })();
         /* === /T73 V14 MOBILE ULTRA OPTIMIZATION === */
 
+
+
+        /* === T73 V15 REAL REPORT TABLE + ORG LOGS + ALL-GOSS IN EVERY TABLE === */
+        (function installT73V15ReportsAndOrgLogs(){
+            const $15 = id => document.getElementById(id);
+            const q15 = sel => document.querySelector(sel);
+            const qa15 = sel => Array.from(document.querySelectorAll(sel));
+            const esc15 = v => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+            const nowId15 = p => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+            const MARK15 = 'REPORT_TABLE_MARK_V15';
+            const MEMBER15 = 'REPORT_TABLE_MEMBER_V15';
+            const ORG_LOG15 = 'GOSS_ORG_LOG_V15';
+            const BUCKETS15 = ['report-screenshots','reports','screenshots'];
+            let weekOffset15 = 0;
+            let files15 = [];
+            let previewUrls15 = [];
+            let currentOrgLogs15 = 'fsb';
+
+            function leader15(){
+                try{
+                    if(!currentUser) return false;
+                    if(currentUser.email === creatorEmail) return true;
+                    if(Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)) return true;
+                    if(Array.isArray(dynamicModLeaders) && dynamicModLeaders.includes(currentUser.id)) return true;
+                    if(Array.isArray(dynamicApLeaders) && dynamicApLeaders.includes(currentUser.id)) return true;
+                    if(Array.isArray(dynamicFsbLeaders) && dynamicFsbLeaders.includes(currentUser.id)) return true;
+                    if(typeof GOSS_ORGS !== 'undefined' && typeof hasGossLeadership === 'function' && GOSS_ORGS.some(o => hasGossLeadership(o.id))) return true;
+                }catch(e){}
+                return false;
+            }
+            function canOrg15(orgId){
+                try{
+                    if(!currentUser) return false;
+                    if(currentUser.email === creatorEmail) return true;
+                    if(Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)) return true;
+                    if(typeof hasGossLeadership === 'function' && hasGossLeadership(orgId)) return true;
+                    if(orgId === 'fsb' && Array.isArray(dynamicFsbLeaders) && dynamicFsbLeaders.includes(currentUser.id)) return true;
+                }catch(e){}
+                return false;
+            }
+            function allOrgs15(){
+                try { if(typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS)) return GOSS_ORGS; } catch(e){}
+                return [
+                    {id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},
+                    {id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},
+                    {id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚔'},
+                    {id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},
+                    {id:'army',short:'Армия',name:'Армия',icon:'🎖️'},
+                    {id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},
+                    {id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},
+                    {id:'fsin',short:'ФСИН',name:'ФСИН',icon:'🔒'}
+                ];
+            }
+            function org15(id){ return allOrgs15().find(o => o.id === id) || allOrgs15()[0]; }
+            function weekDates15(){
+                const d = new Date();
+                d.setHours(12,0,0,0);
+                d.setDate(d.getDate() - weekOffset15 * 7);
+                const day = d.getDay() || 7;
+                d.setDate(d.getDate() - day + 1);
+                return Array.from({length:7}, (_,i)=>{ const x=new Date(d); x.setDate(d.getDate()+i); return x.toISOString().slice(0,10); });
+            }
+            function human15(date){ try { return new Date(date+'T12:00:00').toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit'}); } catch(e){ return date; } }
+            function parse15(v, fallback={}){ try { return JSON.parse(v || ''); } catch(e){ return fallback; } }
+
+            function injectStyle15(){
+                if($15('t73V15Style')) return;
+                document.head.insertAdjacentHTML('beforeend', `<style id="t73V15Style">
+                    .t73-v15-toolbar{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.75rem;margin:1rem 0;padding:1rem;border-radius:18px;background:rgba(0,0,0,.32);border:1px solid rgba(191,198,255,.18)}
+                    .t73-v15-card{border:1px solid rgba(191,198,255,.18);background:rgba(9,12,24,.92);border-radius:18px;padding:1rem;box-shadow:0 8px 22px rgba(0,0,0,.35)}
+                    .t73-v15-table{display:grid;gap:.9rem}.t73-v15-row{display:grid;grid-template-columns:minmax(190px,.7fr) minmax(0,2.4fr);gap:.8rem;align-items:start}
+                    .t73-v15-user{position:sticky;left:0;z-index:1}.t73-v15-days{display:grid;grid-template-columns:repeat(7,minmax(148px,1fr));gap:.6rem;overflow-x:auto;padding-bottom:.25rem}
+                    .t73-v15-day{border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.24);border-radius:14px;padding:.75rem;min-width:148px}.t73-v15-day-title{font-weight:900;color:#fff;margin-bottom:.45rem}
+                    .t73-v15-select,.t73-v15-input{width:100%;min-height:38px;margin:.25rem 0;padding:.55rem;border-radius:10px;background:#111827;color:#fff;border:1px solid rgba(255,255,255,.16);font-size:14px}.t73-v15-select:disabled{opacity:.72}
+                    .t73-v15-small{font-size:.82rem;color:var(--color-text-muted);line-height:1.35}.t73-v15-proof{display:inline-flex;margin:.18rem .2rem .18rem 0;padding:.22rem .48rem;border-radius:999px;background:rgba(82,199,123,.14);color:#8df0ae;border:1px solid rgba(82,199,123,.24);font-size:.78rem;text-decoration:none}
+                    .t73-v15-preview{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.65rem;margin-top:.75rem}.t73-v15-preview-card{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.3)}.t73-v15-preview-card img{width:100%;height:92px;object-fit:cover;display:block}.t73-v15-remove{position:absolute;right:.35rem;top:.35rem;border:0;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;width:26px;height:26px}
+                    .t73-v15-log-grid{display:grid;gap:.8rem}.t73-v15-log{border:1px solid rgba(255,255,255,.1);background:rgba(7,9,17,.92);border-radius:15px;padding:.9rem}.t73-v15-log-head{display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.35rem}.t73-v15-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .58rem;border-radius:999px;background:rgba(162,108,255,.14);color:#d4bbff;border:1px solid rgba(162,108,255,.22);font-size:.78rem;font-weight:900}
+                    @media(max-width:860px),(pointer:coarse){.t73-v15-toolbar{grid-template-columns:1fr;padding:.75rem}.t73-v15-row{grid-template-columns:1fr}.t73-v15-user{position:static}.t73-v15-days{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch}.t73-v15-day{min-width:182px}.t73-v15-card{padding:.8rem}.t73-v15-preview{grid-template-columns:repeat(2,minmax(0,1fr))}.t73-v15-preview-card img{height:86px}}
+                </style>`);
+            }
+            function addMode15(mode){ try { if(Array.isArray(allModesList) && !allModesList.includes(mode)) allModesList.push(mode); } catch(e){} }
+            function ensureButton15(parentId, id, mode, label){
+                const parent = $15(parentId); if(!parent) return;
+                let btn = $15(id);
+                if(!btn){ parent.insertAdjacentHTML('beforeend', `<button class="mode-btn" data-mode="${esc15(mode)}" type="button" id="${esc15(id)}">${label}</button>`); btn = $15(id); }
+                btn.style.display = 'inline-flex';
+                btn.onclick = ev => { ev.preventDefault(); if(typeof switchMode === 'function') switchMode(mode, btn); };
+            }
+            function ensureReportDom15(){
+                injectStyle15(); addMode15('reports_table');
+                ensureButton15('subNavGeneral','reportsTableBtn','reports_table','📊 Таблица отчетов');
+                ensureButton15('subNavModeration','reportsTableBtnModV15','reports_table','📊 Таблица отчетов');
+                const wrap = $15('game') || q15('.game-wrap');
+                if(wrap && !$15('mode-reports_table')) wrap.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>');
+                const sec = $15('mode-reports_table'); if(!sec) return;
+                if(sec.dataset.v15Built === '1') return;
+                sec.dataset.v15Built = '1';
+                sec.innerHTML = `<div class="section-head"><h2 style="color:#52c77b;">📊 Таблица отчётов</h2><p>Реальная таблица по неделе. Руководство может менять два блока: отчётность и отметку дня.</p></div>
+                    <div class="t73-v15-toolbar">
+                        <button class="btn btn-secondary" id="t73V15PrevWeek" type="button">⬅️ Прошлая неделя</button>
+                        <button class="btn btn-secondary" id="t73V15ThisWeek" type="button">Текущая неделя</button>
+                        <button class="btn btn-secondary" id="t73V15NextWeek" type="button">Следующая неделя ➡️</button>
+                        <button class="btn btn-primary" id="t73V15ReloadTable" type="button">🔄 Обновить</button>
+                    </div>
+                    <div class="t73-v15-toolbar">
+                        <input id="t73V15ReportSearch" class="support-input" placeholder="Поиск по нику / email">
+                        <input id="t73V15ManualName" class="support-input" placeholder="Добавить строку: Nick_Name">
+                        <button class="btn btn-secondary" id="t73V15AddManual" type="button">➕ Добавить строку</button>
+                    </div>
+                    <div id="t73V15ReportInfo" class="t73-v15-small">Загрузка...</div>
+                    <div id="reportsTableWrapper" class="t73-v15-table"><div class="message-text" style="padding:2rem;text-align:center;">Нажмите «Обновить»</div></div>`;
+            }
+            async function loadMembers15(dates){
+                const map = new Map();
+                const put = (key, obj) => { if(!key) return; const old = map.get(key) || {}; map.set(key, {...old, ...obj, key}); };
+                try { const r = await supa.from('user_stats').select('user_id,nickname,email').limit(800); (r.data||[]).forEach(u=>put(u.user_id || u.email || u.nickname, {id:u.user_id,name:u.nickname||u.email||u.user_id,email:u.email})); } catch(e){}
+                try { const r = await supa.from('reports').select('*').eq('email', MEMBER15).limit(500); (r.data||[]).forEach(x=>{ const p=parse15(x.date,{}); put(x.link || p.key || p.name, {id:x.link,name:p.name||x.status||x.link,email:p.email||''}); }); } catch(e){}
+                try { const r = await supa.from('reports').select('*').limit(500); (r.data||[]).forEach(row=>{ const p=parse15(row.date,{}); if(!p.nick && !p.userId) return; const key=p.userId||row.email||p.nick||row.id; put(key,{id:p.userId,name:p.nick||row.email,email:row.email}); }); } catch(e){}
+                return Array.from(map.values()).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ru'));
+            }
+            async function loadMarks15(){
+                const marks = new Map();
+                try { const r = await supa.from('reports').select('*').eq('email', MARK15).limit(2000); (r.data||[]).forEach(x=>{ const p=parse15(x.status,{}); marks.set((x.link||'')+'|'+(x.date||''), {id:x.id, ...p}); }); } catch(e){}
+                return marks;
+            }
+            async function loadProofs15(dates){
+                const proofs = new Map();
+                try{
+                    const r = await supa.from('reports').select('*').limit(800);
+                    (r.data||[]).forEach(row=>{
+                        const p=parse15(row.date,{}); const day=p.day || row.date; if(!dates.includes(day)) return;
+                        const key = (p.userId||row.email||p.nick||row.id)+'|'+day;
+                        const arr = proofs.get(key) || [];
+                        let proofCount=0;
+                        if(Array.isArray(p.proofs)) proofCount=p.proofs.length;
+                        else if(String(row.link||'').startsWith('T73_PROOFS:')) { try { proofCount = JSON.parse(String(row.link).slice(11)).length; } catch(e){} }
+                        else if(row.link) proofCount=1;
+                        arr.push({quality:p.quality||row.status||'На проверке', count:proofCount, id:row.id}); proofs.set(key, arr);
+                    });
+                }catch(e){}
+                return proofs;
+            }
+            async function renderReportsTable15(){
+                ensureReportDom15();
+                const info=$15('t73V15ReportInfo'), wrap=$15('reportsTableWrapper'); if(!wrap) return;
+                if(info) info.textContent='Загружаю таблицу...';
+                if(!currentUser){ wrap.innerHTML='<div class="message-card">Войдите в аккаунт, чтобы открыть таблицу отчётов.</div>'; return; }
+                const dates = weekDates15();
+                const [members, marks, proofs] = await Promise.all([loadMembers15(dates), loadMarks15(), loadProofs15(dates)]);
+                const search=($15('t73V15ReportSearch')?.value||'').trim().toLowerCase();
+                const visible = members.filter(m => !search || String(m.name||'').toLowerCase().includes(search) || String(m.email||'').toLowerCase().includes(search)).slice(0,220);
+                const canEdit = leader15();
+                if(info) info.innerHTML = `Неделя: <b>${human15(dates[0])} — ${human15(dates[6])}</b> · строк: <b>${visible.length}</b> · редактирование: <b>${canEdit?'доступно':'только для руководства'}</b>`;
+                if(!visible.length){ wrap.innerHTML='<div class="message-card">Строк нет. Руководитель может добавить строку вручную.</div>'; return; }
+                const reportOptions = ['Нет отчета','Норма','Перенорма','Натяг','Герой дня','Отказ','На проверке'];
+                const dayOptions = ['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];
+                wrap.innerHTML = visible.map(m=>`<div class="t73-v15-row t73-v15-card" data-user="${esc15(m.key)}">
+                    <div class="t73-v15-user"><strong style="color:#fff;">${esc15(m.name||m.key)}</strong><div class="t73-v15-small">${esc15(m.email||m.id||m.key)}</div></div>
+                    <div class="t73-v15-days">${dates.map(day=>{
+                        const mark=marks.get(m.key+'|'+day)||{}; const pf=proofs.get(m.key+'|'+day)||[];
+                        return `<div class="t73-v15-day" data-date="${esc15(day)}"><div class="t73-v15-day-title">${human15(day)}</div>
+                            <label class="t73-v15-small">Отчётность<select class="t73-v15-select t73-v15-mark" data-kind="report" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${reportOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.report||'Нет отчета')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
+                            <label class="t73-v15-small">Отметка дня<select class="t73-v15-select t73-v15-mark" data-kind="day" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${dayOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.day||'Проверить')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
+                            <input class="t73-v15-input t73-v15-note" data-user="${esc15(m.key)}" data-date="${esc15(day)}" placeholder="Комментарий" value="${esc15(mark.note||'')}" ${canEdit?'':'disabled'}>
+                            <div>${pf.length ? pf.map((p,i)=>`<span class="t73-v15-proof">📎 ${esc15(p.quality)} · ${Number(p.count)||0}</span>`).join('') : '<span class="t73-v15-small">Доказательств нет</span>'}</div>
+                        </div>`; }).join('')}</div>
+                </div>`).join('');
+            }
+            async function saveMark15(user,date){
+                if(!leader15()) return alert('Менять таблицу может только руководство.');
+                const sel = s => document.querySelector(s);
+                const report = sel(`.t73-v15-mark[data-user="${CSS.escape(user)}"][data-date="${CSS.escape(date)}"][data-kind="report"]`)?.value || 'Нет отчета';
+                const day = sel(`.t73-v15-mark[data-user="${CSS.escape(user)}"][data-date="${CSS.escape(date)}"][data-kind="day"]`)?.value || 'Проверить';
+                const note = sel(`.t73-v15-note[data-user="${CSS.escape(user)}"][data-date="${CSS.escape(date)}"]`)?.value || '';
+                await supa.from('reports').delete().eq('email', MARK15).eq('link', user).eq('date', date);
+                const { error } = await supa.from('reports').insert([{id:nowId15('rtv15'), email:MARK15, link:user, date, status:JSON.stringify({report,day,note,by:currentNickname||currentUser.email,at:new Date().toISOString()}), xp:0}]);
+                if(error) alert('Не удалось сохранить: '+error.message);
+                else { const info=$15('t73V15ReportInfo'); if(info) info.innerHTML='✅ Сохранено: <b>'+esc15(user)+'</b> · '+esc15(human15(date)); }
+            }
+            async function addManual15(){
+                if(!leader15()) return alert('Добавлять строки может только руководство.');
+                const input=$15('t73V15ManualName'); const name=(input?.value||'').trim(); if(!name) return alert('Введите ник.');
+                const key='manual_'+name.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_')+'_'+Date.now().toString(36);
+                const { error } = await supa.from('reports').insert([{id:nowId15('rtmem15'), email:MEMBER15, link:key, date:JSON.stringify({name,key,addedBy:currentNickname||currentUser.email,at:new Date().toISOString()}), status:name, xp:0}]);
+                if(error) return alert('Не удалось добавить строку: '+error.message);
+                input.value=''; await renderReportsTable15();
+            }
+            function ensureUpload15(){
+                const tab=$15('reportTabBtn'); if(tab) tab.style.display='inline-flex';
+                const area=$15('reportFormArea'); const warn=$15('reportAccessWarning');
+                if(currentUser && area && warn){ area.style.display='grid'; warn.style.display='none'; }
+                const inp=$15('reportFileInput'); if(!inp) return;
+                inp.setAttribute('multiple','multiple'); inp.setAttribute('accept','image/*');
+                if(!$15('t73V15UploadTitle')) inp.insertAdjacentHTML('beforebegin','<div id="t73V15UploadTitle" class="t73-v15-card" style="margin-bottom:.75rem;"><b>📎 Прямая загрузка скриншотов</b><div class="t73-v15-small">Можно выбрать сразу много скринов. Они загрузятся в Supabase Storage; если bucket не настроен, сайт сожмёт их и отправит fallback.</div></div>');
+                if(!$15('reportFilePreview')) inp.insertAdjacentHTML('afterend','<div id="reportFilePreview" class="t73-v15-preview"></div>');
+            }
+            function renderPreview15(){
+                const box=$15('reportFilePreview'); if(!box) return;
+                previewUrls15.forEach(URL.revokeObjectURL); previewUrls15=[];
+                box.classList.add('t73-v15-preview');
+                box.innerHTML = files15.map((f,i)=>{ const u=URL.createObjectURL(f); previewUrls15.push(u); return `<div class="t73-v15-preview-card"><img src="${u}" alt=""><button class="t73-v15-remove" data-i="${i}" type="button">×</button><div class="t73-v15-small" style="padding:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc15(f.name)}</div></div>`; }).join('');
+            }
+            async function compress15(file){
+                const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result||''));r.onerror=()=>rej(r.error);r.readAsDataURL(file);});
+                const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=data;});
+                const max=1280, scale=Math.min(1,max/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+                const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale)), h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+                const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d',{alpha:false}).drawImage(img,0,0,w,h);
+                return c.toDataURL('image/jpeg',.64);
+            }
+            async function upload15(file,i){
+                const safe=String(file.name||('screen_'+i+'.jpg')).replace(/[^a-zA-Z0-9_.-]+/g,'_');
+                const path='reports/'+(currentUser?currentUser.id:'guest')+'/'+new Date().toISOString().slice(0,10)+'/'+Date.now()+'_'+i+'_'+safe;
+                for(const b of BUCKETS15){ try{ const up=await supa.storage.from(b).upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type||'image/jpeg'}); if(!up.error){ const pub=supa.storage.from(b).getPublicUrl(path); if(pub?.data?.publicUrl) return {url:pub.data.publicUrl,name:file.name,bucket:b,kind:'storage'}; } }catch(e){} }
+                return {url:await compress15(file),name:file.name,kind:'compressed-base64'};
+            }
+            async function submitReport15(){
+                const res=$15('reportResultText');
+                if(!currentUser){ if(res){res.textContent='Сначала войдите в аккаунт.';res.style.color='var(--color-error)';} return; }
+                const nick=($15('reportNickInput')?.value||'').trim(), work=($15('reportWorkInput')?.value||'').trim(), day=($15('reportDateInput')?.value||'').trim(), raw=($15('reportLinkInput')?.value||'').trim(), quality=($15('reportQualityInput')?.value||'Норма').trim();
+                if(!nick||!work||!day){ if(res){res.textContent='Заполните ник, работу и дату.';res.style.color='var(--color-error)';} return; }
+                if(!raw&&!files15.length){ if(res){res.textContent='Добавьте ссылку или выберите скриншоты.';res.style.color='var(--color-error)';} return; }
+                const btn=$15('submitReportBtn'); if(btn){btn.disabled=true;btn.textContent='Загружаю файлы...';}
+                try{
+                    const proofs=[]; if(raw) proofs.push({url:raw,name:'Ссылка',kind:'link'});
+                    for(let i=0;i<files15.length;i++){ if(res){res.textContent='Загрузка скрина '+(i+1)+' из '+files15.length+'...';res.style.color='var(--color-text-muted)';} proofs.push(await upload15(files15[i],i)); }
+                    const payload={version:'v15-direct-upload',nick,work,day,quality,proofs,userId:currentUser.id,email:currentUser.email,createdAt:new Date().toISOString()};
+                    const { error } = await supa.from('reports').insert([{id:nowId15('rep15'),email:currentUser.email,link:'T73_PROOFS:'+JSON.stringify(proofs),date:JSON.stringify(payload),status:'На проверке',xp:0}]);
+                    if(error) throw error;
+                    files15=[]; renderPreview15(); ['reportWorkInput','reportLinkInput'].forEach(id=>{const el=$15(id);if(el)el.value='';});
+                    if(res){res.textContent='Отчёт отправлен. Файлов/доказательств: '+proofs.length+'.';res.style.color='var(--color-success)';}
+                    renderReportsTable15();
+                }catch(e){ if(res){res.textContent='Ошибка: '+(e.message||e);res.style.color='var(--color-error)';} }
+                finally{ if(btn){btn.disabled=false;btn.textContent='Отправить Отчет';} }
+            }
+            function selectedOrgId15(){
+                const btn=q15('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active');
+                if(btn?.dataset?.orgId) return btn.dataset.orgId;
+                const sel=$15('t73V15OrgLogsSelect'); if(sel?.value) return sel.value;
+                return currentOrgLogs15 || 'fsb';
+            }
+            function ensureOrgLogsDom15(){
+                injectStyle15(); addMode15('goss_org_logs');
+                const nav=$15('subNavOrganizations');
+                if(nav){
+                    if(!$15('gossOrgLogsTabBtnV15')) nav.insertAdjacentHTML('beforeend','<button class="mode-btn" data-mode="goss_org_logs" type="button" id="gossOrgLogsTabBtnV15">🧾 Логи организации</button>');
+                    const b=$15('gossOrgLogsTabBtnV15'); if(b){ b.style.display='inline-flex'; b.onclick=ev=>{ev.preventDefault(); currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs',b);}; }
+                }
+                const wrap=$15('game')||q15('.game-wrap');
+                if(wrap && !$15('mode-goss_org_logs')) wrap.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-goss_org_logs" style="display:none;"></section>');
+                const sec=$15('mode-goss_org_logs'); if(!sec) return;
+                if(sec.dataset.v15Built !== '1'){
+                    sec.dataset.v15Built = '1';
+                    sec.innerHTML=`<div class="section-head"><h2 style="color:#ff6b88;">🧾 Логи организации</h2><p>Отдельный журнал по выбранной ГОСС организации: отчёты, проверки, магазин, изменения и выдачи.</p></div>
+                    <div class="t73-v15-toolbar"><select id="t73V15OrgLogsSelect" class="support-input">${allOrgs15().map(o=>`<option value="${esc15(o.id)}">${esc15(o.icon+' '+o.short)}</option>`).join('')}</select><button id="t73V15LoadOrgLogs" class="btn btn-primary" type="button">🔄 Обновить логи</button></div>
+                    <div id="t73V15OrgLogsInfo" class="t73-v15-small">Выберите организацию.</div><div id="t73V15OrgLogsList" class="t73-v15-log-grid"></div>`;
+                }
+                const sel=$15('t73V15OrgLogsSelect'); if(sel){ sel.value=currentOrgLogs15||selectedOrgId15(); sel.onchange=()=>{currentOrgLogs15=sel.value; loadOrgLogs15();}; }
+                const load=$15('t73V15LoadOrgLogs'); if(load) load.onclick=loadOrgLogs15;
+                injectOrgLogShortcut15();
+            }
+            function injectOrgLogShortcut15(){
+                const c=$15('gossV4Content')||$15('gossV3Content'); if(!c || $15('t73V15OpenThisOrgLogs')) return;
+                const orgId=selectedOrgId15();
+                c.insertAdjacentHTML('afterbegin',`<div class="gov-v4-card t73-v15-card" style="margin-bottom:1rem;"><div class="gov-v4-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи ${esc15(org15(orgId).short)}</h3><p class="gov-v4-sub">Откройте отдельный журнал именно этой организации.</p></div><button id="t73V15OpenThisOrgLogs" class="btn btn-secondary" type="button">Открыть логи</button></div></div>`);
+                const b=$15('t73V15OpenThisOrgLogs'); if(b) b.onclick=()=>{currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs', $15('gossOrgLogsTabBtnV15')||b);};
+            }
+            async function loadOrgLogs15(){
+                const sel=$15('t73V15OrgLogsSelect'); const orgId=sel?.value||currentOrgLogs15||'fsb'; currentOrgLogs15=orgId; const org=org15(orgId);
+                const info=$15('t73V15OrgLogsInfo'), list=$15('t73V15OrgLogsList'); if(!list) return;
+                if(info) info.textContent='Загружаю логи '+org.short+'...';
+                if(!canOrg15(orgId)){ list.innerHTML='<div class="message-card">Логи этой организации видит только её руководство или руководство всех ГОСС.</div>'; return; }
+                const rows=[];
+                try{ const r=await supa.from('reports').select('*').eq('link',orgId).order('id',{ascending:false}).limit(180); (r.data||[]).forEach(x=>rows.push({source:'reports',...x})); }catch(e){}
+                if(orgId==='fsb'){
+                    try{ const a=await supa.from('admin_logs').select('*').eq('type','fsb_shop').order('created_at',{ascending:false}).limit(80); (a.data||[]).forEach(x=>rows.push({source:'admin_logs',email:'Покупка ФСБ',status:x.status,date:x.created_at,link:orgId,item:x.item_name,nick:x.nickname,cost:x.cost,id:x.id})); }catch(e){}
+                }
+                rows.sort((a,b)=>String(b.created_at||b.id||b.date).localeCompare(String(a.created_at||a.id||a.date)));
+                if(info) info.innerHTML=`Организация: <b>${esc15(org.icon+' '+org.short)}</b> · записей: <b>${rows.length}</b>`;
+                if(!rows.length){ list.innerHTML='<div class="message-card">Логи этой организации пока пустые.</div>'; return; }
+                list.innerHTML=rows.map(r=>{
+                    const p=parse15(r.date,{}); const at=p.at||r.created_at||r.date||''; const title=r.item||p.text||r.email||r.status||'Запись';
+                    const body = typeof r.date === 'string' && r.date.trim().startsWith('{') ? (p.text||JSON.stringify(p.extra||p).slice(0,500)) : (r.date||'');
+                    return `<div class="t73-v15-log"><div class="t73-v15-log-head"><strong style="color:#fff;">${esc15(title)}</strong><span class="t73-v15-pill">${esc15(r.email||r.source)}</span></div><div class="t73-v15-small">${esc15(r.status||'')} · ${esc15(at ? new Date(at).toLocaleString('ru-RU') : '')}</div><div style="margin-top:.45rem;white-space:pre-wrap;">${esc15(body||'—')}</div>${r.nick?`<div class="t73-v15-small">Пользователь: ${esc15(r.nick)} · cost: ${esc15(r.cost||0)}</div>`:''}</div>`;
+                }).join('');
+            }
+            async function enhanceAllGossInStaff15(){
+                const content=$15('gossV4Content')||$15('gossV3Content'); if(!content) return;
+                if(!/Таблица старшего состава/i.test(content.textContent||'')) { injectOrgLogShortcut15(); return; }
+                if(content.dataset.v15AllGossDone === selectedOrgId15()) return;
+                const orgId=selectedOrgId15(), org=org15(orgId);
+                let roles=[]; try{ const r=await supa.from('reports').select('*').eq('email','ADMIN_ROLE').in('status',['goss_admin_all','goss_senior_all']); roles=r.data||[]; }catch(e){}
+                if(!roles.length) return;
+                const ids=roles.map(r=>r.link).filter(Boolean); let users={};
+                try{ if(ids.length){ const u=await supa.from('user_stats').select('user_id,nickname,email').in('user_id',ids); (u.data||[]).forEach(x=>{users[x.user_id]=x;}); } }catch(e){}
+                let table=content.querySelector('table.gov-v4-table, table.gov-v3-table, table');
+                if(!table){
+                    content.insertAdjacentHTML('beforeend','<div class="gov-v4-table-wrap"><table class="gov-v4-table"><thead><tr><th>NickName</th><th>Статус</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody></tbody></table></div>');
+                    table=content.querySelector('table');
+                }
+                const body=table.querySelector('tbody')||table.appendChild(document.createElement('tbody'));
+                roles.forEach(r=>{
+                    if(body.querySelector('tr[data-v15-allgoss="'+CSS.escape(r.link||'')+'"]')) return;
+                    const u=users[r.link]||{}; const name=u.nickname||u.email||r.link||'Пользователь'; const label=r.status==='goss_admin_all'?'Руководство всех ГОСС':'СС всех ГОСС';
+                    body.insertAdjacentHTML('beforeend',`<tr data-v15-allgoss="${esc15(r.link||'')}"><td><strong>${esc15(name)}</strong><div class="gov-v4-muted">${esc15(org.short)} · ${esc15(label)}</div></td><td><span class="gov-v4-pill">${esc15(label)}</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>${esc15(r.date||'—')}</td><td>Все ГОСС</td><td><span class="badge xp">во всех таблицах</span></td></tr>`);
+                });
+                content.dataset.v15AllGossDone = orgId;
+                injectOrgLogShortcut15();
+            }
+            function bind15(){
+                document.addEventListener('click', ev=>{
+                    const t=ev.target;
+                    if(t.closest?.('#t73V15ReloadTable')){ ev.preventDefault(); renderReportsTable15(); }
+                    if(t.closest?.('#t73V15PrevWeek')){ ev.preventDefault(); weekOffset15++; renderReportsTable15(); }
+                    if(t.closest?.('#t73V15NextWeek')){ ev.preventDefault(); if(weekOffset15>0) weekOffset15--; renderReportsTable15(); }
+                    if(t.closest?.('#t73V15ThisWeek')){ ev.preventDefault(); weekOffset15=0; renderReportsTable15(); }
+                    if(t.closest?.('#t73V15AddManual')){ ev.preventDefault(); addManual15(); }
+                    const rem=t.closest?.('.t73-v15-remove'); if(rem){ ev.preventDefault(); const i=Number(rem.dataset.i); files15.splice(i,1); renderPreview15(); }
+                    const sub=t.closest?.('#submitReportBtn'); if(sub){ ev.preventDefault(); ev.stopImmediatePropagation(); submitReport15(); }
+                }, true);
+                document.addEventListener('change', ev=>{
+                    const target=ev.target;
+                    if(target?.id==='reportFileInput'){ const fresh=Array.from(target.files||[]).filter(f=>String(f.type||'').startsWith('image/')); files15=files15.concat(fresh).slice(0,16); target.value=''; renderPreview15(); }
+                    if(target?.classList?.contains('t73-v15-mark')) saveMark15(target.dataset.user, target.dataset.date);
+                }, true);
+                document.addEventListener('input', ev=>{
+                    if(ev.target?.id==='t73V15ReportSearch'){ clearTimeout(window.__t73V15Search); window.__t73V15Search=setTimeout(renderReportsTable15,220); }
+                    if(ev.target?.classList?.contains('t73-v15-note')){ clearTimeout(ev.target.__saveT); const user=ev.target.dataset.user, date=ev.target.dataset.date; ev.target.__saveT=setTimeout(()=>saveMark15(user,date),650); }
+                }, true);
+            }
+            const prevSwitch15 = typeof switchMode === 'function' ? switchMode : null;
+            switchMode = function(mode, btn){
+                ensureReportDom15(); ensureOrgLogsDom15(); ensureUpload15();
+                const r = prevSwitch15 ? prevSwitch15(mode, btn) : undefined;
+                if(mode === 'reports_table') setTimeout(renderReportsTable15,80);
+                if(mode === 'goss_org_logs') setTimeout(loadOrgLogs15,80);
+                if(String(mode||'').startsWith('goss_') || mode === 'goss_center_v4' || mode === 'goss_center_v3') setTimeout(()=>{injectOrgLogShortcut15(); enhanceAllGossInStaff15();},250);
+                return r;
+            };
+            window.t73V15LoadReportsTable = renderReportsTable15;
+            window.t73V15LoadOrgLogs = loadOrgLogs15;
+            loadReportsTable = renderReportsTable15;
+            function boot15(){ ensureReportDom15(); ensureOrgLogsDom15(); ensureUpload15(); enhanceAllGossInStaff15(); }
+            bind15(); boot15(); setTimeout(boot15,600); setTimeout(boot15,1800); setTimeout(boot15,4000);
+            let moT15; new MutationObserver(()=>{ clearTimeout(moT15); moT15=setTimeout(()=>{ ensureUpload15(); injectOrgLogShortcut15(); enhanceAllGossInStaff15(); },450); }).observe(document.body,{childList:true,subtree:true});
+        })();
+        /* === /T73 V15 REAL REPORT TABLE + ORG LOGS + ALL-GOSS IN EVERY TABLE === */
+
         // Запуск
         renderRight("moderation");
         
