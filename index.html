@@ -9245,6 +9245,8 @@
         }
 
         function installTambovHoverFxV7() {
+            const __t73NoHoverFx = window.matchMedia && (matchMedia('(max-width: 860px), (pointer: coarse), (prefers-reduced-motion: reduce)').matches);
+            if (__t73NoHoverFx) { document.documentElement.classList.add('t73-mobile-lite'); return; }
             if (document.getElementById('tambovHoverFxV7Style')) return;
             const style = document.createElement('style');
             style.id = 'tambovHoverFxV7Style';
@@ -9284,7 +9286,9 @@
             };
             const bindAll = () => document.querySelectorAll('.rule-item,.stat,.quest-card,.message-card,.gov-v4-card,.gov-v4-option,.mod-report-card,.report-day-item,.mode-btn,.main-cat-btn,.btn,.action-btn,.panel').forEach(bindOne);
             bindAll();
-            new MutationObserver(bindAll).observe(document.body, { childList:true, subtree:true });
+            if (!(window.matchMedia && matchMedia('(max-width: 860px), (pointer: coarse)').matches)) {
+                let __t73HoverMoT; new MutationObserver(()=>{ clearTimeout(__t73HoverMoT); __t73HoverMoT=setTimeout(bindAll, 180); }).observe(document.body, { childList:true, subtree:true });
+            }
         }
 
         const __t73SwitchModeBeforeV7 = switchMode;
@@ -9510,7 +9514,7 @@
                 show('reportsTableBtn', !!(currentUser && (isModerator || isReportLeader())));
             };
             addStyle(); fixProfileModal(); bindReports();
-            new MutationObserver(()=>{ fixProfileModal(); bindReports(); }).observe(document.body,{childList:true,subtree:true});
+            { let __t73V8MoT; new MutationObserver(()=>{ clearTimeout(__t73V8MoT); __t73V8MoT=setTimeout(()=>{ fixProfileModal(); bindReports(); }, (window.matchMedia&&matchMedia('(max-width: 860px), (pointer: coarse)').matches)?700:220); }).observe(document.body,{childList:true,subtree:true}); }
         })();
         /* === /V8 REPORTS + MODAL FIX === */
 
@@ -10139,7 +10143,7 @@
 
             setupReportDomV9();
             bindReportsV9();
-            new MutationObserver(() => { setupReportDomV9(); bindReportsV9(); }).observe(document.body, { childList:true, subtree:true });
+            { let __t73V9MoT; new MutationObserver(() => { clearTimeout(__t73V9MoT); __t73V9MoT=setTimeout(()=>{ setupReportDomV9(); bindReportsV9(); }, (window.matchMedia&&matchMedia('(max-width: 860px), (pointer: coarse)').matches)?700:220); }).observe(document.body, { childList:true, subtree:true }); }
         })();
         /* === /V9 REAL REPORTS UPDATE === */
 
@@ -10465,7 +10469,7 @@
             };
 
             bindV12();
-            new MutationObserver(bindV12).observe(document.body,{childList:true,subtree:true});
+            { let __t73V12MoT; new MutationObserver(()=>{ clearTimeout(__t73V12MoT); __t73V12MoT=setTimeout(bindV12, (window.matchMedia&&matchMedia('(max-width: 860px), (pointer: coarse)').matches)?700:220); }).observe(document.body,{childList:true,subtree:true}); }
             setTimeout(bindV12, 500); setTimeout(bindV12, 1500); setTimeout(bindV12, 3000);
         })();
         /* === /T73 V12 FINAL === */
@@ -10849,12 +10853,285 @@
             window.t73V13LoadReportsTable = t13LoadReportsTable;
             window.t73V13EnsureGossConstructor = t13EnsureGossConstructor;
 
-            function t13Boot(){ t13BindReports(); t13EnsureGossConstructor(); if (t13('reportsTableWrapper')) t13LoadReportsTable(); }
+            function t13Boot(){ t13BindReports(); t13EnsureGossConstructor(); const tbl=t13('mode-reports_table'); if (tbl && tbl.style.display !== 'none' && t13('reportsTableWrapper')) t13LoadReportsTable(); }
             t13Boot();
             setTimeout(t13Boot, 500); setTimeout(t13Boot, 1500); setTimeout(t13Boot, 3500);
-            new MutationObserver(()=>{ t13BindReports(); setTimeout(t13EnsureGossConstructor, 100); }).observe(document.body,{childList:true,subtree:true});
+            { let __t73V13MoT; new MutationObserver(()=>{ clearTimeout(__t73V13MoT); __t73V13MoT=setTimeout(()=>{ t13BindReports(); setTimeout(t13EnsureGossConstructor, 120); }, (window.matchMedia&&matchMedia('(max-width: 860px), (pointer: coarse)').matches)?800:240); }).observe(document.body,{childList:true,subtree:true}); }
         })();
         /* === /T73 V13 REAL REPORT TABLE + DIRECT FILES + GOSS SHOP CONSTRUCTOR === */
+
+
+        /* === T73 V14 MOBILE ULTRA OPTIMIZATION: phone-safe UI + direct multi-upload + paged report table === */
+        (function installT73V14MobileUltra(){
+            const $14 = id => document.getElementById(id);
+            const isPhone = () => !!(window.matchMedia && matchMedia('(max-width: 860px), (pointer: coarse)').matches);
+            const esc14 = v => String(v ?? '').replace(/[&<>'"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
+            const today14 = () => new Date().toISOString().slice(0,10);
+            const nowId14 = (p='id') => p + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+            const BUCKETS14 = ['report-screenshots','reports','screenshots'];
+            const MARK_EMAIL14 = 'REPORT_TABLE_MARK_V14';
+            const MEMBER_EMAIL14 = 'REPORT_TABLE_MEMBER_V14';
+            let weekOffset14 = 0, reportPage14 = 0, files14 = [], previewUrls14 = [];
+
+            if (isPhone()) document.documentElement.classList.add('t73-mobile-lite');
+
+            function injectStyle14(){
+                if ($14('t73V14MobileStyle')) return;
+                document.head.insertAdjacentHTML('beforeend', `<style id="t73V14MobileStyle">
+                    .t73-mobile-lite *, .t73-mobile-lite *::before, .t73-mobile-lite *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;}
+                    .t73-mobile-lite body{background:#05060a!important;overscroll-behavior:none;}
+                    .t73-mobile-lite .panel,.t73-mobile-lite .message-card,.t73-mobile-lite .rule-item,.t73-mobile-lite .stat,.t73-mobile-lite .quest-card,.t73-mobile-lite .main-nav,.t73-mobile-lite .sub-nav,.t73-mobile-lite .info-banner{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;box-shadow:0 6px 18px rgba(0,0,0,.42)!important;transform:none!important;will-change:auto!important;}
+                    .t73-mobile-lite .t73-hover-fx,.t73-mobile-lite .t73-hover-fx.t73-fx-live{transform:none!important;will-change:auto!important;}
+                    .t73-mobile-lite .t73-hover-fx::before,.t73-mobile-lite .message-card::after{display:none!important;}
+                    .t73-mobile-lite .troll-drunk,.t73-mobile-lite .troll-rainbow{animation:none!important;filter:none!important;}
+                    .t73-mobile-lite .troll-blur{filter:none!important;}
+                    @media (max-width:860px), (pointer:coarse){
+                      html{font-size:15px;} body{background:#05060a!important;}
+                      .page{width:100%!important;padding:.75rem .75rem 1.25rem!important;}
+                      .topbar{gap:.6rem;margin-bottom:.8rem;align-items:flex-start;}.brand{gap:.65rem;min-width:0;}
+                      .logo{width:42px!important;height:42px!important;border-radius:13px!important;box-shadow:none!important;}
+                      .brand-title{font-size:1rem!important;letter-spacing:.04em!important;line-height:1.15!important;}.brand-sub{font-size:.78rem!important;line-height:1.25!important;}
+                      .hero{display:block!important;}.hero-card,.rules,.game-card,.side{padding:1rem!important;gap:.85rem!important;border-radius:18px!important;}
+                      .hero h1{font-size:clamp(1.75rem,9vw,2.45rem)!important;max-width:none!important;line-height:1.02!important;}
+                      .hero-actions{display:grid!important;grid-template-columns:1fr!important;gap:.55rem!important;}
+                      .nav-container{margin:1rem 0!important;gap:.65rem!important;}
+                      .main-nav,.sub-nav{width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;flex-wrap:nowrap!important;border-radius:16px!important;padding:.35rem!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;}
+                      .main-nav::-webkit-scrollbar,.sub-nav::-webkit-scrollbar{display:none!important;}
+                      .main-cat-btn,.mode-btn{flex:0 0 auto!important;padding:.58rem .88rem!important;font-size:.78rem!important;letter-spacing:.02em!important;min-height:38px!important;}
+                      .game-wrap{grid-template-columns:1fr!important;gap:.85rem!important;margin-top:.9rem!important;}
+                      .controls{grid-template-columns:1fr!important;gap:.55rem!important;}
+                      .btn,.action-btn,.support-check-btn{min-height:46px!important;padding:.75rem .9rem!important;border-radius:14px!important;font-size:.85rem!important;}
+                      .message-card{min-height:auto!important;padding:1rem!important;border-radius:18px!important;gap:.8rem!important;}
+                      .message-text{font-size:1rem!important;line-height:1.48!important;}
+                      .author-row{gap:.7rem!important;}.avatar{width:44px!important;height:44px!important;border-radius:13px!important;font-size:1.05rem!important;box-shadow:none!important;}
+                      .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.55rem!important;}.stat{padding:.85rem!important;}.stat-value{font-size:1.35rem!important;}
+                      .rule-item{grid-template-columns:34px minmax(0,1fr)!important;padding:.85rem!important;gap:.65rem!important;}.rule-icon{width:34px!important;height:34px!important;}
+                      .support-answer-row,.support-answer-row-inner{display:grid!important;grid-template-columns:1fr!important;width:100%!important;gap:.75rem!important;}
+                      .support-input,textarea,select,input{font-size:16px!important;max-width:100%!important;}
+                      .shop-grid{grid-template-columns:1fr!important;gap:.85rem!important;}
+                      .rt-controls,.t73-v13-tools,.t73-v14-tools{display:grid!important;grid-template-columns:1fr!important;gap:.55rem!important;}
+                      #reportsTableWrapper{overflow:visible!important;}
+                      .t73-v14-table{display:grid!important;gap:.9rem!important;}
+                      .t73-v14-user-row{border:1px solid rgba(191,198,255,.18);border-radius:16px;padding:.8rem;background:rgba(8,10,18,.95);}
+                      .t73-v14-user-head{display:grid!important;gap:.5rem!important;margin-bottom:.7rem!important;}
+                      .t73-v14-days{display:flex!important;gap:.55rem!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;scroll-snap-type:x mandatory!important;padding-bottom:.25rem!important;}
+                      .t73-v14-day{min-width:176px!important;scroll-snap-align:start!important;padding:.75rem!important;border-radius:14px!important;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);}
+                      .t73-v14-select{width:100%!important;margin:.25rem 0 .45rem!important;min-height:38px!important;border-radius:10px!important;background:#111827!important;color:#fff!important;border:1px solid rgba(255,255,255,.18)!important;}
+                      .t73-v14-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.5rem!important;}
+                      .t73-v14-proof{min-height:92px!important;}
+                    }
+                    .t73-v14-tools{display:flex;flex-wrap:wrap;gap:.7rem;margin:1rem 0;align-items:center;}
+                    .t73-v14-note{padding:.85rem 1rem;border-radius:14px;background:rgba(82,199,123,.1);border:1px solid rgba(82,199,123,.25);color:var(--color-text-muted);margin:.8rem 0;}
+                    .t73-v14-table{display:grid;gap:1rem;}.t73-v14-user-row{padding:1rem;border-radius:18px;background:rgba(13,16,32,.72);border:1px solid rgba(191,198,255,.18);}
+                    .t73-v14-user-head{display:flex;justify-content:space-between;gap:1rem;align-items:center;margin-bottom:.75rem;}
+                    .t73-v14-days{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr));gap:.55rem;}
+                    .t73-v14-day{padding:.7rem;border-radius:14px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.08);}
+                    .t73-v14-day.has{border-color:rgba(82,199,123,.35);background:rgba(82,199,123,.08);}.t73-v14-day.miss{border-color:rgba(255,107,136,.25);}
+                    .t73-v14-label{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-faint);margin:.45rem 0 .2rem;font-weight:800;}
+                    .t73-v14-select{width:100%;padding:.45rem;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(3,5,10,.9);color:#fff;}
+                    .t73-v14-mini{font-size:.78rem;color:var(--color-text-muted);line-height:1.35;}.t73-v14-save{font-size:.75rem;min-height:1.1em;color:var(--color-text-faint);}
+                    .t73-v14-proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.65rem;margin-top:.6rem;}
+                    .t73-v14-proof{position:relative;min-height:110px;border-radius:14px;overflow:hidden;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);}
+                    .t73-v14-proof img{width:100%;height:100%;object-fit:cover;display:block;}.t73-v14-proof button{position:absolute;top:5px;right:5px;width:28px;height:28px;border-radius:50%;background:rgba(255,59,96,.9);color:#fff;font-weight:900;}
+                </style>`);
+            }
+
+            function isLeader14(){
+                try { return !!(currentUser && (currentUser.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)) || (Array.isArray(dynamicModLeaders) && dynamicModLeaders.includes(currentUser.id)) || (Array.isArray(dynamicApLeaders) && dynamicApLeaders.includes(currentUser.id)))); }
+                catch(e){ return false; }
+            }
+            function dates14(){ const arr=[]; const base=new Date(); base.setHours(0,0,0,0); base.setDate(base.getDate() - weekOffset14*7); for(let i=6;i>=0;i--){ const d=new Date(base); d.setDate(base.getDate()-i); arr.push(d.toISOString().slice(0,10)); } return arr; }
+            function reportExcluded14(){ return ['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','REPORT_TABLE_MARK','REPORT_TABLE_MARK_V12','REPORT_TABLE_MARK_V13',MARK_EMAIL14,'REPORT_TABLE_MEMBER_V13',MEMBER_EMAIL14,'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_SHOP_ITEMS_V12','GOSS_SHOP_ITEMS_V13']; }
+            function parseReport14(row){
+                const out={nick:'',day:'',quality:'',work:'',proofs:[],email:row?.email||'',id:row?.id||'',status:row?.status||''};
+                const raw=String(row?.date||'');
+                try { const j=JSON.parse(raw); out.nick=j.nick||j.nickname||''; out.day=j.day||j.date||j.reportDate||''; out.quality=j.quality||j.type||''; out.work=j.work||j.comment||''; out.proofs=Array.isArray(j.proofs)?j.proofs:[]; } catch(e){
+                    const n=raw.match(/Ник:\s*([^|]+)/i); if(n) out.nick=n[1].trim();
+                    const d=raw.match(/Дата:\s*([0-9-]+)/i); if(d) out.day=d[1].trim();
+                    const q=raw.match(/(?:Тип|Тип сдачи):\s*([^|]+)/i); if(q) out.quality=q[1].trim();
+                    const w=raw.match(/Работа:\s*([\s\S]+)/i); if(w) out.work=w[1].trim();
+                }
+                const link=String(row?.link||'');
+                if(link.startsWith('T73_PROOFS:')){ try{ const a=JSON.parse(link.slice(11)); out.proofs=Array.isArray(a)?a.map(x=>typeof x==='string'?{url:x,name:'Доказательство'}:x):out.proofs; }catch(e){} }
+                else if(link && !out.proofs.length) out.proofs=[{url:link,name:'Доказательство'}];
+                if(!out.nick) out.nick=row?.email||'Без ника';
+                return out;
+            }
+            function opt14(value,label,current){ return '<option value="'+esc14(value)+'" '+(String(current)===String(value)?'selected':'')+'>'+esc14(label)+'</option>'; }
+            function xp14(s){ return s==='Норма'?15:s==='Перенорма'?30:s==='Натяг'?7:s==='Герой дня'?60:0; }
+
+            function ensureReportsDom14(){
+                injectStyle14();
+                const table=$14('mode-reports_table');
+                if(table && !$14('t73V14Top')){
+                    table.querySelector('.section-head')?.insertAdjacentHTML('beforeend','<div id="t73V14Top" class="t73-v14-note"><b>Мобильная таблица V14:</b> строки грузятся страницами, лидер может менять оба раздела таблицы без перегруза телефона.</div>');
+                    const wrap=$14('reportsTableWrapper')||table;
+                    wrap.insertAdjacentHTML('beforebegin', `<div id="t73V14Tools" class="t73-v14-tools">
+                        <button class="btn btn-secondary" type="button" id="t73V14PrevWeek">← Прошлая неделя</button><button class="btn btn-secondary" type="button" id="t73V14NextWeek">Следующая →</button><span class="badge xp" id="t73V14WeekLabel">Текущая неделя</span>
+                        <input class="support-input" id="t73V14Search" placeholder="Поиск по нику">
+                        <input class="support-input" id="t73V14ManualNick" placeholder="Ник для новой строки"><input class="support-input" id="t73V14ManualEmail" placeholder="Email/ID, если есть"><button class="btn btn-primary" type="button" id="t73V14AddMember">➕ Добавить строку</button><button class="btn btn-secondary" type="button" id="t73V14Reload">🔄 Обновить</button>
+                    </div><div id="t73V14Pager" class="t73-v14-tools"></div>`);
+                }
+                const file=$14('reportFileInput');
+                if(file){ file.setAttribute('multiple','multiple'); file.setAttribute('accept','image/*'); }
+                if($14('reportFilePreview')) $14('reportFilePreview').classList.add('t73-v14-proof-grid');
+                const hint=$14('reportUploadHint'); if(hint) hint.innerHTML='<b>Оптимизировано для телефона:</b> можно выбрать много скриншотов. Превью лёгкие, а отправка идёт напрямую в Storage. Если Storage не настроен — картинки будут сжаты.';
+                bindReports14();
+            }
+            async function addMember14(){
+                if(!isLeader14()) return alert('Добавлять строки может только лидер.');
+                const nick=($14('t73V14ManualNick')?.value||'').trim(); const email=($14('t73V14ManualEmail')?.value||'').trim();
+                if(!nick) return alert('Введите ник.');
+                const link=email||nick;
+                const payload={nick,email,addedBy:currentUser?.email||currentUser?.id||'',addedAt:new Date().toISOString()};
+                await supa.from('reports').delete().eq('email',MEMBER_EMAIL14).eq('link',link);
+                const {error}=await supa.from('reports').insert([{id:nowId14('rtmem14'),email:MEMBER_EMAIL14,link,date:JSON.stringify(payload),status:'active',xp:0}]);
+                if(error) return alert('Ошибка: '+error.message);
+                if($14('t73V14ManualNick')) $14('t73V14ManualNick').value=''; if($14('t73V14ManualEmail')) $14('t73V14ManualEmail').value='';
+                reportPage14=0; await loadReportsTable14();
+            }
+            async function loadReportsTable14(){
+                ensureReportsDom14();
+                const box=$14('reportsTableWrapper'); if(!box) return;
+                const label=$14('t73V14WeekLabel'); if(label) label.textContent=weekOffset14===0?'Текущая неделя':(weekOffset14+' нед. назад');
+                const next=$14('t73V14NextWeek'); if(next) next.disabled=weekOffset14===0;
+                box.innerHTML='<div class="message-text" style="text-align:center;padding:1.5rem;">Загрузка лёгкой таблицы...</div>';
+                let rows=[]; try{ const r=await supa.from('reports').select('*').order('id',{ascending:false}).limit(isPhone()?900:1800); rows=r.data||[]; }catch(e){ box.innerHTML='<div class="message-text" style="color:var(--color-error);">Ошибка загрузки: '+esc14(e.message||e)+'</div>'; return; }
+                const excluded=reportExcluded14();
+                const reports=rows.filter(r=>!excluded.includes(r.email)).map(parseReport14);
+                const marks={};
+                rows.filter(r=>[MARK_EMAIL14,'REPORT_TABLE_MARK_V13','REPORT_TABLE_MARK_V12','REPORT_TABLE_MARK'].includes(r.email)).forEach(r=>{ try{ marks[r.link]=JSON.parse(r.date||'{}'); }catch(e){ const p=String(r.status||'').split('|'); marks[r.link]={section1:p[0]||'',section2:p[1]||''}; } });
+                const members={};
+                rows.filter(r=>[MEMBER_EMAIL14,'REPORT_TABLE_MEMBER_V13'].includes(r.email)).forEach(r=>{ try{ const j=JSON.parse(r.date||'{}'); members[r.link]={user_id:r.link,nickname:j.nick||r.link,email:j.email||r.link,manual:true}; }catch(e){ members[r.link]={user_id:r.link,nickname:r.link,email:r.link,manual:true}; } });
+                try{ const role=await supa.from('reports').select('*').eq('email','USER_ROLE').eq('status','moderator'); const ids=(role.data||[]).map(r=>r.link).filter(Boolean); if(ids.length){ const us=await supa.from('user_stats').select('user_id,nickname,email').in('user_id',ids.slice(0,350)); (us.data||[]).forEach(u=>{ members[u.user_id||u.email||u.nickname]=u; }); } }catch(e){}
+                reports.forEach(rep=>{ const key=rep.email||rep.nick; if(!members[key]) members[key]={user_id:key,nickname:rep.nick,email:rep.email}; });
+                let users=Object.values(members).filter(u=>u.nickname||u.email||u.user_id).sort((a,b)=>String(a.nickname||a.email||a.user_id).localeCompare(String(b.nickname||b.email||b.user_id),'ru'));
+                const q=($14('t73V14Search')?.value||'').trim().toLowerCase(); if(q) users=users.filter(u=>String(u.nickname||u.email||u.user_id).toLowerCase().includes(q)||String(u.email||'').toLowerCase().includes(q));
+                if(!users.length){ box.innerHTML='<div class="message-text">Строк пока нет. Лидер может добавить строку выше.</div>'; return; }
+                const size=isPhone()?15:60; const pages=Math.max(1,Math.ceil(users.length/size)); if(reportPage14>=pages) reportPage14=pages-1; if(reportPage14<0) reportPage14=0;
+                const visible=users.slice(reportPage14*size, reportPage14*size+size);
+                const pager=$14('t73V14Pager'); if(pager){ pager.innerHTML='<button class="btn btn-secondary" type="button" id="t73V14PrevPage">← Страница</button><span class="badge">'+(reportPage14+1)+' / '+pages+' · строк: '+users.length+'</span><button class="btn btn-secondary" type="button" id="t73V14NextPage">Страница →</button>'; $14('t73V14PrevPage').onclick=()=>{ if(reportPage14>0){reportPage14--;loadReportsTable14();} }; $14('t73V14NextPage').onclick=()=>{ if(reportPage14<pages-1){reportPage14++;loadReportsTable14();} }; }
+                const dates=dates14(); const reportsBy={};
+                reports.forEach(rep=>{ if(!rep.day) return; [rep.nick+'|'+rep.day,rep.email+'|'+rep.day].forEach(k=>{ if(k&&!reportsBy[k]) reportsBy[k]=rep; }); });
+                const canEdit=isLeader14();
+                let html='<div class="t73-v14-table">';
+                visible.forEach(u=>{
+                    const name=u.nickname||u.email||u.user_id||'Без ника'; const uid=u.user_id||u.email||name;
+                    html+='<div class="t73-v14-user-row"><div class="t73-v14-user-head"><div><strong style="font-size:1.05rem;color:#fff;">'+esc14(name)+'</strong><div class="t73-v14-mini">'+esc14(u.email||uid)+'</div></div>'+(u.manual&&canEdit?'<button class="btn btn-secondary" type="button" onclick="t73V14RemoveMember(\''+esc14(uid)+'\')">Удалить строку</button>':'')+'</div><div class="t73-v14-days">';
+                    dates.forEach(day=>{
+                        const rep=reportsBy[name+'|'+day]||reportsBy[(u.email||'')+'|'+day]||reportsBy[uid+'|'+day];
+                        const key=uid+'|'+day; const mark=marks[key]||marks[name+'|'+day]||{};
+                        const sec1=mark.section1||(rep?(rep.status==='На проверке'?(rep.quality||'На проверке'):rep.status):'');
+                        const sec2=mark.section2||(rep?'Сдано':''); const proofs=rep?.proofs||[];
+                        html+='<div class="t73-v14-day '+(rep?'has':(day<today14()?'miss':''))+'" data-uid="'+esc14(uid)+'" data-nick="'+esc14(name)+'" data-day="'+day+'"><div style="font-weight:900;color:#fff;">'+day.slice(5).split('-').reverse().join('.')+'</div>';
+                        html+='<div class="t73-v14-label">Отчетность</div><select class="t73-v14-select" data-sec1 '+(canEdit?'':'disabled')+' onchange="t73V14SaveTableCell(this)">'+opt14('','—',sec1)+opt14('Норма','Норма',sec1)+opt14('Перенорма','Перенорма',sec1)+opt14('Натяг','Натяг',sec1)+opt14('Герой дня','Герой дня',sec1)+opt14('Отказ','Отказ',sec1)+opt14('Нет отчета','Нет отчета',sec1)+opt14('На проверке','На проверке',sec1)+'</select>';
+                        html+='<div class="t73-v14-label">Отметка дня</div><select class="t73-v14-select" data-sec2 '+(canEdit?'':'disabled')+' onchange="t73V14SaveTableCell(this)">'+opt14('','—',sec2)+opt14('Сдано','Сдано',sec2)+opt14('Неактив','Неактив',sec2)+opt14('Нет отчета','Нет отчета',sec2)+opt14('Освобождён','Освобождён',sec2)+opt14('Проверить','Проверить',sec2)+'</select>';
+                        html+='<div class="t73-v14-mini">'+(rep?('Заявлено: '+esc14(rep.quality||'—')+'<br>Скринов: '+proofs.length):'Отчета нет')+'</div>';
+                        if(proofs.length) html+='<div style="display:flex;flex-wrap:wrap;gap:.25rem;">'+proofs.slice(0,isPhone()?2:4).map((p,i)=>'<a class="badge" target="_blank" rel="noreferrer" href="'+esc14(p.url||p)+'">Скрин '+(i+1)+'</a>').join('')+'</div>';
+                        html+='<div class="t73-v14-save" data-save></div></div>';
+                    });
+                    html+='</div></div>';
+                });
+                html+='</div>'; box.innerHTML=html;
+            }
+            window.t73V14SaveTableCell=async function(sel){
+                if(!isLeader14()) return alert('Менять таблицу может только лидер.');
+                const cell=sel.closest('.t73-v14-day'); if(!cell) return;
+                const uid=cell.dataset.uid||cell.dataset.nick; const day=cell.dataset.day; const link=uid+'|'+day;
+                const section1=cell.querySelector('[data-sec1]')?.value||''; const section2=cell.querySelector('[data-sec2]')?.value||'';
+                const payload={userId:uid,nick:cell.dataset.nick||'',day,section1,section2,updatedBy:currentUser?.email||currentUser?.id||'',updatedAt:new Date().toISOString()};
+                const info=cell.querySelector('[data-save]'); if(info) info.textContent='Сохранение...';
+                await supa.from('reports').delete().eq('email',MARK_EMAIL14).eq('link',link);
+                const {error}=await supa.from('reports').insert([{id:nowId14('rtmark14'),email:MARK_EMAIL14,link,date:JSON.stringify(payload),status:section1+'|'+section2,xp:xp14(section1)}]);
+                if(info){ info.textContent=error?('Ошибка: '+error.message):'Сохранено'; info.style.color=error?'var(--color-error)':'var(--color-success)'; }
+            };
+            window.t73V14RemoveMember=async function(uid){ if(!isLeader14()) return alert('Удалять строки может только лидер.'); if(!confirm('Удалить ручную строку?')) return; await supa.from('reports').delete().eq('email',MEMBER_EMAIL14).eq('link',uid); await loadReportsTable14(); };
+
+            function revokePreviews14(){ previewUrls14.forEach(u=>{ try{ URL.revokeObjectURL(u); }catch(e){} }); previewUrls14=[]; }
+            function renderPreview14(){
+                const box=$14('reportFilePreview'); if(!box) return;
+                revokePreviews14();
+                if(!files14.length){ box.innerHTML='<div class="t73-v14-mini">Скриншоты пока не выбраны.</div>'; return; }
+                box.innerHTML=files14.map((f,i)=>{ const url=URL.createObjectURL(f); previewUrls14.push(url); return '<div class="t73-v14-proof"><img loading="lazy" src="'+esc14(url)+'"><button type="button" data-rm14="'+i+'">×</button></div>'; }).join('');
+                box.querySelectorAll('[data-rm14]').forEach(btn=>btn.onclick=()=>{ files14.splice(Number(btn.dataset.rm14),1); renderPreview14(); });
+            }
+            function bindReports14(){
+                const inp=$14('reportFileInput');
+                if(inp && inp.dataset.v14Bound!=='1'){
+                    const clone=inp.cloneNode(true); clone.dataset.v14Bound='1'; inp.replaceWith(clone);
+                    clone.addEventListener('change',()=>{
+                        const max=isPhone()?8:18;
+                        const fresh=Array.from(clone.files||[]).filter(f=>f.type && f.type.startsWith('image/'));
+                        const before=files14.length;
+                        files14=files14.concat(fresh).slice(0,max);
+                        clone.value=''; renderPreview14();
+                        const res=$14('reportResultText'); if(fresh.length && res){ res.textContent='Выбрано скриншотов: '+files14.length+(before+fresh.length>max?' · лишние не добавлены':''); res.style.color='var(--color-text-muted)'; }
+                    });
+                    renderPreview14();
+                }
+            }
+            async function compressDataUrl14(file){
+                const maxDim=isPhone()?1280:1600; const quality=isPhone()?0.62:0.72;
+                const data=await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result||'')); r.onerror=()=>rej(r.error||new Error('Не удалось прочитать файл')); r.readAsDataURL(file); });
+                const img=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=data; });
+                let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height; const scale=Math.min(1,maxDim/Math.max(w,h)); w=Math.max(1,Math.round(w*scale)); h=Math.max(1,Math.round(h*scale));
+                const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d',{alpha:false}); ctx.drawImage(img,0,0,w,h); return canvas.toDataURL('image/jpeg',quality);
+            }
+            async function uploadFile14(file,index){
+                const safe=String(file.name||('screen_'+index+'.jpg')).replace(/[^a-zA-Z0-9_.-]+/g,'_');
+                const path='reports/'+(currentUser?currentUser.id:'guest')+'/'+today14()+'/'+Date.now()+'_'+index+'_'+safe;
+                for(const bucket of BUCKETS14){
+                    try{ const up=await supa.storage.from(bucket).upload(path,file,{cacheControl:'3600',upsert:true,contentType:file.type||'image/jpeg'}); if(!up.error){ const pub=supa.storage.from(bucket).getPublicUrl(path); if(pub?.data?.publicUrl) return {url:pub.data.publicUrl,name:file.name,bucket,kind:'storage'}; } }catch(e){}
+                }
+                return {url:await compressDataUrl14(file),name:file.name,kind:'compressed-base64'};
+            }
+            async function submitReport14(){
+                const res=$14('reportResultText');
+                if(!currentUser){ if(res){res.textContent='Сначала войдите в аккаунт.';res.style.color='var(--color-error)';} return; }
+                const nick=($14('reportNickInput')?.value||'').trim(); const work=($14('reportWorkInput')?.value||'').trim(); const day=($14('reportDateInput')?.value||'').trim(); const rawLink=($14('reportLinkInput')?.value||'').trim(); const quality=($14('reportQualityInput')?.value||'Норма').trim();
+                if(!nick||!work||!day){ if(res){res.textContent='Заполните ник, работу и дату.';res.style.color='var(--color-error)';} return; }
+                if(!rawLink&&!files14.length){ if(res){res.textContent='Прикрепите ссылку или выберите скриншоты.';res.style.color='var(--color-error)';} return; }
+                const btn=$14('submitReportBtn'); if(btn){btn.disabled=true;btn.textContent='Загружаю...';}
+                try{
+                    const proofs=[]; if(rawLink) proofs.push({url:rawLink,name:'Ссылка',kind:'link'});
+                    for(let i=0;i<files14.length;i++){ if(res){res.textContent='Загружаю скрин '+(i+1)+' из '+files14.length+'...';res.style.color='var(--color-text-muted)';} proofs.push(await uploadFile14(files14[i],i)); }
+                    const payload={version:'v14-mobile',nick,work,day,quality,proofs,userId:currentUser.id,email:currentUser.email,createdAt:new Date().toISOString()};
+                    const {error}=await supa.from('reports').insert([{id:nowId14('rep14'),email:currentUser.email,link:'T73_PROOFS:'+JSON.stringify(proofs),date:JSON.stringify(payload),status:'На проверке',xp:0}]);
+                    if(error) throw error;
+                    ['reportNickInput','reportWorkInput','reportDateInput','reportLinkInput'].forEach(id=>{ const el=$14(id); if(el) el.value=''; }); if($14('reportQualityInput')) $14('reportQualityInput').value='Норма'; if($14('reportFileInput')) $14('reportFileInput').value=''; files14=[]; renderPreview14();
+                    if(res){res.textContent='Отчёт отправлен. Доказательств: '+proofs.length+'.';res.style.color='var(--color-success)';}
+                    setTimeout(loadReportsTable14,400);
+                }catch(e){ if(res){res.textContent='Ошибка отправки: '+(e.message||e);res.style.color='var(--color-error)';} }
+                finally{ if(btn){btn.disabled=false;btn.textContent='Отправить Отчет';} }
+            }
+
+            function bindClicks14(){
+                document.addEventListener('click', (ev)=>{
+                    const submit=ev.target.closest && ev.target.closest('#submitReportBtn');
+                    if(submit){ ev.preventDefault(); ev.stopImmediatePropagation(); submitReport14(); return; }
+                    if(ev.target.closest && ev.target.closest('#t73V14Reload')){ ev.preventDefault(); loadReportsTable14(); }
+                    if(ev.target.closest && ev.target.closest('#t73V14PrevWeek')){ ev.preventDefault(); weekOffset14++; reportPage14=0; loadReportsTable14(); }
+                    if(ev.target.closest && ev.target.closest('#t73V14NextWeek')){ ev.preventDefault(); if(weekOffset14>0) weekOffset14--; reportPage14=0; loadReportsTable14(); }
+                    if(ev.target.closest && ev.target.closest('#t73V14AddMember')){ ev.preventDefault(); addMember14(); }
+                }, true);
+                document.addEventListener('input',(ev)=>{ if(ev.target && ev.target.id==='t73V14Search'){ clearTimeout(window.__t73V14SearchT); window.__t73V14SearchT=setTimeout(()=>{ reportPage14=0; loadReportsTable14(); },250); } }, true);
+            }
+
+            const prevSwitch14 = typeof switchMode === 'function' ? switchMode : null;
+            switchMode = function(mode, btn){
+                ensureReportsDom14();
+                const result = prevSwitch14 ? prevSwitch14(mode, btn) : undefined;
+                if(mode === 'reports_table') setTimeout(loadReportsTable14,80);
+                return result;
+            };
+            loadReportsTable = loadReportsTable14;
+            window.t73V13LoadReportsTable = loadReportsTable14;
+            window.t73V14LoadReportsTable = loadReportsTable14;
+            bindClicks14(); ensureReportsDom14(); bindReports14();
+            setTimeout(()=>{ ensureReportsDom14(); bindReports14(); },600);
+            setTimeout(()=>{ if(isPhone()) document.documentElement.classList.add('t73-mobile-lite'); },1200);
+        })();
+        /* === /T73 V14 MOBILE ULTRA OPTIMIZATION === */
 
         // Запуск
         renderRight("moderation");
