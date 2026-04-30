@@ -4701,7 +4701,7 @@
                                         <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option>
                                         <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option>
                                         <option value="Натяг" ${currentStatus === 'Натяг' ? 'selected' : ''}>Натяг</option>
-                                        <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option>
+                                        <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Натяг</option>
                                         <option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option>
                                         <option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option>
                                         <option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option>
@@ -4911,7 +4911,7 @@
                             <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Натяг (5)</button>
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
                             </div>` : ''}
                         </div>
@@ -9985,7 +9985,7 @@
                                             <option value="Норма" ${reportStatus === 'Норма' ? 'selected' : ''}>Норма</option>
                                             <option value="Перенорма" ${reportStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option>
                                             <option value="Натяг" ${reportStatus === 'Натяг' ? 'selected' : ''}>Натяг</option>
-                                            <option value="Герой дня" ${reportStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option>
+                                            <option value="Герой дня" ${reportStatus === 'Герой дня' ? 'selected' : ''}>Натяг</option>
                                             <option value="Не засчитано" ${(reportStatus === 'Не засчитано' || reportStatus === 'Отказ') ? 'selected' : ''}>Отказ</option>
                                             <option value="Нет отчета" ${reportStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option>
                                         </select>
@@ -10333,7 +10333,7 @@
                 area.innerHTML = rows.map(r => {
                     const meta = parseReportV12(r), proofs = extractProofsV12(r);
                     const proofHtml = proofs.length ? '<div class="t73-v12-proof-grid">' + proofs.map(p => String(p).startsWith('data:image') || /\.(png|jpg|jpeg|webp|gif)(\?|$)/i.test(String(p)) ? '<a class="t73-v12-proof" href="'+escV12(p)+'" target="_blank"><img src="'+escV12(p)+'" alt="proof"></a>' : '<a class="btn btn-secondary" href="'+escV12(p)+'" target="_blank" style="padding:.55rem .8rem;font-size:.8rem;">📎 Открыть доказательство</a>').join('') + '</div>' : '<div style="color:var(--color-warning);">Доказательства не найдены</div>';
-                    const buttons = (r.status === 'На проверке' || String(r.status||'').includes('Ожидает')) ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem;"><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Норма\',15)">Норма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Перенорма\',30)">Перенорма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Натяг\',7)">Натяг</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Герой дня\',60)">Герой дня</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Отказ\',0)">Отказ</button></div>' : '';
+                    const buttons = (r.status === 'На проверке' || String(r.status||'').includes('Ожидает')) ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem;"><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Норма\',15)">Норма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Перенорма\',30)">Перенорма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Натяг\',7)">Натяг</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Герой дня\',60)">Натяг</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Отказ\',0)">Отказ</button></div>' : '';
                     return '<div class="t73-v12-report-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><strong style="color:#fff;">'+escV12(meta.nick || r.email)+'</strong><span style="color:var(--color-text-faint);">'+escV12(meta.day || '')+' • '+escV12(meta.quality || '')+'</span></div><div style="color:var(--color-text-muted);font-size:.92rem;">'+escV12(meta.work || meta.raw)+'</div>'+proofHtml+'<div style="font-weight:900;color:'+(Number(r.xp)>0?'var(--color-success)':'var(--color-warning)')+';">'+escV12(r.status)+' ('+escV12(r.xp||0)+' XP)</div>'+buttons+'</div>';
                 }).join('');
             }
@@ -10378,7 +10378,7 @@
                         const sec2 = mark.section2 || (rep ? 'Сдано' : '');
                         const cls = rep ? 'has-report' : (d < new Date().toISOString().slice(0,10) ? 'missing' : '');
                         html += '<div class="t73-v12-day '+cls+'" data-userid="'+escV12(mod.user_id||name)+'" data-nick="'+escV12(name)+'" data-day="'+d+'"><div style="font-weight:900;color:#fff;">'+d.slice(5).split('-').reverse().join('.')+'</div>'
-                            + '<div class="t73-v12-label">Отчетность</div><select data-sec1 class="t73-v12-select" onchange="saveReportTableMarkFromSelectV12(this)"><option value="">—</option><option '+(sec1==='Норма'?'selected':'')+'>Норма</option><option '+(sec1==='Перенорма'?'selected':'')+'>Перенорма</option><option '+(sec1==='Натяг'?'selected':'')+'>Натяг</option><option '+(sec1==='Герой дня'?'selected':'')+'>Герой дня</option><option '+(sec1==='Отказ'||sec1==='Не засчитано'?'selected':'')+'>Отказ</option><option '+(sec1==='Нет отчета'?'selected':'')+'>Нет отчета</option></select>'
+                            + '<div class="t73-v12-label">Отчетность</div><select data-sec1 class="t73-v12-select" onchange="saveReportTableMarkFromSelectV12(this)"><option value="">—</option><option '+(sec1==='Норма'?'selected':'')+'>Норма</option><option '+(sec1==='Перенорма'?'selected':'')+'>Перенорма</option><option '+(sec1==='Натяг'?'selected':'')+'>Натяг</option><option '+(sec1==='Герой дня'?'selected':'')+'>Натяг</option><option '+(sec1==='Отказ'||sec1==='Не засчитано'?'selected':'')+'>Отказ</option><option '+(sec1==='Нет отчета'?'selected':'')+'>Нет отчета</option></select>'
                             + '<div class="t73-v12-label">Отметка дня</div><select data-sec2 class="t73-v12-select" onchange="saveReportTableMarkFromSelectV12(this)"><option value="">—</option><option '+(sec2==='Сдано'?'selected':'')+'>Сдано</option><option '+(sec2==='Неактив'?'selected':'')+'>Неактив</option><option '+(sec2==='Нет отчета'?'selected':'')+'>Нет отчета</option><option '+(sec2==='Освобождён'?'selected':'')+'>Освобождён</option><option '+(sec2==='Проверить'?'selected':'')+'>Проверить</option></select>'
                             + (repMeta ? '<div style="font-size:.78rem;color:var(--color-text-muted);margin-top:.25rem;">Заявлено: '+escV12(repMeta.quality || '—')+'</div>' : '<div style="font-size:.78rem;color:var(--color-text-faint);margin-top:.25rem;">Отчета нет</div>')
                             + '</div>';
@@ -11276,7 +11276,7 @@
                 const canEdit = leader15();
                 if(info) info.innerHTML = `Неделя: <b>${human15(dates[0])} — ${human15(dates[6])}</b> · строк: <b>${visible.length}</b> · редактирование: <b>${canEdit?'доступно':'только для руководства'}</b>`;
                 if(!visible.length){ wrap.innerHTML='<div class="message-card">Строк нет. Руководитель может добавить строку вручную.</div>'; return; }
-                const reportOptions = ['Нет отчета','Норма','Перенорма','Натяг','Герой дня','Отказ','На проверке'];
+                const reportOptions = ['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'];
                 const dayOptions = ['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];
                 wrap.innerHTML = visible.map(m=>`<div class="t73-v15-row t73-v15-card" data-user="${esc15(m.key)}">
                     <div class="t73-v15-user"><strong style="color:#fff;">${esc15(m.name||m.key)}</strong><div class="t73-v15-small">${esc15(m.email||m.id||m.key)}</div></div>
@@ -11589,7 +11589,7 @@
           async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🧾 Логи организации',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
           async function profiles(oid){const m=new Map();try{const d=(await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||k,post:p.post||'—'})})}catch(e){}try{const d=(await supa.from('reports').select('*').eq('email',E.member).eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||p.name||k,post:p.post||'—'})})}catch(e){}return[...m.values()].sort((a,b)=>a.nick.localeCompare(b.nick,'ru'))}
           async function tableLoad(oid,wk){try{const d=(await supa.from('reports').select('*').eq('email',E.table).eq('link',oid).eq('status',wk).order('id',{ascending:false}).limit(1)).data||[];return d[0]?{id:d[0].id,data:parse(d[0].date,{})}:{id:null,data:{}}}catch(e){return{id:null,data:{}}}}
-          async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Герой дня','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
+          async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
           function preview(){const b=$('g19Preview');if(!b)return;b.innerHTML=files.length?files.map((f,i)=>`<div class="g19-proof"><button data-rm="${i}" type="button">×</button><img src="${esc(URL.createObjectURL(f))}"><div class="g19-muted">${esc(f.name)}<br>${Math.round(f.size/1024)} KB</div></div>`).join(''):'<div class="g19-muted">Файлы ещё не выбраны.</div>';b.querySelectorAll('[data-rm]').forEach(x=>x.onclick=()=>{files.splice(+x.dataset.rm,1);preview()})}
           async function shrink(f){if(!String(f.type||'').startsWith('image/'))return{blob:f,fallback:''};const data=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f)}),img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=data});let w=img.width,h=img.height,max=/iPhone|Android/i.test(navigator.userAgent)?900:1400;if(w>h&&w>max){h=Math.round(h*max/w);w=max}else if(h>=w&&h>max){w=Math.round(w*max/h);h=max}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);const blob=await new Promise(res=>c.toBlob(res,'image/jpeg',/iPhone|Android/i.test(navigator.userAgent)?.58:.72));return{blob:blob||f,fallback:c.toDataURL('image/jpeg',.55)}}
           async function upload(f,i,oid){const s=await shrink(f);if(supa?.storage&&s.blob){for(const bucket of BUCKETS){try{const path=`goss/${oid}/${currentUser.id}/${Date.now()}_${i}_${String(f.name).replace(/[^a-z0-9_.-]+/gi,'_')}.jpg`;const u=await supa.storage.from(bucket).upload(path,s.blob,{contentType:'image/jpeg'});if(!u.error)return{url:supa.storage.from(bucket).getPublicUrl(path).data.publicUrl,name:f.name,bucket,size:f.size}}catch(e){}}}return{url:s.fallback,name:f.name,fallback:true,size:f.size}}
@@ -11638,7 +11638,7 @@
           async function tableSave(oid,wk,marks){const old=await tableLoad(oid,wk);const payload={org:oid,week:wk,marks,by:currentUser?.email||'',at:now(),version:'v20'};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('g20tab'),email:E.table,link:oid,status:wk,date:JSON.stringify(payload),xp:0}]);return q}
           async function saveSingleMark(oid,user,day,patch){const ds=daysForDate(day),wk=weekKeyFromDays(ds),loaded=await tableLoad(oid,wk);const marks=(loaded.data&&loaded.data.marks)||{};marks[user]=marks[user]||{};marks[user][day]=Object.assign({},marks[user][day]||{},patch);return tableSave(oid,wk,marks)}
           async function renderTableHub(sheet='table'){style();activate('g20Table');const o=org(),r=root();if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблица ГОСС доступна только руководству этой организации или руководству всех ГОСС.</div>';return}r.innerHTML=`<div class="g20-compact-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Отдельный раздел таблицы. Лист 1 — недельная таблица, лист 2 — сданные отчёты с файлами.</p></div></div><div class="g20-sheetbar"><button class="mode-btn" id="g20SheetTable" type="button">Лист 1 · Таблица</button><button class="mode-btn" id="g20SheetReports" type="button">Лист 2 · Отчёты</button></div><div id="g20SheetBody"><div class="g19-card">Загрузка...</div></div></div>`;$('g20SheetTable').onclick=()=>renderTableHub('table');$('g20SheetReports').onclick=()=>renderTableHub('reports');$('g20SheetTable')?.classList.toggle('active',sheet==='table');$('g20SheetReports')?.classList.toggle('active',sheet==='reports');if(sheet==='reports')return renderReportsSheet(o);return renderTableSheet(o)}
-          async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Герой дня','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
+          async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
           async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдать отчёт». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
           async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
           async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
@@ -11939,7 +11939,7 @@
             mods.forEach(mod => { let userRealXp=0; (reports||[]).forEach(r => { if(r.email === mod.email && Number(r.xp||0) > 0) userRealXp += Number(r.xp||0); }); mod.calculatedRealXp = Math.max(0, userRealXp - Number(mod.shop_spent||0)); });
             if(!leader) mods = mods.filter(m => !(Array.isArray(adminEmails)&&adminEmails.includes(m.email)) && m.email !== creatorEmail && !(Array.isArray(dynamicModLeaders)&&dynamicModLeaders.includes(m.user_id)));
             const actual = new Date(); actual.setHours(0,0,0,0); let html = '<div class="t73-v25-mod-wrap">';
-            mods.sort((a,b)=>String(a.nickname||'').localeCompare(String(b.nickname||''),'ru')).forEach(mod => { html += `<div class="t73-v25-mod-card"><div class="t73-v25-mod-head"><div><b>${esc(mod.nickname || 'Без ника')}</b><div style="color:var(--color-text-muted);font-size:.85rem;">${esc(mod.email || '')}</div></div><div style="color:var(--color-success);font-weight:900;">${mod.calculatedRealXp} Real XP</div></div><div class="t73-v25-mod-days">`; sortedDates.forEach(d => { const nick = String(mod.nickname || '').toLowerCase(); const rep = (reports || []).find(r => String(r.date || '').toLowerCase().includes(nick) && String(r.date || '').includes(d)); let inactive = false; (inactives || []).forEach(ina => { const txt = String(ina.date || '').toLowerCase(); if(txt.includes(nick)){ const fm = txt.match(/с:\s*([\d-]+)/i), tm = txt.match(/по:\s*([\d-]+)/i); if(fm && tm){ const dd = new Date(d); if(dd >= new Date(fm[1]) && dd <= new Date(tm[1])) inactive = true; } } }); let st = 'none'; if(rep) st = rep.status; else if(inactive) st = 'Неактив'; else { const cd = new Date(d); cd.setHours(0,0,0,0); if(cd < actual) st = 'Нет отчета'; } const cls = statusClass25(st); const shortDate = d.slice(5).split('-').reverse().join('.'); const display = st === 'none' ? 'На проверке' : (st === 'Не засчитано' ? 'Отказ' : st); if(leader){ html += `<div class="t73-v25-mod-day ${cls}"><div class="t73-v25-date">${shortDate}</div><select class="t73-v25-status-select ${cls}" data-nick="${esc(mod.nickname||'')}" data-date="${d}" data-id="${rep ? esc(rep.id) : ''}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${(st==='Отказ'||st==='Не засчитано')?'selected':''}>Отказ</option></select></div>`; } else html += `<div class="t73-v25-mod-day ${cls}"><div class="t73-v25-date">${shortDate}</div><div class="t73-v25-status">${esc(display)}</div></div>`; }); html += '</div></div>'; }); html += '</div>'; listArea.innerHTML = html; listArea.querySelectorAll('.t73-v25-status-select').forEach(sel => sel.onchange = () => window.updateReportStatusDirectly(sel, sel.dataset.nick, sel.dataset.date, sel.dataset.id || ''));
+            mods.sort((a,b)=>String(a.nickname||'').localeCompare(String(b.nickname||''),'ru')).forEach(mod => { html += `<div class="t73-v25-mod-card"><div class="t73-v25-mod-head"><div><b>${esc(mod.nickname || 'Без ника')}</b><div style="color:var(--color-text-muted);font-size:.85rem;">${esc(mod.email || '')}</div></div><div style="color:var(--color-success);font-weight:900;">${mod.calculatedRealXp} Real XP</div></div><div class="t73-v25-mod-days">`; sortedDates.forEach(d => { const nick = String(mod.nickname || '').toLowerCase(); const rep = (reports || []).find(r => String(r.date || '').toLowerCase().includes(nick) && String(r.date || '').includes(d)); let inactive = false; (inactives || []).forEach(ina => { const txt = String(ina.date || '').toLowerCase(); if(txt.includes(nick)){ const fm = txt.match(/с:\s*([\d-]+)/i), tm = txt.match(/по:\s*([\d-]+)/i); if(fm && tm){ const dd = new Date(d); if(dd >= new Date(fm[1]) && dd <= new Date(tm[1])) inactive = true; } } }); let st = 'none'; if(rep) st = rep.status; else if(inactive) st = 'Неактив'; else { const cd = new Date(d); cd.setHours(0,0,0,0); if(cd < actual) st = 'Нет отчета'; } const cls = statusClass25(st); const shortDate = d.slice(5).split('-').reverse().join('.'); const display = st === 'none' ? 'На проверке' : (st === 'Не засчитано' ? 'Отказ' : st); if(leader){ html += `<div class="t73-v25-mod-day ${cls}"><div class="t73-v25-date">${shortDate}</div><select class="t73-v25-status-select ${cls}" data-nick="${esc(mod.nickname||'')}" data-date="${d}" data-id="${rep ? esc(rep.id) : ''}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Натяг</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${(st==='Отказ'||st==='Не засчитано')?'selected':''}>Отказ</option></select></div>`; } else html += `<div class="t73-v25-mod-day ${cls}"><div class="t73-v25-date">${shortDate}</div><div class="t73-v25-status">${esc(display)}</div></div>`; }); html += '</div></div>'; }); html += '</div>'; listArea.innerHTML = html; listArea.querySelectorAll('.t73-v25-status-select').forEach(sel => sel.onchange = () => window.updateReportStatusDirectly(sel, sel.dataset.nick, sel.dataset.date, sel.dataset.id || ''));
           }
           window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId){ const val = selectEl.value; let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Герой дня') xpAmount = 60; selectEl.disabled = true; selectEl.style.opacity = '.55'; if(existingId){ if(val === 'none'){ await supa.from('reports').delete().eq('id', existingId); selectEl.dataset.id = ''; } else await supa.from('reports').update({status:val, xp:xpAmount}).eq('id', existingId); } else if(val !== 'none'){ const newId = 'rep_manual_' + Date.now() + '_' + Math.random().toString(16).slice(2); await supa.from('reports').insert([{id:newId, email:currentUser?.email || 'manual', link:'', date:`Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`, status:val, xp:xpAmount}]); selectEl.dataset.id = newId; } selectEl.className = 't73-v25-status-select ' + statusClass25(val); selectEl.disabled = false; selectEl.style.opacity = '1'; setTimeout(oldLoadReportsTable25, 450); };
           function showModReports25(){ if(typeof switchMode === 'function') switchMode('reports_table', $('v25ModViewReportsBtn') || $('reportsTableBtn')); setTimeout(oldLoadReportsTable25, 80); }
@@ -12150,7 +12150,7 @@
                 if (currentStatus === 'Нет отчета' || currentStatus === 'Не засчитано' || currentStatus === 'Отказ') statusClass = 'status-missing';
                 let displayStatus = currentStatus === 'none' ? 'На проверке' : currentStatus; if (currentStatus === 'Не засчитано') displayStatus = 'Отказ';
                 if (isLeader) {
-                  html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"><div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div><select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${esc(mod.nickname || '')}', '${d}', '${rep ? rep.id : ''}')"><option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option><option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option><option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option><option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option><option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option><option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option><option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option></select></div>`;
+                  html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"><div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div><select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${esc(mod.nickname || '')}', '${d}', '${rep ? rep.id : ''}')"><option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option><option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option><option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option><option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Натяг</option><option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option><option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option><option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option></select></div>`;
                 } else html += `<div class="report-day-item ${statusClass}" style="min-width:120px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);"><div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div><div style="font-weight:bold; font-size:0.85rem; text-align:center;">${esc(displayStatus)}</div></div>`;
               });
               html += `</div></div>`;
@@ -12252,7 +12252,7 @@
                 const p = parseJson27(r.date, {}); const files = Array.isArray(p.files) ? p.files : [];
                 const result = p.result || r.statusText || r.status || 'На проверке';
                 const checked = !!p.checkedAt || ['Норма','Перенорма','Герой дня','Отказ'].includes(result);
-                return `<div class="t73-v27-old-report-card"><div style="display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;flex-wrap:wrap;"><div><strong>${esc(p.nick || r.status || 'Пользователь')}</strong><div class="t73-v27-muted">${esc(p.type || 'Отчёт')} · ${esc(p.created || '')}</div></div><span class="t73-v27-chip">${esc(result)} · ${Number(r.xp || p.xp || 0)} XP</span></div><div class="t73-v27-muted">${esc(p.comment || 'Без комментария')}</div>${p.link ? `<a href="${esc(p.link)}" target="_blank" class="btn btn-secondary" style="width:max-content;max-width:100%;">📸 Открыть ссылку на док-во</a>` : ''}${filePreviewHtml27(files)}${!checked ? `<div class="t73-v27-report-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processGossReport27('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processGossReport27('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processGossReport27('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processGossReport27('${esc(r.id)}','Отказ',0)">Отказ</button></div>` : `<div class="t73-v27-muted">Проверил: ${esc(p.checkedBy || '—')} · ${esc(p.checkedAt || '')}</div>`}</div>`;
+                return `<div class="t73-v27-old-report-card"><div style="display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;flex-wrap:wrap;"><div><strong>${esc(p.nick || r.status || 'Пользователь')}</strong><div class="t73-v27-muted">${esc(p.type || 'Отчёт')} · ${esc(p.created || '')}</div></div><span class="t73-v27-chip">${esc(result)} · ${Number(r.xp || p.xp || 0)} XP</span></div><div class="t73-v27-muted">${esc(p.comment || 'Без комментария')}</div>${p.link ? `<a href="${esc(p.link)}" target="_blank" class="btn btn-secondary" style="width:max-content;max-width:100%;">📸 Открыть ссылку на док-во</a>` : ''}${filePreviewHtml27(files)}${!checked ? `<div class="t73-v27-report-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processGossReport27('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processGossReport27('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processGossReport('','Натяг',5)">Натяг (5)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processGossReport27('${esc(r.id)}','Отказ',0)">Отказ</button></div>` : `<div class="t73-v27-muted">Проверил: ${esc(p.checkedBy || '—')} · ${esc(p.checkedAt || '')}</div>`}</div>`;
               }).join('') : '<div class="t73-v27-old-report-card">Отправленных отчётов пока нет.</div>');
               const ref = $('v27RefreshGossReports'); if(ref) ref.onclick = () => renderGossReports27(false);
             }catch(err){ holder.innerHTML = `<div class="t73-v27-old-report-card" style="color:var(--color-error);">Ошибка загрузки: ${esc(err.message || err)}</div>`; }
@@ -12337,7 +12337,7 @@
               area.innerHTML=rows.map(r=>{
                 const waiting=String(r.status||'').includes('Ожидает')||r.status==='На проверке'||!r.status;
                 const proof=String(r.link||'').startsWith('data:image')?`<img src="${r.link}" style="max-width:100%;max-height:150px;border-radius:8px;cursor:zoom-in;border:2px solid var(--theme-accent);" onclick="document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src='${r.link}'">`:(r.link?`<a href="${esc(r.link)}" target="_blank" class="btn btn-secondary" style="padding:.45rem .8rem;font-size:.82rem;">📸 Открыть док-во</a>`:'');
-                return `<div class="t73-v27-old-report-card" style="background:rgba(0,0,0,.5);padding:1rem;border-radius:12px;border:1px solid rgba(191,198,255,.2);display:grid;gap:.7rem;"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email||'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.82rem;">${esc(r.date||'')}</span></div><div>${proof}</div><span style="color:${Number(r.xp||0)>0?'var(--color-success)':(r.status==='Не засчитано'||r.status==='Отказ'?'var(--color-error)':'var(--color-warning)')};font-weight:800;">${esc(r.status||'На проверке')} (${Number(r.xp||0)} XP)</span>${waiting?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.45rem;"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>`:''}</div>`
+                return `<div class="t73-v27-old-report-card" style="background:rgba(0,0,0,.5);padding:1rem;border-radius:12px;border:1px solid rgba(191,198,255,.2);display:grid;gap:.7rem;"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email||'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.82rem;">${esc(r.date||'')}</span></div><div>${proof}</div><span style="color:${Number(r.xp||0)>0?'var(--color-success)':(r.status==='Не засчитано'||r.status==='Отказ'?'var(--color-error)':'var(--color-warning)')};font-weight:800;">${esc(r.status||'На проверке')} (${Number(r.xp||0)} XP)</span>${waiting?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.45rem;"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Натяг (5)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>`:''}</div>`
               }).join('')
             }catch(e){area.innerHTML=`<div class="message-text" style="color:var(--color-error);">Ошибка: ${esc(e.message||e)}</div>`}
           }
@@ -12357,7 +12357,7 @@
             mods.forEach(m=>{let xp=0; reports.forEach(r=>{if(r.email===m.email&&Number(r.xp||0)>0)xp+=Number(r.xp||0)}); m.calculatedRealXp=Math.max(0,xp-Number(m.shop_spent||0))});
             if(!leader) mods=mods.filter(m=>!(Array.isArray(adminEmails)&&adminEmails.includes(m.email))&&m.email!==creatorEmail&&!(Array.isArray(dynamicModLeaders)&&dynamicModLeaders.includes(m.user_id)));
             let html='<div class="reports-modern-container" style="display:flex;flex-direction:column;gap:1rem;">';
-            mods.sort((a,b)=>String(a.nickname||'').localeCompare(String(b.nickname||''),'ru')).forEach(m=>{html+=`<div class="mod-report-card"><div class="mod-report-header"><div class="mod-report-name">${esc(m.nickname||'Без ника')}</div><div style="color:var(--color-success);font-weight:900;">${m.calculatedRealXp} Real XP</div></div><div class="mod-report-days">`; days.forEach(d=>{const nick=String(m.nickname||'').toLowerCase(); const rep=reports.find(r=>String(r.date||'').toLowerCase().includes(nick)&&String(r.date||'').includes(d)); let inactive=false; (inact||[]).forEach(x=>{const t=String(x.date||'').toLowerCase(); if(t.includes(nick)){const fm=t.match(/с:\s*([\d-]+)/i),tm=t.match(/по:\s*([\d-]+)/i); if(fm&&tm){const dd=new Date(d); if(dd>=new Date(fm[1])&&dd<=new Date(tm[1])) inactive=true}}}); let st='none'; if(rep)st=rep.status; else if(inactive)st='Неактив'; else{const cd=new Date(d);cd.setHours(0,0,0,0); if(cd<actual)st='Нет отчета'} const c=cls(st), short=d.slice(5).split('-').reverse().join('.'), disp=st==='none'?'На проверке':(st==='Не засчитано'?'Отказ':st); html+=leader?`<div class="report-day-item ${c}"><div class="report-day-date">${short}</div><select class="status-select ${c}" data-nick="${esc(m.nickname||'')}" data-date="${d}" data-id="${rep?esc(rep.id):''}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${(st==='Отказ'||st==='Не засчитано')?'selected':''}>Отказ</option></select></div>`:`<div class="report-day-item ${c}"><div class="report-day-date">${short}</div><div style="font-weight:800;font-size:.85rem;text-align:center;">${esc(disp)}</div></div>`}); html+='</div></div>'}); wrap.innerHTML=html+'</div>'; wrap.querySelectorAll('.status-select').forEach(s=>s.onchange=()=>updateReportStatusDirectly(s,s.dataset.nick,s.dataset.date,s.dataset.id||''))}
+            mods.sort((a,b)=>String(a.nickname||'').localeCompare(String(b.nickname||''),'ru')).forEach(m=>{html+=`<div class="mod-report-card"><div class="mod-report-header"><div class="mod-report-name">${esc(m.nickname||'Без ника')}</div><div style="color:var(--color-success);font-weight:900;">${m.calculatedRealXp} Real XP</div></div><div class="mod-report-days">`; days.forEach(d=>{const nick=String(m.nickname||'').toLowerCase(); const rep=reports.find(r=>String(r.date||'').toLowerCase().includes(nick)&&String(r.date||'').includes(d)); let inactive=false; (inact||[]).forEach(x=>{const t=String(x.date||'').toLowerCase(); if(t.includes(nick)){const fm=t.match(/с:\s*([\d-]+)/i),tm=t.match(/по:\s*([\d-]+)/i); if(fm&&tm){const dd=new Date(d); if(dd>=new Date(fm[1])&&dd<=new Date(tm[1])) inactive=true}}}); let st='none'; if(rep)st=rep.status; else if(inactive)st='Неактив'; else{const cd=new Date(d);cd.setHours(0,0,0,0); if(cd<actual)st='Нет отчета'} const c=cls(st), short=d.slice(5).split('-').reverse().join('.'), disp=st==='none'?'На проверке':(st==='Не засчитано'?'Отказ':st); html+=leader?`<div class="report-day-item ${c}"><div class="report-day-date">${short}</div><select class="status-select ${c}" data-nick="${esc(m.nickname||'')}" data-date="${d}" data-id="${rep?esc(rep.id):''}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Натяг</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${(st==='Отказ'||st==='Не засчитано')?'selected':''}>Отказ</option></select></div>`:`<div class="report-day-item ${c}"><div class="report-day-date">${short}</div><div style="font-weight:800;font-size:.85rem;text-align:center;">${esc(disp)}</div></div>`}); html+='</div></div>'}); wrap.innerHTML=html+'</div>'; wrap.querySelectorAll('.status-select').forEach(s=>s.onchange=()=>updateReportStatusDirectly(s,s.dataset.nick,s.dataset.date,s.dataset.id||''))}
           window.updateReportStatusDirectly=async function(sel,nick,date,id){const val=sel.value;let xp=0;if(val==='Норма')xp=15;if(val==='Перенорма')xp=30;if(val==='Герой дня')xp=60;sel.disabled=true;if(id){if(val==='none'){await supa.from('reports').delete().eq('id',id);sel.dataset.id=''}else await supa.from('reports').update({status:val,xp}).eq('id',id)}else if(val!=='none'){const nid='rep_manual_'+Date.now()+'_'+Math.random().toString(16).slice(2);await supa.from('reports').insert([{id:nid,email:currentUser?.email||'manual',link:'',date:`Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`,status:val,xp}]);sel.dataset.id=nid}sel.className='status-select '+cls(val);sel.disabled=false;setTimeout(modTable,350)}
           window.processReport=async function(id,status,xp){await supa.from('reports').update({status,xp}).eq('id',id);const a=$('reportsListArea');if(a)a.style.display='none';setTimeout(showModReports,100);setTimeout(modTable,300)}
           function currentOrg(){const id=document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId||document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId||document.querySelector('.gov-org-switch.active')?.dataset?.orgId||'fsb';const arr=(typeof GOSS_ORGS!=='undefined'?GOSS_ORGS:[])||[];return arr.find(o=>o.id===id)||{id,short:id}}
@@ -12423,7 +12423,7 @@
                   ${waiting ? `<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem;">
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button>
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button>
-                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button>
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Натяг (5)</button>
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button>
                   </div>` : ''}
                 </div>`;
@@ -12632,7 +12632,7 @@
                 const waiting = st === 'На проверке' || st.includes('Ожидает');
                 const shown = st === 'Не засчитано' ? 'Отказ' : st;
                 const color = Number(r.xp || 0) > 0 ? 'var(--color-success)' : (st === 'Не засчитано' || st === 'Отказ' ? 'var(--color-error)' : 'var(--color-warning)');
-                return `<div class="t73-v30-card" data-report-id="${esc(r.id)}"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email || 'Неизвестно')}</strong><span class="t73-v30-muted">${esc(r.date || '')}</span></div>${proofHtml30(r)}<div style="display:flex;flex-direction:column;gap:.5rem;"><span style="color:${color};font-weight:900;">${esc(shown)} (${Number(r.xp || 0)} XP)</span>${waiting ? `<div class="t73-v30-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processModReport30('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processModReport30('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processModReport30('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processModReport30('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>` : ''}</div></div>`;
+                return `<div class="t73-v30-card" data-report-id="${esc(r.id)}"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email || 'Неизвестно')}</strong><span class="t73-v30-muted">${esc(r.date || '')}</span></div>${proofHtml30(r)}<div style="display:flex;flex-direction:column;gap:.5rem;"><span style="color:${color};font-weight:900;">${esc(shown)} (${Number(r.xp || 0)} XP)</span>${waiting ? `<div class="t73-v30-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processModReport30('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processModReport30('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processModReport30('${esc(r.id)}','Герой дня',60)">Натяг (5)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processModReport30('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>` : ''}</div></div>`;
               }).join('') : '<div class="message-text">Отчётов модерации пока нет.</div>';
             }catch(err){ listArea.innerHTML = `<div class="message-text" style="color:var(--color-error);">Ошибка при загрузке: ${esc(err.message || err)}</div>`; }
           }
@@ -12746,5 +12746,411 @@
     });
   </script>
 
+<script>
+/* === T73 V31 FINAL REPORTS SPLIT: OLD MODERATION + GOSS CARDS + MOBILE SCROLL === */
+(() => {
+  if (window.__T73_V31_REPORTS_FIX__) return;
+  window.__T73_V31_REPORTS_FIX__ = true;
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const parse = (v, fallback={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fallback); } catch { return fallback; } };
+  const nowRu = () => new Date().toLocaleString('ru-RU');
+  const makeId = (p) => `${p}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+
+  const RESERVED_REPORT_EMAILS = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','GOSS_USER_REPORT','GOSS_PROFILE','GOSS_REPORT_TABLE','GOSS_SHOP_ITEM','GOSS_ORG_LOG','FSB_SHOP','SHOP_FSB'
+  ]);
+
+  function isGossReportRow(row) {
+    if (!row) return false;
+    if (row.email === 'GOSS_USER_REPORT') return true;
+    if (String(row.email || '').startsWith('GOSS_')) return true;
+    const d = parse(row.date, null);
+    return !!(d && (d.org || d.orgName || d.goss || d.reviewStatus));
+  }
+
+  function isModReportRow(row) {
+    if (!row || isGossReportRow(row)) return false;
+    const email = String(row.email || '');
+    if (!email || RESERVED_REPORT_EMAILS.has(email)) return false;
+    if (email.startsWith('SHOP_') || email.startsWith('ROULETTE_') || email.startsWith('CUSTOM_')) return false;
+    if (email.includes('GOSS')) return false;
+    const st = String(row.status || '');
+    const allowed = ['На проверке','Ожидает','Норма','Перенорма','Герой дня','Не засчитано','Отказ'];
+    return allowed.some(x => st.includes(x)) || /Ник:|Дата:|Работа:/i.test(String(row.date || ''));
+  }
+
+  function evidenceHtml(link) {
+    if (!link) return '';
+    const raw = String(link);
+    let list = [];
+    if (raw.trim().startsWith('[')) {
+      try { list = JSON.parse(raw).filter(Boolean); } catch { list = [raw]; }
+    } else if (raw.includes('\n')) list = raw.split('\n').map(x => x.trim()).filter(Boolean);
+    else list = [raw];
+    return `<div style="display:grid; gap:.5rem; margin:.6rem 0;">${list.map((url, i) => {
+      const safe = esc(url);
+      if (String(url).startsWith('data:image')) return `<img src="${safe}" style="max-width:100%; max-height:190px; object-fit:contain; border-radius:10px; border:1px solid rgba(255,255,255,.18); cursor:zoom-in;" onclick="document.getElementById('imageModal') && (document.getElementById('imageModal').style.display='flex', document.getElementById('imageModalSrc').src=this.src)">`;
+      if (/\.(png|jpe?g|webp|gif)(\?|$)/i.test(String(url))) return `<a href="${safe}" target="_blank" rel="noreferrer"><img src="${safe}" style="max-width:100%; max-height:190px; object-fit:contain; border-radius:10px; border:1px solid rgba(255,255,255,.18);"></a>`;
+      return `<a class="btn btn-secondary" href="${safe}" target="_blank" rel="noreferrer" style="padding:.55rem .8rem; font-size:.85rem;">📎 Доказательство ${i+1}</a>`;
+    }).join('')}</div>`;
+  }
+
+  window.processModReportV31 = async function(id, statusText, xpAmount) {
+    if (!window.supa) return alert('Supabase не подключен');
+    await supa.from('reports').update({ status: statusText, xp: Number(xpAmount) || 0 }).eq('id', id);
+    await renderModReportsV31(true);
+    try { window.loadReportsTable && window.loadReportsTable(); } catch {}
+  };
+
+  async function renderModReportsV31(forceOpen=false) {
+    const listArea = $('reportsListArea');
+    if (!listArea || !window.supa) return;
+    if (!forceOpen && listArea.style.display === 'flex') { listArea.style.display = 'none'; return; }
+    listArea.style.display = 'flex';
+    listArea.innerHTML = '<div class="message-text">Загрузка модераторских отчётов...</div>';
+    try {
+      const { data, error } = await supa.from('reports').select('*').order('id', { ascending:false }).limit(200);
+      if (error) throw error;
+      const reports = (data || []).filter(isModReportRow).slice(0, 50);
+      if (!reports.length) { listArea.innerHTML = '<div class="message-text">Модераторских отчётов пока нет</div>'; return; }
+      listArea.innerHTML = reports.map(r => {
+        const status = String(r.status || 'Без статуса');
+        const pending = status === 'На проверке' || status.includes('Ожидает');
+        const color = Number(r.xp || 0) > 0 ? 'var(--color-success)' : (status === 'Не засчитано' || status === 'Отказ' ? 'var(--color-error)' : 'var(--color-warning)');
+        return `<div class="mod-old-report-card" style="background:rgba(0,0,0,.5); padding:1rem; border-radius:14px; border:1px solid rgba(191,198,255,.22); display:grid; gap:.6rem;">
+          <div style="display:flex; justify-content:space-between; gap:.8rem; flex-wrap:wrap;">
+            <strong>${esc(r.email || 'Неизвестно')}</strong>
+            <span style="color:var(--color-text-faint); font-size:.82rem;">${esc(r.id || '')}</span>
+          </div>
+          <div style="color:var(--color-text-muted); font-size:.92rem; white-space:pre-wrap; overflow-wrap:anywhere;">${esc(r.date || '')}</div>
+          ${evidenceHtml(r.link)}
+          <span style="font-weight:800; color:${color};">${esc(status)} · ${Number(r.xp || 0)} XP</span>
+          ${pending ? `<div style="display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.45rem; margin-top:.4rem;" class="mod-report-actions-v31">
+            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#52c77b; color:#52c77b;" onclick="processModReportV31('${esc(r.id)}','Норма',15)">Норма</button>
+            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#3dd68c; color:#3dd68c;" onclick="processModReportV31('${esc(r.id)}','Перенорма',30)">Перенорма</button>
+            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#ffbf47; color:#ffbf47;" onclick="processModReportV31('${esc(r.id)}','Герой дня',60)">Натяг</button>
+            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:var(--color-error); color:var(--color-error);" onclick="processModReportV31('${esc(r.id)}','Не засчитано',0)">Отказ</button>
+          </div>` : ''}
+        </div>`;
+      }).join('');
+    } catch (err) {
+      listArea.innerHTML = `<div class="message-text" style="color:var(--color-error);">Ошибка загрузки: ${esc(err.message)}</div>`;
+    }
+  }
+
+  function setupModButtonV31() {
+    const btn = $('viewReportsBtn');
+    if (!btn || btn.dataset.v31Fixed) return;
+    const clone = btn.cloneNode(true);
+    clone.dataset.v31Fixed = '1';
+    clone.textContent = 'Проверить сданные отчеты';
+    btn.replaceWith(clone);
+    clone.addEventListener('click', () => renderModReportsV31(false));
+  }
+
+  function getActiveGossOrgId() {
+    return document.querySelector('.gov-org-switch-v3.active')?.dataset.orgId || document.querySelector('.gov-org-switch-v3[style*="inline"]')?.dataset.orgId || 'fsb';
+  }
+  function getActiveGossOrgLabel() {
+    const btn = document.querySelector('.gov-org-switch-v3.active');
+    return btn ? btn.textContent.trim() : getActiveGossOrgId().toUpperCase();
+  }
+
+  window.processGossReportV31 = async function(id, result, points) {
+    if (!window.supa) return alert('Supabase не подключен');
+    const { data } = await supa.from('reports').select('*').eq('id', id).limit(1);
+    const row = data && data[0];
+    if (!row) return alert('Отчёт не найден');
+    const payload = parse(row.date, {});
+    payload.reviewStatus = result;
+    payload.reviewPoints = Number(points) || 0;
+    payload.reviewedBy = (window.currentNickname || window.currentUser?.email || 'Руководство');
+    payload.reviewedAt = nowRu();
+    await supa.from('reports').update({ date: JSON.stringify(payload), xp: Number(points) || 0 }).eq('id', id);
+    await renderGossReportsCardsV31();
+  };
+
+  async function renderGossReportsCardsV31() {
+    const root = $('gossV3Content');
+    if (!root || !window.supa) return;
+    const orgId = getActiveGossOrgId();
+    const orgLabel = getActiveGossOrgLabel();
+    root.innerHTML = `<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Проверка ГОСС-отчётов — ${esc(orgLabel)}</h3><div class="message-text">Загрузка отчётов...</div></div>`;
+    try {
+      const { data, error } = await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', orgId).order('id', { ascending:false }).limit(80);
+      if (error) throw error;
+      const reports = data || [];
+      root.innerHTML = `<div class="gov-v3-access-card"><div class="gov-v3-headline"><div><h3 style="color:#ff6b88; margin:0;">Проверка ГОСС-отчётов — ${esc(orgLabel)}</h3><p style="color:var(--color-text-muted); margin:.25rem 0 0;">Карточки как в модерации, но со статусами ГОСС: Натяг / Норма / Перенорма / Отказ.</p></div><button id="gossV31RefreshReports" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>` +
+        (reports.length ? `<div style="display:grid; gap:1rem;">${reports.map(r => {
+          const p = parse(r.date, {});
+          const reviewed = !!p.reviewStatus;
+          const statusText = p.reviewStatus || 'На проверке';
+          const color = reviewed ? (statusText === 'Отказ' ? 'var(--color-error)' : 'var(--color-success)') : 'var(--color-warning)';
+          const proofs = Array.isArray(p.files) ? JSON.stringify(p.files) : (p.link || p.file || r.link || '');
+          return `<div class="gov-v3-report-card" style="display:grid; gap:.7rem; border:1px solid rgba(255,107,136,.25);">
+            <div class="gov-v3-headline"><strong>${esc(p.nick || p.nickname || r.status || 'Сотрудник')} — ${esc(p.type || 'ГОСС отчёт')}</strong><span class="gov-v3-pill">${esc(p.created || '')}</span></div>
+            <div style="color:var(--color-text-muted); white-space:pre-wrap; overflow-wrap:anywhere;">${esc(p.comment || p.work || 'Без комментария')}</div>
+            ${evidenceHtml(proofs)}
+            <div style="font-weight:900; color:${color};">${esc(statusText)}${p.reviewPoints ? ` · ${Number(p.reviewPoints)} баллов` : ''}</div>
+            ${p.reviewedBy ? `<div style="color:var(--color-text-faint); font-size:.85rem;">Проверил: ${esc(p.reviewedBy)} · ${esc(p.reviewedAt || '')}</div>` : ''}
+            ${!reviewed ? `<div style="display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.45rem;" class="goss-report-actions-v31">
+              <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#ffbf47; color:#ffbf47;" onclick="processGossReportV31('${esc(r.id)}','Натяг',5)">Натяг</button>
+              <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#52c77b; color:#52c77b;" onclick="processGossReportV31('${esc(r.id)}','Норма',15)">Норма</button>
+              <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#3dd68c; color:#3dd68c;" onclick="processGossReportV31('${esc(r.id)}','Перенорма',30)">Перенорма</button>
+              <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:var(--color-error); color:var(--color-error);" onclick="processGossReportV31('${esc(r.id)}','Отказ',0)">Отказ</button>
+            </div>` : ''}
+          </div>`;
+        }).join('')}</div>` : '<div class="gov-v3-denied">Отправленных ГОСС-отчётов пока нет.</div>');
+      $('gossV31RefreshReports')?.addEventListener('click', renderGossReportsCardsV31);
+    } catch (err) {
+      root.innerHTML = `<div class="gov-v3-denied" style="border-color:var(--color-error); color:var(--color-error);">Ошибка загрузки ГОСС-отчётов: ${esc(err.message)}</div>`;
+    }
+  }
+
+  async function fileToCompressedDataUrl(file, maxW=1400, quality=.72) {
+    if (!file) return '';
+    if (!file.type.startsWith('image/')) return '';
+    const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+    const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = dataUrl; });
+    const scale = Math.min(1, maxW / img.width);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(img.width * scale));
+    canvas.height = Math.max(1, Math.round(img.height * scale));
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  async function uploadGossFilesV31(files, orgId) {
+    const arr = Array.from(files || []).slice(0, 10);
+    const urls = [];
+    for (const file of arr) {
+      let uploaded = '';
+      for (const bucket of ['report-screenshots','reports','screenshots']) {
+        try {
+          const path = `goss/${orgId}/${Date.now()}_${Math.random().toString(16).slice(2)}_${file.name.replace(/[^a-zA-Z0-9_.-]/g,'_')}`;
+          const { error } = await supa.storage.from(bucket).upload(path, file, { upsert:false, contentType:file.type || 'application/octet-stream' });
+          if (!error) {
+            const { data } = supa.storage.from(bucket).getPublicUrl(path);
+            uploaded = data?.publicUrl || '';
+            break;
+          }
+        } catch {}
+      }
+      if (!uploaded) uploaded = await fileToCompressedDataUrl(file);
+      if (uploaded) urls.push(uploaded);
+    }
+    return urls;
+  }
+
+  function patchGossSubmitViewV31() {
+    const root = $('gossV3Content');
+    const btn = $('gossV3SubmitReportBtn');
+    if (!root || !btn || btn.dataset.v31Fixed) return;
+    const linkField = $('gossV3ReportLink');
+    if (linkField && !$('gossV31FileInput')) {
+      linkField.closest('label')?.insertAdjacentHTML('afterend', `<label style="grid-column:1/-1; border:2px dashed rgba(255,107,136,.35); padding:1rem; border-radius:14px; background:rgba(255,255,255,.03);">Скриншоты отчёта<input id="gossV31FileInput" class="support-input" type="file" accept="image/*" multiple style="margin-top:.7rem;"><div id="gossV31Preview" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:.55rem; margin-top:.8rem;"></div></label>`);
+      $('gossV31FileInput')?.addEventListener('change', () => {
+        const box = $('gossV31Preview'); if (!box) return;
+        box.innerHTML = Array.from($('gossV31FileInput').files || []).slice(0,10).map((f, i) => `<div style="background:rgba(0,0,0,.35); border-radius:10px; padding:.45rem; font-size:.75rem; overflow:hidden;">📎 ${i+1}. ${esc(f.name)}</div>`).join('');
+      });
+    }
+    const clone = btn.cloneNode(true);
+    clone.dataset.v31Fixed = '1';
+    clone.textContent = '📤 Отправить ГОСС-отчёт';
+    btn.replaceWith(clone);
+    clone.addEventListener('click', async () => {
+      const orgId = getActiveGossOrgId();
+      const orgLabel = getActiveGossOrgLabel();
+      const payload = {
+        org: orgId,
+        orgName: orgLabel,
+        type: $('gossV3ReportType')?.value || 'ГОСС отчёт',
+        link: $('gossV3ReportLink')?.value.trim() || '',
+        comment: $('gossV3ReportComment')?.value.trim() || '',
+        userId: window.currentUser?.id,
+        nick: window.currentNickname || window.currentUser?.email || 'Сотрудник',
+        created: nowRu()
+      };
+      const files = $('gossV31FileInput')?.files || [];
+      if (!payload.link && !payload.comment && !files.length) { alert('Добавьте ссылку, комментарий или скриншоты.'); return; }
+      clone.disabled = true; clone.textContent = 'Загрузка...';
+      try {
+        payload.files = await uploadGossFilesV31(files, orgId);
+        await supa.from('reports').insert([{ id: makeId('goss_user_report'), email:'GOSS_USER_REPORT', link:orgId, status:window.currentUser?.id || '', date:JSON.stringify(payload), xp:0 }]);
+        alert('ГОСС-отчёт отправлен руководству.');
+        const submitBtn = document.querySelector('.gov-action-switch-v3[data-view="submit"]');
+        submitBtn?.click();
+      } catch (err) { alert('Ошибка отправки: ' + err.message); }
+      finally { clone.disabled = false; clone.textContent = '📤 Отправить ГОСС-отчёт'; }
+    });
+  }
+
+  function setupGossInterceptorsV31() {
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest?.('.gov-action-switch-v3');
+      if (!btn) return;
+      if (btn.dataset.view === 'reports') setTimeout(renderGossReportsCardsV31, 80);
+      if (btn.dataset.view === 'submit') setTimeout(patchGossSubmitViewV31, 120);
+    }, true);
+  }
+
+  function addCssV31() {
+    if ($('t73V31Css')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="t73V31Css">
+      @media (max-width: 760px) {
+        .main-nav, .sub-nav, .nav-container, #subNavModeration, #subNavSupport, #subNavGeneral, #subNavOrganizations, #gossOrgActionNavV3, .gov-v3-actions { max-width:100% !important; width:100% !important; overflow-x:auto !important; overflow-y:hidden !important; flex-wrap:nowrap !important; justify-content:flex-start !important; -webkit-overflow-scrolling:touch !important; scroll-snap-type:x proximity; padding-bottom:.55rem !important; }
+        .main-nav button, .sub-nav button, #gossOrgActionNavV3 button, .gov-v3-actions button { flex:0 0 auto !important; white-space:nowrap !important; scroll-snap-align:start; }
+        .mod-report-actions-v31, .goss-report-actions-v31 { grid-template-columns:1fr 1fr !important; }
+        .gov-v3-table-wrap, .reports-modern-container, #reportsTableWrapper { overflow-x:auto !important; -webkit-overflow-scrolling:touch !important; }
+        .message-card, .panel, .rule-item, .stat { backdrop-filter:none !important; box-shadow:0 8px 20px rgba(0,0,0,.35) !important; }
+      }
+    </style>`);
+  }
+
+  function bootV31() {
+    addCssV31();
+    setupModButtonV31();
+    setupGossInterceptorsV31();
+    if (document.querySelector('.gov-action-switch-v3.active[data-view="submit"]')) setTimeout(patchGossSubmitViewV31, 100);
+    if (document.querySelector('.gov-action-switch-v3.active[data-view="reports"]')) setTimeout(renderGossReportsCardsV31, 100);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV31); else bootV31();
+  setTimeout(bootV31, 800);
+  setInterval(setupModButtonV31, 1500);
+})();
+</script>
+<script>
+/* === T73 V32 HOTFIX: ГОСС/СС без Героя дня, только Натяг === */
+(() => {
+  if (window.__T73_V32_GOSS_NO_HERO__) return;
+  window.__T73_V32_GOSS_NO_HERO__ = true;
+
+  const GOSS_ROOT_SELECTORS = [
+    '#gossV3Content',
+    '#gossV4Content',
+    '#gossOrgPanel',
+    '#gossOrgArea',
+    '.goss-report-actions-v31',
+    '.goss-report-actions-v30',
+    '.goss-v4-actions',
+    '.gov-v3-access-card',
+    '.gov-v3-report-card',
+    '.gov-v4-card',
+    '[data-goss-org]',
+    '[data-org-id]'
+  ].join(',');
+
+  function isGossZone(node) {
+    if (!node || !node.closest) return false;
+    return !!node.closest(GOSS_ROOT_SELECTORS);
+  }
+
+  function normalizeGossStatus(status, points) {
+    const s = String(status || '').trim();
+    if (/герой\s*дня/i.test(s)) return { status: 'Натяг', points: Number(points) > 0 && Number(points) < 60 ? Number(points) : 5 };
+    return { status: s, points: Number(points) || 0 };
+  }
+
+  function patchOptionSelect(select) {
+    if (!select || !isGossZone(select)) return;
+    const hasNatyag = Array.from(select.options || []).some(o => String(o.value || o.textContent).trim() === 'Натяг');
+    Array.from(select.options || []).forEach(opt => {
+      const txt = String(opt.textContent || opt.value || '');
+      if (/герой\s*дня/i.test(txt)) {
+        if (hasNatyag) opt.remove();
+        else {
+          opt.value = 'Натяг';
+          opt.textContent = 'Натяг';
+        }
+      }
+    });
+  }
+
+  function patchGossButton(btn) {
+    if (!btn || !isGossZone(btn)) return;
+    const txt = String(btn.textContent || '');
+    const onclick = String(btn.getAttribute('onclick') || '');
+    if (!/герой\s*дня/i.test(txt + ' ' + onclick)) return;
+
+    btn.textContent = txt.replace(/Герой\s*дня/gi, 'Натяг').replace(/\(60\)/g, '(5)');
+    btn.setAttribute('data-goss-hero-fixed', '1');
+
+    if (onclick) {
+      let fixed = onclick
+        .replace(/(['"])Герой\s*дня\1/gi, "'Натяг'")
+        .replace(/,\s*60\s*\)/g, ',5)')
+        .replace(/,\s*60\s*,/g, ',5,');
+      btn.setAttribute('onclick', fixed);
+    }
+  }
+
+  function patchTextNodes(root) {
+    if (!root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.nodeValue || !/Герой\s*дня/i.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+        const parent = node.parentElement;
+        if (!parent || !isGossZone(parent)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(n => { n.nodeValue = n.nodeValue.replace(/Герой\s*дня/gi, 'Натяг').replace(/60\s*(балл|XP|xp|очк)/gi, '5 $1'); });
+  }
+
+  function patchGossDom() {
+    document.querySelectorAll('select').forEach(patchOptionSelect);
+    document.querySelectorAll('button, .btn').forEach(patchGossButton);
+    document.querySelectorAll('#gossV3Content, #gossV4Content, #gossOrgPanel, #gossOrgArea, .gov-v3-access-card, .gov-v3-report-card, .gov-v4-card').forEach(patchTextNodes);
+  }
+
+  function wrapGossProcessor(name) {
+    const old = window[name];
+    if (typeof old !== 'function' || old.__v32Wrapped) return;
+    const wrapped = async function(id, status, points, ...rest) {
+      const fixed = normalizeGossStatus(status, points);
+      return old.call(this, id, fixed.status, fixed.points, ...rest);
+    };
+    wrapped.__v32Wrapped = true;
+    window[name] = wrapped;
+  }
+
+  function wrapKnownProcessors() {
+    ['processGossReportV31', 'processGossReport30', 'processGossReport29', 'processGossReportV27'].forEach(wrapGossProcessor);
+  }
+
+  document.addEventListener('change', (e) => {
+    const select = e.target && e.target.closest && e.target.closest('select');
+    if (!select || !isGossZone(select)) return;
+    patchOptionSelect(select);
+    if (/герой\s*дня/i.test(String(select.value || ''))) select.value = 'Натяг';
+  }, true);
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target && e.target.closest && e.target.closest('button, .btn');
+    if (!btn || !isGossZone(btn)) return;
+    if (!/герой\s*дня/i.test(String(btn.textContent || '') + ' ' + String(btn.getAttribute('onclick') || ''))) return;
+    patchGossButton(btn);
+  }, true);
+
+  function boot() {
+    wrapKnownProcessors();
+    patchGossDom();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  setTimeout(boot, 300);
+  setTimeout(boot, 1000);
+  setInterval(() => { wrapKnownProcessors(); patchGossDom(); }, 1800);
+  new MutationObserver(() => {
+    clearTimeout(window.__t73V32GossPatchTimer);
+    window.__t73V32GossPatchTimer = setTimeout(boot, 80);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
