@@ -527,6 +527,320 @@
       .status-select { font-size: 0.8rem; }
       .mod-report-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
     }
+  
+    /* === ULTRA UI UPGRADE 2026-04-30 ===
+       Мягкий неоновый слой поверх текущей верстки: стекло, глубина, режимные карточки и адаптивность. */
+    :root {
+      --ultra-glass: rgba(9, 12, 26, 0.72);
+      --ultra-glass-strong: rgba(8, 10, 20, 0.88);
+      --ultra-line: rgba(191, 198, 255, 0.22);
+      --ultra-line-hot: rgba(255, 255, 255, 0.38);
+      --ultra-glow: 0 0 34px rgba(108, 140, 255, 0.26), 0 24px 80px rgba(0, 0, 0, 0.72);
+      --ultra-radius: 26px;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::before {
+      background:
+        linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at 50% 20%, rgba(0,0,0,0.9), transparent 72%);
+      opacity: 0.5;
+      animation: ultraGridMove 22s linear infinite;
+    }
+
+    body::after {
+      background:
+        radial-gradient(circle at var(--mx, 18%) var(--my, 12%), rgba(255,255,255,0.13), transparent 18rem),
+        radial-gradient(circle at 80% 18%, rgba(108,140,255,0.22), transparent 30rem),
+        radial-gradient(circle at 15% 80%, rgba(255,107,136,0.15), transparent 28rem);
+      opacity: 0.8;
+      transition: opacity .35s ease;
+    }
+
+    @keyframes ultraGridMove {
+      from { transform: translate3d(0,0,0); }
+      to { transform: translate3d(42px,42px,0); }
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 50;
+      padding: .75rem;
+      border: 1px solid rgba(191,198,255,.16);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(9,12,26,.80), rgba(5,7,15,.62));
+      backdrop-filter: blur(18px) saturate(1.35);
+      box-shadow: 0 18px 60px rgba(0,0,0,.38);
+    }
+
+    .brand-title {
+      letter-spacing: .04em;
+      text-shadow: 0 0 18px rgba(255,255,255,.22);
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--ultra-radius);
+      border: 1px solid rgba(191,198,255,.20);
+      box-shadow: var(--ultra-glow);
+      backdrop-filter: blur(18px) saturate(1.18);
+      transform-style: preserve-3d;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.13), transparent 34%),
+        radial-gradient(circle at 85% 10%, rgba(255,255,255,.10), transparent 24rem);
+      opacity: .55;
+      mix-blend-mode: screen;
+    }
+
+    .panel > * { position: relative; z-index: 1; }
+
+    .panel:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 42px rgba(108,140,255,.30), 0 30px 95px rgba(0,0,0,.78);
+    }
+
+    .hero {
+      grid-template-columns: minmax(0, 1.24fr) minmax(300px, .76fr);
+      align-items: stretch;
+    }
+
+    .hero-card {
+      min-height: 430px;
+      padding: clamp(1.4rem, 2vw, 2.4rem);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255,255,255,.16), transparent 16rem),
+        radial-gradient(circle at 88% 22%, rgba(108,140,255,.22), transparent 18rem),
+        linear-gradient(150deg, rgba(13,16,35,.94), rgba(5,6,14,.94));
+      isolation: isolate;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      right: -170px;
+      top: -170px;
+      border-radius: 50%;
+      background: conic-gradient(from 160deg, rgba(108,140,255,.0), rgba(108,140,255,.42), rgba(255,107,136,.32), rgba(108,140,255,.0));
+      filter: blur(10px);
+      opacity: .72;
+      animation: ultraOrb 13s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes ultraOrb { to { transform: rotate(360deg); } }
+
+    .hero h1 {
+      max-width: 15ch;
+      letter-spacing: -.02em;
+      text-wrap: balance;
+      filter: drop-shadow(0 22px 34px rgba(0,0,0,.55));
+    }
+
+    .hero p { max-width: 68ch; }
+
+    .badge {
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 8px 22px rgba(0,0,0,.25);
+    }
+
+    .mode-identity {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 1rem;
+      align-items: start;
+      margin: .2rem 0 .35rem;
+      padding: 1rem;
+      border-radius: 22px;
+      border: 1px solid rgba(191,198,255,.20);
+      background: linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.028));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 16px 40px rgba(0,0,0,.28);
+    }
+
+    .mode-id-icon {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      font-size: 1.65rem;
+      background: linear-gradient(135deg, rgba(108,140,255,.34), rgba(255,107,136,.24));
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 12px 30px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    .mode-id-copy { display: grid; gap: .55rem; min-width: 0; }
+    .mode-id-title { font-weight: 900; letter-spacing: .04em; text-transform: uppercase; color: #fff; }
+    .mode-id-tip { color: var(--color-text-muted); font-size: var(--text-sm); line-height: 1.55; }
+    .mode-id-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .mode-chip {
+      padding: .32rem .68rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.15);
+      color: #dfe6ff;
+      background: rgba(0,0,0,.24);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .main-nav,
+    .sub-nav {
+      border: 1px solid rgba(191,198,255,.16);
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(9,12,26,.76), rgba(5,7,15,.50));
+      backdrop-filter: blur(18px) saturate(1.25);
+      box-shadow: 0 16px 52px rgba(0,0,0,.34);
+      padding: .55rem;
+    }
+
+    .main-cat-btn,
+    .mode-btn {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(191,198,255,.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .main-cat-btn::after,
+    .mode-btn::after,
+    .btn::after,
+    .action-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      translate: -120% 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.20), transparent);
+      transition: translate .75s cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+
+    .main-cat-btn:hover::after,
+    .mode-btn:hover::after,
+    .btn:hover::after,
+    .action-btn:hover::after { translate: 120% 0; }
+
+    .main-cat-btn.active,
+    .mode-btn.active {
+      color: #fff;
+      border-color: rgba(255,255,255,.34);
+      box-shadow: 0 12px 30px rgba(108,140,255,.22), inset 0 1px 0 rgba(255,255,255,.16);
+    }
+
+    .feed,
+    .stats-grid,
+    .controls { gap: 1rem; }
+
+    .message-card,
+    .stat,
+    .rule-item,
+    .quest-card,
+    .shop-item,
+    .report-item {
+      border: 1px solid rgba(191,198,255,.16) !important;
+      background: linear-gradient(145deg, rgba(255,255,255,.065), rgba(0,0,0,.22)) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 36px rgba(0,0,0,.25);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+
+    .message-card:hover,
+    .stat:hover,
+    .rule-item:hover,
+    .quest-card:hover,
+    .shop-item:hover,
+    .report-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.30) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 18px 46px rgba(0,0,0,.35);
+    }
+
+    input,
+    select,
+    textarea,
+    .support-input {
+      border-radius: 16px !important;
+      border: 1px solid rgba(191,198,255,.20) !important;
+      background: rgba(4,6,14,.72) !important;
+      color: #fff !important;
+      outline: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07);
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus,
+    .support-input:focus {
+      border-color: rgba(108,140,255,.70) !important;
+      box-shadow: 0 0 0 4px rgba(108,140,255,.16), inset 0 1px 0 rgba(255,255,255,.10);
+    }
+
+    .btn,
+    .action-btn {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .btn-primary,
+    .action-btn.good-btn,
+    .skip-btn {
+      box-shadow: 0 14px 34px rgba(108,140,255,.30), inset 0 1px 0 rgba(255,255,255,.22);
+    }
+
+    html[data-site-theme="support"] .mode-id-icon,
+    html[data-site-theme="ap_shop"] .mode-id-icon,
+    html[data-site-theme="ap_admin"] .mode-id-icon { background: linear-gradient(135deg, rgba(255,143,196,.45), rgba(162,108,255,.24)); }
+    html[data-site-theme="shop"] .mode-id-icon,
+    html[data-site-theme="leadership"] .mode-id-icon,
+    html[data-site-theme="reports_table"] .mode-id-icon { background: linear-gradient(135deg, rgba(82,199,123,.45), rgba(255,191,71,.25)); }
+    html[data-site-theme="complaints"] .mode-id-icon { background: linear-gradient(135deg, rgba(255,107,136,.50), rgba(255,61,61,.26)); }
+    html[data-site-theme="quests"] .mode-id-icon { background: linear-gradient(135deg, rgba(162,108,255,.50), rgba(196,161,255,.25)); }
+    html[data-site-theme="leaderboard"] .mode-id-icon { background: linear-gradient(135deg, rgba(255,61,0,.45), rgba(255,191,71,.24)); }
+    html[data-site-theme="timeattack"] .mode-id-icon { background: linear-gradient(135deg, rgba(255,191,71,.50), rgba(255,61,0,.24)); }
+
+    @media (max-width: 980px) {
+      .hero { grid-template-columns: 1fr; }
+      .topbar { position: relative; top: 0; }
+    }
+
+    @media (max-width: 640px) {
+      .page { width: min(100% - 1rem, 1120px); padding-top: .75rem; }
+      .topbar { border-radius: 20px; }
+      .hero-card, .rules, .game-card, .side { padding: 1rem; }
+      .mode-identity { grid-template-columns: 1fr; }
+      .mode-id-icon { width: 48px; height: 48px; font-size: 1.4rem; }
+      .main-nav, .sub-nav { border-radius: 18px; }
+      .main-cat-btn, .mode-btn { flex: 1 1 100%; justify-content: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -757,7 +1071,7 @@
         </div>
         <div>
           <div class="brand-title">Tambov 73</div>
-          <div class="brand-sub" id="brandSubtitle">Симулятор смены модераторов</div>
+          <div class="brand-sub" id="brandSubtitle">Патруль чата модераторов</div>
         </div>
       </div>
  
@@ -784,10 +1098,10 @@
       <article class="panel hero-card">
         <div class="badge-row">
           <span class="badge">Discord • Tambov 73</span>
-          <span class="badge" id="heroBadge2">Режим: модераторы</span>
+          <span class="badge" id="heroBadge2">🛡️ Режим: чат-патруль</span>
         </div>
-        <h1 id="heroTitle">Следи за <span>порядком</span> на сервере.</h1>
-        <p id="heroText">Проверяй сообщения, принимай решения и поддерживай порядок в чате.</p>
+        <h1 id="heroTitle">Патрулируй <span>чат</span> без ошибок.</h1>
+        <p id="heroText">Отличай нарушения от обычного общения, выбирай верный вердикт и держи стабильную смену.</p>
      
         <div class="hero-actions">
           <button class="btn btn-primary" type="button" id="startBtn">Начать смену</button>
@@ -2149,6 +2463,70 @@
             rc.innerHTML = data.cards.map((item, idx) => `<div class="rule-item"><div class="rule-icon ${idx===0?"ok":idx===1?"warn":"ban"}">${idx===0?"✓":idx===1?"?":"ℹ"}</div><div class="rule-copy"><strong>${item[0]}</strong><span>${item[1]}</span></div></div>`).join("");
         }
 
+        
+        /* === ULTRA MODE IDENTITY: разные заголовки и карточки для каждой вкладки === */
+        const modeIdentityContent = {
+            moderation: { icon: "🛡️", tone: "Патруль чата", chips: ["Вердикты", "Антиспам", "Точность"], tip: "Тренируйся отличать нарушение от обычного общения и держи стабильный процент правильных решений." },
+            timeattack: { icon: "⏱️", tone: "Скоростной раунд", chips: ["60 секунд", "Реакция", "Комбо"], tip: "Сконцентрируйся на быстрых решениях: каждая ошибка съедает темп, а серия верных ответов усиливает результат." },
+            complaints: { icon: "📂", tone: "Разбор жалоб", chips: ["Доказательства", "Вердикт", "КГМ"], tip: "Смотри на факты, сверяй доказательства и передавай спорные ситуации старшим." },
+            support: { icon: "💬", tone: "Линия поддержки", chips: ["FAQ", "Помощь", "Тон"], tip: "Отвечай понятно, спокойно и по делу — игрок должен быстро понять следующий шаг." },
+            quests: { icon: "🎯", tone: "Квестовый центр", chips: ["Задания", "Бонусы", "Актив"], tip: "Закрывай задачи, собирай бонусный XP и отслеживай прогресс смены." },
+            guide: { icon: "📘", tone: "Справочник", chips: ["Контакты", "Роли", "Навигация"], tip: "Быстрый доступ к руководству и важной информации, чтобы не искать её во время смены." },
+            leaderboard: { icon: "🏆", tone: "Рейтинг", chips: ["Топ", "XP", "Активность"], tip: "Сравнивай прогресс сотрудников и мотивируйся подниматься выше в таблице." },
+            about: { icon: "✨", tone: "Команда проекта", chips: ["Авторы", "Идея", "Кредиты"], tip: "Раздел с людьми, которые вложились в создание и развитие тренажёра." },
+            profile: { icon: "👤", tone: "Личный кабинет", chips: ["Статы", "Баланс", "Награды"], tip: "Проверяй результаты, баланс, покупки и личные достижения аккаунта." },
+            shop: { icon: "🛒", tone: "Магазин модератора", chips: ["XP", "Бонусы", "Рулетки"], tip: "Трать заработанный опыт на ускорения, скидки и игровые бонусы." },
+            ap_shop: { icon: "🌸", tone: "Магазин АП", chips: ["Баллы АП", "Улучшения", "Игры"], tip: "Отдельная витрина для агентов поддержки с бонусами под их прогресс." },
+            report: { icon: "🧾", tone: "Отчётность", chips: ["Онлайн", "Норма", "Проверка"], tip: "Заполняй отчёт аккуратно: дата, время и комментарий должны быть понятны руководству." },
+            inactives: { icon: "🌙", tone: "Неактивы", chips: ["Заявка", "Причина", "Срок"], tip: "Оформи отсутствие заранее и укажи причину, чтобы не было вопросов по норме." },
+            admin_log: { icon: "📜", tone: "Логи модерации", chips: ["Выдачи", "Покупки", "Контроль"], tip: "Проверяй действия, которые требуют ручной выдачи или подтверждения руководства." },
+            ap_admin_log: { icon: "🧩", tone: "Логи АП", chips: ["Выдачи АП", "Баллы", "История"], tip: "Отдельный журнал действий и покупок для ветки агентов поддержки." },
+            creator: { icon: "👑", tone: "Панель создателя", chips: ["База", "Контент", "Права"], tip: "Центр управления пользователями, данными, контентом и техническими настройками проекта." },
+            leadership: { icon: "🧭", tone: "Руководство модерации", chips: ["Состав", "Статусы", "Проверки"], tip: "Управляй модераторами, статусами и внутренними действиями команды." },
+            ap_admin: { icon: "🎧", tone: "Руководство АП", chips: ["Состав АП", "FAQ", "Баллы"], tip: "Настраивай ветку поддержки, выдавай статусы и следи за качеством ответов." },
+            reports_table: { icon: "📊", tone: "Сводка отчётов", chips: ["Даты", "Норма", "Итоги"], tip: "Просматривай онлайн по датам и быстро находи тех, кто закрыл норму или ушёл в отказ." },
+            fsb: { icon: "🛡️", tone: "Отбор ФСБ", chips: ["Кандидаты", "Документы", "РП"], tip: "Проверяй заявления по критериям: ник, документы, скриншоты, розыск и законопослушность." },
+            fsb_shop: { icon: "🎁", tone: "Склад ФСБ", chips: ["Баллы ФСБ", "Отгулы", "Призы"], tip: "Используй баллы организации на награды, отгулы и внутриигровые возможности." },
+            fsb_admin: { icon: "🏛️", tone: "Штаб ФСБ", chips: ["Состав", "Баллы", "Роли"], tip: "Руководство ФСБ может управлять составом, правами и начислениями." },
+            fsb_admin_log: { icon: "🗂️", tone: "Журнал ФСБ", chips: ["Покупки", "Выдачи", "История"], tip: "Отдельный лог магазина и выдач ФСБ, чтобы ничего не потерялось." },
+            goss_center_v3: { icon: "🏛️", tone: "ГОСС центр", chips: ["Организации", "Состав", "Права"], tip: "Единый центр для старшего состава государственных организаций." },
+            goss_center_v4: { icon: "🏛️", tone: "ГОСС тренажёр", chips: ["Тренировка", "Отчёты", "Состав"], tip: "Актуальный раздел ГОСС: тренажёры доступны всем, управление — по правам." }
+        };
+
+        function getDynamicModeHeader(mode) {
+            if (mode === 'goss_center_v3' || mode === 'goss_center_v4') {
+                return ["ГОСС центр организаций", 'Координируй <span>госструктуры</span>.', "Выбирай организацию, проходи тренировки и работай с составом при наличии прав.", "🏛️ Режим: ГОСС"];
+            }
+            if (String(mode || '').startsWith('goss_')) {
+                const orgId = String(mode).replace('goss_', '');
+                const org = (typeof GOSS_ORGS !== 'undefined' ? GOSS_ORGS.find(o => o.id === orgId) : null) || { icon: '🏛️', short: 'ГОСС', name: 'Государственная организация' };
+                return ["ГОСС: " + org.short, org.icon + ' Раздел <span>' + org.short + '</span>.', "Работай с составом и материалами организации: " + org.name + ".", "🏛️ Режим: " + org.short];
+            }
+            return null;
+        }
+
+        function updateModeIdentity(mode, headerData) {
+            const heroCard = document.querySelector('.hero-card');
+            if (!heroCard || !headerData) return;
+            const heroActions = heroCard.querySelector('.hero-actions');
+            let box = document.getElementById('modeIdentity');
+            if (!box) {
+                box = document.createElement('div');
+                box.id = 'modeIdentity';
+                box.className = 'mode-identity';
+                if (heroActions) heroCard.insertBefore(box, heroActions);
+                else heroCard.appendChild(box);
+            }
+            const details = modeIdentityContent[mode] || (String(mode || '').startsWith('goss_') ? modeIdentityContent.goss_center_v4 : modeIdentityContent.moderation);
+            const chips = (details.chips || []).map(chip => '<span class="mode-chip">' + chip + '</span>').join('');
+            box.innerHTML = '<div class="mode-id-icon" aria-hidden="true">' + details.icon + '</div>' +
+                '<div class="mode-id-copy"><div class="mode-id-title">' + details.tone + '</div>' +
+                '<div class="mode-id-tip">' + details.tip + '</div>' +
+                '<div class="mode-id-chips">' + chips + '</div></div>';
+            heroCard.dataset.mode = mode;
+            document.body.dataset.activeMode = mode;
+        }
+
         const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb","fsb_shop","fsb_admin"];
         
         function switchMode(mode, btn) {
@@ -2169,6 +2547,7 @@
             else if(["complaints"].includes(mode)) currentTheme = "complaints";
             else if(["timeattack"].includes(mode)) currentTheme = "timeattack";
             else if(["creator"].includes(mode)) currentTheme = "creator";
+            else if(String(mode || "").startsWith("goss_") || ["goss_center_v3", "goss_center_v4", "fsb_admin_log"].includes(mode)) currentTheme = "quests";
 
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
@@ -2184,34 +2563,43 @@
             if(mode === 'profile') renderProfileData();
             if(mode === 'reports_table') loadReportsTable();
             
-            const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");
-            const headers = {
-                moderation: ["Симулятор смены модераторов", 'Следи за <span>порядком</span> на сервере.', "Проверяй сообщения, принимай решения и поддерживай порядок в чате.", "Режим: модераторы"],
-                timeattack: ["Симулятор смены: На время", 'Успей за <span>минуту</span>.', "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!", "Режим: спидран"],
-                complaints: ["Симулятор смены: Жалобы", 'Рассматривай <span>репорты</span>.', "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.", "Режим: жалобы"],
-                support: ["Симулятор смены агентов поддержки", 'Создавай <span>уют</span> и помогай игрокам.', "Отвечай на вопросы игроков, ориентируйся в материалах.", "Режим: агенты поддержки"],
-                quests: ["Квесты сотрудников", 'Выполняй <span>задания</span>.', "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.", "Режим: квесты"],
-                guide: ["Руководство Сервера", 'Контакты <span>руководства</span>.', "Основная информация и контактные данные.", "Режим: руководство"],
-                leaderboard: ["Таблица лидеров", 'Топ <span>лучших</span>.', "Отображаются активные сотрудники с наибольшим количеством XP.", "Режим: лидерборд"],
-                about: ["Люди, которые сделали этот проект", 'Узнай, кто <span>стоит за идеей</span>.', "Этот раздел посвящён авторам и тем, кто помогал собрать тренажёр.", "Режим: о команде"],
-                profile: ["Личный Профиль", 'Ваша <span>Статистика</span>.', "Ваши достижения, баланс и визуальные улучшения для аккаунта.", "Режим: профиль"],
-                shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
-                ap_shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
-                report: ["Симулятор смены: Отчетность", 'Сдавай <span>отчеты</span> вовремя.', "Отправляй данные своего онлайна для проверки руководством.", "Режим: отчетность"],
-                inactives: ["Симулятор смены: Неактивы", 'Берешь <span>отдых</span>?', "Отправьте заявку на неактив с указанием причины.", "Режим: неактивы"],
-                admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
-                ap_admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
-                creator: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                leadership: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                ap_admin: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
-                reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"],
-                fsb: ["Организации: ФСБ", 'Вербовка в <span>УФСБ</span>.', "Проверяйте заявления кандидатов на стажировку. Учитывайте РП правила и УК РФ.", "Режим: ФСБ"],
-                fsb_shop: ["Магазин ФСБ", 'Покупки для <span>Сотрудников</span>.', "Покупайте отгулы, транспорт или крутите рулетки за баллы.", "Режим: ФСБ Магазин"],
-                fsb_admin: ["Руководство ФСБ", 'Управление <span>Составом</span>.', "Выдача статуса ФСБ и начисление баллов.", "Режим: Руководство ФСБ"]
+            const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");            const headers = {
+                moderation: ["Патруль чата модераторов", 'Патрулируй <span>чат</span> без ошибок.', "Отличай нарушения от обычного общения, выбирай верный вердикт и держи стабильную смену.", "🛡️ Режим: чат-патруль"],
+                timeattack: ["Скоростная проверка сообщений", 'Решай за <span>секунды</span>.', "Минутный раунд на реакцию: быстро, точно и без лишних кликов.", "⏱️ Режим: спринт"],
+                complaints: ["Разбор жалоб игроков", 'Разбирай <span>доказательства</span>.', "Изучай жалобы, проверяй аргументы и выноси справедливый вердикт.", "📂 Режим: жалобы"],
+                support: ["Тренажёр агента поддержки", 'Помогай <span>игрокам</span> уверенно.', "Отвечай понятно, дружелюбно и по материалам, чтобы игрок быстро решил проблему.", "💬 Режим: поддержка"],
+                quests: ["Квестовый центр сотрудников", 'Забирай <span>миссии</span>.', "Выполняй задания, получай бонусный XP и отслеживай активность смены.", "🎯 Режим: квесты"],
+                guide: ["Справочник руководства", 'Держи <span>контакты</span> под рукой.', "Быстрый раздел с основной информацией, контактами и полезной навигацией.", "📘 Режим: справочник"],
+                leaderboard: ["Рейтинг активности", 'Смотри <span>топ</span> смены.', "Следи за лидерами по XP и сравнивай прогресс сотрудников.", "🏆 Режим: рейтинг"],
+                about: ["Команда проекта", 'Люди за <span>проектом</span>.', "Раздел об авторах, идее и людях, которые помогли собрать тренажёр.", "✨ Режим: о проекте"],
+                profile: ["Личный кабинет", 'Прокачивай <span>профиль</span>.', "Статистика, баланс, награды и покупки аккаунта в одном месте.", "👤 Режим: профиль"],
+                shop: ["Магазин модератора", 'Обменивай <span>XP</span> на бонусы.', "Покупай ускорения, скидки и игровые улучшения за заработанный опыт.", "🛒 Режим: магазин модерации"],
+                ap_shop: ["Магазин агента поддержки", 'Усиливай <span>АП</span> бонусами.', "Отдельные бонусы для ветки поддержки: баллы, улучшения и мини-игры.", "🌸 Режим: магазин АП"],
+                report: ["Отчётность по онлайну", 'Сдавай <span>норму</span> вовремя.', "Отправляй онлайн на проверку руководству и следи за корректностью данных.", "🧾 Режим: отчётность"],
+                inactives: ["Заявки на неактив", 'Оформи <span>отдых</span> корректно.', "Укажи срок и причину отсутствия, чтобы руководство быстро обработало заявку.", "🌙 Режим: неактивы"],
+                admin_log: ["Логи выдач модерации", 'Проверь <span>выдачи</span>.', "История покупок, рулеток и действий, которые нужно вручную подтвердить.", "📜 Режим: логи модерации"],
+                ap_admin_log: ["Логи выдач поддержки", 'Контролируй <span>АП-выдачи</span>.', "Отдельный журнал покупок и начислений для агентов поддержки.", "🧩 Режим: логи АП"],
+                creator: ["Главная панель создателя", 'Настраивай <span>проект</span>.', "Управляй пользователями, базой данных, правами и контентом тренажёра.", "👑 Режим: создатель"],
+                leadership: ["Панель руководства модерации", 'Управляй <span>составом</span>.', "Выдавай статусы, проверяй активность и контролируй работу модераторов.", "🧭 Режим: руководство модерации"],
+                ap_admin: ["Панель руководства АП", 'Веди <span>команду АП</span>.', "Настраивай вопросы, статусы и прогресс сотрудников поддержки.", "🎧 Режим: руководство АП"],
+                reports_table: ["Сводная таблица отчётов", 'Анализируй <span>онлайн</span>.', "Смотри нормы по датам, статусы отчётов и общий результат сотрудников.", "📊 Режим: таблица отчётов"],
+                fsb: ["Отбор в академию ФСБ", 'Проверяй <span>кандидатов</span>.', "Оценивай заявления по документам, скринам, РП-критериям и требованиям организации.", "🛡️ Режим: ФСБ отбор"],
+                fsb_shop: ["Склад наград ФСБ", 'Трать <span>баллы ФСБ</span>.', "Покупай отгулы, транспорт, бонусы и призы за баллы организации.", "🎁 Режим: магазин ФСБ"],
+                fsb_admin: ["Штаб руководства ФСБ", 'Управляй <span>составом ФСБ</span>.', "Выдавай статусы, начисляй баллы и контролируй внутреннюю структуру ФСБ.", "🏛️ Режим: штаб ФСБ"],
+                fsb_admin_log: ["Журнал выдач ФСБ", 'Отслеживай <span>операции ФСБ</span>.', "Смотри историю покупок и выдач магазина ФСБ, чтобы ничего не потерялось.", "🗂️ Режим: логи ФСБ"],
+                goss_center_v3: ["ГОСС центр организаций", 'Координируй <span>госструктуры</span>.', "Выбирай организацию, работай с составом и открывай разделы по правам.", "🏛️ Режим: ГОСС"],
+                goss_center_v4: ["ГОСС тренажёр", 'Тренируй <span>госслужбы</span>.', "Актуальный центр ГОСС: тренировки доступны всем, управление открывается по статусу.", "🏛️ Режим: ГОСС v4"]
             };
-            if(headers[mode]) {
-                if(brandSub) brandSub.textContent = headers[mode][0]; if(hTitle) hTitle.innerHTML = headers[mode][1]; if(hText) hText.textContent = headers[mode][2]; if(hBadge) hBadge.textContent = headers[mode][3];
+            const activeHeader = headers[mode] || getDynamicModeHeader(mode);
+            if(activeHeader) {
+                if(brandSub) brandSub.textContent = activeHeader[0];
+                if(hTitle) hTitle.innerHTML = activeHeader[1];
+                if(hText) hText.textContent = activeHeader[2];
+                if(hBadge) hBadge.textContent = activeHeader[3];
+                updateModeIdentity(mode, activeHeader);
+                document.title = activeHeader[0] + " — Tambov 73";
             }
+
         }
 
         document.querySelectorAll('.main-cat-btn').forEach(btn => {
