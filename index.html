@@ -1695,7 +1695,7 @@
         let modQueue = [], supQueue = [], compQueue = [], taQueue = [], fsbQueue = [], currentTableWeekOffset = 0; 
         let currentGameCurrency = 'game'; 
 
-        // === МАССИВЫ ИГР И ВОПРОСОВ ===
+        // === МАССИВЫ МАГАЗИНА И ИГР ===
         let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
             { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
@@ -1755,7 +1755,7 @@
 
         const questsData = [ { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 }, { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 }, { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 }, { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 } ];
 
-       let baseModMessages = [
+        let baseModMessages = [
         { type: "good", text: "Всем привет, как настроение сегодня?" },
         { type: "good", text: "Подскажите, где найти автосалон низкого класса?" },
         { type: "good", text: "Кто пойдет со мной на водолаза? Нужен напарник." },
@@ -2117,7 +2117,32 @@
             { text: 'Резюме в ФСБ. Владею всеми видами оружия на 100%. Адекватный, грамотный.', evidence: 'Документы в норме, но никнейм nonRP формата (LexaGamer2010).', type: 'reject' }
         ];
 
-        // ЛОГИКА ВКЛАДОК ФСБ
+        const allComplaints = [ { text: 'Игрок жалуется, что модератор выдал мут за капс, хотя в сообщении было одно слово.', evidence: 'Скрин: "ПОМОГИТЕ".', type: 'reject' }, { text: 'Жалоба на игрока, который в голосовом и текстовом канале оскорбил семью.', evidence: 'Видео с прямыми оскорблениями.', type: 'approve' }, { text: 'Пользователь просит наказать за бан, но в доказательствах обрезанный скрин.', evidence: 'Один скрин без ID и даты.', type: 'reject' }, { text: 'Жалоба на администратора: выдал наказание знакомому в обход правил.', evidence: 'Скрины, упоминание блата.', type: 'pass' }, { text: 'Игрок отправил жалобу на обход мута через твинк и приложил скрины.', evidence: 'Скрин признания и совпадение ID.', type: 'approve' } ];
+
+        const jwQuizQuestions = [
+            { q: "Как звали щенка, которого Джону подарила покойная жена?", opts: ["Дейзи", "Бадди", "Макс", "Снупи"], ans: "Дейзи" },
+            { q: "Какая машина была у Джона Уика (ту, которую угнали)?", opts: ["Ford Mustang Boss 429", "Dodge Charger", "Chevrolet Camaro", "Gran Torino"], ans: "Ford Mustang Boss 429" },
+            { q: "Какой предмет использовал Джон Уик, чтобы убить троих в баре?", opts: ["Карандаш", "Ручку", "Книгу", "Нож для стейка"], ans: "Карандаш" },
+            { q: "Как называется знаменитый отель для наемных убийц?", opts: ["Континенталь", "Плаза", "Ритц", "Ассасин Инн"], ans: "Континенталь" },
+            { q: "Какую валюту используют наемные убийцы в этом мире?", opts: ["Золотые монеты", "Бриллианты", "Биткоины", "Пачки наличных"], ans: "Золотые монеты" },
+            { q: "Кто угнал машину Джона и убил его собаку?", opts: ["Иосиф Тарасов", "Вигго Тарасов", "Сантино Д'Антонио", "Джулиус"], ans: "Иосиф Тарасов" },
+            { q: "Какое прозвище было у Джона Уика в криминальном мире?", opts: ["Баба Яга", "Кощей", "Жнец", "Призрак"], ans: "Баба Яга" },
+            { q: "Какое главное правило отеля «Континенталь»?", opts: ["Никаких дел на территории отеля", "Никакого огнестрельного оружия", "Только рукопашный бой", "Можно всё за двойную плату"], ans: "Никаких дел на территории отеля" },
+            { q: "В кого стрелял Джон в отеле «Континенталь», нарушив главное правило?", opts: ["Сантино Д'Антонио", "Арес", "Вигго", "Маркиз де Грамон"], ans: "Сантино Д'Антонио" },
+            { q: "Кто является бессменным консьержем в нью-йоркском «Континентале»?", opts: ["Харон", "Уинстон", "Боулер", "Зеро"], ans: "Харон" },
+            { q: "Кого сыграл Уиллем Дефо в первом фильме?", opts: ["Маркуса", "Уинстона", "Харона", "Вигго"], ans: "Маркуса" },
+            { q: "В каком городе находится главный 'Континенталь'?", opts: ["Нью-Йорк", "Рим", "Париж", "Лондон"], ans: "Нью-Йорк" },
+            { q: "В какой клуб отправился Джон во 2 фильме в Риме?", opts: ["Red Circle", "Blue Note", "Black Box", "Green Door"], ans: "Red Circle" },
+            { q: "Какой долг (вексель) потребовали от Джона во 2 части?", opts: ["Маркер", "Монета", "Журнал", "Кольцо"], ans: "Маркер" },
+            { q: "Кто был главной целью Джона во 2 фильме?", opts: ["Джианна", "Сантино", "Уинстон", "Кассиан"], ans: "Джианна" },
+            { q: "На чем Джон сбегает из Нью-Йорка в конце 3 фильма?", opts: ["На коне", "На метро", "На такси", "Пешком"], ans: "На коне" },
+            { q: "Как зовут персонажа Холли Берри в 3 части?", opts: ["София", "Анна", "Ева", "Мария"], ans: "София" },
+            { q: "Кому Джон отрубает палец в 3 части?", opts: ["Старейшине", "Уинстону", "Харону", "Никому, он отрубил себе"], ans: "Никому, он отрубил себе" },
+            { q: "С какой фразы начинается татуировка на спине Джона?", opts: ["Fortis Fortuna Adiuvat", "Смерть или Слава", "Баба Яга", "Без пощады"], ans: "Fortis Fortuna Adiuvat" },
+            { q: "Что Джон ответил на вопрос 'Ты вернулся?' в первой части?", opts: ["Я думаю, да", "Я никогда не уходил", "Я пришел за машиной", "Это только начало"], ans: "Я думаю, да" }
+        ];
+
+        // === ВСЕ ФУНКЦИИ ФСБ ===
         window.switchFsbTab = function(tabId, btn) {
             document.getElementById('btn_fsb_table').classList.remove('active');
             document.getElementById('btn_fsb_admin').classList.remove('active');
@@ -2130,32 +2155,6 @@
             if (tabId === 'fsb_table') loadFsbTable();
             if (tabId === 'fsb_reports') loadFsbReports();
         };
-
-        // ТАБЛИЦА ФСБ (Старший Состав)
-        getEl('openSsDataModalBtn')?.addEventListener('click', () => {
-            getEl('ssDataModal').style.display = 'flex';
-        });
-
-        getEl('saveSsDataBtn')?.addEventListener('click', async () => {
-            const age = getEl('ssAge').value.trim();
-            const vk = getEl('ssVk').value.trim();
-            const forum = getEl('ssForum').value.trim();
-            const tz = getEl('ssTimezone').value.trim();
-            const pos = getEl('ssPosition').value.trim();
-            if (!age || !vk || !forum || !tz || !pos) return alert("Заполните все поля!");
-            
-            const dataStr = JSON.stringify({ age, vk, forum, tz, pos, nick: currentNickname || currentUser.email });
-            
-            const { data: existing } = await supa.from('reports').select('id').eq('email', 'FSB_SS').eq('link', currentUser.id);
-            if (existing && existing.length > 0) {
-                await supa.from('reports').update({ date: dataStr }).eq('id', existing[0].id);
-            } else {
-                await supa.from('reports').insert([{ id: 'fss_' + Date.now(), email: 'FSB_SS', link: currentUser.id, date: dataStr, status: 'active', xp: 0 }]);
-            }
-            alert("Ваши данные сохранены в Таблице ФСБ!");
-            getEl('ssDataModal').style.display = 'none';
-            loadFsbTable();
-        });
 
         window.loadFsbTable = async function() {
             const tbody = getEl('fsbTableBody');
@@ -2205,19 +2204,7 @@
                 await supa.from('reports').update({ date: JSON.stringify(parsed) }).eq('id', id);
                 alert("Строка успешно сохранена!");
             }
-        }
-
-        // ОТЧЕТНОСТЬ ФСБ
-        getEl('submitFsbReportBtn')?.addEventListener('click', async () => {
-            const link = getEl('fsbReportLink').value.trim();
-            if(!link) return alert("Вставьте ссылку на доказательства!");
-            getEl('submitFsbReportBtn').disabled = true;
-            await supa.from('reports').insert([{ id: 'frep_' + Date.now(), email: 'FSB_REPORT', link: link, date: currentNickname || currentUser.email, status: 'На проверке', xp: 0 }]);
-            getEl('submitFsbReportBtn').disabled = false;
-            getEl('fsbReportLink').value = '';
-            alert("Отчет СС ФСБ успешно отправлен на проверку Руководству!");
-            loadFsbReports();
-        });
+        };
 
         window.loadFsbReports = async function() {
             const list = getEl('fsbReportsList');
@@ -2251,41 +2238,7 @@
             loadFsbReports();
         };
 
-
-        function randomFsbApp() {
-            if (fsbQueue.length === 0) { fsbQueue = allFsbApps.map((_, i) => i); shuffleArray(fsbQueue); }
-            const item = allFsbApps[fsbQueue.pop()]; fsbState.current = item;
-            const fsbAuthor = document.getElementById("fsbAuthor");
-            if (fsbAuthor) {
-                fsbAuthor.textContent = randomFunnyNick(); 
-                document.getElementById("fsbMeta").textContent = "Ожидает проверки УФСБ"; 
-                document.getElementById("fsbText").textContent = item.text; 
-                document.getElementById("fsbEvidence").textContent = "Документы: " + item.evidence;
-            }
-        }
-
-        window.judgeFsb = function(action) {
-            if (!state.started) { alert('Сначала нажми "Начать смену" в главном меню!'); return; }
-            if (isSpamming() || !fsbState.current) return;
-            const isCorrect = action === fsbState.current.type;
-            fsbState.resolved++;
-            if (action === 'approve') fsbState.approved++; else fsbState.rejected++;
-            
-            if (isCorrect) { 
-                playSound('ok'); 
-                pushLog(`✅ ФСБ: верный вердикт (${action})`); 
-                addGameXp(10); 
-                if (currentUser) shopState.fsbSpent = (shopState.fsbSpent || 0) - 5; 
-            } 
-            else { playSound('fail'); pushLog(`❌ ФСБ: ошибка в проверке!`); }
-            
-            document.getElementById("fsbResolvedValue").textContent = fsbState.resolved;
-            document.getElementById("fsbApprovedValue").textContent = fsbState.approved;
-            document.getElementById("fsbRejectedValue").textContent = fsbState.rejected;
-            
-            saveProgress(); randomFsbApp(); updateShopStats();
-        };
-
+        // === ОБЩИЕ ФУНКЦИИ И ИНИЦИАЛИЗАЦИЯ ===
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'SHOP_FSB', 'ROULETTE_MOD', 'ROULETTE_AP', 'ROULETTE_FSB', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE', 'SHOP_OVERRIDE', 'GAME_XP']);
             customShopItems = []; customApShopItems = []; customFsbShopItems = []; customModMessages = []; customSupQuestions = []; hiddenChecks = []; activeMods = []; activeAps = []; activeFsb = [];
@@ -2440,18 +2393,6 @@
             }
         }
 
-        document.querySelectorAll('.main-cat-btn').forEach(btn => {
-            if (btn.id.startsWith('btn_fsb')) return; 
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.main-cat-btn').forEach(b => { if (!b.id.startsWith('btn_fsb')) b.classList.remove('active'); }); btn.classList.add('active');
-                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport'), organizations: document.getElementById('subNavOrganizations') };
-                Object.values(subNavs).forEach(nav => { if(nav) nav.style.display = 'none'; });
-                const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
-            });
-        });
-
-        document.querySelectorAll(".mode-btn").forEach(btn => { btn.addEventListener("click", () => switchMode(btn.dataset.mode, btn)); });
-
         function randomFunnyNick() { 
             const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"], funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
             return `${funnyLeft[Math.floor(Math.random() * funnyLeft.length)]}_${funnyRight[Math.floor(Math.random() * funnyRight.length)]}#${Math.floor(1000 + Math.random() * 8999)}`;
@@ -2524,6 +2465,17 @@
             pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
         }
 
+        async function saveProgress() {
+            if(!currentUser) return;
+            await supa.from('user_stats').upsert([{ 
+                user_id: currentUser.id, 
+                email: currentUser.email, 
+                nickname: currentNickname || currentUser.email,
+                mod_correct: state.correct,
+                sup_correct: supportState.correct
+            }]);
+        }
+
         async function checkAndApplyHiddenChecks() {
             if(!currentUser) return null;
             const hcIndex = hiddenChecks.findIndex(hc => hc.userId === currentUser.id);
@@ -2551,6 +2503,18 @@
             document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
         }
 
+        function randomFsbApp() {
+            if (fsbQueue.length === 0) { fsbQueue = allFsbApps.map((_, i) => i); shuffleArray(fsbQueue); }
+            const item = allFsbApps[fsbQueue.pop()]; fsbState.current = item;
+            const fsbAuthor = document.getElementById("fsbAuthor");
+            if (fsbAuthor) {
+                fsbAuthor.textContent = randomFunnyNick(); 
+                document.getElementById("fsbMeta").textContent = "Ожидает проверки УФСБ"; 
+                document.getElementById("fsbText").textContent = item.text; 
+                document.getElementById("fsbEvidence").textContent = "Документы: " + item.evidence;
+            }
+        }
+
         function taNextMsg() {
             let combinedModMessages = [...baseModMessages, ...customModMessages];
             if (taQueue.length === 0) { taQueue = combinedModMessages.map((_, i) => i); shuffleArray(taQueue); }
@@ -2572,6 +2536,54 @@
             else { alert(`Время вышло! Увы, вы не заработали очков.`); }
             document.getElementById('taStartScreen').style.display = 'block'; document.getElementById('taGameScreen').style.display = 'none';
         }
+
+        window.judge = function(action) {
+            if (!state.started) { alert('Сначала нажми "Начать смену" в главном меню!'); return; }
+            if (isSpamming() || !state.current) return;
+            const isCorrect = action === state.current.type;
+            state.resolved++;
+            if (isCorrect) { 
+                state.correct++; playSound('ok'); pushLog(`✅ Верно (${action}): ${state.current.user}`); 
+            } else { 
+                state.mistakes++; playSound('fail'); pushLog(`❌ Ошибка (${action}): ${state.current.user}`); 
+            }
+            randomMessage(); updateModStats(); saveProgress();
+        };
+
+        window.judgeComplaint = function(action) {
+            if (!state.started) { alert('Сначала нажми "Начать смену" в главном меню!'); return; }
+            if (isSpamming() || !complaintState.current) return;
+            const isCorrect = action === complaintState.current.type;
+            complaintState.resolved++;
+            if (isCorrect) { 
+                complaintState.correct++; playSound('ok'); pushLog(`✅ Жалоба: верный вердикт (${action})`); 
+            } else { 
+                complaintState.mistakes++; playSound('fail'); pushLog(`❌ Жалоба: ошибка!`); 
+            }
+            randomComplaint(); updateComplaintStats(); saveProgress();
+        };
+
+        window.judgeFsb = function(action) {
+            if (!state.started) { alert('Сначала нажми "Начать смену" в главном меню!'); return; }
+            if (isSpamming() || !fsbState.current) return;
+            const isCorrect = action === fsbState.current.type;
+            fsbState.resolved++;
+            if (action === 'approve') fsbState.approved++; else fsbState.rejected++;
+            
+            if (isCorrect) { 
+                playSound('ok'); 
+                pushLog(`✅ ФСБ: верный вердикт (${action})`); 
+                addGameXp(10); 
+                if (currentUser) shopState.fsbSpent = (shopState.fsbSpent || 0) - 5; 
+            } 
+            else { playSound('fail'); pushLog(`❌ ФСБ: ошибка в проверке!`); }
+            
+            document.getElementById("fsbResolvedValue").textContent = fsbState.resolved;
+            document.getElementById("fsbApprovedValue").textContent = fsbState.approved;
+            document.getElementById("fsbRejectedValue").textContent = fsbState.rejected;
+            
+            saveProgress(); randomFsbApp(); updateShopStats();
+        };
 
         function renderProfileData() {
             const nameEl = document.getElementById('profileName');
@@ -2979,33 +2991,6 @@
         function openSafesGame() {
             document.getElementById('safesModal').style.display = 'flex'; document.getElementById('safesResult').textContent = ''; document.getElementById('closeSafesBtn').style.display = 'none'; document.querySelectorAll('.safe-btn').forEach(btn => { btn.textContent = '🧰'; btn.disabled = false; });
         }
-        
-        const jwQuizQuestions = [
-            { q: "Как звали щенка, которого Джону подарила покойная жена?", opts: ["Дейзи", "Бадди", "Макс", "Снупи"], ans: "Дейзи" },
-            { q: "Какая машина была у Джона Уика (ту, которую угнали)?", opts: ["Ford Mustang Boss 429", "Dodge Charger", "Chevrolet Camaro", "Gran Torino"], ans: "Ford Mustang Boss 429" },
-            { q: "Какой предмет использовал Джон Уик, чтобы убить троих в баре?", opts: ["Карандаш", "Ручку", "Книгу", "Нож для стейка"], ans: "Карандаш" },
-            { q: "Как называется знаменитый отель для наемных убийц?", opts: ["Континенталь", "Плаза", "Ритц", "Ассасин Инн"], ans: "Континенталь" },
-            { q: "Какую валюту используют наемные убийцы в этом мире?", opts: ["Золотые монеты", "Бриллианты", "Биткоины", "Пачки наличных"], ans: "Золотые монеты" },
-            { q: "Кто угнал машину Джона и убил его собаку?", opts: ["Иосиф Тарасов", "Вигго Тарасов", "Сантино Д'Антонио", "Джулиус"], ans: "Иосиф Тарасов" },
-            { q: "Какое прозвище было у Джона Уика в криминальном мире?", opts: ["Баба Яга", "Кощей", "Жнец", "Призрак"], ans: "Баба Яга" },
-            { q: "Какое главное правило отеля «Континенталь»?", opts: ["Никаких дел на территории отеля", "Никакого огнестрельного оружия", "Только рукопашный бой", "Можно всё за двойную плату"], ans: "Никаких дел на территории отеля" },
-            { q: "В кого стрелял Джон в отеле «Континенталь», нарушив главное правило?", opts: ["Сантино Д'Антонио", "Арес", "Вигго", "Маркиз де Грамон"], ans: "Сантино Д'Антонио" },
-            { q: "Кто является бессменным консьержем в нью-йоркском «Континентале»?", opts: ["Харон", "Уинстон", "Боулер", "Зеро"], ans: "Харон" },
-            { q: "Кого сыграл Уиллем Дефо в первом фильме?", opts: ["Маркуса", "Уинстона", "Харона", "Вигго"], ans: "Маркуса" },
-            { q: "В каком городе находится главный 'Континенталь'?", opts: ["Нью-Йорк", "Рим", "Париж", "Лондон"], ans: "Нью-Йорк" },
-            { q: "В какой клуб отправился Джон во 2 фильме в Риме?", opts: ["Red Circle", "Blue Note", "Black Box", "Green Door"], ans: "Red Circle" },
-            { q: "Какой долг (вексель) потребовали от Джона во 2 части?", opts: ["Маркер", "Монета", "Журнал", "Кольцо"], ans: "Маркер" },
-            { q: "Кто был главной целью Джона во 2 фильме?", opts: ["Джианна", "Сантино", "Уинстон", "Кассиан"], ans: "Джианна" },
-            { q: "На чем Джон сбегает из Нью-Йорка в конце 3 фильма?", opts: ["На коне", "На метро", "На такси", "Пешком"], ans: "На коне" },
-            { q: "Как зовут персонажа Холли Берри в 3 части?", opts: ["София", "Анна", "Ева", "Мария"], ans: "София" },
-            { q: "Кому Джон отрубает палец в 3 части?", opts: ["Старейшине", "Уинстону", "Харону", "Никому, он отрубил себе"], ans: "Никому, он отрубил себе" },
-            { q: "С какой фразы начинается татуировка на спине Джона?", opts: ["Fortis Fortuna Adiuvat", "Смерть или Слава", "Баба Яга", "Без пощады"], ans: "Fortis Fortuna Adiuvat" },
-            { q: "Что Джон ответил на вопрос 'Ты вернулся?' в первой части?", opts: ["Я думаю, да", "Я никогда не уходил", "Я пришел за машиной", "Это только начало"], ans: "Я думаю, да" }
-        ];
-
-        let jwCurrentQ = 0;
-        let jwCorrect = 0;
-        let jwSelectedQs = [];
 
         function openJwQuiz() {
             if(!currentUser) { alert("Войдите в аккаунт, чтобы играть!"); return; }
@@ -3530,7 +3515,7 @@
             await supa.from('reports').update({ status: statusText }).eq('id', id); document.getElementById('viewInactivesBtn').click(); setTimeout(() => document.getElementById('viewInactivesBtn').click(), 100); 
         };
 
-        // Подключаем кнопки
+        // === ПОДКЛЮЧЕНИЕ КНОПОК ===
         const getEl = (id) => document.getElementById(id);
         
         getEl('loginBtnUI').onclick = () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; };
@@ -3555,10 +3540,7 @@
             if(error) { 
                 err.textContent = error.message; err.style.color = "var(--color-error)"; 
             } else { 
-                // Принудительно заносим в БД чтобы юзер сразу появился в списках
-                if (authData && authData.user) {
-                    await supa.from('user_stats').insert([{ user_id: authData.user.id, email: email, nickname: nickname }]);
-                }
+                if (authData && authData.user) { await supa.from('user_stats').insert([{ user_id: authData.user.id, email: email, nickname: nickname }]); }
                 err.textContent = "Успешно! Выполняется вход..."; err.style.color = "var(--color-success)"; 
                 await supa.auth.signInWithPassword({ email, password });
                 window.location.reload(); 
@@ -3754,7 +3736,6 @@
             if(item) { await supa.from('reports').delete().eq('id', item.id); alert("Товар АП удален у всех!"); loadGlobalShopAndRoulette(); } else alert("Пользовательский товар с таким названием не найден!");
         });
 
-        // ИСПРАВЛЕНИЕ: Выдача опыта создателем напрямую через БД отчетов, а не через изменение "потраченного"
         getEl('creatorXpBtn')?.addEventListener('click', async () => {
              const userId = getEl('creatorUserSelect').value, amount = Number(getEl('creatorXpAmount').value);
              const type = getEl('creatorGiveType').value;
@@ -3948,7 +3929,6 @@
             alert("Статус Сотрудника ФСБ успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
         });
 
-        // ИСПРАВЛЕНИЕ: Прямое зачисление опыта модератору (чтобы XP не терялось)
         getEl('leadershipXpBtn')?.addEventListener('click', async () => {
             const userId = getEl('leadershipUserSelect').value, amount = Number(getEl('leadershipXpAmount').value);
             const type = getEl('leadershipGiveType').value;
@@ -4061,5 +4041,3 @@
         });
     });
   </script>
-</body>
-</html>
