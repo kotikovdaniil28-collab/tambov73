@@ -2094,7 +2094,7 @@
         { type: "ban", text: "Игрок1: Вот ссылка на чит.\nИгрок2: Спасибо, скачал." },
         { type: "ban", text: "Игрок1: Скину шок фото.\nИгрок2: Жду." },
         { type: "ban", text: "Игрок1: Давай обмен аккаунтами за деньги.\nИгрок2: Давай." }
-        ];
+       ];
 
         let baseSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] }, { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] }, { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] }, { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] } ];
         
@@ -2171,7 +2171,7 @@
                         <td style="padding: 1rem;">${isLd ? `<input type="text" id="fsb_tz_${d.id}" value="${parsed.tz||''}" class="support-input" style="padding:0.2rem; font-size:0.8rem; width:60px;">` : (parsed.tz||'')}</td>
                         <td style="padding: 1rem;">${parsed.vk ? `<a href="${parsed.vk.startsWith('http')?parsed.vk:'https://vk.com/'+parsed.vk}" target="_blank" style="color:var(--color-primary);">ВК</a>` : '-'}</td>
                         <td style="padding: 1rem;">${parsed.forum ? `<a href="${parsed.forum}" target="_blank" style="color:var(--color-primary);">Форум</a>` : '-'}</td>
-                        ${isLd ? `<td style="padding: 1rem;"><button onclick="saveFsbTableRow('${d.id}')" class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.7rem; border-color:#6c8cff; color:#6c8cff;">Сохранить</button></td>` : ''}
+                        ${isLd ? `<td style="padding: 1rem;"><button onclick="window.saveFsbTableRow('${d.id}')" class="btn btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.7rem; border-color:#6c8cff; color:#6c8cff;">Сохранить</button></td>` : ''}
                     </tr>
                     `;
                 }).join('');
@@ -2211,8 +2211,8 @@
                     </div>
                     ${r.status === 'На проверке' ? `
                     <div style="display:flex; gap: 0.5rem; margin-top:0.5rem;">
-                        <button class="btn btn-secondary" style="flex:1; padding:0.3rem; border-color:var(--color-success); color:var(--color-success);" onclick="processFsbReport('${r.id}', 'Одобрено')">Одобрить</button>
-                        <button class="btn btn-secondary" style="flex:1; padding:0.3rem; border-color:var(--color-error); color:var(--color-error);" onclick="processFsbReport('${r.id}', 'Отказано')">Отказать</button>
+                        <button class="btn btn-secondary" style="flex:1; padding:0.3rem; border-color:var(--color-success); color:var(--color-success);" onclick="window.processFsbReport('${r.id}', 'Одобрено')">Одобрить</button>
+                        <button class="btn btn-secondary" style="flex:1; padding:0.3rem; border-color:var(--color-error); color:var(--color-error);" onclick="window.processFsbReport('${r.id}', 'Отказано')">Отказать</button>
                     </div>
                     ` : ''}
                 </div>
@@ -2640,7 +2640,7 @@
             container.innerHTML = ''; const totalXp = availableXp(), realXp = getRealBalance();
             shopItems.forEach(item => {
                 const isGame = !!item.action, canAfford = isGame ? (totalXp >= item.price) : (realXp >= item.price), errorReason = isGame ? "Не хватает XP" : "Нужен XP с Отчетов";
-                container.innerHTML += `<div class="shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price">${item.price} XP</div></div> <p>${item.desc}</p> <button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? (isGame ? 'Играть' : 'Купить') : errorReason}</button> </div>`;
+                container.innerHTML += `<div class="shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price">${item.price} XP</div></div> <p>${item.desc}</p> <button class="shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="window.buyItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? (isGame ? 'Играть' : 'Купить') : errorReason}</button> </div>`;
             });
         }
         
@@ -2649,7 +2649,7 @@
             container.innerHTML = ''; const currentPts = availablePts();
             apShopItems.forEach(item => {
                 const canAfford = currentPts >= item.price;
-                container.innerHTML += `<div class="shop-card ap-shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price ap-shop-price">${item.price} Баллов</div></div> <p>${item.desc}</p> <button class="shop-buy-btn ap-shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="buyApItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button> </div>`;
+                container.innerHTML += `<div class="shop-card ap-shop-card"> <div style="display:flex; justify-content:space-between; align-items:start;"><h3>${item.icon} ${item.title}</h3><div class="shop-price ap-shop-price">${item.price} Баллов</div></div> <p>${item.desc}</p> <button class="shop-buy-btn ap-shop-buy-btn" ${!canAfford ? 'disabled' : ''} onclick="window.buyApItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button> </div>`;
             });
         }
 
@@ -2661,7 +2661,7 @@
                 container.innerHTML += `<div class="shop-card" style="border-color: rgba(108, 140, 255, 0.4);">
                     <div style="display:flex; justify-content:space-between; align-items:start;"><h3 style="color:#6c8cff;">${item.icon} ${item.title}</h3><div class="shop-price" style="color:#6c8cff; border-color:#6c8cff; background:rgba(108,140,255,0.1);">${item.price} Баллов</div></div>
                     <p>${item.desc}</p>
-                    <button class="shop-buy-btn" style="background: linear-gradient(135deg, #6c8cff, #4a6fe3); color:#fff;" ${!canAfford ? 'disabled' : ''} onclick="buyFsbItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button>
+                    <button class="shop-buy-btn" style="background: linear-gradient(135deg, #6c8cff, #4a6fe3); color:#fff;" ${!canAfford ? 'disabled' : ''} onclick="window.buyFsbItem('${item.id}', ${item.price}, '${item.action || ''}')">${canAfford ? 'Купить' : 'Не хватает Баллов'}</button>
                 </div>`;
             });
         }
@@ -3078,7 +3078,7 @@
             const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ? JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
             cont.innerHTML = questsData.map(q => {
                 const isClaimed = claimed.includes(q.id); const prog = Math.min(q.max, q.getProgress()); const isDone = prog >= q.max;
-                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--theme-accent); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--theme-accent); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
+                return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--theme-accent); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--theme-accent); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="window.claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
             }).join('');
         }
         
@@ -3187,7 +3187,7 @@
                                     <div style="font-size:0.7rem; color:var(--color-text-faint);">Реальный XP</div>
                                     <input type="number" id="db_real_${u.user_id}" value="${userRealXp}" class="support-input" style="width:80px; padding:0.4rem; text-align:center;">
                                 </div>
-                                <button onclick="saveUserDb('${u.user_id}', ${userGameXp}, ${userRealXp})" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-top: 15px;">Сохранить</button>
+                                <button onclick="window.saveUserDb('${u.user_id}', ${userGameXp}, ${userRealXp})" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-top: 15px;">Сохранить</button>
                             </div>
                         </div>`;
                     }
@@ -3302,7 +3302,7 @@
             if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
 
             if(logs && logs.length > 0) {
-                area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
+                area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="window.markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
             } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
         };
 
@@ -3442,7 +3442,7 @@
                     if (isLeader) {
                         html += `<div class="report-day-item ${statusClass}" style="min-width:130px; background:rgba(0,0,0,0.4); padding:0.8rem; border-radius:12px; display:flex; flex-direction:column; align-items:center; border:1px solid rgba(255,255,255,0.05);">
                                     <div class="report-day-date" style="font-size:0.8rem; margin-bottom:0.5rem; color:#fff; font-weight:bold;">${shortDate}</div>
-                                    <select class="status-select ${statusClass}" onchange="updateReportStatusDirectly(this, '${mod.nickname}', '${d}', '${rep ? rep.id : ''}')">
+                                    <select class="status-select ${statusClass}" onchange="window.updateReportStatusDirectly(this, '${mod.nickname}', '${d}', '${rep ? rep.id : ''}')">
                                         <option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option>
                                         <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option>
                                         <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option>
@@ -3479,14 +3479,14 @@
             selectEl.style.opacity = '0.5'; selectEl.disabled = true;
 
             if (existingId) {
-                if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '')`); } 
+                if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.setAttribute('onchange', `window.updateReportStatusDirectly(this, '${nick}', '${date}', '')`); } 
                 else { await supa.from('reports').update({ status: val, xp: xpAmount }).eq('id', existingId); }
             } else {
                 if (val !== 'none') {
                     const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
                     const newId = 'rep_manual_' + Date.now().toString();
                     await supa.from('reports').insert([{ id: newId, email: currentUser.email, link: '', date: fakeData, status: val, xp: xpAmount }]);
-                    selectEl.setAttribute('onchange', `updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}')`);
+                    selectEl.setAttribute('onchange', `window.updateReportStatusDirectly(this, '${nick}', '${date}', '${newId}')`);
                 }
             }
             if (val === 'Не засчитано' || val === 'Нет отчета') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
@@ -3865,6 +3865,7 @@
             alert("Рулетка АП обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
+        // Управление товарами ФСБ
         getEl('addFsbShopItemBtn')?.addEventListener('click', async () => {
             const title = getEl('fsbShopItemTitle').value.trim(), desc = getEl('fsbShopItemDesc').value.trim(), price = Number(getEl('fsbShopItemPrice').value), icon = getEl('fsbShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
