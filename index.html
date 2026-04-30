@@ -13408,6 +13408,283 @@
   setTimeout(install, 250); setTimeout(install, 1200); setTimeout(install, 3000);
   setInterval(() => { if (window.loadReportsTable !== oldModeratorsTableV34) window.loadReportsTable = oldModeratorsTableV34; }, 900);
 })();
+
+/* === T73 V35: фикс таблицы модераторов в Общем/Модерации, без СС/ГОСС-подмены === */
+(() => {
+  if (window.__T73_V35_MOD_TABLE_STABLE__) return;
+  window.__T73_V35_MOD_TABLE_STABLE__ = true;
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  const SYSTEM_EMAILS = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_OVERRIDE','USER_ROLE','GAME_XP','INACTIVE_REQ',
+    'GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_REPORTS','GOSS_PROFILE','GOSS_REPORT_TABLE','GOSS_REPORT_MEMBER',
+    'GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_SHOP','GOSS_SHOP_BUY','GOSS_ORG_LOG','GOSS_SHOP_ITEMS_V12','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V30',
+    'REPORT_TABLE_MARK','REPORT_TABLE_MARK_V12','REPORT_TABLE_MARK_V13','REPORT_TABLE_MARK_V14','REPORT_TABLE_MARK_V15','REPORT_TABLE_MARK_V16','REPORT_TABLE_MEMBER_V13'
+  ]);
+  let v35Rendering = false;
+  let v35Queued = false;
+
+  function isLeader(){
+    try {
+      return !!(window.currentUser && (
+        (Array.isArray(window.adminEmails) && window.adminEmails.includes(currentUser.email)) ||
+        currentUser.email === window.creatorEmail ||
+        (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.includes(currentUser.id))
+      ));
+    } catch(e){ return false; }
+  }
+  function isGossLike(r){
+    const email = String(r?.email || '');
+    const link = String(r?.link || '');
+    const status = String(r?.status || '');
+    const date = String(r?.date || '');
+    return email.startsWith('GOSS_') || link.startsWith('goss') || status.startsWith('goss') ||
+      date.includes('GOSS_') || date.includes('ГОСС') || date.includes('СС всех ГОСС') ||
+      email.includes('GOSS') || SYSTEM_EMAILS.has(email);
+  }
+  function cleanStatus(st){
+    st = String(st || 'none');
+    if (st === 'Натяг') return 'Герой дня'; // защита только для модераторской таблицы, чтобы старые кривые записи не ломали отображение
+    if (st === 'Не засчитано') return 'Отказ';
+    return st;
+  }
+  function statusClass(st){
+    st = cleanStatus(st);
+    if (st === 'Норма' || st === 'Перенорма') return 'status-good';
+    if (st === 'Герой дня') return 'status-hero';
+    if (st === 'Неактив') return 'status-inactive';
+    if (st === 'Нет отчета' || st === 'Отказ') return 'status-missing';
+    return 'status-none';
+  }
+  function statusText(st){
+    st = cleanStatus(st);
+    if (st === 'none') return '-';
+    return st || '-';
+  }
+  function xpFor(st){
+    st = cleanStatus(st);
+    if (st === 'Норма') return 15;
+    if (st === 'Перенорма') return 30;
+    if (st === 'Герой дня') return 60;
+    return 0;
+  }
+  function days(){
+    const out = [];
+    const offset = Number(window.currentTableWeekOffset || 0);
+    const today = new Date();
+    today.setDate(today.getDate() - offset * 7);
+    for (let i = 0; i < 7; i++) { const d = new Date(today); d.setDate(d.getDate() - i); out.push(d.toISOString().slice(0,10)); }
+    return out.reverse();
+  }
+  function reportsVisible(){
+    const sec = $('mode-reports_table');
+    return !!(sec && getComputedStyle(sec).display !== 'none');
+  }
+  function ensureShell(){
+    let sec = $('mode-reports_table');
+    const game = document.querySelector('.game-wrap') || document.querySelector('.page') || document.body;
+    if (!sec && game) {
+      game.insertAdjacentHTML('beforeend', '<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>');
+      sec = $('mode-reports_table');
+    }
+    if (!sec) return null;
+    if (sec.dataset.v35Shell !== '1' || !sec.querySelector('#reportsTableWrapper')) {
+      sec.dataset.v35Shell = '1';
+      sec.innerHTML = `
+        <div class="section-head">
+          <h2 style="color:#52c77b;">Таблица Отчетов Модерации</h2>
+          <p>Старая таблица модераторов: карточки, даты недели, Real XP и привычные статусы. ГОСС/СС-таблицы сюда не попадают.</p>
+        </div>
+        <div class="rt-controls">
+          <button id="rtPrevWeekBtn" class="btn btn-secondary" type="button">⬅️ Прошлая неделя</button>
+          <strong id="rtCurrentWeekLabel">Текущая неделя</strong>
+          <button id="rtNextWeekBtn" class="btn btn-secondary" type="button">Следующая ➡️</button>
+        </div>
+        <div id="reportsTableWrapper" data-v35-stable="0"><div class="message-text" style="text-align:center;padding:2rem;">Нажмите «Обновить» или откройте таблицу заново.</div></div>`;
+    }
+    bindWeekButtons();
+    return $('reportsTableWrapper');
+  }
+  function bindWeekButtons(){
+    const prev = $('rtPrevWeekBtn'), next = $('rtNextWeekBtn');
+    if (prev && prev.dataset.v35 !== '1') {
+      prev.dataset.v35 = '1';
+      prev.onclick = (e) => { e.preventDefault(); window.currentTableWeekOffset = Number(window.currentTableWeekOffset || 0) + 1; window.loadReportsTable(); };
+    }
+    if (next && next.dataset.v35 !== '1') {
+      next.dataset.v35 = '1';
+      next.onclick = (e) => { e.preventDefault(); window.currentTableWeekOffset = Math.max(0, Number(window.currentTableWeekOffset || 0) - 1); window.loadReportsTable(); };
+    }
+    if (next) next.disabled = Number(window.currentTableWeekOffset || 0) === 0;
+  }
+
+  async function loadModTableV35(){
+    if (v35Rendering) { v35Queued = true; return; }
+    v35Rendering = true;
+    const wrap = ensureShell();
+    if (!wrap) { v35Rendering = false; return; }
+    wrap.dataset.v35Stable = '0';
+    wrap.innerHTML = '<div class="message-card" style="text-align:center;min-height:auto;">⏳ Загружаю именно таблицу модераторов...</div>';
+    const lbl = $('rtCurrentWeekLabel');
+    if (lbl) lbl.textContent = Number(window.currentTableWeekOffset || 0) === 0 ? 'Текущая неделя' : `${window.currentTableWeekOffset} нед. назад`;
+    const next = $('rtNextWeekBtn'); if (next) next.disabled = Number(window.currentTableWeekOffset || 0) === 0;
+
+    try {
+      const { data: modRoles, error: roleErr } = await supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','moderator');
+      if (roleErr) throw roleErr;
+      const modIds = (modRoles || []).map(r => r.link).filter(Boolean);
+      if (!modIds.length) {
+        wrap.dataset.v35Stable = '1';
+        wrap.innerHTML = '<div class="message-card" style="text-align:center;min-height:auto;">Модераторы не найдены. Выдайте роль модератора.</div>';
+        return;
+      }
+      const { data: usersData, error: usersErr } = await supa.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id', modIds);
+      if (usersErr) throw usersErr;
+      let mods = (usersData || []).filter(u => u && u.email);
+      const sortedDays = days();
+      const { data: rawReports } = await supa.from('reports').select('*').order('id',{ ascending:false }).limit(1400);
+      const reports = (rawReports || []).filter(r => !isGossLike(r));
+      const { data: inactives } = await supa.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено');
+      const leader = isLeader();
+      const actual = new Date(); actual.setHours(0,0,0,0);
+
+      mods.forEach(mod => {
+        let realXp = 0;
+        reports.forEach(r => { if (String(r.email || '') === String(mod.email || '') && Number(r.xp || 0) > 0) realXp += Number(r.xp || 0); });
+        mod.calculatedRealXp = Math.max(0, realXp - Number(mod.shop_spent || 0));
+      });
+      if (!leader) {
+        mods = mods.filter(m => !((Array.isArray(window.adminEmails) && window.adminEmails.includes(m.email)) || m.email === window.creatorEmail || (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.includes(m.user_id))));
+      }
+      mods.sort((a,b) => String(a.nickname || '').localeCompare(String(b.nickname || ''), 'ru'));
+
+      let html = '<div class="v35-table-note">Показана таблица <b>модераторов</b>. ГОСС/СС отчёты и таблицы тут принудительно отфильтрованы.</div><div class="v34-mobile-hint">↔️ На телефоне проведите по строке влево/вправо, чтобы увидеть все даты.</div><div class="reports-modern-container v34-old-mod-table v35-mod-only">';
+      mods.forEach(mod => {
+        const nick = String(mod.nickname || '').trim();
+        const nickLower = nick.toLowerCase();
+        html += `<div class="mod-report-card v34-card v35-mod-card"><div class="v34-report-head"><div class="mod-report-name">${esc(nick || 'Без ника')}</div><div class="v34-xp">${Number(mod.calculatedRealXp || 0)} Real XP</div></div><div class="mod-report-days v34-days">`;
+        sortedDays.forEach(day => {
+          const rep = reports.find(r => String(r.date || '').toLowerCase().includes(nickLower) && String(r.date || '').includes(day));
+          let inactive = false;
+          (inactives || []).forEach(ina => {
+            const txt = String(ina.date || '').toLowerCase();
+            if (!nickLower || !txt.includes(nickLower)) return;
+            const from = txt.match(/с:\s*([\d-]+)/i);
+            const to = txt.match(/по:\s*([\d-]+)/i);
+            if (from && to) { const d = new Date(day); if (d >= new Date(from[1]) && d <= new Date(to[1])) inactive = true; }
+          });
+          let currentStatus = 'none';
+          if (rep) currentStatus = cleanStatus(rep.status || 'none');
+          else if (inactive) currentStatus = 'Неактив';
+          else { const col = new Date(day); col.setHours(0,0,0,0); if (col < actual) currentStatus = 'Нет отчета'; }
+          const cls = statusClass(currentStatus);
+          const shortDate = day.slice(5).split('-').reverse().join('.');
+          if (leader) {
+            html += `<div class="report-day-item v34-day ${cls}"><div class="report-day-date">${esc(shortDate)}</div><select class="status-select ${cls}" data-nick="${esc(nick)}" data-date="${esc(day)}" data-id="${rep ? esc(rep.id) : ''}"><option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option><option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option><option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option><option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option><option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option><option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option><option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option></select></div>`;
+          } else {
+            html += `<div class="report-day-item v34-day ${cls}"><div class="report-day-date">${esc(shortDate)}</div><div style="font-weight:900;font-size:.85rem;text-align:center;">${esc(statusText(currentStatus))}</div></div>`;
+          }
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      wrap.innerHTML = html;
+      wrap.dataset.v35Stable = '1';
+      wrap.querySelectorAll('.status-select').forEach(sel => { sel.onchange = () => window.updateReportStatusDirectly(sel, sel.dataset.nick || '', sel.dataset.date || '', sel.dataset.id || ''); });
+    } catch(err) {
+      wrap.dataset.v35Stable = '1';
+      wrap.innerHTML = `<div class="message-card" style="color:var(--color-error);min-height:auto;">Ошибка загрузки таблицы модераторов: ${esc(err.message || err)}</div>`;
+    } finally {
+      v35Rendering = false;
+      if (v35Queued) { v35Queued = false; setTimeout(loadModTableV35, 60); }
+    }
+  }
+
+  window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId){
+    let val = String(selectEl.value || 'none');
+    if (val === 'Натяг') val = 'Герой дня';
+    const xp = xpFor(val);
+    selectEl.disabled = true;
+    selectEl.style.opacity = '.55';
+    try {
+      if (existingId) {
+        if (val === 'none') { await supa.from('reports').delete().eq('id', existingId); selectEl.dataset.id = ''; }
+        else { await supa.from('reports').update({ status: val, xp }).eq('id', existingId); }
+      } else if (val !== 'none') {
+        const id = 'rep_manual_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
+        await supa.from('reports').insert([{ id, email: currentUser?.email || 'manual', link:'', date: fakeData, status: val, xp }]);
+        selectEl.dataset.id = id;
+      }
+    } finally {
+      selectEl.className = 'status-select ' + statusClass(val);
+      selectEl.disabled = false;
+      selectEl.style.opacity = '1';
+      setTimeout(loadModTableV35, 250);
+      if (typeof window.loadCreatorPanelData === 'function') setTimeout(window.loadCreatorPanelData, 400);
+    }
+  };
+
+  function openModTable(btn){
+    ensureShell();
+    if (typeof window.switchMode === 'function') window.switchMode('reports_table', btn || $('reportsTableBtn'));
+    else {
+      document.querySelectorAll('[id^="mode-"]').forEach(s => s.style.display = 'none');
+      const sec = $('mode-reports_table'); if (sec) sec.style.display = 'block';
+    }
+    setTimeout(loadModTableV35, 80);
+    setTimeout(loadModTableV35, 450);
+  }
+  function installButtons(){
+    ensureShell();
+    const general = $('subNavGeneral');
+    const moderation = $('subNavModeration');
+    const main = $('reportsTableBtn');
+    if (main) { main.textContent = '📊 Таблица модераторов'; main.style.display = isLeader() ? 'inline-flex' : main.style.display; main.onclick = (e) => { e.preventDefault(); openModTable(main); }; }
+    let mb = $('v35ModTableBtn');
+    if (!mb && moderation) { moderation.insertAdjacentHTML('beforeend','<button class="mode-btn" id="v35ModTableBtn" type="button">📊 Таблица модераторов</button>'); mb = $('v35ModTableBtn'); }
+    if (mb) { mb.style.display = isLeader() ? 'inline-flex' : 'none'; mb.onclick = (e) => { e.preventDefault(); openModTable(mb); }; }
+    let gb = $('v35GeneralModTableBtn');
+    if (!gb && general && !main) { general.insertAdjacentHTML('beforeend','<button class="mode-btn" id="v35GeneralModTableBtn" type="button">📊 Таблица модераторов</button>'); gb = $('v35GeneralModTableBtn'); }
+    if (gb) { gb.style.display = isLeader() ? 'inline-flex' : 'none'; gb.onclick = (e) => { e.preventDefault(); openModTable(gb); }; }
+    // Убираем старые экспериментальные кнопки таблиц, которые могли открывать СС/ГОСС вместо модеров.
+    ['v16ReportTableBtnGen','v16OpenTableTop','v16ReportTableBtnMod','reportsTableBtnModStatic','reportsTableBtnModV15','v25ModViewReportsBtn'].forEach(id => { const el = $(id); if (el) { el.style.display = 'none'; el.onclick = null; } });
+    document.querySelectorAll('#subNavGeneral [id^="g19"],#subNavGeneral [id^="g20"],#subNavGeneral [data-mode="goss_center_v3"],#subNavGeneral [data-mode="goss_center_v4"]').forEach(el => { if (el) el.style.display = 'none'; });
+  }
+  function style(){
+    if ($('t73V35ModTableStyle')) return;
+    const s = document.createElement('style');
+    s.id = 't73V35ModTableStyle';
+    s.textContent = `
+      #mode-reports_table[data-v35-shell="1"]{isolation:isolate;}
+      #mode-reports_table[data-v35-shell="1"] .section-head h2::after{content:" · модераторы";font-size:.8rem;color:var(--color-text-muted);font-family:var(--font-body);text-transform:none;letter-spacing:0;margin-left:.45rem;}
+      #reportsTableWrapper .v35-table-note{border:1px solid rgba(82,199,123,.28);background:rgba(82,199,123,.08);border-radius:14px;padding:.8rem 1rem;color:#b8ffd0;font-size:.92rem;margin:.2rem 0 1rem;}
+      #reportsTableWrapper .v35-mod-only{display:grid!important;gap:1.25rem!important;}
+      #reportsTableWrapper .v35-mod-card{position:relative;}
+      #reportsTableWrapper .v35-mod-card::before{content:"MOD";position:absolute;right:1rem;top:.75rem;font-size:.68rem;font-weight:900;letter-spacing:.12em;color:rgba(82,199,123,.7);}
+      #reportsTableWrapper .status-select option[value="Натяг"]{display:none!important;}
+      #v16OpenBar,#v16OpenTableTop,#v16ReportTableBtnGen,#v16ReportTableBtnMod,#reportsTableBtnModStatic,#reportsTableBtnModV15{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+    `;
+    document.head.appendChild(s);
+  }
+  function install(){
+    style();
+    window.loadReportsTable = loadModTableV35;
+    window.T73_MOD_REPORT_TABLE = { load: loadModTableV35, open: openModTable };
+    installButtons();
+    bindWeekButtons();
+    if (reportsVisible()) {
+      const wrap = ensureShell();
+      const bad = wrap && (wrap.querySelector('.g19-table,.g20-sheetbar,.gov-v3-table,.gov-v4-table,.v16-table-box') || wrap.dataset.v35Stable !== '1');
+      if (bad) loadModTableV35();
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  document.addEventListener('click', () => setTimeout(install, 120), true);
+  setTimeout(install, 250); setTimeout(install, 1000); setTimeout(install, 2500);
+  setInterval(() => { if (window.loadReportsTable !== loadModTableV35) window.loadReportsTable = loadModTableV35; if (reportsVisible()) install(); }, 700);
+})();
 </script>
 
 </body>
