@@ -1131,9 +1131,8 @@
         <button class="mode-btn active" data-mode="moderation" type="button">Тренажёр</button>
         <button class="mode-btn" data-mode="timeattack" type="button">На время ⏱️</button>
         <button class="mode-btn" data-mode="complaints" type="button">Жалобы</button>
-        <button class="mode-btn" data-mode="reports_table" type="button" id="reportsTableBtnModStatic" style="display:inline-flex;">Таблица Отчетов</button>
         <button class="mode-btn" data-mode="shop" type="button" id="shopTabBtn" style="display:none;">Магазин</button>
-        <button class="mode-btn" data-mode="report" type="button" id="reportTabBtn" style="display:inline-flex;">Отчетность</button>
+        <button class="mode-btn" data-mode="report" type="button" id="reportTabBtn" style="display:none;">Отчетность</button>
         <button class="mode-btn" data-mode="inactives" type="button" id="inactiveTabBtn" style="display:none;">Неактивы</button>
         <button class="mode-btn" data-mode="leadership" type="button" id="leadershipTabBtn" style="display:none;">Руководство</button>
         <button class="mode-btn" data-mode="admin_log" type="button" id="adminLogTabBtn" style="display:none;">Логи (Мод)</button>
@@ -1156,7 +1155,7 @@
       <div class="sub-nav" id="subNavGeneral" style="display:none;">
         <button class="mode-btn" data-mode="quests" type="button">Квесты</button>
         <button class="mode-btn" data-mode="leaderboard" type="button">Лидерборд</button>
-        <button class="mode-btn" data-mode="reports_table" type="button" id="reportsTableBtn" style="display:inline-flex;">Таблица Отчетов</button>
+        <button class="mode-btn" data-mode="reports_table" type="button" id="reportsTableBtn" style="display:none;">Таблица Отчетов</button>
         <button class="mode-btn" data-mode="guide" type="button">Руководство</button>
         <button class="mode-btn" data-mode="about" type="button">О команде</button>
         <button class="mode-btn" data-mode="profile" type="button">Профиль</button>
@@ -1760,16 +1759,6 @@
         </div>
         
         <div class="feed" id="reportFormArea" style="display:none;">
-          <article id="reportSubsectionCard" class="message-card t73-report-subsection" style="min-height:auto; gap:1rem;">
-            <div class="channel"><span class="channel-dot" style="background:#52c77b;"></span># отчетности / быстрый доступ</div>
-            <div class="section-head"><h2 style="font-size:1.25rem;color:#52c77b;">Подраздел отчётностей</h2><p>Сдача отчёта с пометкой: норма, перенорма или натяг. Руководство потом подтверждает итог в таблице.</p></div>
-            <div class="t73-report-status-grid">
-              <div class="t73-status-info"><strong>✅ Норма</strong><span>Обычный закрытый норматив.</span></div>
-              <div class="t73-status-info"><strong>⚡ Перенорма</strong><span>Сделано больше обычного.</span></div>
-              <div class="t73-status-info"><strong>🪢 Натяг</strong><span>Минимально дотянул до сдачи.</span></div>
-            </div>
-            <button class="btn btn-secondary" type="button" id="openReportsTableFromForm" style="width:100%;border-color:#52c77b;color:#7fe8a0;">📊 Открыть таблицу отчётностей</button>
-          </article>
           <article class="message-card" style="min-height: auto; gap: 1.5rem;">
             <div class="channel"><span class="channel-dot" style="background:#a26cff;"></span># tambov-73 / reports</div>
             <div class="author-row">
@@ -1780,14 +1769,11 @@
               <div class="support-answer-row-inner" style="flex-direction: column; gap: 1rem;">
                 <div class="admin-field"><label>Ваш NickName:</label><input id="reportNickInput" class="support-input" type="text" placeholder="Введите никнейм"></div>
                 <div class="admin-field"><label>Проделанная работа за день:</label><textarea id="reportWorkInput" class="support-input" rows="3" placeholder="Что вы сегодня сделали?"></textarea></div>
-                <div class="admin-field"><label>Тип сдачи:</label><select id="reportQualityInput" class="support-input"><option value="Норма">Норма</option><option value="Перенорма">Перенорма</option><option value="Натяг">Натяг</option></select></div>
                 <div class="admin-field"><label>Дата (Только сегодня и вчера):</label><input id="reportDateInput" class="support-input" type="date"></div>
                 <div class="admin-field"><label>Ссылка на доказательства (Imgur/Yapx):</label><input id="reportLinkInput" class="support-input" type="url" placeholder="https://..."></div>
                 <div class="admin-field" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
                     <label style="color: #fff; font-weight: bold;">ИЛИ загрузите скриншот напрямую:</label>
-                    <input id="reportFileInput" class="support-input" type="file" accept="image/*" multiple style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
-                    <div id="reportUploadHint" style="font-size:.85rem;color:var(--color-text-muted);margin-top:.6rem;">Можно выбрать сразу много скриншотов. До отправки их можно удалить из списка ниже.</div>
-                    <div id="reportFilePreview" class="t73-report-preview"></div>
+                    <input id="reportFileInput" class="support-input" type="file" accept="image/*" style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
                 </div>
                 <button class="support-check-btn" type="button" id="submitReportBtn" style="margin-top: 1rem; width: 100%;">Отправить Отчет</button>
               </div>
@@ -11967,5 +11953,117 @@
         /* === /T73 V25 === */
 
 
+        /* === T73 V26: восстановление старой модерации + явная ГОСС-панель руководства + красивые иконки товаров === */
+        (() => {
+          const $26 = (id) => document.getElementById(id);
+          const esc26 = (v) => String(v ?? '').replace(/[&<>"]/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+          const iconSet26 = ['🎁','⭐','💎','🏆','🛡️','👑','⚡','🔥','💰','🎫','📦','🎯','🚓','🎖️','🏥','🎙️','⛓️','📋','🧾','🔐','🕵️','🛒','🎲','🧰','📌','✅','🪪','🚨','📣','🧡'];
+          function style26(){
+            if($26('t73V26Style')) return;
+            document.head.insertAdjacentHTML('beforeend', `<style id="t73V26Style">
+              .t73-v26-card{padding:1.1rem;border-radius:18px;border:1px solid rgba(255,107,136,.28);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(5,7,14,.98));display:grid;gap:1rem;margin-bottom:1rem}
+              .t73-v26-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem}.t73-v26-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem}.t73-v26-list{display:grid;gap:.65rem}.t73-v26-mini{padding:.85rem;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26)}.t73-v26-muted{color:var(--color-text-muted);font-size:.9rem}.t73-v26-icons{display:flex;flex-wrap:wrap;gap:.35rem}.t73-v26-icon-btn{min-width:42px;min-height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.26);font-size:1.25rem}.t73-v26-icon-btn.active{background:linear-gradient(135deg,#ff6b88,#6c8cff);box-shadow:0 0 18px rgba(255,107,136,.35)}.t73-v26-sticky-open{display:inline-flex!important}.t73-v26-hidden{display:none!important}
+              @media(max-width:820px){.t73-v26-row,.t73-v26-grid{grid-template-columns:1fr}.t73-v26-card .btn{width:100%}}
+            </style>`);
+          }
+          function currentOrg26(){
+            const id = document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId || document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId || document.querySelector('.gov-org-switch.active')?.dataset?.orgId || 'fsb';
+            const arr = (typeof GOSS_ORGS !== 'undefined' ? GOSS_ORGS : []) || [];
+            return arr.find(o => o.id === id) || {id, short:id.toUpperCase(), name:id, icon:'🏛️'};
+          }
+          function root26(){ return $26('gossV4Content') || $26('gossV3Content') || $26('gossDashView'); }
+          async function canOrgLead26(orgId){
+            try { if(typeof isCreator !== 'undefined' && isCreator) return true; } catch(e) {}
+            try { if(typeof currentUser !== 'undefined' && currentUser && typeof creatorEmail !== 'undefined' && currentUser.email === creatorEmail) return true; } catch(e) {}
+            try { if(typeof hasGossLeadership === 'function' && hasGossLeadership(orgId)) return true; } catch(e) {}
+            try { if(typeof supa !== 'undefined' && typeof currentUser !== 'undefined' && currentUser){
+              const statuses = ['goss_admin_all','goss_lead_'+orgId,'goss_admin_'+orgId,'goss_leader_'+orgId];
+              const { data } = await supa.from('reports').select('status').eq('email','ADMIN_ROLE').eq('link',currentUser.id).in('status',statuses).limit(1);
+              return !!(data && data.length);
+            }} catch(e) {}
+            return false;
+          }
+          async function users26(){
+            const map = new Map();
+            const add = (id,nick,email) => { if(id && !map.has(id)) map.set(id,{id,nick:nick||email||id,email}); };
+            try { if(typeof usersCache !== 'undefined' && Array.isArray(usersCache)) usersCache.forEach(u => add(u.id || u.user_id, u.nickname || u.email, u.email)); } catch(e) {}
+            try { const { data } = await supa.from('reports').select('email,link,status,date').limit(6000); (data||[]).forEach(r => { let p={}; try{p=JSON.parse(r.date||'{}')}catch(e){}; add(p.userId || r.status || r.link, p.nick || p.nickname || r.status || r.link, r.email); }); } catch(e) {}
+            return [...map.values()].sort((a,b)=>String(a.nick||'').localeCompare(String(b.nick||''),'ru'));
+          }
+          function statusSenior26(orgId){ return 'goss_senior_' + orgId; }
+          async function renderLeadership26(){
+            style26();
+            const r = root26(); if(!r) return;
+            const org = currentOrg26();
+            if(!(await canOrgLead26(org.id))){ r.innerHTML = '<div class="t73-v26-card"><b>Панель руководства доступна только лидеру/следящему этой организации.</b></div>'; return; }
+            const us = await users26();
+            let rows=[]; try { const { data } = await supa.from('reports').select('*').eq('email','ADMIN_ROLE').in('status',[statusSenior26(org.id),'goss_senior_all']).limit(1000); rows = data || []; } catch(e) {}
+            r.innerHTML = `<div class="t73-v26-card"><div><h3 style="margin:0;color:#ff6b88">👑 Панель руководства — ${esc26(org.short)}</h3><div class="t73-v26-muted">Выдача/снятие прав СС внутри выбранной организации. Глобальные права ГОСС остаются в разделе «Общее».</div></div><div class="t73-v26-row"><label>Пользователь<select id="v26SeniorUser" class="support-input">${us.map(u=>`<option value="${esc26(u.id)}">${esc26(u.nick||u.email||u.id)}</option>`).join('')}</select></label><label>Доступ<select id="v26SeniorType" class="support-input"><option value="one">СС ${esc26(org.short)}</option><option value="all">СС всех ГОСС</option></select></label></div><div class="t73-v26-row"><button id="v26GrantSenior" class="btn btn-secondary" style="border-color:var(--color-success);color:var(--color-success)" type="button">➕ Выдать СС</button><button id="v26RemoveSenior" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" type="button">➖ Снять СС</button><button id="v26OpenShopConstructor" class="btn btn-primary" type="button">🛒 Конструктор магазина</button></div></div><div class="t73-v26-card"><h3 style="margin:0;color:#fff">Текущие права</h3><div class="t73-v26-list">${rows.length ? rows.map(row => { const u=us.find(x=>x.id===row.link); return `<div class="t73-v26-mini"><b>${esc26(u?.nick || row.link)}</b><div class="t73-v26-muted">${row.status === 'goss_senior_all' ? 'СС всех ГОСС' : 'СС ' + esc26(org.short)}</div></div>`; }).join('') : '<div class="t73-v26-muted">Права СС пока никому не выданы.</div>'}</div></div>`;
+            const st = () => ($26('v26SeniorType')?.value === 'all' ? 'goss_senior_all' : statusSenior26(org.id));
+            $26('v26GrantSenior').onclick = async () => { const u=$26('v26SeniorUser')?.value; if(!u) return; await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st()); await supa.from('reports').insert([{id:'v26_sen_'+Date.now()+Math.random(), email:'ADMIN_ROLE', link:u, status:st(), date:new Date().toISOString(), xp:0}]); alert('Права выданы.'); renderLeadership26(); };
+            $26('v26RemoveSenior').onclick = async () => { const u=$26('v26SeniorUser')?.value; if(!u) return; await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st()); alert('Права сняты.'); renderLeadership26(); };
+            $26('v26OpenShopConstructor').onclick = () => renderShop26();
+          }
+          function renderShop26(){
+            style26();
+            const r=root26(); if(!r) return;
+            const org=currentOrg26();
+            const icons = iconSet26.map(ic=>`<button class="t73-v26-icon-btn" type="button" data-v26-icon="${ic}">${ic}</button>`).join('');
+            r.innerHTML = `<div class="t73-v26-card"><div><h3 style="margin:0;color:#ffbf47">🛒 Конструктор магазина — ${esc26(org.short)}</h3><div class="t73-v26-muted">Выбери красивую иконку, чтобы товар выглядел нормально в магазине.</div></div><div class="t73-v26-row"><label>Название товара<input id="v26ShopTitle" class="support-input" placeholder="Например: Премия сотруднику"></label><label>Цена<input id="v26ShopPrice" type="number" class="support-input" value="10"></label><label>Валюта<select id="v26ShopCurrency" class="support-input"><option value="goss_points">ГОСС баллы</option><option value="xp">XP</option></select></label></div><label>Описание<input id="v26ShopDesc" class="support-input" placeholder="Краткое описание товара"></label><input id="v26ShopIcon" type="hidden" value="🎁"><div class="t73-v26-icons" id="v26IconPicker">${icons}</div><div class="t73-v26-row"><button id="v26SaveShopItem" class="btn btn-primary" type="button">💾 Добавить товар</button><button id="v26BackLeadership" class="btn btn-secondary" type="button">👑 Назад в панель</button></div><div id="v26ShopResult" class="t73-v26-muted"></div></div><div class="t73-v26-card"><h3 style="margin:0;color:#fff">Подсказка</h3><div class="t73-v26-muted">Иконки можно менять одним нажатием. Если в старом конструкторе был текстовый ввод эмодзи, он тоже теперь получает выбранную иконку.</div></div>`;
+            $26('v26IconPicker')?.addEventListener('click', (e)=>{ const b=e.target.closest('[data-v26-icon]'); if(!b) return; document.querySelectorAll('[data-v26-icon]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $26('v26ShopIcon').value=b.dataset.v26Icon; const oldIcon=$26('g20ShopIcon')||$26('g19ShopIcon')||$26('modShopItemIcon'); if(oldIcon) oldIcon.value=b.dataset.v26Icon; });
+            document.querySelector('[data-v26-icon]')?.classList.add('active');
+            $26('v26BackLeadership').onclick=renderLeadership26;
+            $26('v26SaveShopItem').onclick=async()=>{ const title=$26('v26ShopTitle')?.value.trim(), price=Number($26('v26ShopPrice')?.value||0), desc=$26('v26ShopDesc')?.value.trim(), icon=$26('v26ShopIcon')?.value||'🎁', cur=$26('v26ShopCurrency')?.value||'goss_points'; const res=$26('v26ShopResult'); if(!title||!price){res.textContent='Укажи название и цену.';return;} try{ await supa.from('reports').insert([{id:'v26_shop_'+Date.now()+Math.random(), email:'GOSS_SHOP_ITEMS_V19', link:org.id, status:title, date:JSON.stringify({title,price,desc,icon,currency:cur,org:org.id,createdBy:currentUser?.email||''}), xp:price}]); res.textContent='✅ Товар добавлен: '+icon+' '+title; }catch(e){res.textContent='Ошибка: '+(e.message||e);} };
+          }
+          async function ensureLeadershipBtn26(){
+            style26();
+            const nav = $26('gossOrgActionNavV4') || $26('gossOrgActionNavV3') || $26('gossOrgActionNav'); if(!nav) return;
+            const org = currentOrg26();
+            const can = await canOrgLead26(org.id);
+            let b = $26('v26LeadershipPanelBtn');
+            if(!b){ nav.insertAdjacentHTML('beforeend','<button class="mode-btn" id="v26LeadershipPanelBtn" type="button">👑 Панель руководства</button>'); b=$26('v26LeadershipPanelBtn'); }
+            b.style.display = can ? 'inline-flex' : 'none';
+            b.onclick = (e)=>{ e.preventDefault(); document.querySelectorAll('#gossOrgActionNavV4 .mode-btn,#gossOrgActionNavV3 .mode-btn,#gossOrgActionNav .mode-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); renderLeadership26(); };
+          }
+          function installIconPickers26(){
+            const oldIconIds = ['modShopItemIcon','apShopItemIcon','fsbShopItemIcon','g20ShopIcon','g19ShopIcon'];
+            oldIconIds.forEach(id=>{ const input=$26(id); if(!input || input.dataset.v26Icons==='1') return; input.dataset.v26Icons='1'; const wrap=document.createElement('div'); wrap.className='t73-v26-icons'; wrap.style.margin='.55rem 0 1rem'; wrap.innerHTML=iconSet26.map(ic=>`<button class="t73-v26-icon-btn" type="button" data-v26-pick="${ic}">${ic}</button>`).join(''); input.insertAdjacentElement('afterend',wrap); wrap.addEventListener('click',(e)=>{ const b=e.target.closest('[data-v26-pick]'); if(!b)return; input.value=b.dataset.v26Pick; wrap.querySelectorAll('.t73-v26-icon-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }); });
+          }
+          function restoreOldMod26(){
+            const staticBtn = $26('reportsTableBtnModStatic'); if(staticBtn) staticBtn.remove();
+            const reportTab = $26('reportTabBtn'); if(reportTab && !reportTab.dataset.v26OldBound){ reportTab.dataset.v26OldBound='1'; reportTab.style.display = (typeof isModerator !== 'undefined' && isModerator) ? 'inline-flex' : reportTab.style.display; }
+            const oldV16 = $26('submitReportBtnV16'); if(oldV16) oldV16.classList.add('t73-v26-hidden');
+            const notice = $26('v16UploadNotice'); if(notice) notice.classList.add('t73-v26-hidden');
+            const oldSubmit = $26('submitReportBtn'); if(oldSubmit) oldSubmit.style.display='';
+          }
+          function tick26(){ restoreOldMod26(); installIconPickers26(); ensureLeadershipBtn26(); }
+          setTimeout(tick26,400); setTimeout(tick26,1400); setTimeout(tick26,3200);
+          document.addEventListener('click',()=>setTimeout(tick26,120),true);
+          new MutationObserver(()=>{ clearTimeout(window.__t73V26Tick); window.__t73V26Tick=setTimeout(tick26,180); }).observe(document.body,{childList:true,subtree:true});
+          window.T73_V26 = { renderLeadership:renderLeadership26, renderShop:renderShop26, refresh:tick26 };
+        })();
+        /* === /T73 V26 === */
+
+        /* === T73 V26B: расширенная ГОСС-панель руководства с лидеркой === */
+        (() => {
+          const $ = (id) => document.getElementById(id);
+          const esc = (v) => String(v ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+          function org(){ const id=document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId||document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId||'fsb'; const arr=(typeof GOSS_ORGS!=='undefined'?GOSS_ORGS:[])||[]; return arr.find(o=>o.id===id)||{id,short:id.toUpperCase(),icon:'🏛️'}; }
+          function root(){ return $('gossV4Content')||$('gossV3Content')||$('gossDashView'); }
+          async function roles(){ try{return (await supa.from('reports').select('*').eq('email','ADMIN_ROLE').limit(5000)).data||[]}catch(e){return[]} }
+          function creator(){ try{return !!(isCreator || (currentUser && creatorEmail && currentUser.email===creatorEmail));}catch(e){return false} }
+          async function global(){ if(creator()) return true; if(!currentUser)return false; return (await roles()).some(r=>r.link===currentUser.id&&r.status==='goss_admin_all'); }
+          async function canLead(oid){ if(await global()) return true; if(!currentUser)return false; return (await roles()).some(r=>r.link===currentUser.id&&(r.status==='goss_lead_'+oid || r.status==='goss_admin_all')); }
+          async function users(){ const m=new Map(); const add=(id,n,e)=>{if(id&&!m.has(id))m.set(id,{id,nick:n||e||id,email:e})}; try{if(Array.isArray(usersCache))usersCache.forEach(u=>add(u.id||u.user_id,u.nickname||u.email,u.email))}catch(e){} try{const r=await supa.from('reports').select('email,link,status,date').limit(6000);(r.data||[]).forEach(x=>{let p={};try{p=JSON.parse(x.date||'{}')}catch(e){}add(p.userId||x.status||x.link,p.nick||p.nickname||x.status||x.link,x.email)})}catch(e){} return [...m.values()].sort((a,b)=>String(a.nick).localeCompare(String(b.nick),'ru')) }
+          async function render(){ const r=root(), o=org(); if(!r)return; if(!(await canLead(o.id))){r.innerHTML='<div class="t73-v26-card"><b>Панель руководства доступна только лидеру/следящему организации.</b></div>';return} const all=await global(); const us=await users(); const rs=(await roles()).filter(x=>['goss_lead_'+o.id,'goss_senior_'+o.id,'goss_senior_all','goss_admin_all'].includes(x.status)); const roleOpts = `<option value="goss_senior_${esc(o.id)}">СС / следящий ${esc(o.short)}</option><option value="goss_lead_${esc(o.id)}">Лидер / руководство ${esc(o.short)}</option>` + (all ? `<option value="goss_senior_all">СС всех ГОСС</option><option value="goss_admin_all">Руководство всех ГОСС</option>` : ''); r.innerHTML=`<div class="t73-v26-card"><h3 style="margin:0;color:#ff6b88">👑 Панель руководства — ${esc(o.short)}</h3><div class="t73-v26-muted">Здесь можно делать лидерку, выдавать/забирать права СС и перейти в конструктор магазина.</div><div class="t73-v26-row"><label>Пользователь<select id="v26bUser" class="support-input">${us.map(u=>`<option value="${esc(u.id)}">${esc(u.nick||u.email||u.id)}</option>`).join('')}</select></label><label>Доступ<select id="v26bRole" class="support-input">${roleOpts}</select></label></div><div class="t73-v26-row"><button id="v26bGrant" class="btn btn-primary" type="button">➕ Выдать доступ</button><button id="v26bRemove" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" type="button">➖ Забрать доступ</button><button id="v26bShop" class="btn btn-secondary" type="button">🛒 Конструктор магазина</button></div></div><div class="t73-v26-card"><h3 style="margin:0;color:#fff">Текущие права</h3><div class="t73-v26-list">${rs.length?rs.map(x=>{const u=us.find(y=>y.id===x.link)||{nick:x.link};return `<div class="t73-v26-mini"><b>${esc(u.nick||x.link)}</b><div class="t73-v26-muted">${esc(String(x.status).replace('goss_lead_','Лидер ').replace('goss_senior_','СС ').replace('goss_admin_all','Руководство всех ГОСС').replace('goss_senior_all','СС всех ГОСС'))}</div></div>`}).join(''):'<div class="t73-v26-muted">Права пока никому не выданы.</div>'}</div></div>`; $('v26bGrant').onclick=async()=>{const u=$('v26bUser').value,st=$('v26bRole').value;await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);await supa.from('reports').insert([{id:'v26b_'+Date.now()+Math.random(),email:'ADMIN_ROLE',link:u,status:st,date:new Date().toISOString(),xp:0}]);alert('Доступ выдан');render()}; $('v26bRemove').onclick=async()=>{const u=$('v26bUser').value,st=$('v26bRole').value;await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);alert('Доступ снят');render()}; $('v26bShop').onclick=()=>{ if(window.T73_V26?.renderShop) window.T73_V26.renderShop(); } }
+          function bind(){ const b=$('v26LeadershipPanelBtn'); if(b && !b.dataset.v26b){ b.dataset.v26b='1'; b.onclick=(e)=>{e.preventDefault();document.querySelectorAll('#gossOrgActionNavV4 .mode-btn,#gossOrgActionNavV3 .mode-btn,#gossOrgActionNav .mode-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');render();}; } }
+          setTimeout(bind,600);setTimeout(bind,1800);document.addEventListener('click',()=>setTimeout(bind,100),true);window.T73_V26B={render,bind};
+        })();
+        /* === /T73 V26B === */
+
+
     });
   </script>
+
+</body>
+</html>
