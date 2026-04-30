@@ -13174,5 +13174,241 @@
   new MutationObserver(() => { clearTimeout(window.__t73V33ModHeroTimer); window.__t73V33ModHeroTimer = setTimeout(boot, 80); }).observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
+
+
+<style>
+/* === T73 V34: старая таблица модераторов в новом дизайне === */
+#mode-reports_table .rt-controls{
+  position:sticky; top:.5rem; z-index:3;
+  background:linear-gradient(135deg,rgba(10,20,14,.94),rgba(8,12,24,.94));
+  border:1px solid rgba(82,199,123,.32);
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
+  backdrop-filter:blur(14px);
+}
+#reportsTableWrapper .reports-modern-container.v34-old-mod-table{display:grid!important;gap:1.25rem!important;}
+#reportsTableWrapper .mod-report-card.v34-card{
+  background:radial-gradient(circle at 0 0,rgba(82,199,123,.12),transparent 45%),linear-gradient(145deg,rgba(14,18,34,.96),rgba(8,10,20,.98));
+  border:1px solid rgba(191,198,255,.20);
+  box-shadow:0 18px 48px rgba(0,0,0,.52);
+  border-radius:18px;
+  padding:1rem;
+}
+#reportsTableWrapper .mod-report-card.v34-card:hover{border-color:rgba(82,199,123,.40);box-shadow:0 20px 60px rgba(0,0,0,.62);}
+#reportsTableWrapper .v34-report-head{display:flex;justify-content:space-between;gap:.8rem;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.8rem;}
+#reportsTableWrapper .v34-xp{color:#52c77b;font-weight:900;text-shadow:0 0 18px rgba(82,199,123,.28);white-space:nowrap;}
+#reportsTableWrapper .mod-report-days.v34-days{display:flex;gap:.65rem;overflow-x:auto;overflow-y:hidden;padding:.95rem .05rem .25rem;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
+#reportsTableWrapper .mod-report-days.v34-days::-webkit-scrollbar{height:8px;}
+#reportsTableWrapper .mod-report-days.v34-days::-webkit-scrollbar-thumb{background:rgba(82,199,123,.5);border-radius:999px;}
+#reportsTableWrapper .report-day-item.v34-day{min-width:130px;scroll-snap-align:start;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.75rem;display:flex;flex-direction:column;align-items:center;gap:.55rem;}
+#reportsTableWrapper .report-day-item.v34-day.status-good{background:rgba(22,163,74,.16)!important;border-color:rgba(22,163,74,.7)!important;}
+#reportsTableWrapper .report-day-item.v34-day.status-hero{background:rgba(59,130,246,.18)!important;border-color:rgba(59,130,246,.8)!important;}
+#reportsTableWrapper .report-day-item.v34-day.status-inactive{background:rgba(234,88,12,.18)!important;border-color:rgba(234,88,12,.75)!important;}
+#reportsTableWrapper .report-day-item.v34-day.status-missing{background:rgba(239,68,68,.16)!important;border-color:rgba(239,68,68,.75)!important;}
+#reportsTableWrapper .report-day-date{font-size:.9rem;font-weight:900;letter-spacing:.04em;}
+#reportsTableWrapper .status-select{min-height:38px;border-radius:9px;font-weight:900;text-align:center;text-align-last:center;}
+#reportsTableWrapper .v34-mobile-hint{display:none;color:var(--color-text-faint);font-size:.82rem;margin:.25rem 0 .7rem;}
+@media (max-width:700px){
+  #mode-reports_table .rt-controls{position:relative;top:auto;display:grid!important;grid-template-columns:1fr;gap:.65rem;text-align:center;}
+  #reportsTableWrapper .v34-report-head{align-items:flex-start;}
+  #reportsTableWrapper .report-day-item.v34-day{min-width:116px;}
+  #reportsTableWrapper .v34-mobile-hint{display:block;}
+}
+</style>
+<script>
+/* === T73 V34: вернуть старую таблицу модераторов без изменений статусов === */
+(() => {
+  if (window.__T73_V34_OLD_MOD_TABLE__) return;
+  window.__T73_V34_OLD_MOD_TABLE__ = true;
+
+  const SYSTEM_EMAILS = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_OVERRIDE','USER_ROLE','GAME_XP','INACTIVE_REQ',
+    'GOSS_USER_REPORT','GOSS_SHOP','GOSS_SHOP_BUY','REPORT_TABLE_MARK_V13','REPORT_TABLE_MARK_V14','REPORT_TABLE_MARK_V15','REPORT_TABLE_MARK_V16'
+  ]);
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  }
+  function isLeader(){
+    try {
+      return !!(window.currentUser && (
+        (Array.isArray(window.adminEmails) && window.adminEmails.includes(currentUser.email)) ||
+        currentUser.email === window.creatorEmail ||
+        (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.includes(currentUser.id))
+      ));
+    } catch(e) { return false; }
+  }
+  function isModReportRow(r, modEmails){
+    if (!r) return false;
+    const email = String(r.email || '');
+    const link = String(r.link || '');
+    const date = String(r.date || '');
+    if (SYSTEM_EMAILS.has(email)) return false;
+    if (email.startsWith('GOSS_') || link.startsWith('goss') || date.includes('GOSS_REPORT')) return false;
+    if (email === 'GOSS_USER_REPORT') return false;
+    return !modEmails || modEmails.has(email);
+  }
+  function statusClass(status){
+    if (status === 'Норма' || status === 'Перенорма') return 'status-good';
+    if (status === 'Герой дня') return 'status-hero';
+    if (status === 'Неактив') return 'status-inactive';
+    if (status === 'Нет отчета' || status === 'Не засчитано' || status === 'Отказ') return 'status-missing';
+    return 'status-none';
+  }
+  function statusText(status){
+    if (status === 'none') return '-';
+    if (status === 'Не засчитано') return 'Отказ';
+    return status || '-';
+  }
+  function xpFor(status){
+    if (status === 'Норма') return 15;
+    if (status === 'Перенорма') return 30;
+    if (status === 'Герой дня') return 60;
+    return 0;
+  }
+  function weekDays(){
+    const days = [];
+    const offset = Number(window.currentTableWeekOffset || 0);
+    const today = new Date();
+    today.setDate(today.getDate() - offset * 7);
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      days.push(d.toISOString().slice(0,10));
+    }
+    return days.reverse();
+  }
+  function bindWeekButtons(){
+    const prev = $('rtPrevWeekBtn'), next = $('rtNextWeekBtn');
+    if (prev && prev.dataset.v34 !== '1') {
+      prev.dataset.v34 = '1';
+      prev.onclick = (e) => { e.preventDefault(); window.currentTableWeekOffset = Number(window.currentTableWeekOffset || 0) + 1; window.loadReportsTable(); };
+    }
+    if (next && next.dataset.v34 !== '1') {
+      next.dataset.v34 = '1';
+      next.onclick = (e) => { e.preventDefault(); window.currentTableWeekOffset = Math.max(0, Number(window.currentTableWeekOffset || 0) - 1); window.loadReportsTable(); };
+    }
+    if (next) next.disabled = Number(window.currentTableWeekOffset || 0) === 0;
+  }
+
+  async function oldModeratorsTableV34(){
+    bindWeekButtons();
+    const wrap = $('reportsTableWrapper');
+    if (!wrap) return;
+    wrap.innerHTML = '<div class="message-card" style="text-align:center;">⏳ Загрузка старой таблицы модераторов...</div>';
+    const lbl = $('rtCurrentWeekLabel');
+    if (lbl) lbl.textContent = Number(window.currentTableWeekOffset || 0) === 0 ? 'Текущая неделя' : `${window.currentTableWeekOffset} нед. назад`;
+    const next = $('rtNextWeekBtn');
+    if (next) next.disabled = Number(window.currentTableWeekOffset || 0) === 0;
+
+    try {
+      const { data: modRoles } = await supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','moderator');
+      const modIds = (modRoles || []).map(r => r.link).filter(Boolean);
+      if (!modIds.length) { wrap.innerHTML = '<div class="message-card" style="text-align:center;">Модераторы не найдены. Выдайте роль модератора.</div>'; return; }
+      const { data: usersData } = await supa.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id', modIds);
+      let mods = usersData || [];
+      const modEmails = new Set(mods.map(m => String(m.email || '')).filter(Boolean));
+      const days = weekDays();
+      const { data: rawReports } = await supa.from('reports').select('*').order('id',{ascending:false}).limit(1200);
+      const reports = (rawReports || []).filter(r => isModReportRow(r, modEmails));
+      const { data: inactives } = await supa.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено');
+      const leader = isLeader();
+      const actualDate = new Date(); actualDate.setHours(0,0,0,0);
+
+      mods.forEach(mod => {
+        let realXp = 0;
+        reports.forEach(r => { if (r.email === mod.email && Number(r.xp || 0) > 0) realXp += Number(r.xp || 0); });
+        mod.calculatedRealXp = Math.max(0, realXp - Number(mod.shop_spent || 0));
+      });
+      if (!leader) {
+        mods = mods.filter(m => !((Array.isArray(window.adminEmails) && window.adminEmails.includes(m.email)) || m.email === window.creatorEmail || (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.includes(m.user_id))));
+      }
+
+      let html = '<div class="v34-mobile-hint">↔️ Проведите влево/вправо по строке модератора, чтобы увидеть все даты.</div><div class="reports-modern-container v34-old-mod-table">';
+      mods.sort((a,b) => String(a.nickname || '').localeCompare(String(b.nickname || ''), 'ru')).forEach(mod => {
+        const nick = String(mod.nickname || '').trim();
+        const nickLower = nick.toLowerCase();
+        html += `<div class="mod-report-card v34-card"><div class="v34-report-head"><div class="mod-report-name">${esc(nick || 'Без ника')}</div><div class="v34-xp">${Number(mod.calculatedRealXp || 0)} Real XP</div></div><div class="mod-report-days v34-days">`;
+        days.forEach(day => {
+          const rep = reports.find(r => String(r.email || '') === String(mod.email || '') && String(r.date || '').toLowerCase().includes(nickLower) && String(r.date || '').includes(day));
+          let inactive = false;
+          (inactives || []).forEach(ina => {
+            const txt = String(ina.date || '').toLowerCase();
+            if (!nickLower || !txt.includes(nickLower)) return;
+            const from = txt.match(/с:\s*([\d-]+)/i);
+            const to = txt.match(/по:\s*([\d-]+)/i);
+            if (from && to) {
+              const d = new Date(day);
+              if (d >= new Date(from[1]) && d <= new Date(to[1])) inactive = true;
+            }
+          });
+          let currentStatus = 'none';
+          if (rep) currentStatus = rep.status || 'none';
+          else if (inactive) currentStatus = 'Неактив';
+          else {
+            const col = new Date(day); col.setHours(0,0,0,0);
+            if (col < actualDate) currentStatus = 'Нет отчета';
+          }
+          const cls = statusClass(currentStatus);
+          const shortDate = day.slice(5).split('-').reverse().join('.');
+          if (leader) {
+            html += `<div class="report-day-item v34-day ${cls}"><div class="report-day-date">${esc(shortDate)}</div><select class="status-select ${cls}" data-nick="${esc(nick)}" data-date="${esc(day)}" data-id="${rep ? esc(rep.id) : ''}"><option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option><option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option><option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option><option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option><option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option><option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option><option value="Не засчитано" ${(currentStatus === 'Отказ' || currentStatus === 'Не засчитано') ? 'selected' : ''}>Отказ</option></select></div>`;
+          } else {
+            html += `<div class="report-day-item v34-day ${cls}"><div class="report-day-date">${esc(shortDate)}</div><div style="font-weight:900;font-size:.85rem;text-align:center;">${esc(statusText(currentStatus))}</div></div>`;
+          }
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+      wrap.innerHTML = html;
+      wrap.querySelectorAll('.status-select').forEach(sel => {
+        sel.onchange = () => window.updateReportStatusDirectly(sel, sel.dataset.nick || '', sel.dataset.date || '', sel.dataset.id || '');
+      });
+    } catch (err) {
+      wrap.innerHTML = `<div class="message-card" style="color:var(--color-error);">Ошибка загрузки таблицы: ${esc(err.message || err)}</div>`;
+    }
+  }
+
+  window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId){
+    const val = String(selectEl.value || 'none');
+    const xp = xpFor(val);
+    selectEl.disabled = true;
+    selectEl.style.opacity = '.55';
+    try {
+      if (existingId) {
+        if (val === 'none') {
+          await supa.from('reports').delete().eq('id', existingId);
+          selectEl.dataset.id = '';
+        } else {
+          await supa.from('reports').update({ status: val, xp }).eq('id', existingId);
+        }
+      } else if (val !== 'none') {
+        const id = 'rep_manual_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        const fakeData = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
+        await supa.from('reports').insert([{ id, email: currentUser?.email || 'manual', link: '', date: fakeData, status: val, xp }]);
+        selectEl.dataset.id = id;
+      }
+    } finally {
+      selectEl.className = 'status-select ' + statusClass(val);
+      selectEl.disabled = false;
+      selectEl.style.opacity = '1';
+      setTimeout(() => { window.loadReportsTable?.(); if (typeof window.loadCreatorPanelData === 'function') window.loadCreatorPanelData(); }, 350);
+    }
+  };
+
+  function install(){
+    window.loadReportsTable = oldModeratorsTableV34;
+    bindWeekButtons();
+    const btn = $('reportsTableBtn');
+    if (btn && isLeader()) btn.style.display = 'inline-block';
+    if (document.body && document.body.dataset && document.body.dataset.mode === 'reports_table') oldModeratorsTableV34();
+  }
+  window.T73_V34_OLD_MOD_TABLE = { load: oldModeratorsTableV34, install };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  document.addEventListener('click', () => setTimeout(install, 160), true);
+  setTimeout(install, 250); setTimeout(install, 1200); setTimeout(install, 3000);
+  setInterval(() => { if (window.loadReportsTable !== oldModeratorsTableV34) window.loadReportsTable = oldModeratorsTableV34; }, 900);
+})();
+</script>
+
 </body>
 </html>
