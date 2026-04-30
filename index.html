@@ -12370,6 +12370,152 @@
         })();
         /* === /T73 V28 === */
 
+
+        /* === T73 V29: FIX OLD MOD REPORT CHECK + GOSS REPORT CHECK + MOBILE SCROLL === */
+        (() => {
+          const $ = id => document.getElementById(id);
+          const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+          const parse = v => { try { return JSON.parse(v || '{}') || {}; } catch(e) { return {}; } };
+          const modSystem = new Set(['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG']);
+          const orgIds = () => { try { return (Array.isArray(GOSS_ORGS) ? GOSS_ORGS : []).map(o => String(o.id || '').toLowerCase()); } catch(e) { return ['fsb','gibdd','umvd','army','hospital','smi','fsin','prav']; } };
+          const isGoss = r => {
+            const email = String(r?.email || ''), link = String(r?.link || '').toLowerCase(), id = String(r?.id || '').toLowerCase(), st = String(r?.status || '').toLowerCase(), dt = String(r?.date || ''), j = parse(dt);
+            return email.startsWith('GOSS_') || id.startsWith('goss_') || id.startsWith('g19_') || id.startsWith('g20_') || id.startsWith('g24') || id.startsWith('g27') || orgIds().includes(link) || st.startsWith('goss_') || !!(j.org || j.orgName || j.goss) || /ГОСС|госс|GOSS|goss/.test(dt);
+          };
+          const isModReport = r => !modSystem.has(String(r?.email || '')) && !isGoss(r);
+          function currentOrg() {
+            const id = document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId || document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId || document.querySelector('.gov-org-switch.active')?.dataset?.orgId || 'fsb';
+            const arr = (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS)) ? GOSS_ORGS : [];
+            return arr.find(o => o.id === id) || { id, short: id };
+          }
+          async function canGoss(org) {
+            if (!currentUser) return false;
+            if (currentUser.email === creatorEmail) return true;
+            try {
+              const rows = (await supa.from('reports').select('*').eq('email','ADMIN_ROLE').eq('link',currentUser.id).limit(500)).data || [];
+              return rows.some(r => ['goss_admin_all','goss_senior_all','goss_lead_' + org,'goss_senior_' + org].includes(r.status));
+            } catch(e) { return false; }
+          }
+          async function showModReports29() {
+            const area = $('reportsListArea'); if (!area) return;
+            if (area.style.display === 'flex') { area.style.display = 'none'; return; }
+            area.style.display = 'flex';
+            area.innerHTML = '<div class="message-text">Загрузка отчетов модерации...</div>';
+            try {
+              const { data, error } = await supa.from('reports').select('*').order('id', { ascending:false }).limit(900);
+              if (error) throw error;
+              const rows = (data || []).filter(isModReport).slice(0, 80);
+              if (!rows.length) { area.innerHTML = '<div class="message-text">Отчетов модерации пока нет.</div>'; return; }
+              rows.sort((a,b) => {
+                const da = String(a.date || '').match(/Дата:\s*([\d-]+)/), db = String(b.date || '').match(/Дата:\s*([\d-]+)/);
+                const ta = da ? new Date(da[1]).getTime() : 0, tb = db ? new Date(db[1]).getTime() : 0;
+                return tb !== ta ? tb - ta : String(b.id || '').localeCompare(String(a.id || ''));
+              });
+              area.innerHTML = rows.map(r => {
+                const waiting = String(r.status || '').includes('Ожидает') || r.status === 'На проверке' || !r.status;
+                const proof = String(r.link || '').startsWith('data:image')
+                  ? `<img src="${r.link}" style="max-width:100%;max-height:150px;border-radius:8px;cursor:zoom-in;border:2px solid var(--theme-accent);" onclick="document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src='${r.link}'">`
+                  : (r.link ? `<a href="${esc(r.link)}" target="_blank" class="btn btn-secondary" style="padding:.4rem .8rem;font-size:.8rem;">📸 Открыть ссылку на док-во</a>` : '');
+                return `<div class="t73-v29-mod-report-card" style="background:rgba(0,0,0,.5);padding:1rem;border-radius:12px;border:1px solid rgba(191,198,255,.2);display:grid;gap:.65rem;">
+                  <div style="display:flex;justify-content:space-between;gap:.75rem;flex-wrap:wrap;"><strong>${esc(r.email || 'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.8rem;">Данные формы: ${esc(r.date || '')}</span></div>
+                  <div>${proof}</div>
+                  <span style="color:${Number(r.xp || 0) > 0 ? 'var(--color-success)' : (r.status === 'Не засчитано' || r.status === 'Отказ' ? 'var(--color-error)' : 'var(--color-warning)')};font-weight:800;">${esc(r.status || 'На проверке')} (${Number(r.xp || 0)} XP)</span>
+                  ${waiting ? `<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem;">
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button>
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button>
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button>
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button>
+                  </div>` : ''}
+                </div>`;
+              }).join('');
+            } catch(e) {
+              area.innerHTML = `<div class="message-text" style="color:var(--color-error);">Ошибка при загрузке: ${esc(e.message || e)}</div>`;
+            }
+          }
+          async function showGossReports29() {
+            const org = currentOrg();
+            if (!(await canGoss(org.id))) return alert('Проверка ГОСС/СС отчётов доступна только руководству/СС организации.');
+            const root = $('gossV4Content') || $('gossV3Content') || $('gossDashView') || $('mode-fsb');
+            if (!root) return;
+            let area = $('v29GossReportsList');
+            if (!area) {
+              root.insertAdjacentHTML('beforeend', '<div id="v29GossReportsList" class="t73-v27-report-list" style="display:none;flex-direction:column;gap:1rem;margin-top:1rem;"></div>');
+              area = $('v29GossReportsList');
+            }
+            const old = $('v28GossReportsList'); if (old) old.style.display = 'none';
+            if (area.style.display === 'flex') { area.style.display = 'none'; return; }
+            area.style.display = 'flex';
+            area.innerHTML = '<div class="message-text">⏳ Загрузка ГОСС/СС отчётов...</div>';
+            const { data, error } = await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link',org.id).order('id',{ascending:false}).limit(120);
+            if (error) { area.innerHTML = `<div class="t73-v27-old-report-card" style="color:var(--color-error);">Ошибка: ${esc(error.message)}</div>`; return; }
+            const rows = data || [];
+            area.innerHTML = `<div class="gov-v4-card gov-v3-access-card"><h3 style="color:#ff6b88;margin:0;">Проверка ГОСС/СС отчётов — ${esc(org.short || org.id)}</h3><p class="t73-v27-muted">Здесь только ГОСС/СС: Натяг / Норма / Перенорма. Модераторские отчёты сюда не попадают.</p></div>` + (rows.length ? rows.map(r => {
+              const p = parse(r.date), files = Array.isArray(p.files) ? p.files : [];
+              const result = p.result || r.status || 'На проверке';
+              const checked = !!p.checkedAt || ['Натяг','Норма','Перенорма','Отказ'].includes(result);
+              const fileHtml = files.length ? '<div class="t73-v27-files">' + files.map(f => String(f).startsWith('data:image') ? `<div class="t73-v27-file-thumb"><img src="${f}" onclick="document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src='${f}'"></div>` : `<a class="btn btn-secondary" href="${esc(f)}" target="_blank">📎 Файл</a>`).join('') + '</div>' : '';
+              return `<div class="t73-v27-old-report-card"><div style="display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;flex-wrap:wrap;"><div><strong>${esc(p.nick || r.status || 'Пользователь')}</strong><div class="t73-v27-muted">${esc(p.type || 'ГОСС отчёт')} · ${esc(p.created || '')}</div></div><span class="t73-v27-chip">${esc(result)} · ${Number(r.xp || p.xp || 0)} балл.</span></div><div class="t73-v27-muted">${esc(p.comment || 'Без комментария')}</div>${p.link ? `<a href="${esc(p.link)}" target="_blank" class="btn btn-secondary" style="width:max-content;max-width:100%;">📸 Открыть ссылку</a>` : ''}${fileHtml}${!checked ? `<div class="t73-v27-report-actions"><button class="btn btn-secondary" style="border-color:#00e5ff;color:#00e5ff;" onclick="processGossReport29('${esc(r.id)}','Натяг',7)">Натяг (7)</button><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processGossReport29('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processGossReport29('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processGossReport29('${esc(r.id)}','Отказ',0)">Отказ</button></div>` : `<div class="t73-v27-muted">Проверил: ${esc(p.checkedBy || '—')} · ${esc(p.checkedAt || '')}</div>`}</div>`;
+            }).join('') : '<div class="t73-v27-old-report-card">ГОСС/СС отчётов пока нет.</div>');
+          }
+          window.processGossReport29 = async function(id, status, xp) {
+            const { data } = await supa.from('reports').select('*').eq('id',id).limit(1);
+            const row = data && data[0], p = parse(row?.date);
+            p.result = status; p.xp = xp; p.checkedAt = new Date().toLocaleString('ru-RU'); p.checkedBy = currentNickname || currentUser?.email || 'Руководство';
+            await supa.from('reports').update({ date: JSON.stringify(p), status, xp }).eq('id', id);
+            const a = $('v29GossReportsList'); if (a) a.style.display = 'none'; setTimeout(showGossReports29, 100);
+          };
+          function applyMobileScrollFix29() {
+            if ($('t73v29MobileScrollFix')) return;
+            const style = document.createElement('style');
+            style.id = 't73v29MobileScrollFix';
+            style.textContent = `@media (max-width: 820px) { html, body { overflow-y: auto !important; overscroll-behavior-y: auto !important; touch-action: pan-y !important; } .page { width: 100% !important; max-width: 100% !important; padding-left: .75rem !important; padding-right: .75rem !important; overflow: visible !important; } .nav-container, .main-nav, .sub-nav, .gov-v4-tabs, .gov-v3-actions, .gov-v4-actions, .goss-v4-actions, .gossV4Tabs, .t73-v27-report-actions { width: 100% !important; max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; flex-wrap: nowrap !important; justify-content: flex-start !important; -webkit-overflow-scrolling: touch !important; scroll-snap-type: none !important; touch-action: pan-x !important; padding-bottom: .55rem !important; } .main-nav::-webkit-scrollbar, .sub-nav::-webkit-scrollbar, .gov-v4-tabs::-webkit-scrollbar, .gov-v3-actions::-webkit-scrollbar, .gov-v4-actions::-webkit-scrollbar { height: 0 !important; display: none !important; } .main-cat-btn, .mode-btn, .gov-v4-tabs button, .gov-v3-actions button, .gov-v4-actions button, .goss-v4-actions button, .t73-v27-report-actions .btn { flex: 0 0 auto !important; white-space: nowrap !important; min-width: max-content !important; } .hero, .game-wrap { grid-template-columns: 1fr !important; } .panel, .hero-card, .rules, .game-card, .side { max-width: 100% !important; overflow: visible !important; } }`;
+            document.head.appendChild(style);
+          }
+          function patchReportButtons29() {
+            applyMobileScrollFix29();
+            const modBtn = $('viewReportsBtn');
+            if (modBtn && modBtn.dataset.v29 !== 'mod') {
+              const clone = modBtn.cloneNode(true);
+              clone.dataset.v29 = 'mod';
+              clone.textContent = 'Проверить сданные отчеты';
+              clone.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); showModReports29(); }, true);
+              modBtn.replaceWith(clone);
+            }
+            ['v27GossViewReportsBtn','v25GossViewReportsBtn','v26GossViewReportsBtn','v29GossViewReportsBtn'].forEach(id => {
+              const btn = $(id);
+              if (btn && btn.dataset.v29 !== 'goss') {
+                const clone = btn.cloneNode(true);
+                clone.dataset.v29 = 'goss';
+                clone.textContent = 'Проверить сданные ГОСС отчеты';
+                clone.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); showGossReports29(); }, true);
+                btn.replaceWith(clone);
+              }
+            });
+            document.querySelectorAll('button').forEach(btn => {
+              const txt = (btn.textContent || '').trim().toLowerCase();
+              if (!txt.includes('проверить') || !txt.includes('отчет')) return;
+              if (btn.id === 'viewReportsBtn') return;
+              const inGoss = btn.closest('#gossV4Content,#gossV3Content,#gossDashView,[id^="mode-goss"],#mode-fsb');
+              if (inGoss && btn.dataset.v29 !== 'goss') {
+                const clone = btn.cloneNode(true);
+                clone.dataset.v29 = 'goss';
+                clone.textContent = 'Проверить сданные ГОСС отчеты';
+                clone.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); showGossReports29(); }, true);
+                btn.replaceWith(clone);
+              }
+            });
+            window.showModeratorReports29 = showModReports29;
+            window.showGossReports29 = showGossReports29;
+          }
+          setTimeout(patchReportButtons29, 250);
+          setTimeout(patchReportButtons29, 900);
+          setTimeout(patchReportButtons29, 2200);
+          document.addEventListener('click', () => setTimeout(patchReportButtons29, 80), true);
+          new MutationObserver(() => { clearTimeout(window.__t73V29Patch); window.__t73V29Patch = setTimeout(patchReportButtons29, 180); }).observe(document.body, { childList:true, subtree:true });
+          window.T73_V29_REPORTS_SPLIT_FIXED = { modReports:showModReports29, gossReports:showGossReports29, refresh:patchReportButtons29 };
+        })();
+        /* === /T73 V29 === */
+
         /* === /T73 V27 === */
     });
   </script>
