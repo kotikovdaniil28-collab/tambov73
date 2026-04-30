@@ -8859,8 +8859,11 @@
                         .gov-v4-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.36rem .75rem;border-radius:999px;font-size:.82rem;font-weight:900;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;}
                         .gov-v4-sub{color:var(--color-text-muted);font-size:.95rem;margin:.25rem 0 0;}
                         .gov-v4-actions{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:flex-end;}
-                        .gov-v4-options{display:grid;gap:.75rem;margin-top:1rem;}
-                        .gov-v4-option{width:100%;min-height:54px;padding:.9rem 1rem;border-radius:16px;text-align:left;background:rgba(13,16,32,.82);border:1px solid rgba(191,198,255,.2);color:#fff;font-weight:800;}
+                        .gov-v4-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1rem;align-items:stretch;}
+                        .gov-v4-option{width:100%;min-height:142px;padding:1rem 1rem;border-radius:18px;text-align:left;background:rgba(13,16,32,.82);border:1px solid rgba(191,198,255,.2);color:#fff;font-weight:800;display:flex;flex-direction:column;justify-content:center;gap:.65rem;line-height:1.35;}
+                        .gov-v4-choice-tag{display:inline-flex;align-items:center;width:max-content;padding:.22rem .6rem;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted);}
+                        .gov-v4-choice-text{display:block;}
+                        @media (max-width:760px){.gov-v4-options{grid-template-columns:1fr;}.gov-v4-option{min-height:118px;}}
                         .gov-v4-option:hover{border-color:#ff6b88;background:rgba(255,107,136,.12);}
                         .gov-v4-option.good{border-color:rgba(82,199,123,.65);background:rgba(82,199,123,.12);}
                         .gov-v4-option.bad{border-color:rgba(255,107,136,.65);background:rgba(255,107,136,.12);}
@@ -8949,7 +8952,7 @@
             function v4RenderTrainer(){
                 const org = v4Org(), pack = GOV_TRAINERS_V4[org.id] || GOV_TRAINERS_V4.fsb, round = v4GetRound(org.id), root = document.getElementById('gossV4Content');
                 if (!root) return;
-                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">' + v4Esc(pack.title) + '</h3><p class="gov-v4-sub">' + v4Esc(pack.lead) + '</p></div><span class="gov-v4-pill">' + v4Esc(pack.badge) + '</span></div></div><div class="message-card" style="min-height:auto;"><div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># ' + v4Esc(org.short.toLowerCase()) + ' / тренажёр СС</div><div class="author-row"><div class="avatar">' + v4Esc(org.icon) + '</div><div><div class="author-name">' + v4Esc(round.scenario.from) + '</div><div class="author-meta">' + v4Esc(org.name) + '</div></div></div><div class="message-text">' + v4Esc(round.scenario.text) + '</div><div class="gov-v4-options">' + round.options.map((o, idx) => '<button class="gov-v4-option" data-idx="' + idx + '" type="button">' + v4Esc(o.text) + '</button>').join('') + '</div><div id="govV4TrainerFeedback"></div></div><div class="gov-v4-actions"><button id="govV4NextScenarioBtn" class="btn btn-secondary" type="button">Следующая ситуация</button></div>' + (!v4HasSpecial(org.id) ? '<div class="gov-v4-denied">Сейчас у вас обычный доступ: доступен только тренажёр. Разделы «Мои данные», «Отчётность», «Магазин» появятся после выдачи прав старшего состава. Панель руководства появится только после выдачи прав руководства.</div>' : '');
+                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">' + v4Esc(pack.title) + '</h3><p class="gov-v4-sub">' + v4Esc(pack.lead) + '</p></div><span class="gov-v4-pill">' + v4Esc(pack.badge) + '</span></div></div><div class="message-card" style="min-height:auto;"><div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># ' + v4Esc(org.short.toLowerCase()) + ' / тренажёр СС</div><div class="author-row"><div class="avatar">' + v4Esc(org.icon) + '</div><div><div class="author-name">' + v4Esc(round.scenario.from) + '</div><div class="author-meta">' + v4Esc(org.name) + '</div></div></div><div class="message-text">' + v4Esc(round.scenario.text) + '</div><div class="gov-v4-options">' + round.options.map((o, idx) => '<button class="gov-v4-option" data-idx="' + idx + '" type="button"><span class="gov-v4-choice-tag">Вариант ' + String.fromCharCode(65 + idx) + '</span><span class="gov-v4-choice-text">' + v4Esc(o.text) + '</span></button>').join('') + '</div><div id="govV4TrainerFeedback"></div></div><div class="gov-v4-actions"><button id="govV4NextScenarioBtn" class="btn btn-secondary" type="button">Следующая ситуация</button></div>' + (!v4HasSpecial(org.id) ? '<div class="gov-v4-denied">Сейчас у вас обычный доступ: доступен только тренажёр. Разделы «Мои данные», «Отчётность», «Магазин» появятся после выдачи прав старшего состава. Панель руководства появится только после выдачи прав руководства.</div>' : '');
                 root.querySelectorAll('.gov-v4-option').forEach(btn => v4Bind(btn, () => {
                     if (round.answered) return;
                     round.answered = true;
@@ -9174,6 +9177,111 @@
         })();
         /* === /GOV TRAINERS & ACCESS V4 2026-04-30 === */
 
+
+        /* === V7 FIX: заголовки из переданного кода + анти-чит длины ответов + живая hover-анимация === */
+        const T73_MODE_HEADERS_FROM_REFERENCE = {
+            moderation: ["Симулятор смены модераторов", 'Следи за <span>порядком</span> на сервере.', "Проверяй сообщения, принимай решения и поддерживай порядок в чате.", "Режим: модераторы"],
+            timeattack: ["Симулятор смены: На время", 'Успей за <span>минуту</span>.', "Проверяй сообщения как можно быстрее. За ошибки отнимается драгоценное время!", "Режим: спидран"],
+            complaints: ["Симулятор смены: Жалобы", 'Рассматривай <span>репорты</span>.', "Изучай доказательства игроков и выноси вердикты. Спорные моменты и ЧСМ передавай КГМ.", "Режим: жалобы"],
+            support: ["Симулятор смены агентов поддержки", 'Создавай <span>уют</span> и помогай игрокам.', "Отвечай на вопросы игроков, ориентируйся в материалах.", "Режим: агенты поддержки"],
+            quests: ["Квесты сотрудников", 'Выполняй <span>задания</span>.', "Получай бонусный XP за активную работу в симуляторе. Задания обновляются автоматически.", "Режим: квесты"],
+            guide: ["Руководство Сервера", 'Контакты <span>руководства</span>.', "Основная информация и контактные данные.", "Режим: руководство"],
+            leaderboard: ["Таблица лидеров", 'Топ <span>лучших</span>.', "Отображаются активные сотрудники с наибольшим количеством XP.", "Режим: лидерборд"],
+            about: ["Люди, которые сделали этот проект", 'Узнай, кто <span>стоит за идеей</span>.', "Этот раздел посвящён авторам и тем, кто помогал собрать тренажёр.", "Режим: о команде"],
+            profile: ["Личный Профиль", 'Ваша <span>Статистика</span>.', "Ваши достижения, баланс и визуальные улучшения для аккаунта.", "Режим: профиль"],
+            shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
+            ap_shop: ["Магазин за XP/Баллы", 'Трать <span>Опыт</span> на бонусы.', "Покупайте скидки для ускорения повышения или испытай удачу в играх.", "Режим: магазин"],
+            report: ["Симулятор смены: Отчетность", 'Сдавай <span>отчеты</span> вовремя.', "Отправляй данные своего онлайна для проверки руководством.", "Режим: отчетность"],
+            inactives: ["Симулятор смены: Неактивы", 'Берешь <span>отдых</span>?', "Отправьте заявку на неактив с указанием причины.", "Режим: неактивы"],
+            admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
+            ap_admin_log: ["Админ-Панель", 'Логи <span>выдач</span>.', "Здесь отображаются все покупки и выигрыши в рулетку, требующие ручной выдачи Руководством в Discord.", "Режим: руководство"],
+            creator: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
+            leadership: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
+            ap_admin: ["Панель Руководства", 'Управление <span>Пользователями</span>.', "Управление базой данных, выдача опыта и редактирование контента.", "Режим: Руководство"],
+            reports_table: ["Отчеты", 'Таблица <span>Отчетов</span>.', "Здесь видна сводка онлайна всех модераторов по датам.", "Режим: Отчеты"],
+            fsb: ["Организации: ФСБ", 'Вербовка в <span>УФСБ</span>.', "Проверяйте заявления кандидатов на стажировку. Учитывайте РП правила и УК РФ.", "Режим: ФСБ"],
+            fsb_shop: ["Магазин ФСБ", 'Покупки для <span>Сотрудников</span>.', "Покупайте отгулы, транспорт или крутите рулетки за баллы.", "Режим: ФСБ Магазин"],
+            fsb_admin: ["Руководство ФСБ", 'Управление <span>Составом</span>.', "Выдача статуса ФСБ и начисление баллов.", "Режим: Руководство ФСБ"],
+            fsb_admin_log: ["Логи ФСБ", 'Контроль <span>выдач ФСБ</span>.', "Проверяйте покупки магазина ФСБ и отмечайте, что уже выдано сотрудникам.", "Режим: логи ФСБ"],
+            goss_dashboard: ["ГОСС Центр", 'Выбери <span>организацию</span>.', "Открывай тренажёры, составы и разделы государственных организаций.", "Режим: ГОСС"],
+            goss_center_v3: ["ГОСС Центр", 'Разделы <span>госструктур</span>.', "Работа со старшим составом, правами и таблицами организаций.", "Режим: ГОСС"],
+            goss_center_v4: ["ГОСС Тренажёр", 'Тренируй <span>госструктуры</span>.', "Выбирай организацию и проходи ситуации старшего состава без подсказки по длине ответа.", "Режим: ГОСС тренажёр"]
+        };
+
+        function applyTambovModeHeaderV7(mode) {
+            const brandSub = document.getElementById("brandSubtitle");
+            const hTitle = document.getElementById("heroTitle");
+            const hText = document.getElementById("heroText");
+            const hBadge = document.getElementById("heroBadge2");
+            let header = T73_MODE_HEADERS_FROM_REFERENCE[mode];
+            if (!header && typeof getDynamicModeHeader === 'function') header = getDynamicModeHeader(mode);
+            if (!header && String(mode || '').startsWith('goss_')) {
+                const orgId = String(mode).replace('goss_', '');
+                const org = (typeof GOSS_ORGS !== 'undefined' ? GOSS_ORGS.find(o => o.id === orgId) : null) || { icon:'🏛️', short:'ГОСС', name:'Государственная организация' };
+                header = ["ГОСС: " + org.short, org.icon + ' Тренажёр <span>' + org.short + '</span>.', "Ситуации и рабочие разделы организации: " + org.name + ".", "Режим: " + org.short];
+            }
+            if (!header) return;
+            if (brandSub) brandSub.textContent = header[0];
+            if (hTitle) hTitle.innerHTML = header[1];
+            if (hText) hText.textContent = header[2];
+            if (hBadge) hBadge.textContent = header[3];
+            if (typeof updateModeIdentity === 'function') updateModeIdentity(mode, header);
+            document.title = header[0] + " — Tambov 73";
+        }
+
+        function installTambovHoverFxV7() {
+            if (document.getElementById('tambovHoverFxV7Style')) return;
+            const style = document.createElement('style');
+            style.id = 'tambovHoverFxV7Style';
+            style.textContent = `
+                .t73-hover-fx{position:relative;transform-style:preserve-3d;overflow:hidden;--t73-x:50%;--t73-y:50%;--t73-rx:0deg;--t73-ry:0deg;--t73-lift:0px;transition:transform 180ms cubic-bezier(.2,.8,.2,1),box-shadow 180ms ease,border-color 180ms ease;will-change:transform;}
+                .t73-hover-fx::before{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--t73-x) var(--t73-y),rgba(255,255,255,.22),rgba(255,255,255,.08) 18%,transparent 45%);opacity:0;transition:opacity 180ms ease;z-index:1;}
+                .t73-hover-fx > *{position:relative;z-index:2;}
+                .t73-hover-fx.t73-fx-live{transform:perspective(850px) rotateX(var(--t73-rx)) rotateY(var(--t73-ry)) translateY(var(--t73-lift));box-shadow:0 18px 45px rgba(0,0,0,.56),0 0 34px rgba(108,140,255,.16);border-color:rgba(255,255,255,.38)!important;}
+                .t73-hover-fx.t73-fx-live::before{opacity:1;}
+                .gov-v4-option.t73-hover-fx.t73-fx-live{box-shadow:0 16px 42px rgba(0,0,0,.56),0 0 30px rgba(255,107,136,.18);}
+                @media (prefers-reduced-motion: reduce){.t73-hover-fx,.t73-hover-fx.t73-fx-live{transform:none!important;transition:none!important;}.t73-hover-fx::before{display:none;}}
+            `;
+            document.head.appendChild(style);
+
+            const bindOne = (el) => {
+                if (!el || el.dataset.t73HoverFx === '1') return;
+                el.dataset.t73HoverFx = '1';
+                el.classList.add('t73-hover-fx');
+                el.addEventListener('mousemove', (ev) => {
+                    const r = el.getBoundingClientRect();
+                    if (!r.width || !r.height) return;
+                    const px = (ev.clientX - r.left) / r.width;
+                    const py = (ev.clientY - r.top) / r.height;
+                    el.style.setProperty('--t73-x', (px * 100).toFixed(1) + '%');
+                    el.style.setProperty('--t73-y', (py * 100).toFixed(1) + '%');
+                    el.style.setProperty('--t73-ry', ((px - .5) * 9).toFixed(2) + 'deg');
+                    el.style.setProperty('--t73-rx', ((.5 - py) * 9).toFixed(2) + 'deg');
+                    el.style.setProperty('--t73-lift', '-4px');
+                    el.classList.add('t73-fx-live');
+                }, { passive:true });
+                el.addEventListener('mouseleave', () => {
+                    el.classList.remove('t73-fx-live');
+                    el.style.setProperty('--t73-rx', '0deg');
+                    el.style.setProperty('--t73-ry', '0deg');
+                    el.style.setProperty('--t73-lift', '0px');
+                });
+            };
+            const bindAll = () => document.querySelectorAll('.rule-item,.stat,.quest-card,.message-card,.gov-v4-card,.gov-v4-option,.mod-report-card,.report-day-item,.mode-btn,.main-cat-btn,.btn,.action-btn,.panel').forEach(bindOne);
+            bindAll();
+            new MutationObserver(bindAll).observe(document.body, { childList:true, subtree:true });
+        }
+
+        const __t73SwitchModeBeforeV7 = switchMode;
+        switchMode = function(mode, btn) {
+            const result = __t73SwitchModeBeforeV7(mode, btn);
+            applyTambovModeHeaderV7(mode);
+            installTambovHoverFxV7();
+            return result;
+        };
+        applyTambovModeHeaderV7('moderation');
+        installTambovHoverFxV7();
+        /* === /V7 FIX === */
 
 
         // Запуск
