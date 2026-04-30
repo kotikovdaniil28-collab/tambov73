@@ -11723,5 +11723,87 @@
           window.T73_GOSS_V22 = { renderGlobalPanel:renderGlobalPanel22, refresh:tick22 };
         })();
         /* === /T73 V22 === */
+        /* === T73 V23: restore org leadership panel + mobile mode scroll === */
+        (function(){
+          const ACCESS = 'ADMIN_ROLE';
+          const ORG_LOG = 'GOSS_ORG_LOG_V19';
+          const $ = id => document.getElementById(id);
+          const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+          const now = () => new Date().toLocaleString('ru-RU');
+          const rid = p => p + '_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+          function orgs(){
+            try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e) {}
+            return [{id:'prav',short:'Правительство',icon:'🏛️'},{id:'fsb',short:'ФСБ',icon:'🛡️'},{id:'gibdd',short:'ГИБДД',icon:'🚓'},{id:'umvd',short:'УМВД',icon:'👮'},{id:'army',short:'Армия',icon:'🎖️'},{id:'hospital',short:'Больница',icon:'🏥'},{id:'smi',short:'СМИ',icon:'🎙️'},{id:'fsin',short:'ФСИН',icon:'⛓️'}];
+          }
+          function currentOrg(){
+            const active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+            const id = active?.dataset?.orgId || document.querySelector('#gossV4Org')?.dataset?.orgId || document.querySelector('#gossV3Org')?.dataset?.orgId || 'fsb';
+            return orgs().find(o => o.id === id) || orgs()[0];
+          }
+          async function roles(){
+            try { return (await supa.from('reports').select('*').eq('email', ACCESS).limit(5000)).data || []; } catch(e) { return []; }
+          }
+          async function users(){
+            try { return ((await supa.from('user_stats').select('user_id,nickname,email,xp').limit(2500)).data || []).map(u => ({id:u.user_id, nick:u.nickname || u.email || u.user_id, email:u.email || '', xp:u.xp || 0})); } catch(e) { return []; }
+          }
+          async function hasAnyLead(orgId){
+            if (!currentUser) return false;
+            if (currentUser.email === creatorEmail) return true;
+            const rs = await roles();
+            return rs.some(r => r.link === currentUser.id && ['goss_admin_all','goss_senior_all','goss_lead_'+orgId,'goss_senior_'+orgId].includes(r.status));
+          }
+          async function canAll(){
+            if (!currentUser) return false;
+            if (currentUser.email === creatorEmail) return true;
+            const rs = await roles();
+            return rs.some(r => r.link === currentUser.id && r.status === 'goss_admin_all');
+          }
+          function ensureStyle(){
+            if ($('t73V23Style')) return;
+            document.head.insertAdjacentHTML('beforeend', `<style id="t73V23Style">
+              .t73-v23-card{border:1px solid rgba(191,198,255,.2);background:rgba(6,9,18,.86);border-radius:18px;padding:1rem;box-shadow:0 12px 32px rgba(0,0,0,.35);display:grid;gap:.9rem}.t73-v23-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.t73-v23-grid label{display:grid;gap:.35rem;color:var(--color-text-muted);font-size:.92rem;font-weight:900}.t73-v23-select,.t73-v23-input,.t73-v23-area{width:100%;padding:.85rem 1rem;border-radius:14px;border:1px solid rgba(191,198,255,.25);background:rgba(4,6,12,.85);color:#fff;outline:none}.t73-v23-area{min-height:82px;resize:vertical}.t73-v23-actions{display:flex;gap:.65rem;flex-wrap:wrap}.t73-v23-list{display:grid;gap:.6rem}.t73-v23-row{padding:.8rem;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.7rem;align-items:center}.t73-v23-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.45}.t73-v23-pill{display:inline-flex;align-items:center;justify-content:center;padding:.28rem .62rem;border-radius:999px;background:rgba(82,199,123,.12);border:1px solid rgba(82,199,123,.3);color:#b8ffd0;font-weight:900;font-size:.78rem}.t73-v23-denied{padding:1rem;border-radius:16px;border:1px solid rgba(255,191,71,.35);background:rgba(255,191,71,.08);color:#fff}
+              @media (max-width: 820px){html,body{overflow-x:hidden!important}.nav-container,.main-nav,.sub-nav,[id^="subNav"],#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav{max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-x!important;scroll-snap-type:x proximity!important;flex-wrap:nowrap!important;white-space:nowrap!important;justify-content:flex-start!important}.nav-container{padding-bottom:.25rem}.main-nav,.sub-nav,[id^="subNav"],#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav{display:flex!important}.mode-btn,.main-cat-btn{flex:0 0 auto!important;scroll-snap-align:start!important}.game-wrap{grid-template-columns:1fr!important}.t73-v23-grid{grid-template-columns:1fr}.t73-v23-row{grid-template-columns:1fr}.t73-v23-actions .btn{width:100%}.page{width:min(100% - 1rem,1120px)!important}.panel{max-width:100%!important}}
+            </style>`);
+          }
+          function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
+          async function renderOrgLeadershipPanel(){
+            ensureStyle();
+            const o = currentOrg();
+            const r = root();
+            if (!r) return;
+            if (!(await hasAnyLead(o.id))) { r.innerHTML = '<div class="t73-v23-denied">Панель руководства доступна лидерам, следящим и руководству всех ГОСС.</div>'; return; }
+            const all = await canAll();
+            const us = await users();
+            const rs = (await roles()).filter(x => ['goss_senior_'+o.id, 'goss_lead_'+o.id, 'goss_senior_all', 'goss_admin_all'].includes(x.status));
+            const userOpts = us.map(u => `<option value="${esc(u.id)}">${esc(u.nick)}${u.email ? ' · ' + esc(u.email) : ''}</option>`).join('');
+            const roleOpts = `<option value="goss_senior_${esc(o.id)}">СС ${esc(o.short)}</option>` + (all ? `<option value="goss_lead_${esc(o.id)}">Руководство ${esc(o.short)}</option><option value="goss_senior_all">СС всех ГОСС</option><option value="goss_admin_all">Руководство всех ГОСС</option>` : '');
+            r.innerHTML = `<div class="t73-v23-card"><div><h3 style="margin:0;color:#ff6b88;">👑 Панель руководства — ${esc(o.short)}</h3><div class="t73-v23-muted">Для лидеров и следящих. Здесь можно выдать или забрать права старшего состава выбранной организации. Глобальные права доступны только руководству всех ГОСС.</div></div><div class="t73-v23-grid"><label>Пользователь<select id="v23LeadUser" class="t73-v23-select">${userOpts || '<option value="">Нет пользователей</option>'}</select></label><label>Доступ<select id="v23LeadRole" class="t73-v23-select">${roleOpts}</select></label><label style="grid-column:1/-1;">Комментарий<textarea id="v23LeadComment" class="t73-v23-area" placeholder="Причина выдачи/снятия доступа"></textarea></label></div><div class="t73-v23-actions"><button class="btn btn-primary" id="v23GrantRole" type="button">➕ Выдать доступ</button><button class="btn btn-secondary" id="v23RemoveRole" type="button" style="border-color:var(--color-error);color:var(--color-error);">➖ Забрать доступ</button><button class="btn btn-secondary" id="v23BackManage" type="button">↩️ Назад</button></div></div><div class="t73-v23-card"><h3 style="margin:0;color:#fff;">Текущие права</h3><div class="t73-v23-list">${rs.length ? rs.map(x => { const u = us.find(y => y.id === x.link) || {nick:x.link,email:''}; return `<div class="t73-v23-row"><div><strong>${esc(u.nick)}</strong><div class="t73-v23-muted">${esc(u.email || x.link || '')}</div><div class="t73-v23-muted">${esc(x.date || '')}</div></div><span class="t73-v23-pill">${esc(x.status.replace('goss_senior_','СС ').replace('goss_lead_','Руководство ').replace('goss_admin_all','Руководство всех ГОСС').replace('goss_senior_all','СС всех ГОСС'))}</span></div>`; }).join('') : '<div class="t73-v23-denied">Права пока никому не выданы.</div>'}</div></div>`;
+            $('v23GrantRole').onclick = async () => { const user = $('v23LeadUser').value, st = $('v23LeadRole').value, c = String($('v23LeadComment').value || '').trim(); if (!user || !st) return alert('Выберите пользователя и доступ.'); await supa.from('reports').delete().eq('email', ACCESS).eq('link', user).eq('status', st); const date = `Выдано: ${st} · ${currentUser?.email || 'unknown'} · ${now()}${c ? ' · ' + c : ''}`; const res = await supa.from('reports').insert([{id:rid('v23role'), email:ACCESS, link:user, status:st, date, xp:0}]); if (res.error) return alert('Ошибка: ' + res.error.message); await supa.from('reports').insert([{id:rid('v23log'), email:ORG_LOG, link:o.id, status:'grant_role', date, xp:0}]); alert('Доступ выдан.'); renderOrgLeadershipPanel(); };
+            $('v23RemoveRole').onclick = async () => { const user = $('v23LeadUser').value, st = $('v23LeadRole').value, c = String($('v23LeadComment').value || '').trim(); if (!user || !st) return alert('Выберите пользователя и доступ.'); const res = await supa.from('reports').delete().eq('email', ACCESS).eq('link', user).eq('status', st); if (res.error) return alert('Ошибка: ' + res.error.message); const date = `Снято: ${st} · ${currentUser?.email || 'unknown'} · ${now()}${c ? ' · ' + c : ''}`; await supa.from('reports').insert([{id:rid('v23log'), email:ORG_LOG, link:o.id, status:'remove_role', date, xp:0}]); alert('Доступ снят.'); renderOrgLeadershipPanel(); };
+            $('v23BackManage').onclick = () => renderManageBox();
+          }
+          async function renderManageBox(){
+            ensureStyle();
+            const o = currentOrg();
+            const r = root();
+            if (!r) return;
+            if (!(await hasAnyLead(o.id))) { r.innerHTML = '<div class="t73-v23-denied">Управление доступно лидерам, следящим и руководству всех ГОСС.</div>'; return; }
+            r.innerHTML = `<div class="t73-v23-card"><h3 style="color:#ff6b88;margin:0;">🧭 Управление — ${esc(o.short)}</h3><div class="t73-v23-muted">Основные функции собраны в одном месте, чтобы не перегружать панель организации.</div><div class="t73-v23-actions"><button class="btn btn-primary" id="v23OpenLeadership" type="button">👑 Панель руководства</button><button class="btn btn-secondary" id="v23OpenLogs" type="button">🧾 Логи организации</button></div></div>`;
+            $('v23OpenLeadership').onclick = renderOrgLeadershipPanel;
+            $('v23OpenLogs').onclick = () => { if (window.T73_GOSS_V15 && typeof window.T73_GOSS_V15.loadOrgLogs === 'function') window.T73_GOSS_V15.loadOrgLogs(); else if (typeof renderAdminLogs === 'function') renderAdminLogs('goss'); else alert('Модуль логов не найден.'); };
+          }
+          function patchManageButton(){
+            ensureStyle();
+            const b = $('g20Manage');
+            if (b && b.dataset.v23Patched !== '1') { b.dataset.v23Patched = '1'; b.onclick = e => { e.preventDefault(); renderManageBox(); }; b.textContent = '🧭 Управление'; b.style.display = b.style.display === 'none' ? b.style.display : 'inline-flex'; }
+          }
+          function tick(){ patchManageButton(); }
+          document.addEventListener('click', () => setTimeout(tick, 80), true);
+          setTimeout(tick, 700); setTimeout(tick, 1800); setTimeout(tick, 3600);
+          new MutationObserver(() => { clearTimeout(window.__t73V23Tick); window.__t73V23Tick = setTimeout(tick, 160); }).observe(document.body, {childList:true, subtree:true});
+          window.T73_GOSS_V23 = { renderManageBox, renderOrgLeadershipPanel, refresh:tick };
+        })();
+        /* === /T73 V23 === */
+
     });
   </script>
