@@ -13687,5 +13687,338 @@
 })();
 </script>
 
+<script>
+/* === T73 V36 REAL FIX: старая таблица модераторов + нормальная выдача XP === */
+(() => {
+  if (window.__T73_V36_REAL_FIX__) return;
+  window.__T73_V36_REAL_FIX__ = true;
+
+  const $ = (id) => document.getElementById(id);
+  const qa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  const nowId = (prefix) => prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+
+  const SERVICE_EMAILS = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','SHOP_OVERRIDE','USER_ROLE','INACTIVE_REQ',
+    'ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK',
+    'REPORT_TABLE_MARK','REPORT_TABLE_MARK_V12','REPORT_TABLE_MARK_V13','REPORT_TABLE_MARK_V14','REPORT_TABLE_MARK_V15','REPORT_TABLE_MARK_V16','REPORT_TABLE_MEMBER_V13',
+    'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_REPORTS','GOSS_REPORT_TABLE','GOSS_REPORT_MEMBER','GOSS_ORG_LOG','GOSS_SHOP','GOSS_SHOP_BUY','GOSS_POINTS'
+  ]);
+
+  function isLeader(){
+    try {
+      return !!(window.currentUser && (
+        currentUser.email === window.creatorEmail ||
+        (Array.isArray(window.adminEmails) && window.adminEmails.includes(currentUser.email)) ||
+        (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.includes(currentUser.id))
+      ));
+    } catch { return false; }
+  }
+
+  function statusClass(st){
+    st = normalizeModStatus(st);
+    if (st === 'Норма' || st === 'Перенорма') return 'status-good';
+    if (st === 'Герой дня') return 'status-hero';
+    if (st === 'Неактив') return 'status-inactive';
+    if (st === 'Нет отчета' || st === 'Отказ' || st === 'Не засчитано') return 'status-missing';
+    return 'status-none';
+  }
+  function normalizeModStatus(st){
+    st = String(st || 'none');
+    if (st === 'Отказ') return 'Не засчитано';
+    if (st === 'Натяг') return 'Герой дня';
+    return st;
+  }
+  function displayModStatus(st){
+    st = normalizeModStatus(st);
+    if (st === 'none') return 'На проверке';
+    if (st === 'Не засчитано') return 'Отказ';
+    return st;
+  }
+  function xpFor(st){
+    st = normalizeModStatus(st);
+    if (st === 'Норма') return 15;
+    if (st === 'Перенорма') return 30;
+    if (st === 'Герой дня') return 60;
+    return 0;
+  }
+  function isServiceOrGossReport(r){
+    const email = String(r?.email || '');
+    const text = `${email} ${r?.link || ''} ${r?.status || ''} ${r?.date || ''}`.toLowerCase();
+    if (SERVICE_EMAILS.has(email)) return true;
+    if (email.startsWith('GOSS_')) return true;
+    if (/goss|госс|сс всех|руководство всех/.test(text)) return true;
+    return false;
+  }
+  function weekDays(){
+    const offset = Number(window.currentTableWeekOffset || 0);
+    const base = new Date(); base.setHours(0,0,0,0); base.setDate(base.getDate() - offset * 7);
+    const arr = [];
+    for (let i=0;i<7;i++){ const d = new Date(base); d.setDate(d.getDate()-i); arr.push(d.toISOString().slice(0,10)); }
+    return arr.reverse();
+  }
+
+  function style(){
+    if ($('t73V36RealStyle')) return;
+    const s = document.createElement('style');
+    s.id = 't73V36RealStyle';
+    s.textContent = `
+      #mode-reports_table[data-t73-v36="mod"]{isolation:isolate;}
+      #mode-reports_table[data-t73-v36="mod"] .section-head h2{color:#7fe8a0!important;}
+      #mode-reports_table[data-t73-v36="mod"] .rt-controls{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:1rem!important;flex-wrap:wrap!important;}
+      #reportsTableWrapper[data-t73-v36="mod"]{display:block!important;overflow:visible!important;}
+      #reportsTableWrapper .t73-v36-note{border:1px solid rgba(82,199,123,.28);background:rgba(82,199,123,.08);border-radius:16px;padding:.9rem 1rem;color:#b8ffd0;font-size:.93rem;margin:.2rem 0 1rem;}
+      #reportsTableWrapper .t73-v36-list{display:grid!important;gap:1.25rem!important;}
+      #reportsTableWrapper .t73-v36-card{background:linear-gradient(145deg,rgba(13,16,32,.92),rgba(8,10,18,.97))!important;border:1px solid rgba(82,199,123,.25)!important;border-radius:18px!important;padding:1.15rem!important;box-shadow:0 14px 38px rgba(0,0,0,.42)!important;overflow:hidden!important;}
+      #reportsTableWrapper .t73-v36-head{display:flex!important;justify-content:space-between!important;gap:.8rem!important;align-items:center!important;border-bottom:1px solid rgba(255,255,255,.09)!important;padding-bottom:.85rem!important;}
+      #reportsTableWrapper .t73-v36-name{font-weight:900!important;font-size:1.08rem!important;color:#fff!important;overflow-wrap:anywhere!important;}
+      #reportsTableWrapper .t73-v36-xp{font-weight:900!important;color:#52c77b!important;text-shadow:0 0 18px rgba(82,199,123,.32)!important;white-space:nowrap!important;}
+      #reportsTableWrapper .t73-v36-days{display:flex!important;gap:.65rem!important;overflow-x:auto!important;overflow-y:hidden!important;padding:.95rem .05rem .25rem!important;scroll-snap-type:x proximity!important;-webkit-overflow-scrolling:touch!important;}
+      #reportsTableWrapper .t73-v36-days::-webkit-scrollbar{height:8px;}
+      #reportsTableWrapper .t73-v36-days::-webkit-scrollbar-thumb{background:rgba(82,199,123,.5);border-radius:999px;}
+      #reportsTableWrapper .t73-v36-day{min-width:130px!important;scroll-snap-align:start!important;background:rgba(255,255,255,.045)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:12px!important;padding:.75rem!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:.55rem!important;}
+      #reportsTableWrapper .t73-v36-day.status-good{background:rgba(22,163,74,.16)!important;border-color:rgba(22,163,74,.72)!important;}
+      #reportsTableWrapper .t73-v36-day.status-hero{background:rgba(59,130,246,.18)!important;border-color:rgba(59,130,246,.80)!important;}
+      #reportsTableWrapper .t73-v36-day.status-inactive{background:rgba(234,88,12,.18)!important;border-color:rgba(234,88,12,.75)!important;}
+      #reportsTableWrapper .t73-v36-day.status-missing{background:rgba(239,68,68,.16)!important;border-color:rgba(239,68,68,.75)!important;}
+      #reportsTableWrapper .t73-v36-date{font-size:.9rem!important;font-weight:900!important;letter-spacing:.04em!important;color:#fff!important;}
+      #reportsTableWrapper .t73-v36-select{min-height:38px!important;width:100%!important;border-radius:9px!important;font-weight:900!important;text-align:center!important;text-align-last:center!important;}
+      #reportsTableWrapper .t73-v36-mobile{display:none;color:var(--color-text-faint);font-size:.84rem;margin:.25rem 0 .8rem;}
+      #v16OpenBar,#v16OpenTableTop,#v16ReportTableBtnGen,#v16ReportTableBtnMod,#reportsTableBtnModStatic,#reportsTableBtnModV15,#v25ModViewReportsBtn,#v34GeneralModTableBtn,#v34OpenModTableBtn,#v35GeneralModTableBtn,#v35ModTableBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+      @media(max-width:760px){
+        #mode-reports_table[data-t73-v36="mod"] .rt-controls{display:grid!important;grid-template-columns:1fr!important;text-align:center!important;}
+        #reportsTableWrapper .t73-v36-mobile{display:block!important;}
+        #reportsTableWrapper .t73-v36-day{min-width:116px!important;}
+        #reportsTableWrapper .t73-v36-card{padding:1rem!important;}
+        #reportsTableWrapper .t73-v36-head{align-items:flex-start!important;}
+      }`;
+    document.head.appendChild(s);
+  }
+
+  function shell(){
+    style();
+    let sec = $('mode-reports_table');
+    if (!sec) {
+      const host = document.querySelector('.game-wrap') || document.querySelector('.page') || document.body;
+      if (!host) return null;
+      host.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>');
+      sec = $('mode-reports_table');
+    }
+    if (!sec) return null;
+    sec.dataset.t73V36 = 'mod';
+    sec.dataset.v35Shell = '1';
+    if (!$('reportsTableWrapper') || !sec.querySelector('#reportsTableWrapper')) {
+      sec.innerHTML = `<div class="section-head"><h2>Таблица Отчетов Модерации</h2><p>Карточки модераторов, даты недели, Real XP и старые привычные статусы.</p></div>
+      <div class="rt-controls"><button id="rtPrevWeekBtn" class="btn btn-secondary" type="button">⬅️ Прошлая неделя</button><strong id="rtCurrentWeekLabel">Текущая неделя</strong><button id="rtNextWeekBtn" class="btn btn-secondary" type="button">Следующая ➡️</button></div>
+      <div id="reportsTableWrapper" data-t73-v36="mod" data-v35-stable="1"><div class="message-card" style="min-height:auto;text-align:center;">Загрузка...</div></div>`;
+    } else {
+      const wrap = $('reportsTableWrapper');
+      if (wrap) { wrap.dataset.t73V36 = 'mod'; wrap.dataset.v35Stable = '1'; }
+    }
+    bindWeek();
+    return $('reportsTableWrapper');
+  }
+
+  function bindWeek(){
+    const p = $('rtPrevWeekBtn'), n = $('rtNextWeekBtn'), label = $('rtCurrentWeekLabel');
+    if (label) label.textContent = Number(window.currentTableWeekOffset||0) === 0 ? 'Текущая неделя' : `${window.currentTableWeekOffset} нед. назад`;
+    if (p) p.onclick = (e)=>{ e.preventDefault(); window.currentTableWeekOffset = Number(window.currentTableWeekOffset||0)+1; loadModTableV36(); };
+    if (n) { n.disabled = Number(window.currentTableWeekOffset||0) <= 0; n.onclick = (e)=>{ e.preventDefault(); window.currentTableWeekOffset = Math.max(0, Number(window.currentTableWeekOffset||0)-1); loadModTableV36(); }; }
+  }
+
+  async function fetchUserById(uid){
+    try { const {data} = await supa.from('user_stats').select('*').eq('user_id',uid).limit(1); return data && data[0] ? data[0] : null; } catch { return null; }
+  }
+  async function getTargetUser(uid, listName){
+    let u = null;
+    try { const arr = window[listName] || window.adminUsersList || window.creatorUsersList || []; u = Array.isArray(arr) ? arr.find(x => String(x.user_id) === String(uid)) : null; } catch {}
+    return u || await fetchUserById(uid);
+  }
+  async function addXpRecord(uid, amount, reason){
+    if (!uid || !Number.isFinite(Number(amount)) || Number(amount) === 0) throw new Error('Введите количество XP.');
+    const row = { id: nowId('manual_xp'), email:'MANUAL_XP', link:uid, status:'mod', date:reason || 'Ручная выдача XP', xp:Number(amount) };
+    const {error} = await supa.from('reports').insert([row]);
+    if (error) throw error;
+  }
+  async function changeRealXpBySpent(uid, amount){
+    const user = await fetchUserById(uid);
+    if (!user) throw new Error('Пользователь не найден в user_stats.');
+    const newSpent = Number(user.shop_spent || 0) - Number(amount || 0);
+    const {error} = await supa.from('user_stats').update({ shop_spent:newSpent }).eq('user_id', uid);
+    if (error) throw error;
+  }
+  async function refreshAfterXp(){
+    try { if (typeof window.loadGlobalShopAndRoulette === 'function') await window.loadGlobalShopAndRoulette(); } catch {}
+    try { if (typeof window.updateShopStats === 'function') window.updateShopStats(); } catch {}
+    try { if (typeof window.updateModStats === 'function') window.updateModStats(); } catch {}
+    try { if (typeof window.loadUsersForAdmin === 'function') await window.loadUsersForAdmin(); } catch {}
+    try { if (typeof window.loadCreatorPanelData === 'function') await window.loadCreatorPanelData(); } catch {}
+    if (visible()) setTimeout(loadModTableV36, 100);
+  }
+  function rebindXpButtons(){
+    const bind = (id, selectId, typeId, amountId, listName, creatorOnly) => {
+      const old = $(id); if (!old || old.dataset.v36Xp === '1') return;
+      const btn = old.cloneNode(true); btn.dataset.v36Xp = '1'; old.replaceWith(btn);
+      btn.onclick = async (e) => {
+        e.preventDefault();
+        const uid = $(selectId)?.value;
+        const type = $(typeId)?.value || 'game';
+        const amount = Number($(amountId)?.value || 0);
+        if (creatorOnly && (!window.currentUser || currentUser.email !== window.creatorEmail)) return alert('Доступно только создателю.');
+        if (!uid || uid.startsWith('Загрузка') || !Number.isFinite(amount) || amount === 0) return alert('Выберите пользователя и введите XP.');
+        const target = await getTargetUser(uid, listName);
+        if (target && target.email === window.creatorEmail && (!window.currentUser || currentUser.email !== window.creatorEmail)) return alert('Создателю XP может менять только он сам.');
+        btn.disabled = true; btn.style.opacity = '.6';
+        try {
+          if (type === 'report') await changeRealXpBySpent(uid, amount);
+          else await addXpRecord(uid, amount, `Выдача/списание игрового XP: ${amount} · ${window.currentUser?.email || 'unknown'}`);
+          alert('XP изменён.');
+          await refreshAfterXp();
+        } catch (err) { alert('Ошибка XP: ' + (err?.message || err)); }
+        finally { btn.disabled = false; btn.style.opacity = '1'; }
+      };
+    };
+    bind('creatorXpBtn','creatorUserSelect','creatorGiveType','creatorXpAmount','creatorUsersList',true);
+    bind('leadershipXpBtn','leadershipUserSelect','leadershipGiveType','leadershipXpAmount','adminUsersList',false);
+  }
+
+  let loading = false;
+  async function loadModTableV36(){
+    if (loading) return;
+    loading = true;
+    const wrap = shell();
+    if (!wrap) { loading = false; return; }
+    wrap.dataset.t73V36 = 'mod'; wrap.dataset.v35Stable = '1';
+    wrap.innerHTML = '<div class="message-card" style="min-height:auto;text-align:center;">⏳ Загружаю таблицу модераторов...</div>';
+    try {
+      bindWeek();
+      const {data: roleRows, error: roleErr} = await supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','moderator');
+      if (roleErr) throw roleErr;
+      const ids = [...new Set((roleRows||[]).map(r => String(r.link||'').trim()).filter(Boolean))];
+      if (!ids.length) { wrap.innerHTML = '<div class="message-card" style="min-height:auto;text-align:center;">Модераторы не найдены. Выдайте кому-нибудь роль модератора.</div>'; return; }
+      const {data: usersData, error: usersErr} = await supa.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id',ids);
+      if (usersErr) throw usersErr;
+      let mods = (usersData||[]).filter(u => u && u.email && !/goss|госс|сс всех/i.test(`${u.nickname||''} ${u.email||''}`));
+      const [{data: rawReports, error: repErr}, {data: inactiveRows}, {data: manualRows}] = await Promise.all([
+        supa.from('reports').select('*').order('id',{ascending:false}).limit(1800),
+        supa.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено'),
+        supa.from('reports').select('*').in('email',['GAME_XP','MANUAL_XP']).limit(2000)
+      ]);
+      if (repErr) throw repErr;
+      const reports = (rawReports||[]).filter(r => !isServiceOrGossReport(r));
+      const leader = isLeader();
+      if (!leader) mods = mods.filter(m => !(Array.isArray(window.adminEmails)&&window.adminEmails.includes(m.email)) && m.email !== window.creatorEmail && !(Array.isArray(window.dynamicModLeaders)&&window.dynamicModLeaders.includes(m.user_id)));
+      mods.forEach(mod => {
+        const reportXp = reports.reduce((sum,r)=> sum + (String(r.email||'')===String(mod.email||'') && Number(r.xp||0)>0 ? Number(r.xp||0) : 0),0);
+        const manualXp = (manualRows||[]).reduce((sum,r)=> sum + (String(r.link||'')===String(mod.user_id||'') ? Number(r.xp||0) : 0),0);
+        mod.calculatedRealXp = Math.max(0, reportXp + manualXp - Number(mod.shop_spent||0));
+      });
+      mods.sort((a,b)=>String(a.nickname||'').localeCompare(String(b.nickname||''),'ru'));
+      const days = weekDays();
+      const actual = new Date(); actual.setHours(0,0,0,0);
+      let html = '<div class="t73-v36-note"><b>Таблица модераторов.</b> Старый формат: карточка сотрудника, Real XP, 7 дат недели и привычные статусы.</div><div class="t73-v36-mobile">↔️ На телефоне свайпайте даты влево/вправо.</div><div class="t73-v36-list">';
+      mods.forEach(mod => {
+        const nick = String(mod.nickname || '').trim();
+        const nickLower = nick.toLowerCase();
+        html += `<div class="t73-v36-card"><div class="t73-v36-head"><div class="t73-v36-name">${esc(nick || 'Без ника')}</div><div class="t73-v36-xp">${Number(mod.calculatedRealXp || 0)} Real XP</div></div><div class="t73-v36-days">`;
+        days.forEach(day => {
+          const rep = reports.find(r => String(r.date||'').toLowerCase().includes(nickLower) && String(r.date||'').includes(day));
+          let inactive = false;
+          (inactiveRows||[]).forEach(ina => {
+            const txt = String(ina.date||'').toLowerCase();
+            if (!nickLower || !txt.includes(nickLower)) return;
+            const fm = txt.match(/с:\s*([\d-]+)/i), tm = txt.match(/по:\s*([\d-]+)/i);
+            if (fm && tm) { const dd = new Date(day); if (dd >= new Date(fm[1]) && dd <= new Date(tm[1])) inactive = true; }
+          });
+          let st = 'none';
+          if (rep) st = normalizeModStatus(rep.status || 'none');
+          else if (inactive) st = 'Неактив';
+          else { const d = new Date(day); d.setHours(0,0,0,0); if (d < actual) st = 'Нет отчета'; }
+          const cls = statusClass(st);
+          const short = day.slice(5).split('-').reverse().join('.');
+          if (leader) {
+            html += `<div class="t73-v36-day ${cls}"><div class="t73-v36-date">${esc(short)}</div><select class="t73-v36-select status-select ${cls}" data-id="${rep?esc(rep.id):''}" data-nick="${esc(nick)}" data-day="${esc(day)}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${st==='Не засчитано'?'selected':''}>Отказ</option></select></div>`;
+          } else {
+            html += `<div class="t73-v36-day ${cls}"><div class="t73-v36-date">${esc(short)}</div><div style="font-weight:900;font-size:.85rem;text-align:center;">${esc(displayModStatus(st))}</div></div>`;
+          }
+        });
+        html += '</div></div>';
+      });
+      wrap.innerHTML = html + '</div>';
+      wrap.dataset.t73V36 = 'mod'; wrap.dataset.v35Stable = '1';
+      qa('.t73-v36-select', wrap).forEach(sel => sel.onchange = () => updateStatus(sel));
+    } catch (err) {
+      wrap.innerHTML = `<div class="message-card" style="min-height:auto;color:var(--color-error);">Ошибка таблицы модераторов: ${esc(err?.message || err)}</div>`;
+    } finally { loading = false; }
+  }
+  async function updateStatus(sel){
+    let val = normalizeModStatus(sel.value);
+    const oldId = sel.dataset.id || '';
+    const nick = sel.dataset.nick || '';
+    const day = sel.dataset.day || '';
+    const xp = xpFor(val);
+    sel.disabled = true; sel.style.opacity = '.55';
+    try {
+      if (oldId) {
+        if (val === 'none') { await supa.from('reports').delete().eq('id',oldId); sel.dataset.id=''; }
+        else await supa.from('reports').update({status:val,xp}).eq('id',oldId);
+      } else if (val !== 'none') {
+        const id = nowId('rep_manual');
+        await supa.from('reports').insert([{id,email:window.currentUser?.email||'manual',link:'',date:`Ник: ${nick} | Дата: ${day} | Работа: Выставлено руководством`,status:val,xp}]);
+        sel.dataset.id = id;
+      }
+      await refreshAfterXp();
+    } catch (err) { alert('Ошибка сохранения статуса: ' + (err?.message || err)); }
+    finally { sel.disabled=false; sel.style.opacity='1'; setTimeout(loadModTableV36,180); }
+  }
+  function visible(){ const sec=$('mode-reports_table'); return !!(sec && getComputedStyle(sec).display !== 'none'); }
+  function open(btn){
+    shell();
+    if (typeof window.switchMode === 'function') window.switchMode('reports_table', btn || $('reportsTableBtn'));
+    else { qa('[id^="mode-"]').forEach(s=>s.style.display='none'); const sec=$('mode-reports_table'); if(sec) sec.style.display='block'; }
+    setTimeout(loadModTableV36,30); setTimeout(loadModTableV36,300);
+  }
+  function buttons(){
+    const leader = isLeader();
+    const main = $('reportsTableBtn');
+    if (main) { main.textContent='📊 Таблица модераторов'; main.dataset.mode='reports_table'; main.style.display = leader ? 'inline-flex' : 'none'; main.onclick = (e)=>{e.preventDefault();open(main);}; }
+    const general = $('subNavGeneral');
+    let gb = $('t73V36GeneralModTableBtn');
+    if (!gb && general && !main) { general.insertAdjacentHTML('beforeend','<button class="mode-btn" id="t73V36GeneralModTableBtn" type="button">📊 Таблица модераторов</button>'); gb=$('t73V36GeneralModTableBtn'); }
+    if (gb) { gb.style.display=leader?'inline-flex':'none'; gb.onclick=(e)=>{e.preventDefault();open(gb);}; }
+    const modNav = $('subNavModeration');
+    let mb = $('t73V36ModTableBtn');
+    if (!mb && modNav) { modNav.insertAdjacentHTML('beforeend','<button class="mode-btn" id="t73V36ModTableBtn" type="button">📊 Таблица модераторов</button>'); mb=$('t73V36ModTableBtn'); }
+    if (mb) { mb.style.display=leader?'inline-flex':'none'; mb.onclick=(e)=>{e.preventDefault();open(mb);}; }
+    ['v16ReportTableBtnGen','v16OpenTableTop','v16ReportTableBtnMod','reportsTableBtnModStatic','reportsTableBtnModV15','v25ModViewReportsBtn','v34GeneralModTableBtn','v34OpenModTableBtn','v35GeneralModTableBtn','v35ModTableBtn'].forEach(id=>{const el=$(id); if(el){el.style.display='none'; el.onclick=null; el.setAttribute('aria-hidden','true');}});
+  }
+  function install(){
+    style(); shell(); buttons(); bindWeek(); rebindXpButtons();
+    window.loadReportsTable = loadModTableV36;
+    window.updateReportStatusDirectly = function(selectEl,nick,date,existingId){ selectEl.dataset.nick=nick; selectEl.dataset.day=date; selectEl.dataset.id=existingId||''; return updateStatus(selectEl); };
+    window.T73_MOD_REPORT_TABLE = {load:loadModTableV36,open};
+    if (visible()) {
+      const wrap = $('reportsTableWrapper');
+      const wrong = !wrap || wrap.dataset.t73V36 !== 'mod' || !wrap.querySelector('.t73-v36-list');
+      if (wrong) loadModTableV36();
+    }
+  }
+  const prevSwitch = window.switchMode;
+  if (typeof prevSwitch === 'function' && !prevSwitch.__t73v36RealWrapped) {
+    const wrapped = function(mode, btn){
+      const res = prevSwitch.apply(this, arguments);
+      if (mode === 'reports_table') setTimeout(()=>open(btn||$('reportsTableBtn')),30);
+      return res;
+    };
+    wrapped.__t73v36RealWrapped = true;
+    window.switchMode = wrapped;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
+  document.addEventListener('click', () => setTimeout(install,120), true);
+  setTimeout(install,250); setTimeout(install,1000); setTimeout(install,2500);
+  setInterval(()=>{ if(window.loadReportsTable !== loadModTableV36) window.loadReportsTable = loadModTableV36; buttons(); rebindXpButtons(); if(visible()){ const w=$('reportsTableWrapper'); if(!w || w.dataset.t73V36!=='mod' || !w.querySelector('.t73-v36-list')) loadModTableV36(); } }, 600);
+})();
+
+</script>
 </body>
 </html>
