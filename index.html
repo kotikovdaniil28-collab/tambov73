@@ -4911,7 +4911,7 @@
                             <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Натяг (5)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
                                 <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
                             </div>` : ''}
                         </div>
@@ -9451,7 +9451,7 @@
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#52c77b;color:#52c77b" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#3dd68c;color:#3dd68c" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#19d8ef;color:#19d8ef" onclick="processReport('${esc(r.id)}','Натяг',7)">Натяг (7)</button>
-                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#ffbf47;color:#ffbf47" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой (60)</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#ffbf47;color:#ffbf47" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:var(--color-error);color:var(--color-error)" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button>
                             </div>` : ''}
                         </div>`;
@@ -9834,7 +9834,7 @@
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#52c77b;color:#52c77b" onclick="processReport('${escV9(row.id)}','Норма',15)">Норма</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#3dd68c;color:#3dd68c" onclick="processReport('${escV9(row.id)}','Перенорма',30)">Перенорма</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#00e5ff;color:#00e5ff" onclick="processReport('${escV9(row.id)}','Натяг',7)">Натяг</button>
-                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#ffbf47;color:#ffbf47" onclick="processReport('${escV9(row.id)}','Герой дня',60)">Герой</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#ffbf47;color:#ffbf47" onclick="processReport('${escV9(row.id)}','Герой дня',60)">Герой дня</button>
                                 <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:var(--color-error);color:var(--color-error)" onclick="processReport('${escV9(row.id)}','Не засчитано',0)">Отказ</button>
                             </div>` : ''}
                         </div>`;
@@ -10333,7 +10333,7 @@
                 area.innerHTML = rows.map(r => {
                     const meta = parseReportV12(r), proofs = extractProofsV12(r);
                     const proofHtml = proofs.length ? '<div class="t73-v12-proof-grid">' + proofs.map(p => String(p).startsWith('data:image') || /\.(png|jpg|jpeg|webp|gif)(\?|$)/i.test(String(p)) ? '<a class="t73-v12-proof" href="'+escV12(p)+'" target="_blank"><img src="'+escV12(p)+'" alt="proof"></a>' : '<a class="btn btn-secondary" href="'+escV12(p)+'" target="_blank" style="padding:.55rem .8rem;font-size:.8rem;">📎 Открыть доказательство</a>').join('') + '</div>' : '<div style="color:var(--color-warning);">Доказательства не найдены</div>';
-                    const buttons = (r.status === 'На проверке' || String(r.status||'').includes('Ожидает')) ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem;"><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Норма\',15)">Норма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Перенорма\',30)">Перенорма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Натяг\',7)">Натяг</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Герой дня\',60)">Натяг</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Отказ\',0)">Отказ</button></div>' : '';
+                    const buttons = (r.status === 'На проверке' || String(r.status||'').includes('Ожидает')) ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.5rem;"><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Норма\',15)">Норма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Перенорма\',30)">Перенорма</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Натяг\',7)">Герой дня</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Герой дня\',60)">Герой дня</button><button class="btn btn-secondary" onclick="processReport(\''+escV12(r.id)+'\',\'Отказ\',0)">Отказ</button></div>' : '';
                     return '<div class="t73-v12-report-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><strong style="color:#fff;">'+escV12(meta.nick || r.email)+'</strong><span style="color:var(--color-text-faint);">'+escV12(meta.day || '')+' • '+escV12(meta.quality || '')+'</span></div><div style="color:var(--color-text-muted);font-size:.92rem;">'+escV12(meta.work || meta.raw)+'</div>'+proofHtml+'<div style="font-weight:900;color:'+(Number(r.xp)>0?'var(--color-success)':'var(--color-warning)')+';">'+escV12(r.status)+' ('+escV12(r.xp||0)+' XP)</div>'+buttons+'</div>';
                 }).join('');
             }
@@ -12337,7 +12337,7 @@
               area.innerHTML=rows.map(r=>{
                 const waiting=String(r.status||'').includes('Ожидает')||r.status==='На проверке'||!r.status;
                 const proof=String(r.link||'').startsWith('data:image')?`<img src="${r.link}" style="max-width:100%;max-height:150px;border-radius:8px;cursor:zoom-in;border:2px solid var(--theme-accent);" onclick="document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src='${r.link}'">`:(r.link?`<a href="${esc(r.link)}" target="_blank" class="btn btn-secondary" style="padding:.45rem .8rem;font-size:.82rem;">📸 Открыть док-во</a>`:'');
-                return `<div class="t73-v27-old-report-card" style="background:rgba(0,0,0,.5);padding:1rem;border-radius:12px;border:1px solid rgba(191,198,255,.2);display:grid;gap:.7rem;"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email||'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.82rem;">${esc(r.date||'')}</span></div><div>${proof}</div><span style="color:${Number(r.xp||0)>0?'var(--color-success)':(r.status==='Не засчитано'||r.status==='Отказ'?'var(--color-error)':'var(--color-warning)')};font-weight:800;">${esc(r.status||'На проверке')} (${Number(r.xp||0)} XP)</span>${waiting?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.45rem;"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Натяг (5)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>`:''}</div>`
+                return `<div class="t73-v27-old-report-card" style="background:rgba(0,0,0,.5);padding:1rem;border-radius:12px;border:1px solid rgba(191,198,255,.2);display:grid;gap:.7rem;"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email||'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.82rem;">${esc(r.date||'')}</span></div><div>${proof}</div><span style="color:${Number(r.xp||0)>0?'var(--color-success)':(r.status==='Не засчитано'||r.status==='Отказ'?'var(--color-error)':'var(--color-warning)')};font-weight:800;">${esc(r.status||'На проверке')} (${Number(r.xp||0)} XP)</span>${waiting?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.45rem;"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>`:''}</div>`
               }).join('')
             }catch(e){area.innerHTML=`<div class="message-text" style="color:var(--color-error);">Ошибка: ${esc(e.message||e)}</div>`}
           }
@@ -12423,7 +12423,7 @@
                   ${waiting ? `<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem;">
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#52c77b;color:#52c77b;" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button>
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#3dd68c;color:#3dd68c;" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button>
-                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Натяг (5)</button>
+                    <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:#ffbf47;color:#ffbf47;" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button>
                     <button class="btn btn-secondary" style="flex:1;min-width:120px;padding:.3rem;font-size:.75rem;border-color:var(--color-error);color:var(--color-error);" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button>
                   </div>` : ''}
                 </div>`;
@@ -12632,7 +12632,7 @@
                 const waiting = st === 'На проверке' || st.includes('Ожидает');
                 const shown = st === 'Не засчитано' ? 'Отказ' : st;
                 const color = Number(r.xp || 0) > 0 ? 'var(--color-success)' : (st === 'Не засчитано' || st === 'Отказ' ? 'var(--color-error)' : 'var(--color-warning)');
-                return `<div class="t73-v30-card" data-report-id="${esc(r.id)}"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email || 'Неизвестно')}</strong><span class="t73-v30-muted">${esc(r.date || '')}</span></div>${proofHtml30(r)}<div style="display:flex;flex-direction:column;gap:.5rem;"><span style="color:${color};font-weight:900;">${esc(shown)} (${Number(r.xp || 0)} XP)</span>${waiting ? `<div class="t73-v30-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processModReport30('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processModReport30('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processModReport30('${esc(r.id)}','Герой дня',60)">Натяг (5)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processModReport30('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>` : ''}</div></div>`;
+                return `<div class="t73-v30-card" data-report-id="${esc(r.id)}"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(r.email || 'Неизвестно')}</strong><span class="t73-v30-muted">${esc(r.date || '')}</span></div>${proofHtml30(r)}<div style="display:flex;flex-direction:column;gap:.5rem;"><span style="color:${color};font-weight:900;">${esc(shown)} (${Number(r.xp || 0)} XP)</span>${waiting ? `<div class="t73-v30-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processModReport30('${esc(r.id)}','Норма',15)">Норма (15)</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processModReport30('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processModReport30('${esc(r.id)}','Герой дня',60)">Герой дня (60)</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processModReport30('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>` : ''}</div></div>`;
               }).join('') : '<div class="message-text">Отчётов модерации пока нет.</div>';
             }catch(err){ listArea.innerHTML = `<div class="message-text" style="color:var(--color-error);">Ошибка при загрузке: ${esc(err.message || err)}</div>`; }
           }
@@ -12830,7 +12830,7 @@
           ${pending ? `<div style="display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.45rem; margin-top:.4rem;" class="mod-report-actions-v31">
             <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#52c77b; color:#52c77b;" onclick="processModReportV31('${esc(r.id)}','Норма',15)">Норма</button>
             <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#3dd68c; color:#3dd68c;" onclick="processModReportV31('${esc(r.id)}','Перенорма',30)">Перенорма</button>
-            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#ffbf47; color:#ffbf47;" onclick="processModReportV31('${esc(r.id)}','Герой дня',60)">Натяг</button>
+            <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:#ffbf47; color:#ffbf47;" onclick="processModReportV31('${esc(r.id)}','Герой дня',60)">Герой дня</button>
             <button class="btn btn-secondary" style="padding:.45rem; font-size:.78rem; border-color:var(--color-error); color:var(--color-error);" onclick="processModReportV31('${esc(r.id)}','Не засчитано',0)">Отказ</button>
           </div>` : ''}
         </div>`;
@@ -13033,14 +13033,13 @@
     '#gossV4Content',
     '#gossOrgPanel',
     '#gossOrgArea',
+    '#gossV31ReportsRoot',
+    '#gossReportsArea',
+    '#v30GossReviewBar',
     '.goss-report-actions-v31',
     '.goss-report-actions-v30',
     '.goss-v4-actions',
-    '.gov-v3-access-card',
-    '.gov-v3-report-card',
-    '.gov-v4-card',
-    '[data-goss-org]',
-    '[data-org-id]'
+    '[data-goss-org]'
   ].join(',');
 
   function isGossZone(node) {
@@ -13105,7 +13104,7 @@
   function patchGossDom() {
     document.querySelectorAll('select').forEach(patchOptionSelect);
     document.querySelectorAll('button, .btn').forEach(patchGossButton);
-    document.querySelectorAll('#gossV3Content, #gossV4Content, #gossOrgPanel, #gossOrgArea, .gov-v3-access-card, .gov-v3-report-card, .gov-v4-card').forEach(patchTextNodes);
+    document.querySelectorAll('#gossV3Content, #gossV4Content, #gossOrgPanel, #gossOrgArea, #gossV31ReportsRoot, #gossReportsArea, #v30GossReviewBar').forEach(patchTextNodes);
   }
 
   function wrapGossProcessor(name) {
@@ -13150,6 +13149,29 @@
     clearTimeout(window.__t73V32GossPatchTimer);
     window.__t73V32GossPatchTimer = setTimeout(boot, 80);
   }).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+
+<script>
+/* === T73 V33 HOTFIX: модерация = Герой дня, ГОСС/СС = Натяг === */
+(() => {
+  if (window.__T73_V33_MOD_HERO_DAY__) return;
+  window.__T73_V33_MOD_HERO_DAY__ = true;
+  const GOSS_ZONE = '#gossV3Content,#gossV4Content,#gossOrgPanel,#gossOrgArea,#gossV31ReportsRoot,#gossReportsArea,#v30GossReviewBar,[data-goss-org]';
+  function inGoss(el){ return !!(el && el.closest && el.closest(GOSS_ZONE)); }
+  function restore(btn){
+    if (!btn || inGoss(btn)) return;
+    const on = String(btn.getAttribute('onclick') || '');
+    if (!/(processReport|processModReport)/.test(on) || !/Герой\s*дня/i.test(on)) return;
+    const t = String(btn.textContent || '').trim();
+    if (/натяг/i.test(t) || /^герой$/i.test(t) || /\(5\)/.test(t)) btn.textContent = /\(/.test(t) ? 'Герой дня (60)' : 'Герой дня';
+    btn.setAttribute('onclick', on.replace(/,\s*5\s*\)/g, ',60)').replace(/,\s*5\s*,/g, ',60,'));
+  }
+  function boot(){ document.querySelectorAll('button,.btn').forEach(restore); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  document.addEventListener('click', () => setTimeout(boot, 50), true);
+  setTimeout(boot, 300); setTimeout(boot, 1200); setInterval(boot, 1700);
+  new MutationObserver(() => { clearTimeout(window.__t73V33ModHeroTimer); window.__t73V33ModHeroTimer = setTimeout(boot, 80); }).observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
 </body>
