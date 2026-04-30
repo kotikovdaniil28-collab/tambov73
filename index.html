@@ -1622,7 +1622,6 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
 
-        // Ограничение дат для отчетов (только сегодня и вчера)
         const dateInput = document.getElementById('reportDateInput');
         if (dateInput) {
             const today = new Date(), yesterday = new Date(today);
@@ -1631,7 +1630,6 @@
             dateInput.setAttribute('max', fmt(today)); dateInput.setAttribute('min', fmt(yesterday));
         }
 
-        // === АУДИО И СЖАТИЕ ФОТО ===
         let isMusicEnabled = false, isSfxEnabled = true;    
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playUIClick() {
@@ -1679,7 +1677,6 @@
             };
         }
 
-        // === ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ ===
         const supa = window.supabase.createClient('https://icfihnroblyjjflsfepq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ');
         
         let currentUser = null, currentNickname = null, isReportsRequired = localStorage.getItem('require_reports') !== 'false';
@@ -1695,7 +1692,7 @@
         let modQueue = [], supQueue = [], compQueue = [], taQueue = [], fsbQueue = [], currentTableWeekOffset = 0; 
         let currentGameCurrency = 'game'; 
 
-        // === МАССИВЫ МАГАЗИНА И ИГР ===
+        // === МАССИВЫ ===
         let defaultShopItems = [
             { id: 'mm_1', title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
             { id: 'm_1', title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
@@ -1740,18 +1737,10 @@
         let defaultApRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '50 Баллов', val: 50 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '30 Баллов', val: 30 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }, { id: 'fine', type: 'r-fine', icon: '📉', text: 'Штраф -10 Баллов', val: -10 }];
         let defaultFsbRoulettePrizes = [{ id: 'leg', type: 'r-leg', icon: '🏆', text: '100 Баллов', val: 100 }, { id: 'rare', type: 'r-rare', icon: '💎', text: '50 Баллов', val: 50 }, { id: 'fail', type: 'r-fail', icon: '💀', text: 'Ничего', val: 0 }];
 
-        let shopItems = [...defaultShopItems];
-        let apShopItems = [...defaultApShopItems];
-        let fsbShopItems = [...defaultFsbShopItems];
-        let customShopItems = [];
-        let customApShopItems = [];
-        let customFsbShopItems = [];
-        let modRoulettePrizes = [...defaultModRoulettePrizes];
-        let apRoulettePrizes = [...defaultApRoulettePrizes];
-        let fsbRoulettePrizes = [...defaultFsbRoulettePrizes];
-        let customModMessages = [];
-        let customSupQuestions = [];
-        let hiddenChecks = [];
+        let shopItems = [...defaultShopItems], apShopItems = [...defaultApShopItems], fsbShopItems = [...defaultFsbShopItems];
+        let customShopItems = [], customApShopItems = [], customFsbShopItems = [];
+        let modRoulettePrizes = [...defaultModRoulettePrizes], apRoulettePrizes = [...defaultApRoulettePrizes], fsbRoulettePrizes = [...defaultFsbRoulettePrizes];
+        let customModMessages = [], customSupQuestions = [], hiddenChecks = [];
 
         const questsData = [ { id: 'q1', title: 'Младший Модератор', desc: 'Рассмотреть 50 сообщений в тренажёре', max: 50, getProgress: () => state.resolved, reward: 150 }, { id: 'q2', title: 'Активный Помощник', desc: 'Ответить на 25 вопросов игроков', max: 25, getProgress: () => supportState.resolved, reward: 100 }, { id: 'q3', title: 'Детектив', desc: 'Вынести вердикт по 15 жалобам', max: 15, getProgress: () => complaintState.resolved, reward: 120 }, { id: 'q4', title: 'Мастер Своего Дела', desc: 'Рассмотреть 200 сообщений в тренажёре', max: 200, getProgress: () => state.resolved, reward: 500 } ];
 
@@ -2105,7 +2094,7 @@
         { type: "ban", text: "Игрок1: Вот ссылка на чит.\nИгрок2: Спасибо, скачал." },
         { type: "ban", text: "Игрок1: Скину шок фото.\nИгрок2: Жду." },
         { type: "ban", text: "Игрок1: Давай обмен аккаунтами за деньги.\nИгрок2: Давай." }
-       ];
+        ];
 
         let baseSupQuestions = [ { title: "Навигация", text: "Как найти правительство области в GPS?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Навигация", text: "Где устроиться работать на шахту?", keywords: ["gps", "гпс", "навигатор"] }, { title: "Команды", text: "Какой командой открыть инвентарь?", keywords: ["inv", "инв"] }, { title: "Команды", text: "Как показать свой паспорт игроку?", keywords: ["pass", "пасс", "паспорт"] }, { title: "Уровни", text: "Какой уровень нужен для работы дальнобойщиком?", keywords: ["18", "восемнадцат"] }, { title: "Уровни", text: "Какой уровень нужен на инкассатора?", keywords: ["15", "пятнадцат"] }, { title: "Вопросы", text: "Сколько стоит создание семьи?", keywords: ["3кк", "3 миллион", "3000000"] }, { title: "Вопросы", text: "Как купить Black Pass?", keywords: ["donate", "bp", "донат"] }, { title: "Почему мут", meta: "Наказания", text: "Мне выдали мут, но я не понял за что.", keywords: ['форум', 'жалоб'] } ];
         
@@ -2152,12 +2141,12 @@
             document.getElementById('fsb_admin_tab').style.display = 'none';
             document.getElementById('fsb_reports_tab').style.display = 'none';
             document.getElementById(tabId).style.display = 'block';
-            if (tabId === 'fsb_table') loadFsbTable();
-            if (tabId === 'fsb_reports') loadFsbReports();
+            if (tabId === 'fsb_table') window.loadFsbTable();
+            if (tabId === 'fsb_reports') window.loadFsbReports();
         };
 
         window.loadFsbTable = async function() {
-            const tbody = getEl('fsbTableBody');
+            const tbody = document.getElementById('fsbTableBody');
             if(!tbody) return;
             tbody.innerHTML = '<tr><td colspan="7" style="padding:1rem; text-align:center;">Загрузка...</td></tr>';
             const { data: ssData } = await supa.from('reports').select('*').eq('email', 'FSB_SS');
@@ -2192,9 +2181,9 @@
         };
 
         window.saveFsbTableRow = async function(id) {
-            const pos = getEl(`fsb_pos_${id}`).value;
-            const age = getEl(`fsb_age_${id}`).value;
-            const tz = getEl(`fsb_tz_${id}`).value;
+            const pos = document.getElementById(`fsb_pos_${id}`).value;
+            const age = document.getElementById(`fsb_age_${id}`).value;
+            const tz = document.getElementById(`fsb_tz_${id}`).value;
             
             const { data: existing } = await supa.from('reports').select('date').eq('id', id).maybeSingle();
             if (existing) {
@@ -2207,7 +2196,7 @@
         };
 
         window.loadFsbReports = async function() {
-            const list = getEl('fsbReportsList');
+            const list = document.getElementById('fsbReportsList');
             if(!list) return;
             list.innerHTML = "Загрузка отчетов...";
             const { data: reps } = await supa.from('reports').select('*').eq('email', 'FSB_REPORT').order('id', {ascending: false});
@@ -2235,7 +2224,7 @@
 
         window.processFsbReport = async function(id, status) {
             await supa.from('reports').update({ status: status }).eq('id', id);
-            loadFsbReports();
+            window.loadFsbReports();
         };
 
         // === ОБЩИЕ ФУНКЦИИ И ИНИЦИАЛИЗАЦИЯ ===
@@ -2272,7 +2261,7 @@
                 isAp = activeAps.includes(currentUser.id) || apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
                 isFsbUser = activeFsb.includes(currentUser.id) || adminEmails.includes(currentUser.email) || dynamicFsbLeaders.includes(currentUser.id) || currentUser.email === creatorEmail;
             }
-            checkRolesAndAccess(); updateShopStats(); updateTicker(); loadFsbTable();
+            checkRolesAndAccess(); updateShopStats(); updateTicker(); window.loadFsbTable();
         }
 
         async function updateTicker() {
@@ -2323,7 +2312,7 @@
 
         const allModesList = ["moderation","timeattack","complaints","support","guide","leaderboard","about","profile","shop","ap_shop","report","inactives","admin_log","ap_admin_log","quests","creator","leadership","ap_admin","reports_table","fsb","fsb_shop","fsb_admin","gibdd","pravo","umvd","bolnica","fsin","armiya"];
         
-        function switchMode(mode, btn) {
+        window.switchMode = function(mode, btn) {
             document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
             if(btn) btn.classList.add("active");
             allModesList.forEach(m => { 
@@ -2345,17 +2334,17 @@
             document.documentElement.setAttribute("data-site-theme", currentTheme);
             renderRight(mode);
 
-            if(mode === 'leaderboard') loadLeaderboard();
+            if(mode === 'leaderboard') window.loadLeaderboard();
             if(mode === 'shop' || mode === 'ap_shop' || mode === 'fsb_shop') updateShopStats();
             if(mode === 'report' || mode === 'inactives') checkRolesAndAccess(); 
-            if(mode === 'admin_log') renderAdminLogs(false);
-            if(mode === 'ap_admin_log') renderAdminLogs(true);
+            if(mode === 'admin_log') window.renderAdminLogs(false);
+            if(mode === 'ap_admin_log') window.renderAdminLogs(true);
             if(mode === 'quests') renderQuests(); 
-            if(mode === 'creator') loadCreatorPanelData();
-            if(mode === 'leadership' || mode === 'ap_admin' || mode === 'fsb_admin') loadUsersForAdmin();
+            if(mode === 'creator') window.loadCreatorPanelData();
+            if(mode === 'leadership' || mode === 'ap_admin' || mode === 'fsb_admin') window.loadUsersForAdmin();
             if(mode === 'profile') renderProfileData();
-            if(mode === 'reports_table') loadReportsTable();
-            if(mode === 'fsb') { loadFsbTable(); loadFsbReports(); }
+            if(mode === 'reports_table') window.loadReportsTable();
+            if(mode === 'fsb') { window.loadFsbTable(); window.loadFsbReports(); }
             
             const brandSub = document.getElementById("brandSubtitle"), hTitle = document.getElementById("heroTitle"), hText = document.getElementById("heroText"), hBadge = document.getElementById("heroBadge2");
             const headers = {
@@ -2391,7 +2380,19 @@
             if(headers[mode]) {
                 if(brandSub) brandSub.textContent = headers[mode][0]; if(hTitle) hTitle.innerHTML = headers[mode][1]; if(hText) hText.textContent = headers[mode][2]; if(hBadge) hBadge.textContent = headers[mode][3];
             }
-        }
+        };
+
+        document.querySelectorAll('.main-cat-btn').forEach(btn => {
+            if (btn.id.startsWith('btn_fsb')) return; 
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.main-cat-btn').forEach(b => { if (!b.id.startsWith('btn_fsb')) b.classList.remove('active'); }); btn.classList.add('active');
+                const subNavs = { general: document.getElementById('subNavGeneral'), moderation: document.getElementById('subNavModeration'), support: document.getElementById('subNavSupport'), organizations: document.getElementById('subNavOrganizations') };
+                Object.values(subNavs).forEach(nav => { if(nav) nav.style.display = 'none'; });
+                const cat = btn.dataset.cat; if(subNavs[cat]) { subNavs[cat].style.display = 'flex'; const firstBtn = subNavs[cat].querySelector('.mode-btn'); if(firstBtn) firstBtn.click(); }
+            });
+        });
+
+        document.querySelectorAll(".mode-btn").forEach(btn => { btn.addEventListener("click", () => window.switchMode(btn.dataset.mode, btn)); });
 
         function randomFunnyNick() { 
             const funnyLeft = ["Мелстройность", "Смешнявка", "Макенза", "Сраупен", "бурмалда", "Рассыльщик", "ПолитТоксик", "РелигБаттл", "Дед_с_Клавой"], funnyRight = ["из_Тамбова", "без_микрофона", "на_ГлОбАнЕ", "в_муте", "с_баном", "тянет_конфу", "обижен", "любит_капс", "ищет_баги"];
@@ -2451,19 +2452,19 @@
             logList.innerHTML = state.log.length > 0 ? state.log.map(item => `<div class="log-item">${item}</div>`).join("") : '<div class="log-item">Пока пусто. Нажми «Начать смену».</div>';
         }
 
-        function startGame() {
+        window.startGame = function() {
             state.started = true;
             const sb = document.getElementById('startBtn'); if(sb) sb.disabled = true;
             randomMessage();
             updateModStats(); updateSupportStats(); updateComplaintStats(); document.getElementById("game").scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        };
 
-        function resetGame() {
+        window.resetGame = function() {
             state.started = false;
             const sb = document.getElementById('startBtn'); if(sb) sb.disabled = false;
             document.getElementById("messageText").textContent = "Пока сообщений нет. Нажми «Начать смену».";
             pushLog('Смена сброшена.'); updateModStats(); updateSupportStats(); updateComplaintStats();
-        }
+        };
 
         async function saveProgress() {
             if(!currentUser) return;
@@ -2877,10 +2878,6 @@
             });
         }
 
-        function openCasesGame(price) {
-            document.getElementById('ggCases').style.display = 'flex'; window.currentCaseBet = price;
-        }
-
         window.openCase = async function(type) {
             document.getElementById('ggCases').style.display = 'none'; document.getElementById('ggResult').textContent = 'Открываем...'; document.getElementById('ggResult').style.color = '#fff'; document.getElementById('ggResult').style.display = 'block';
             setTimeout(async () => {
@@ -2974,7 +2971,7 @@
             document.getElementById('coinAnimation').style.display = 'none'; document.getElementById('closeCoinBtn').style.display = 'none'; document.getElementById('btnHeads').disabled = false; document.getElementById('btnTails').disabled = false;
         }
         
-        function playCoin(choice) {
+        window.playCoin = function(choice) {
             document.getElementById('btnHeads').disabled = true; document.getElementById('btnTails').disabled = true;
             const anim = document.getElementById('coinAnimation'); anim.style.display = 'block'; anim.classList.add('flipping');
             setTimeout(async () => {
@@ -2986,7 +2983,7 @@
                 else { document.getElementById('coinResult').textContent = 'Проигрыш. Выпал ' + (outcome==='heads'?'Орёл':'Решка') + '.'; document.getElementById('coinResult').style.color = 'var(--color-error)'; playSound('fail'); }
                 updateShopStats(); updateModStats(); await saveProgress(); document.getElementById('closeCoinBtn').style.display = 'inline-block';
             }, 2000);
-        }
+        };
 
         function openSafesGame() {
             document.getElementById('safesModal').style.display = 'flex'; document.getElementById('safesResult').textContent = ''; document.getElementById('closeSafesBtn').style.display = 'none'; document.querySelectorAll('.safe-btn').forEach(btn => { btn.textContent = '🧰'; btn.disabled = false; });
@@ -3076,7 +3073,6 @@
             document.getElementById('closeJwBtn').style.display = 'inline-block';
         }
 
-        // === 9. КВЕСТЫ И ЛИДЕРБОРД ===
         function renderQuests() {
             const cont = document.getElementById('questsContainer'); if(!cont) return;
             const claimed = localStorage.getItem('quests_' + (currentUser ? currentUser.email : '')) ? JSON.parse(localStorage.getItem('quests_' + (currentUser ? currentUser.email : ''))) : [];
@@ -3085,6 +3081,7 @@
                 return `<div class="quest-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;"><h3 style="margin:0; font-size:1.1rem;">${q.title}</h3><span style="color:var(--theme-accent); font-weight:bold;">+${q.reward} XP</span></div><p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">${q.desc}</p><div style="display:flex; justify-content:space-between; align-items:center; gap: 1rem;"><div style="flex:1; background:rgba(0,0,0,0.5); height:10px; border-radius:5px; overflow:hidden;"><div style="height:100%; width:${(prog/q.max)*100}%; background:var(--theme-accent); transition:0.3s;"></div></div><span style="font-size:0.85rem; font-weight:bold; min-width:40px; text-align:right;">${prog}/${q.max}</span></div><div style="margin-top: 1rem;">${isClaimed ? `<button class="quest-btn completed" style="width:100%;">Выполнено</button>` : isDone ? `<button class="quest-btn claim" style="width:100%;" onclick="claimQuest('${q.id}', ${q.reward})">Забрать награду</button>` : `<button class="quest-btn in-progress" style="width:100%;">В процессе</button>`}</div></div>`;
             }).join('');
         }
+        
         window.claimQuest = function(qId, reward) {
             if(!currentUser) return;
             const claimed = localStorage.getItem('quests_' + currentUser.email) ? JSON.parse(localStorage.getItem('quests_' + currentUser.email)) : [];
@@ -3125,13 +3122,10 @@
             list.innerHTML = isApTab ? (window.lbApHTML || '<div class="message-text">Топ АП пуст.</div>') : (window.lbModHTML || '<div class="message-text">Топ Модерации пуст.</div>');
         };
 
-        // === 10. ПАНЕЛИ СОЗДАТЕЛЯ И АДМИНА ===
-        let creatorUsersList = [];
-        
         window.saveUserDb = async function(userId, oldGame, oldReal) {
             const newGame = Number(document.getElementById('db_game_' + userId).value);
             const newReal = Number(document.getElementById('db_real_' + userId).value);
-            const target = creatorUsersList.find(u => u.user_id === userId);
+            const target = window.creatorUsersList.find(u => u.user_id === userId);
             
             if (newGame !== oldGame) {
                 const diff = newGame - oldGame;
@@ -3147,10 +3141,10 @@
                 }
             }
             alert('XP успешно сохранен!');
-            loadCreatorPanelData();
+            window.loadCreatorPanelData();
         };
 
-        async function loadCreatorPanelData() {
+        window.loadCreatorPanelData = async function() {
             if (!currentUser || currentUser.email !== creatorEmail) return;
             const toggle = document.getElementById('requireReportsToggle');
             if (toggle) { toggle.checked = isReportsRequired; toggle.onchange = () => { isReportsRequired = toggle.checked; localStorage.setItem('require_reports', isReportsRequired); alert("Настройки обновлены (локально)!"); } }
@@ -3158,20 +3152,19 @@
             const sel = document.getElementById('creatorUserSelect'); if (sel) sel.innerHTML = '<option>Загрузка...</option>';
             const { data: users } = await supa.from('user_stats').select('user_id, nickname, email, shop_spent, mod_correct');
             if (users && users.length > 0) { 
-                creatorUsersList = users; 
+                window.creatorUsersList = users; 
                 if (sel) sel.innerHTML = users.map(u => `<option value="${u.user_id}">${u.nickname || u.email} (Списано: ${u.shop_spent || 0})</option>`).join(''); 
             }
 
-            const adminSel = document.getElementById('creatorAdminSelect'); if (adminSel && creatorUsersList.length > 0) { adminSel.innerHTML = creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
+            const adminSel = document.getElementById('creatorAdminSelect'); if (adminSel && window.creatorUsersList && window.creatorUsersList.length > 0) { adminSel.innerHTML = window.creatorUsersList.map(u => `<option value="${u.user_id}">${u.nickname || u.email}</option>`).join(''); }
 
-            // Загрузка Базы Данных для Создателя
             const dbContainer = document.getElementById('creatorDbContainer');
-            if (dbContainer) {
+            if (dbContainer && window.creatorUsersList) {
                 const { data: repData } = await supa.from('reports').select('link, email, xp').gt('xp', 0).neq('email', 'GAME_XP');
                 const { data: gameData } = await supa.from('reports').select('link, xp').eq('email', 'GAME_XP');
                 
                 let dbHtml = '<div style="display:flex; flex-direction:column; gap:0.5rem;">';
-                creatorUsersList.forEach(u => {
+                window.creatorUsersList.forEach(u => {
                     const isLd = adminEmails.includes(u.email) || dynamicModLeaders.includes(u.user_id) || u.email === creatorEmail;
                     if (activeMods.includes(u.user_id) && !isLd) {
                         let userRealXp = 0;
@@ -3204,23 +3197,22 @@
             }
 
             const adminList = document.getElementById('creatorAdminsList');
-            if (adminList) {
+            if (adminList && window.creatorUsersList) {
                 const { data: admins } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
                 if (admins && admins.length > 0) {
                     adminList.innerHTML = admins.map(a => {
-                        const u = creatorUsersList.find(user => user.user_id === a.link), name = u ? (u.nickname || u.email) : 'Неизвестный ID: ' + a.link, roleName = a.status === 'leadership' ? 'Модерация' : a.status === 'ap_admin' ? 'АП' : 'ФСБ';
+                        const u = window.creatorUsersList.find(user => user.user_id === a.link), name = u ? (u.nickname || u.email) : 'Неизвестный ID: ' + a.link, roleName = a.status === 'leadership' ? 'Модерация' : a.status === 'ap_admin' ? 'АП' : 'ФСБ';
                         return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success);">${name}</strong> <span style="font-size:0.8rem; color:var(--color-text-faint);">(${roleName})</span></div></div>`;
                     }).join('');
                 } else { adminList.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">В руководстве пока никого нет</div>'; }
             }
-        }
+        };
 
-        // === ЛОГИКА ТРОЛЛИНГА ===
-        async function applyTrollEffect(effect) {
+        window.applyTrollEffect = async function(effect) {
             if (!currentUser || currentUser.email !== creatorEmail) return;
             const userId = document.getElementById('creatorUserSelect').value;
             if (!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            const targetUser = window.creatorUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("ОШИБКА: Нельзя применить эффект к Создателю (John Wick)!");
 
             if (effect === 'clear') {
@@ -3230,12 +3222,9 @@
                 await supa.from('reports').upsert([{ id: 'troll_' + userId, email: 'TROLL_EFFECT', link: userId, status: effect, date: new Date().toISOString(), xp: 0 }]);
                 alert(`Эффект '${effect}' успешно применен к пользователю! Он активируется при его следующей загрузке страницы.`);
             }
-        }
+        };
 
-        // ВЫДАЧА СТАТУСОВ И АДМИН ПАНЕЛИ
-        let adminUsersList = [];
-
-        async function loadUsersForAdmin() {
+        window.loadUsersForAdmin = async function() {
             if(!currentUser) return;
             const isModLeader = adminEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicModLeaders.includes(currentUser.id); 
             const isApLeader = apLeadershipEmails.includes(currentUser.email) || currentUser.email === creatorEmail || dynamicApLeaders.includes(currentUser.id);
@@ -3243,7 +3232,7 @@
 
             if(!isModLeader && !isApLeader && !isFsbLeader) return;
             
-            const { data: users } = await supa.from('user_stats').select('*').order('nickname', { ascending: true }); if(users) adminUsersList = users;
+            const { data: users } = await supa.from('user_stats').select('*').order('nickname', { ascending: true }); if(users) window.adminUsersList = users;
             const { data: repData } = await supa.from('reports').select('email, xp').gt('xp', 0);
             
             if (isModLeader) { 
@@ -3267,7 +3256,7 @@
                             const u = users.find(user => user.user_id === m.link), name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
                             return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:var(--color-success);">${name}</strong></div><button class="badge ban del-mod-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
                         }).join('');
-                        list.querySelectorAll('.del-mod-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
+                        list.querySelectorAll('.del-mod-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); window.loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
                     } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Модераторов пока нет</div>';
                 }
             }
@@ -3285,7 +3274,7 @@
                             const u = users.find(user => user.user_id === m.link), name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
                             return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#ff8fc4;">${name}</strong></div><button class="badge ban del-ap-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
                         }).join('');
-                        list.querySelectorAll('.del-ap-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
+                        list.querySelectorAll('.del-ap-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); window.loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
                     } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Агентов Поддержки пока нет</div>';
                 }
             }
@@ -3301,13 +3290,13 @@
                             const u = users.find(user => user.user_id === m.link), name = u ? (u.nickname || u.email) : 'ID: ' + m.link;
                             return `<div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.5); padding: 0.5rem 1rem; border-radius: 8px;"><div><strong style="color:#6c8cff;">${name}</strong></div><button class="badge ban del-fsb-btn" data-id="${m.id}" style="cursor:pointer; padding: 0.5rem 1rem;">Забрать статус</button></div>`;
                         }).join('');
-                        list.querySelectorAll('.del-fsb-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
+                        list.querySelectorAll('.del-fsb-btn').forEach(btn => { btn.addEventListener('click', async () => { btn.disabled = true; await supa.from('reports').delete().eq('id', btn.dataset.id); window.loadUsersForAdmin(); loadGlobalShopAndRoulette(); }); });
                     } else list.innerHTML = '<div style="font-size:var(--text-sm); color:var(--color-text-faint);">Сотрудников ФСБ пока нет</div>';
                 }
             }
-        }
+        };
 
-        async function renderAdminLogs(isAp = false) {
+        window.renderAdminLogs = async function(isAp = false) {
             const area = document.getElementById(isAp ? 'apAdminLogsArea' : 'adminLogsArea'); if(!area) return; area.innerHTML = 'Загрузка...';
             const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', isAp ? 'ap_shop' : 'mod_shop').order('created_at', { ascending: false }).limit(50);
             if (error) { area.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка: ${error.message}</div>`; return; }
@@ -3315,15 +3304,14 @@
             if(logs && logs.length > 0) {
                 area.innerHTML = logs.map(log => `<div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 12px; border: 1px solid rgba(191,198,255,0.2); display:flex; justify-content:space-between; align-items:center;"><div><strong style="color: ${isAp ? '#ff8fc4' : '#ffbf47'};">${log.nickname}</strong><div style="font-size:0.9rem; margin: 0.2rem 0;">Покупка/Выигрыш: <span style="font-weight: bold;">${log.item_name}</span></div><div style="font-size:0.8rem; color:var(--color-text-faint);">${new Date(log.created_at).toLocaleString('ru-RU')}</div></div><div style="text-align: right;"><div style="margin-bottom: 0.5rem; color: ${log.status === 'Выдано' || log.status === 'Автоматически зачислено' ? 'var(--color-success)' : 'var(--color-warning)'}">${log.status}</div>${log.status === 'Ожидает выдачи' ? `<button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="markLogIssued('${log.id}', ${isAp})">Отметить как выданное</button>` : ''}</div></div>`).join('');
             } else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
-        }
+        };
 
-        window.markLogIssued = async function(id, isAp) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); renderAdminLogs(isAp); };
+        window.markLogIssued = async function(id, isAp) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); window.renderAdminLogs(isAp); };
 
         function checkRolesAndAccess() {
             if (isModerator) document.getElementById('shopTabBtn').style.display = 'inline-block'; else document.getElementById('shopTabBtn').style.display = 'none';
             if (isAp) document.getElementById('apShopTabBtn').style.display = 'inline-block'; else document.getElementById('apShopTabBtn').style.display = 'none';
             
-            // Вкладки ФСБ
             if (isFsbUser) {
                 document.getElementById('fsbShopTabBtn').style.display = 'inline-block';
                 document.getElementById('btn_fsb_admin').style.display = 'none'; 
@@ -3362,7 +3350,7 @@
             }
         }
 
-        async function loadReportsTable() {
+        window.loadReportsTable = async function() {
             const listArea = document.getElementById('reportsTableWrapper');
             if(!listArea) return;
             listArea.innerHTML = '<div class="message-text" style="text-align:center;">⏳ Загрузка таблицы модераторов...</div>';
@@ -3474,7 +3462,7 @@
                 html += `</div></div>`;
             });
             html += '</div>'; listArea.innerHTML = html;
-        }
+        };
 
         window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId) {
             const val = selectEl.value; 
@@ -3504,7 +3492,7 @@
             if (val === 'Не засчитано' || val === 'Нет отчета') { selectEl.style.borderColor = '#ef4444'; selectEl.style.color = '#ef4444'; } else { selectEl.style.borderColor = ''; selectEl.style.color = ''; }
             selectEl.style.opacity = '1'; selectEl.disabled = false;
             
-            setTimeout(() => { loadReportsTable(); loadCreatorPanelData(); }, 1000);
+            setTimeout(() => { window.loadReportsTable(); window.loadCreatorPanelData(); }, 1000);
         };
 
         window.processReport = async function(id, statusText, xpAmount) { 
@@ -3515,7 +3503,7 @@
             await supa.from('reports').update({ status: statusText }).eq('id', id); document.getElementById('viewInactivesBtn').click(); setTimeout(() => document.getElementById('viewInactivesBtn').click(), 100); 
         };
 
-        // === ПОДКЛЮЧЕНИЕ КНОПОК ===
+        // Подключаем кнопки
         const getEl = (id) => document.getElementById(id);
         
         getEl('loginBtnUI').onclick = () => { getEl('authModal').style.display = 'flex'; getEl('authErrorMsg').style.display = 'none'; };
@@ -3540,7 +3528,9 @@
             if(error) { 
                 err.textContent = error.message; err.style.color = "var(--color-error)"; 
             } else { 
-                if (authData && authData.user) { await supa.from('user_stats').insert([{ user_id: authData.user.id, email: email, nickname: nickname }]); }
+                if (authData && authData.user) {
+                    await supa.from('user_stats').insert([{ user_id: authData.user.id, email: email, nickname: nickname }]);
+                }
                 err.textContent = "Успешно! Выполняется вход..."; err.style.color = "var(--color-success)"; 
                 await supa.auth.signInWithPassword({ email, password });
                 window.location.reload(); 
@@ -3551,14 +3541,14 @@
             const val = getEl('forceNicknameInput').value.trim(); if (val.length < 3) return alert("Никнейм должен быть длиннее 3 символов!");
             await supa.auth.updateUser({ data: { nickname: val } }); if (currentUser) await supa.from('user_stats').update({ nickname: val }).eq('user_id', currentUser.id);
             currentNickname = val; getEl('userEmailDisplay').textContent = val; getEl('nicknameModal').style.display = 'none'; 
-            if(!state.started && getEl("authorName")?.textContent === "System") startGame();
+            if(!state.started && getEl("authorName")?.textContent === "System") window.startGame();
         });
 
-        document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => judge(btn.dataset.action); });
-        document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => judgeComplaint(btn.dataset.compAction); });
+        document.querySelectorAll('[data-action]').forEach(btn => { btn.onclick = () => window.judge(btn.dataset.action); });
+        document.querySelectorAll('[data-comp-action]').forEach(btn => { btn.onclick = () => window.judgeComplaint(btn.dataset.compAction); });
         
-        const sb = getEl('startBtn'); if (sb) sb.onclick = startGame;
-        const rb = getEl('resetBtn'); if (rb) rb.onclick = resetGame;
+        const sb = getEl('startBtn'); if (sb) sb.onclick = window.startGame;
+        const rb = getEl('resetBtn'); if (rb) rb.onclick = window.resetGame;
         
         const themeBtn = document.querySelector('[data-theme-toggle]');
         if(themeBtn) { 
@@ -3673,10 +3663,10 @@
                             <span style="color: ${r.xp > 0 ? 'var(--color-success)' : r.status === 'Не засчитано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'} (${r.xp || 0} XP)</span>
                             ${(r.status === 'На проверке' || r.status?.includes('Ожидает')) ? `
                             <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="window.processReport('${r.id}', 'Норма', 15)">Норма (15)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #3dd68c; color: #3dd68c;" onclick="window.processReport('${r.id}', 'Перенорма', 30)">Перенорма (30)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #ffbf47; color: #ffbf47;" onclick="window.processReport('${r.id}', 'Герой дня', 60)">Герой дня (60)</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="window.processReport('${r.id}', 'Не засчитано', 0)">Отказ</button>
                             </div>` : ''}
                         </div>
                     </div>`).join('');
@@ -3705,8 +3695,8 @@
                             <span style="font-weight: bold; color: ${r.status === 'Одобрено' ? 'var(--color-success)' : r.status === 'Отказано' ? 'var(--color-error)' : 'var(--color-warning)'}">${r.status || 'Без статуса'}</span>
                             ${(r.status === 'Ожидает одобрения') ? `
                             <div style="display:flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="processInactive('${r.id}', 'Одобрено')">Одобрить</button>
-                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="processInactive('${r.id}', 'Отказано')">Отказать</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: #52c77b; color: #52c77b;" onclick="window.processInactive('${r.id}', 'Одобрено')">Одобрить</button>
+                                <button class="btn btn-secondary" style="flex: 1; padding: 0.3rem; font-size: 0.75rem; border-color: var(--color-error); color: var(--color-error);" onclick="window.processInactive('${r.id}', 'Отказано')">Отказать</button>
                             </div>` : ''}
                         </div>
                     </div>`).join('');
@@ -3714,8 +3704,8 @@
             } catch (err) { listArea.innerHTML = `<div class="message-text" style="color: var(--color-error);">Ошибка при загрузке: ${err.message}</div>`; }
         });
 
-        getEl('loadAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(false)); 
-        getEl('loadApAdminLogsBtn')?.addEventListener('click', () => renderAdminLogs(true));
+        getEl('loadAdminLogsBtn')?.addEventListener('click', () => window.renderAdminLogs(false)); 
+        getEl('loadApAdminLogsBtn')?.addEventListener('click', () => window.renderAdminLogs(true));
 
         getEl('changeAnyPriceBtn')?.addEventListener('click', async () => {
             const id = getEl('editAnyItemId').value.trim(), price = Number(getEl('editAnyItemPrice').value);
@@ -3740,7 +3730,7 @@
              const userId = getEl('creatorUserSelect').value, amount = Number(getEl('creatorXpAmount').value);
              const type = getEl('creatorGiveType').value;
              if (!userId || isNaN(amount)) return; 
-             const targetUser = creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+             const targetUser = window.creatorUsersList.find(u => u.user_id === userId); if(!targetUser) return;
              if (targetUser.email === creatorEmail && currentUser.email !== creatorEmail) return alert("Неприкосновенность Создателя!");
              
              if (type === 'game') {
@@ -3748,42 +3738,42 @@
              } else {
                  await supa.from('reports').insert([{ id: 'rep_manual_' + Date.now() + Math.random(), email: targetUser.email, link: '', date: 'Выдано Создателем (Ручное зачисление)', status: 'Норма', xp: amount }]);
              }
-             alert(`Успешно! Опыт был зачислен напрямую, ничего не потеряется.`); loadCreatorPanelData();
+             alert(`Успешно! Опыт был зачислен напрямую, ничего не потеряется.`); window.loadCreatorPanelData();
         });
 
         getEl('trollWipeXpBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = getEl('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            const targetUser = window.creatorUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
-            await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); loadCreatorPanelData();
+            await supa.from('user_stats').update({ shop_spent: 999999 }).eq('user_id', userId); alert(`🤡 Троллинг: XP обнулен`); window.loadCreatorPanelData();
         });
 
         getEl('trollDebtBtn')?.addEventListener('click', async () => {
             const userId = getEl('creatorUserSelect').value, amount = Number(getEl('trollDebtAmount').value);
             if (!userId || isNaN(amount) || amount <= 0) return alert("Введите сумму!");
-            const target = creatorUsersList.find(u => u.user_id === userId);
+            const target = window.creatorUsersList.find(u => u.user_id === userId);
             if(target) { 
                 if (target.email === creatorEmail) return alert("У Создателя полный иммунитет!");
-                await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`🤡 Троллинг: Игроку выдан долг ${amount} XP!`); loadCreatorPanelData(); 
+                await supa.from('user_stats').update({ shop_spent: (Number(target.shop_spent)||0) + amount }).eq('user_id', userId); alert(`🤡 Троллинг: Игроку выдан долг ${amount} XP!`); window.loadCreatorPanelData(); 
             }
         });
 
         getEl('trollRenameBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = getEl('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return alert("Выберите пользователя!");
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            const targetUser = window.creatorUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("У Создателя полный иммунитет!");
             const targetNick = getEl('trollCustomNick').value.trim() || randomFunnyNick();
-            await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', userId); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); loadCreatorPanelData();
+            await supa.from('user_stats').update({ nickname: targetNick }).eq('user_id', userId); alert(`🤡 Троллинг: Ник изменен на ${targetNick}`); window.loadCreatorPanelData();
         });
 
         getEl('trollDeleteBtn')?.addEventListener('click', async () => {
             if (!currentUser || currentUser.email !== creatorEmail) return; 
             const userId = getEl('creatorUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            const targetUser = window.creatorUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы статистики!'); loadCreatorPanelData(); }
+            if(confirm("Вы уверены, что хотите удалить этого пользователя?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Пользователь удален из базы статистики!'); window.loadCreatorPanelData(); }
         });
 
         getEl('creatorAddAdminBtn')?.addEventListener('click', async () => {
@@ -3792,16 +3782,16 @@
             const { data: existing } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role);
             if(existing && existing.length > 0) return alert("Этот пользователь уже находится в руководстве!");
             await supa.from('reports').insert([{ id: Date.now().toString(), email: 'ADMIN_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: role, xp: 0 }]);
-            alert("Пользователь успешно добавлен в руководство! Права появятся у него после перезагрузки страницы."); loadCreatorPanelData();
+            alert("Пользователь успешно добавлен в руководство! Права появятся у него после перезагрузки страницы."); window.loadCreatorPanelData();
         });
 
         getEl('creatorRemoveAdminBtn')?.addEventListener('click', async () => {
             const userId = getEl('creatorAdminSelect').value, role = getEl('creatorAdminRole').value;
             if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = creatorUsersList.find(u => u.user_id === userId);
+            const targetUser = window.creatorUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("Нельзя забрать права у Создателя!");
             await supa.from('reports').delete().eq('email', 'ADMIN_ROLE').eq('link', userId).eq('status', role);
-            alert("Пользователь удален из руководства!"); loadCreatorPanelData();
+            alert("Пользователь удален из руководства!"); window.loadCreatorPanelData();
         });
 
         getEl('sendHiddenCheckBtn')?.addEventListener('click', async () => {
@@ -3875,7 +3865,6 @@
             alert("Рулетка АП обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
-        // Управление товарами ФСБ
         getEl('addFsbShopItemBtn')?.addEventListener('click', async () => {
             const title = getEl('fsbShopItemTitle').value.trim(), desc = getEl('fsbShopItemDesc').value.trim(), price = Number(getEl('fsbShopItemPrice').value), icon = getEl('fsbShopItemIcon').value.trim() || "🎁";
             if(!title || !desc || isNaN(price)) return alert("Заполните все поля товара!");
@@ -3904,13 +3893,12 @@
             alert("Рулетка ФСБ обновлена для всех!"); loadGlobalShopAndRoulette();
         });
 
-
         getEl('leadAddModBtn')?.addEventListener('click', async () => {
             const userId = getEl('leadAddModSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
             const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'moderator');
             if(existing && existing.length > 0) return alert("Этот пользователь уже является модератором!");
             await supa.from('reports').insert([{ id: 'mod_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'moderator', xp: 0 }]);
-            alert("Статус Модератора успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+            alert("Статус Модератора успешно выдан!"); window.loadUsersForAdmin(); loadGlobalShopAndRoulette();
         });
 
         getEl('leadAddApBtn')?.addEventListener('click', async () => {
@@ -3918,7 +3906,7 @@
             const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'ap');
             if(existing && existing.length > 0) return alert("Этот пользователь уже является АП!");
             await supa.from('reports').insert([{ id: 'ap_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'ap', xp: 0 }]);
-            alert("Статус АП успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+            alert("Статус АП успешно выдан!"); window.loadUsersForAdmin(); loadGlobalShopAndRoulette();
         });
 
         getEl('leadAddFsbBtn')?.addEventListener('click', async () => {
@@ -3926,13 +3914,13 @@
             const { data: existing } = await supa.from('reports').select('*').eq('email', 'USER_ROLE').eq('link', userId).eq('status', 'fsb');
             if(existing && existing.length > 0) return alert("Этот пользователь уже является сотрудником ФСБ!");
             await supa.from('reports').insert([{ id: 'fsb_' + Date.now(), email: 'USER_ROLE', link: userId, date: new Date().toLocaleString('ru-RU'), status: 'fsb', xp: 0 }]);
-            alert("Статус Сотрудника ФСБ успешно выдан!"); loadUsersForAdmin(); loadGlobalShopAndRoulette();
+            alert("Статус Сотрудника ФСБ успешно выдан!"); window.loadUsersForAdmin(); loadGlobalShopAndRoulette();
         });
 
         getEl('leadershipXpBtn')?.addEventListener('click', async () => {
             const userId = getEl('leadershipUserSelect').value, amount = Number(getEl('leadershipXpAmount').value);
             const type = getEl('leadershipGiveType').value;
-            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            if (!userId || isNaN(amount)) return; const targetUser = window.adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             
             if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
 
@@ -3942,20 +3930,20 @@
                 await supa.from('reports').insert([{ id: 'rep_manual_' + Date.now() + Math.random(), email: targetUser.email, link: '', date: 'Выдано Руководством (Ручное зачисление)', status: 'Норма', xp: amount }]);
             }
             alert('Опыт успешно зачислен напрямую!');
-            loadUsersForAdmin();
+            window.loadUsersForAdmin();
         });
 
         getEl('leadershipDeleteBtn')?.addEventListener('click', async () => {
             const userId = getEl('leadershipUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = adminUsersList.find(u => u.user_id === userId);
+            const targetUser = window.adminUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Удалить пользователя из базы статистики модераторов?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); loadUsersForAdmin(); }
+            if(confirm("Удалить пользователя из базы статистики модераторов?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); window.loadUsersForAdmin(); }
         });
 
         getEl('apAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = getEl('apAdminUserSelect').value, amount = Number(getEl('apAdminPointsAmount').value);
             const type = getEl('apAdminGiveType').value;
-            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            if (!userId || isNaN(amount)) return; const targetUser = window.adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             
             if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
 
@@ -3966,37 +3954,36 @@
                 await supa.from('user_stats').update({ ap_spent: newSpent }).eq('user_id', userId);
             }
             alert('Успешно выполнено (АП)!');
-            loadUsersForAdmin();
+            window.loadUsersForAdmin();
         });
 
         getEl('fsbAdminPointsBtn')?.addEventListener('click', async () => {
             const userId = getEl('fsbAdminUserSelect').value, amount = Number(getEl('fsbAdminPointsAmount').value);
-            if (!userId || isNaN(amount)) return; const targetUser = adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
+            if (!userId || isNaN(amount)) return; const targetUser = window.adminUsersList.find(u => u.user_id === userId); if(!targetUser) return;
             if (targetUser.email === creatorEmail) return alert("Создатель (John Wick) неприкосновенен!");
             
             const newSpent = (Number(targetUser.fsb_spent) || 0) - amount; 
             await supa.from('user_stats').update({ fsb_spent: newSpent }).eq('user_id', userId);
             
             alert('Баллы ФСБ успешно выданы!');
-            loadUsersForAdmin();
+            window.loadUsersForAdmin();
         });
 
         getEl('apAdminDeleteBtn')?.addEventListener('click', async () => {
             const userId = getEl('apAdminUserSelect').value; if(!userId || userId.startsWith("Загрузка")) return;
-            const targetUser = adminUsersList.find(u => u.user_id === userId);
+            const targetUser = window.adminUsersList.find(u => u.user_id === userId);
             if (targetUser && targetUser.email === creatorEmail) return alert("Создателя удалить невозможно!");
-            if(confirm("Удалить пользователя из базы статистики АП?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); loadUsersForAdmin(); }
+            if(confirm("Удалить пользователя из базы статистики АП?")) { await supa.from('user_stats').delete().eq('user_id', userId); alert('Удален!'); window.loadUsersForAdmin(); }
         });
 
-        getEl('trollEffectBobo')?.addEventListener('click', () => applyTrollEffect('bobo'));
-        getEl('trollEffectBlur')?.addEventListener('click', () => applyTrollEffect('blur'));
-        getEl('trollEffectDrunk')?.addEventListener('click', () => applyTrollEffect('drunk'));
-        getEl('trollEffectGhost')?.addEventListener('click', () => applyTrollEffect('ghost'));
-        getEl('trollEffectFlip')?.addEventListener('click', () => applyTrollEffect('flip'));
-        getEl('trollEffectRainbow')?.addEventListener('click', () => applyTrollEffect('rainbow'));
-        getEl('trollEffectClear')?.addEventListener('click', () => applyTrollEffect('clear'));
+        getEl('trollEffectBobo')?.addEventListener('click', () => window.applyTrollEffect('bobo'));
+        getEl('trollEffectBlur')?.addEventListener('click', () => window.applyTrollEffect('blur'));
+        getEl('trollEffectDrunk')?.addEventListener('click', () => window.applyTrollEffect('drunk'));
+        getEl('trollEffectGhost')?.addEventListener('click', () => window.applyTrollEffect('ghost'));
+        getEl('trollEffectFlip')?.addEventListener('click', () => window.applyTrollEffect('flip'));
+        getEl('trollEffectRainbow')?.addEventListener('click', () => window.applyTrollEffect('rainbow'));
+        getEl('trollEffectClear')?.addEventListener('click', () => window.applyTrollEffect('clear'));
 
-        // Запуск
         renderRight("moderation");
         
         supa.auth.getSession().then(async ({ data: { session } }) => { 
