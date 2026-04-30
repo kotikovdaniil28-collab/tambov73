@@ -4805,6 +4805,287 @@
         })();
         /* === /GOV NAV CLICK COMPAT 2026-04-30 === */
 
+
+
+        /* === GOV ACCESS V3 FIX 2026-04-30: senior vs leadership, org subtabs, reports, visible saved profiles === */
+        (function installGovAccessV3(){
+            let selectedOrgV3 = 'fsb';
+            let selectedViewV3 = 'profile';
+            let dynamicGossSeniorsV3 = [];
+            let onboardingShownV3 = false;
+
+            function v3Esc(v){ return escapeHtmlFix(v); }
+            function seniorStatusV3(orgId){ return 'goss_senior_' + orgId; }
+            function seniorAllStatusV3(){ return 'goss_senior_all'; }
+            function isCreatorV3(){ return !!(currentUser && currentUser.email === creatorEmail); }
+            function isGossLeaderV3(orgId){ return !!(currentUser && (isCreatorV3() || dynamicGossLeaders.some(r => r.link === currentUser.id && (r.status === 'goss_admin_all' || r.status === gossLeadStatus(orgId))))); }
+            function isGossSeniorOnlyV3(orgId){ return !!(currentUser && dynamicGossSeniorsV3.some(r => r.link === currentUser.id && (r.status === seniorAllStatusV3() || r.status === seniorStatusV3(orgId)))); }
+            function hasGossAccessV3(orgId){ return isGossLeaderV3(orgId) || isGossSeniorOnlyV3(orgId); }
+            function accessLabelV3(orgId){ return isGossLeaderV3(orgId) ? 'Руководство' : isGossSeniorOnlyV3(orgId) ? 'Старший состав' : 'Нет доступа'; }
+            function orgV3(){ return findGossOrg(selectedOrgV3 || 'fsb'); }
+            function parseJsonV3(value, fallback){ try { return value ? JSON.parse(value) : fallback; } catch(e){ return fallback; } }
+            function todayInputV3(){ return new Date().toISOString().slice(0,10); }
+            function nowRuV3(){ return new Date().toLocaleString('ru-RU'); }
+            function setTextV3(id, value){ const el = document.getElementById(id); if (el) el.textContent = value; }
+            function availableOrgsV3(){
+                if (!currentUser) return [];
+                if (isCreatorV3()) return GOSS_ORGS.slice();
+                return GOSS_ORGS.filter(o => hasGossAccessV3(o.id));
+            }
+            function ensureStyleV3(){
+                if (document.getElementById('govAccessV3Style')) return;
+                const style = document.createElement('style');
+                style.id = 'govAccessV3Style';
+                style.textContent = `
+                    #gossOrgActionNavV3 { margin-top:-.35rem; }
+                    .gov-v3-shell { display:grid; gap:1rem; }
+                    .gov-v3-access-card { padding:1rem; border-radius:18px; background:linear-gradient(145deg, rgba(13,16,32,.92), rgba(7,9,18,.96)); border:1px solid rgba(255,107,136,.28); box-shadow:0 12px 32px rgba(0,0,0,.38); }
+                    .gov-v3-headline { display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+                    .gov-v3-pill { display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .75rem; border-radius:999px; font-size:.82rem; font-weight:900; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.07); color:#fff; }
+                    .gov-v3-table-wrap { overflow:auto; border-radius:18px; border:1px solid rgba(191,198,255,.18); background:rgba(0,0,0,.36); -webkit-overflow-scrolling:touch; }
+                    .gov-v3-table { width:100%; min-width:980px; border-collapse:separate; border-spacing:0; }
+                    .gov-v3-table th, .gov-v3-table td { padding:.85rem .75rem; border-bottom:1px solid rgba(255,255,255,.08); border-right:1px solid rgba(255,255,255,.06); text-align:center; vertical-align:middle; }
+                    .gov-v3-table th { background:linear-gradient(180deg, rgba(255,107,136,.30), rgba(108,140,255,.16)); color:#fff; text-transform:uppercase; letter-spacing:.06em; font-size:.82rem; position:sticky; top:0; z-index:2; }
+                    .gov-v3-table th:first-child, .gov-v3-table td:first-child { text-align:left; position:sticky; left:0; z-index:3; background:rgba(13,16,32,.98); }
+                    .gov-v3-table th:first-child { background:linear-gradient(180deg, rgba(255,107,136,.36), rgba(108,140,255,.22)); }
+                    .gov-v3-profile-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.85rem; }
+                    .gov-v3-field { padding:.9rem 1rem; border-radius:14px; border:1px solid rgba(191,198,255,.16); background:rgba(0,0,0,.28); }
+                    .gov-v3-field span { display:block; color:var(--color-text-faint); font-size:.78rem; text-transform:uppercase; letter-spacing:.12em; font-weight:900; margin-bottom:.25rem; }
+                    .gov-v3-field strong { display:block; color:#fff; overflow-wrap:anywhere; }
+                    .gov-v3-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+                    .gov-v3-form label { color:var(--color-text-muted); font-size:.9rem; font-weight:900; display:grid; gap:.35rem; }
+                    .gov-v3-actions { display:flex; flex-wrap:wrap; gap:.75rem; justify-content:flex-end; }
+                    .gov-v3-denied { padding:1.1rem; border-radius:16px; border:1px solid rgba(255,191,71,.38); background:rgba(255,191,71,.08); color:#fff; }
+                    .gov-v3-report-card { padding:1rem; border-radius:16px; border:1px solid rgba(191,198,255,.16); background:rgba(0,0,0,.32); display:grid; gap:.45rem; }
+                    .gov-v3-status { width:100%; min-width:130px; border-radius:999px; padding:.42rem .55rem; color:#fff; font-weight:900; border:1px solid rgba(255,255,255,.22); outline:none; }
+                    @media(max-width:720px){ .gov-v3-form{grid-template-columns:1fr;} .gov-v3-actions{justify-content:stretch;} .gov-v3-actions .btn{width:100%;} .gov-v3-table{min-width:850px;} #gossOrgActionNavV3 .mode-btn{flex:1 1 100%;} }
+                `;
+                document.head.appendChild(style);
+            }
+            function ensureDomV3(){
+                ensureStyleV3();
+                const orgNav = document.getElementById('subNavOrganizations');
+                if (orgNav && orgNav.dataset.govV3 !== '1') {
+                    orgNav.dataset.govV3 = '1';
+                    orgNav.innerHTML = GOSS_ORGS.map(o => '<button class="mode-btn gov-org-switch-v3" data-mode="goss_center_v3" data-org-id="' + o.id + '" type="button">' + o.icon + ' ' + o.short + '</button>').join('') + '<span id="gossNoAccessHintV3" class="badge ban" style="display:none;">Нет выданных ГОСС прав</span>';
+                    orgNav.querySelectorAll('.gov-org-switch-v3').forEach(btn => bindPress(btn, () => { selectedOrgV3 = btn.dataset.orgId || 'fsb'; selectedViewV3 = 'profile'; switchMode('goss_center_v3', btn); }));
+                }
+                if (orgNav && !document.getElementById('gossOrgActionNavV3')) orgNav.insertAdjacentHTML('afterend', '<div class="sub-nav" id="gossOrgActionNavV3" style="display:none;"></div>');
+                const oldNav = document.getElementById('gossOrgActionNav'); if (oldNav) oldNav.style.display = 'none';
+                const wrap = document.getElementById('game');
+                if (wrap && !document.getElementById('mode-goss_center_v3')) {
+                    const html = '<section class="panel game-card fade-in" id="mode-goss_center_v3" style="display:none;"><div class="section-head"><h2 id="gossV3Title" style="color:#ff6b88;">ГОСС</h2><p id="gossV3Lead">Разделы старшего состава и руководства ГОСС организаций.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV3Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV3Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV3Denied" class="gov-v3-denied" style="display:none;">У вас нет прав в этой ГОСС организации. Попросите создателя или руководство выдать права старшего состава.</div><div id="gossV3Content" class="gov-v3-shell"></div></section>';
+                    const profile = document.getElementById('mode-profile'); if (profile) profile.insertAdjacentHTML('beforebegin', html); else wrap.insertAdjacentHTML('afterbegin', html);
+                }
+                const oldSaveProfileBtnV3 = document.getElementById('gossProfileSaveBtn');
+                if (oldSaveProfileBtnV3 && oldSaveProfileBtnV3.dataset.govV3Bound !== '1') {
+                    const fresh = oldSaveProfileBtnV3.cloneNode(true);
+                    oldSaveProfileBtnV3.replaceWith(fresh);
+                    fresh.dataset.govV3Bound = '1';
+                    bindPress(fresh, saveProfileV3);
+                }
+                const oldCancelProfileBtnV3 = document.getElementById('gossProfileCancelBtn');
+                if (oldCancelProfileBtnV3 && oldCancelProfileBtnV3.dataset.govV3Bound !== '1') {
+                    const freshCancel = oldCancelProfileBtnV3.cloneNode(true);
+                    oldCancelProfileBtnV3.replaceWith(freshCancel);
+                    freshCancel.dataset.govV3Bound = '1';
+                    bindPress(freshCancel, () => { const m = document.getElementById('gossProfileModal'); if (m) m.style.display = 'none'; });
+                }
+                if (!allModesList.includes('goss_center_v3')) allModesList.push('goss_center_v3');
+            }
+            async function loadAccessV3(){
+                if (!currentUser) { dynamicGossSeniorsV3 = []; return; }
+                const { data } = await supa.from('reports').select('*').eq('email', 'ADMIN_ROLE');
+                dynamicGossLeaders = (data || []).filter(r => r.status === 'goss_admin_all' || String(r.status || '').startsWith('goss_lead_'));
+                dynamicGossSeniorsV3 = (data || []).filter(r => r.status === seniorAllStatusV3() || String(r.status || '').startsWith('goss_senior_'));
+            }
+            async function loadProfilesV3(orgId){
+                const { data } = await supa.from('reports').select('*').eq('email', 'GOSS_PROFILE').eq('link', orgId).order('id', { ascending:true });
+                return (data || []).map(r => ({ id:r.id, userId:r.status || '', data:Object.assign({ nick:'', post:'', age:'', forum:'', vk:'', discord:'', appointed:'', timezone:'', org:findGossOrg(orgId).short }, parseJsonV3(r.date, {})) }));
+            }
+            async function loadMyProfileV3(orgId){
+                if (!currentUser) return null;
+                const { data } = await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',orgId).eq('status',currentUser.id).order('id',{ascending:false}).limit(1);
+                return data && data[0] ? { id:data[0].id, data:Object.assign({ org:findGossOrg(orgId).short }, parseJsonV3(data[0].date, {})) } : null;
+            }
+            function renderActionNavV3(){
+                const nav = document.getElementById('gossOrgActionNavV3'); if (!nav) return;
+                const org = orgV3();
+                if (document.getElementById('subNavOrganizations')?.style.display === 'none') { nav.style.display = 'none'; return; }
+                const hasAccess = hasGossAccessV3(org.id), leader = isGossLeaderV3(org.id);
+                const tabs = [];
+                if (hasAccess) { tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📤 Сдать отчётность' }, { view:'shop', label:'🛒 Магазин' }); }
+                if (leader) { tabs.push({ view:'staff', label:'📋 Таблица состава' }, { view:'reports', label:'📊 Отчёты состава' }, { view:'manage', label:'👑 Панель руководства' }); }
+                nav.style.display = tabs.length ? 'flex' : 'none';
+                nav.innerHTML = tabs.map(t => '<button class="mode-btn gov-action-switch-v3 ' + (selectedViewV3 === t.view ? 'active' : '') + '" data-view="' + t.view + '" type="button">' + t.label + '</button>').join('');
+                nav.querySelectorAll('.gov-action-switch-v3').forEach(btn => bindPress(btn, () => { selectedViewV3 = btn.dataset.view || 'profile'; switchMode('goss_center_v3', btn); }));
+            }
+            function renderOrgNavAccessV3(){
+                ensureDomV3();
+                const orgNav = document.getElementById('subNavOrganizations'); if (!orgNav) return;
+                const available = availableOrgsV3();
+                orgNav.querySelectorAll('.gov-org-switch-v3').forEach(btn => { const show = available.some(o => o.id === btn.dataset.orgId); btn.style.display = show ? 'inline-flex' : 'none'; btn.classList.toggle('active', btn.dataset.orgId === selectedOrgV3); });
+                const hint = document.getElementById('gossNoAccessHintV3'); if (hint) hint.style.display = available.length ? 'none' : 'inline-flex';
+                if (available.length && !available.some(o => o.id === selectedOrgV3)) selectedOrgV3 = available[0].id;
+                renderActionNavV3();
+            }
+            function profileFieldsHtmlV3(d){
+                return '<div class="gov-v3-profile-grid"><div class="gov-v3-field"><span>Ник</span><strong>' + v3Esc(d.nick || 'Не заполнено') + '</strong></div><div class="gov-v3-field"><span>Должность</span><strong>' + v3Esc(d.post || '—') + '</strong></div><div class="gov-v3-field"><span>Возраст</span><strong>' + v3Esc(d.age || '—') + '</strong></div><div class="gov-v3-field"><span>Форум</span><strong>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(d.forum) + '">Форум</a>' : '—') + '</strong></div><div class="gov-v3-field"><span>VK ID</span><strong>' + v3Esc(d.vk || '—') + '</strong></div><div class="gov-v3-field"><span>Discord</span><strong>' + v3Esc(d.discord || '—') + '</strong></div><div class="gov-v3-field"><span>Когда поставлен</span><strong>' + v3Esc(d.appointed || '—') + '</strong></div><div class="gov-v3-field"><span>Часовой пояс</span><strong>' + v3Esc(d.timezone || '—') + '</strong></div></div>';
+            }
+            async function renderProfileV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3(), row = await loadMyProfileV3(org.id), d = row ? row.data : {};
+                root.innerHTML = '<div class="gov-v3-access-card"><div class="gov-v3-headline"><div><h3 style="color:#ff6b88; margin:0 0 .3rem;">Мои данные старшего состава</h3><p style="color:var(--color-text-muted); margin:0;">Эти данные попадают в таблицу, которую видит руководство организации.</p></div><div class="gov-v3-actions"><button id="gossV3EditProfileBtn" class="btn btn-primary" type="button">' + (row ? 'Обновить данные' : 'Заполнить данные') + '</button></div></div></div>' + (row ? '<div class="gov-v3-access-card">' + profileFieldsHtmlV3(d) + '</div>' : '<div class="gov-v3-denied">Данные пока не заполнены. Нажмите «Заполнить данные».</div>');
+                bindPress(document.getElementById('gossV3EditProfileBtn'), () => showProfileModalV3(org.id, !row));
+            }
+            async function renderStaffTableV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3();
+                if (!isGossLeaderV3(org.id)) { root.innerHTML = '<div class="gov-v3-denied">Таблицу состава видит только руководство организации.</div>'; return; }
+                const rows = await loadProfilesV3(org.id);
+                root.innerHTML = '<div class="gov-v3-access-card"><div class="gov-v3-headline"><div><h3 style="color:#ff6b88; margin:0;">Таблица старшего состава — ' + v3Esc(org.short) + '</h3><p style="color:var(--color-text-muted); margin:.25rem 0 0;">Не Excel-копия: своя адаптивная таблица сайта.</p></div><button id="gossV3RefreshStaffBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="gov-v3-table-wrap"><table class="gov-v3-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody>' + rows.map(row => { const d = row.data; return '<tr><td><strong>' + v3Esc(d.nick || 'Не заполнено') + '</strong><div class="muted">' + v3Esc(d.org || org.short) + '</div></td><td>' + v3Esc(d.post || '—') + '</td><td>' + v3Esc(d.age || '—') + '</td><td>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(d.forum) + '">ФА</a>' : '—') + '</td><td>' + v3Esc(d.vk || '—') + '</td><td>' + v3Esc(d.discord || '—') + '</td><td>' + v3Esc(d.appointed || '—') + '</td><td>' + v3Esc(d.timezone || '—') + '</td><td><button class="badge ban gossV3DeleteProfile" data-id="' + v3Esc(row.id) + '" type="button">Удалить</button></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="gov-v3-denied">Никто ещё не заполнил данные. После назначения старшего состава человеку при входе покажется форма.</div>');
+                bindPress(document.getElementById('gossV3RefreshStaffBtn'), renderStaffTableV3);
+                document.querySelectorAll('.gossV3DeleteProfile').forEach(btn => bindPress(btn, async () => { await supa.from('reports').delete().eq('id', btn.dataset.id); await renderStaffTableV3(); }));
+            }
+            async function renderSubmitReportV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3();
+                const { data } = currentUser ? await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link',org.id).eq('status',currentUser.id).order('id',{ascending:false}).limit(8) : { data: [] };
+                root.innerHTML = '<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Сдать отчётность — ' + v3Esc(org.short) + '</h3><div class="gov-v3-form"><label>Тип отчёта<select id="gossV3ReportType" class="support-input"><option value="Ежедневный отчёт">Ежедневный отчёт</option><option value="Недельный отчёт">Недельный отчёт</option><option value="Отчёт по работе">Отчёт по работе</option><option value="Другое">Другое</option></select></label><label>Ссылка на доказательства<input id="gossV3ReportLink" class="support-input" placeholder="Ссылка на форум/скрин/док-ва"></label><label style="grid-column:1/-1;">Комментарий<textarea id="gossV3ReportComment" class="support-input" rows="4" placeholder="Что было сделано"></textarea></label></div><div class="gov-v3-actions" style="margin-top:1rem;"><button id="gossV3SubmitReportBtn" class="btn btn-primary" type="button">📤 Отправить отчёт</button></div></div><div class="gov-v3-access-card"><h3 style="color:#fff; margin:0 0 1rem;">Мои последние отчёты</h3><div style="display:grid; gap:.7rem;">' + ((data && data.length) ? data.map(r => { const p = parseJsonV3(r.date, {}); return '<div class="gov-v3-report-card"><strong>' + v3Esc(p.type || 'Отчёт') + '</strong><span style="color:var(--color-text-muted);">' + v3Esc(p.comment || 'Без комментария') + '</span>' + (p.link ? '<span><a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(p.link) + '">' + v3Esc(p.link) + '</a></span>' : '') + '<span style="color:var(--color-text-faint); font-size:.85rem;">' + v3Esc(p.created || '') + '</span></div>'; }).join('') : '<div class="gov-v3-denied">Отчётов пока нет.</div>') + '</div></div>';
+                bindPress(document.getElementById('gossV3SubmitReportBtn'), async () => {
+                    const payload = { org: org.id, orgName: org.short, type: document.getElementById('gossV3ReportType').value, link: document.getElementById('gossV3ReportLink').value.trim(), comment: document.getElementById('gossV3ReportComment').value.trim(), userId: currentUser.id, nick: currentNickname || currentUser.email, created: nowRuV3() };
+                    if (!payload.link && !payload.comment) { alert('Добавьте ссылку или комментарий к отчёту.'); return; }
+                    await supa.from('reports').insert([{ id: makeFixId('goss_user_report'), email:'GOSS_USER_REPORT', link:org.id, status:currentUser.id, date:JSON.stringify(payload), xp:0 }]);
+                    alert('Отчёт отправлен руководству.'); await renderSubmitReportV3();
+                });
+            }
+            async function renderLeadershipReportsV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3();
+                if (!isGossLeaderV3(org.id)) { root.innerHTML = '<div class="gov-v3-denied">Раздел отчётов состава видит только руководство.</div>'; return; }
+                const { data: repRows } = await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link',org.id).order('id',{ascending:false}).limit(60);
+                const reports = repRows || [];
+                root.innerHTML = '<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Отчёты состава — ' + v3Esc(org.short) + '</h3><div style="display:grid; gap:.7rem;">' + (reports.length ? reports.map(r => { const p = parseJsonV3(r.date,{}); return '<div class="gov-v3-report-card"><div class="gov-v3-headline"><strong>' + v3Esc(p.nick || r.status) + ' — ' + v3Esc(p.type || 'Отчёт') + '</strong><span class="gov-v3-pill">' + v3Esc(p.created || '') + '</span></div><span style="color:var(--color-text-muted);">' + v3Esc(p.comment || 'Без комментария') + '</span>' + (p.link ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(p.link) + '">' + v3Esc(p.link) + '</a>' : '') + '</div>'; }).join('') : '<div class="gov-v3-denied">Отправленных отчётов пока нет.</div>') + '</div></div>';
+            }
+            function renderShopV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3();
+                if (org.id === 'fsb') {
+                    root.innerHTML = '<div class="gov-v3-denied" style="border-color:rgba(108,140,255,.4); background:rgba(108,140,255,.08);">Магазин ФСБ доступен отдельным разделом. Нажмите кнопку ниже: рулетки и товары сработают сразу после покупки.</div><button id="gossV3OpenFsbShop" class="btn btn-primary" type="button" style="width:100%; background:#6c8cff; color:#fff;">Открыть магазин ФСБ</button>';
+                    bindPress(document.getElementById('gossV3OpenFsbShop'), () => switchMode('fsb_shop', document.getElementById('gossV3OpenFsbShop')));
+                } else root.innerHTML = '<div class="gov-v3-denied">Для этой организации магазин пока не настроен. Сам доступ к разделу магазина уже появляется у старшего состава; товары можно будет подключить отдельной настройкой, как в ФСБ.</div>';
+            }
+            async function renderManageV3(){
+                const root = document.getElementById('gossV3Content'), org = orgV3();
+                if (!isGossLeaderV3(org.id)) { root.innerHTML = '<div class="gov-v3-denied">Панель руководства видит только руководство организации.</div>'; return; }
+                if ((!adminUsersList || !adminUsersList.length) && typeof loadUsersForAdmin === 'function') { try { await loadUsersForAdmin(); } catch(e){} }
+                const users = (creatorUsersList && creatorUsersList.length ? creatorUsersList : adminUsersList) || [];
+                const seniorRows = dynamicGossSeniorsV3.filter(r => r.status === seniorAllStatusV3() || r.status === seniorStatusV3(org.id));
+                root.innerHTML = '<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Панель руководства — ' + v3Esc(org.short) + '</h3><p style="color:var(--color-text-muted); margin:0 0 1rem;">Руководство может выдавать и снимать права старшего состава. Создатель выдаёт права руководства в своей панели.</p><div class="gov-v3-form"><label>Пользователь<select id="gossV3SeniorUser" class="support-input">' + (users.length ? users.map(u => '<option value="' + u.user_id + '">' + v3Esc(u.nickname || u.email) + '</option>').join('') : '<option value="">Нет пользователей</option>') + '</select></label><label>Права<select id="gossV3SeniorScope" class="support-input"><option value="one">Только ' + v3Esc(org.short) + '</option><option value="all">Все ГОСС организации</option></select></label></div><div class="gov-v3-actions" style="margin-top:1rem;"><button id="gossV3GrantSeniorBtn" class="btn btn-secondary" style="border-color:var(--color-success); color:var(--color-success);" type="button">➕ Выдать старший состав</button><button id="gossV3RemoveSeniorBtn" class="btn btn-secondary" style="border-color:var(--color-error); color:var(--color-error);" type="button">➖ Снять старший состав</button></div></div><div class="gov-v3-access-card"><h3 style="margin:0 0 1rem; color:#fff;">Текущий старший состав по правам</h3><div style="display:grid; gap:.6rem;">' + (seniorRows.length ? seniorRows.map(r => { const u = users.find(x => x.user_id === r.link); return '<div class="gov-v3-report-card"><div class="gov-v3-headline"><strong>' + v3Esc(u ? (u.nickname || u.email) : r.link) + '</strong><span class="gov-v3-pill">' + (r.status === seniorAllStatusV3() ? 'Все ГОСС' : v3Esc(org.short)) + '</span></div></div>'; }).join('') : '<div class="gov-v3-denied">Права старшего состава пока никому не выданы.</div>') + '</div></div>' + (org.id === 'fsb' ? '<div class="gov-v3-access-card"><h3 style="color:#6c8cff; margin:0 0 1rem;">Магазин и рулетки ФСБ</h3><button id="gossV3OpenFsbAdmin" class="btn btn-primary" type="button" style="width:100%; background:#6c8cff; color:#fff;">Открыть управление магазином ФСБ</button></div>' : '');
+                bindPress(document.getElementById('gossV3GrantSeniorBtn'), async () => {
+                    const uid = document.getElementById('gossV3SeniorUser').value, scope = document.getElementById('gossV3SeniorScope').value; if (!uid) return;
+                    const status = scope === 'all' ? seniorAllStatusV3() : seniorStatusV3(org.id);
+                    await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid).eq('status',status);
+                    await supa.from('reports').insert([{ id:makeFixId('gosssenior'), email:'ADMIN_ROLE', link:uid, status, date:nowRuV3(), xp:0 }]);
+                    alert('Права старшего состава выданы. При входе человеку покажется форма заполнения данных.'); await loadAccessV3(); renderOrgNavAccessV3(); await renderManageV3();
+                });
+                bindPress(document.getElementById('gossV3RemoveSeniorBtn'), async () => {
+                    const uid = document.getElementById('gossV3SeniorUser').value, scope = document.getElementById('gossV3SeniorScope').value; if (!uid) return;
+                    if (scope === 'all') await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid).in('status',[seniorAllStatusV3()].concat(GOSS_ORGS.map(o => seniorStatusV3(o.id))));
+                    else await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid).eq('status',seniorStatusV3(org.id));
+                    alert('Права старшего состава сняты.'); await loadAccessV3(); renderOrgNavAccessV3(); await renderManageV3();
+                });
+                bindPress(document.getElementById('gossV3OpenFsbAdmin'), () => switchMode('fsb_admin', document.getElementById('gossV3OpenFsbAdmin')));
+            }
+            async function renderDashboardV3(){
+                ensureDomV3(); await loadAccessV3();
+                const org = orgV3(), allowed = hasGossAccessV3(org.id), leader = isGossLeaderV3(org.id);
+                setTextV3('gossV3Title', org.icon + ' ' + org.name);
+                setTextV3('gossV3Lead', leader ? 'Панель руководства, состав, отчётность и магазин организации.' : 'Раздел старшего состава: мои данные, сдача отчетности и магазин.');
+                setTextV3('gossV3Org', org.short); setTextV3('gossV3Access', accessLabelV3(org.id));
+                const denied = document.getElementById('gossV3Denied'), content = document.getElementById('gossV3Content');
+                if (denied) denied.style.display = allowed ? 'none' : 'block'; if (content) content.style.display = allowed ? 'grid' : 'none';
+                renderOrgNavAccessV3(); renderActionNavV3();
+                if (!allowed) return;
+                if (!leader && (selectedViewV3 === 'staff' || selectedViewV3 === 'reports' || selectedViewV3 === 'manage')) selectedViewV3 = 'profile';
+                if (selectedViewV3 === 'staff') await renderStaffTableV3();
+                else if (selectedViewV3 === 'reports') await renderLeadershipReportsV3();
+                else if (selectedViewV3 === 'submit') await renderSubmitReportV3();
+                else if (selectedViewV3 === 'shop') renderShopV3();
+                else if (selectedViewV3 === 'manage') await renderManageV3();
+                else await renderProfileV3();
+            }
+            async function showProfileModalV3(orgId, onboarding){
+                if (!currentUser || !hasGossAccessV3(orgId)) return;
+                const org = findGossOrg(orgId), modal = document.getElementById('gossProfileModal'); if (!modal) return;
+                modal.dataset.org = org.id; modal.dataset.v3 = '1';
+                setTextV3('gossProfileTitle', onboarding ? 'Поздравляю, тебя назначили на пост!' : 'Данные старшего состава: ' + org.short);
+                setTextV3('gossProfileText', onboarding ? 'Тебе выдали статус старшего состава. Заполни данные: ник, должность, возраст, форум, VK ID, Discord, дата постановления и часовой пояс.' : 'Заполни или обнови свои данные для ' + org.short + '.');
+                const row = await loadMyProfileV3(org.id), d = row ? row.data : { appointed: todayInputV3(), org: org.short };
+                document.getElementById('gossProfileNick').value = d.nick || currentNickname || ''; document.getElementById('gossProfilePost').value = d.post || ''; document.getElementById('gossProfileAge').value = d.age || ''; document.getElementById('gossProfileForum').value = d.forum || ''; document.getElementById('gossProfileVk').value = d.vk || ''; document.getElementById('gossProfileDiscord').value = d.discord || ''; document.getElementById('gossProfileAppointed').value = d.appointed || todayInputV3(); document.getElementById('gossProfileTimezone').value = d.timezone || '';
+                modal.style.display = 'flex';
+            }
+            async function saveProfileV3(){
+                const modal = document.getElementById('gossProfileModal'); if (!modal || !currentUser) return;
+                const org = findGossOrg(modal.dataset.org || selectedOrgV3);
+                const payload = { nick:document.getElementById('gossProfileNick').value.trim(), post:document.getElementById('gossProfilePost').value.trim(), age:document.getElementById('gossProfileAge').value.trim(), forum:document.getElementById('gossProfileForum').value.trim(), vk:document.getElementById('gossProfileVk').value.trim(), discord:document.getElementById('gossProfileDiscord').value.trim(), appointed:document.getElementById('gossProfileAppointed').value.trim(), timezone:document.getElementById('gossProfileTimezone').value.trim(), org:org.short };
+                if (!payload.nick || !payload.post) { alert('Заполните минимум ник и должность.'); return; }
+                const { data: old } = await supa.from('reports').select('id').eq('email','GOSS_PROFILE').eq('link',org.id).eq('status',currentUser.id).order('id',{ascending:false}).limit(1);
+                if (old && old[0]) await supa.from('reports').update({ date:JSON.stringify(payload), xp:0 }).eq('id', old[0].id);
+                else await supa.from('reports').insert([{ id:makeFixId('gossprofile'), email:'GOSS_PROFILE', link:org.id, status:currentUser.id, date:JSON.stringify(payload), xp:0 }]);
+                modal.style.display = 'none'; selectedOrgV3 = org.id; selectedViewV3 = isGossLeaderV3(org.id) ? 'staff' : 'profile'; await renderDashboardV3();
+            }
+            async function maybePromptProfileV3(){
+                if (!currentUser || onboardingShownV3) return;
+                const orgs = availableOrgsV3();
+                for (const o of orgs) { const row = await loadMyProfileV3(o.id); if (!row) { onboardingShownV3 = true; selectedOrgV3 = o.id; selectedViewV3 = 'profile'; await showProfileModalV3(o.id, true); return; } }
+            }
+
+            const prevLoadGlobalV3 = loadGlobalShopAndRoulette;
+            loadGlobalShopAndRoulette = async function(){
+                await prevLoadGlobalV3(); await loadAccessV3();
+                if (currentUser && hasGossAccessV3('fsb')) isFsbUser = true;
+                checkRolesAndAccess(); renderOrgNavAccessV3(); maybePromptProfileV3();
+            };
+            const prevCheckRolesV3 = checkRolesAndAccess;
+            checkRolesAndAccess = function(){
+                prevCheckRolesV3();
+                const fsbLeader = currentUser && (isCreatorV3() || dynamicFsbLeaders.includes(currentUser.id) || adminEmails.includes(currentUser.email) || isGossLeaderV3('fsb'));
+                const fsbAccess = currentUser && (isFsbUser || hasGossAccessV3('fsb'));
+                const show = (id, yes, display='inline-block') => { const el = document.getElementById(id); if (el) el.style.display = yes ? display : 'none'; };
+                show('fsbShopTabBtn', !!fsbAccess); show('fsbAdminTabBtn', !!fsbLeader); show('fsbAdminLogTabBtn', !!fsbLeader); renderOrgNavAccessV3();
+            };
+            const prevSwitchModeV3 = switchMode;
+            switchMode = function(mode, btn){
+                if (btn && btn.dataset && btn.dataset.orgId) selectedOrgV3 = btn.dataset.orgId;
+                if (btn && btn.dataset && btn.dataset.view) selectedViewV3 = btn.dataset.view;
+                if (mode === 'goss_center_v3') {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    const orgBtn = document.querySelector('.gov-org-switch-v3[data-org-id="' + selectedOrgV3 + '"]'); if (orgBtn) orgBtn.classList.add('active');
+                    allModesList.forEach(m => { const panel = document.getElementById('mode-' + m); if (panel) panel.style.display = (m === 'goss_center_v3') ? '' : 'none'; });
+                    document.documentElement.setAttribute('data-site-theme', 'quests'); renderRight('goss_center_v3'); renderDashboardV3(); return;
+                }
+                prevSwitchModeV3(mode, btn); renderOrgNavAccessV3();
+            };
+            const prevRenderRightV3 = renderRight;
+            renderRight = function(mode){
+                if (mode === 'goss_center_v3') {
+                    const org = orgV3(), rt = document.getElementById('rightTitle'), rl = document.getElementById('rightLead'), rc = document.getElementById('rightCards');
+                    if (rt) rt.innerHTML = org.icon + ' ' + org.short;
+                    if (rl) rl.innerHTML = 'Сначала выбирается организация, ниже появляются доступные разделы по выданным правам.';
+                    if (rc) rc.innerHTML = '<div class="rule-item"><div class="rule-icon ok">✓</div><div class="rule-copy"><strong>Старший состав</strong><span>Мои данные, сдача отчетности и магазин.</span></div></div><div class="rule-item"><div class="rule-icon warn">?</div><div class="rule-copy"><strong>Руководство</strong><span>Таблица состава, отчеты состава, выдача старшего состава и управление магазином.</span></div></div><div class="rule-item"><div class="rule-icon ban">ℹ</div><div class="rule-copy"><strong>Таблица</strong><span>Полную таблицу видит только руководство.</span></div></div>';
+                    return;
+                }
+                prevRenderRightV3(mode);
+            };
+            const prevRefreshGossLeadershipPanelV3 = refreshGossLeadershipPanel;
+            refreshGossLeadershipPanel = async function(){
+                await prevRefreshGossLeadershipPanelV3();
+                const block = document.getElementById('creatorGossLeadershipBlock');
+                if (block && !document.getElementById('gossCreatorV3Note')) block.insertAdjacentHTML('afterbegin', '<div id="gossCreatorV3Note" class="gov-v3-denied" style="margin-bottom:1rem; border-color:rgba(255,107,136,.35); background:rgba(255,107,136,.08);">Создатель выдаёт здесь права руководства. Руководитель организации после этого сможет внутри ГОСС-панели выдавать права старшего состава.</div>');
+                await loadAccessV3(); renderOrgNavAccessV3();
+            };
+
+            ensureDomV3();
+            loadAccessV3().then(() => { renderOrgNavAccessV3(); maybePromptProfileV3(); });
+        })();
+        /* === /GOV ACCESS V3 FIX 2026-04-30 === */
+
         // Запуск
         renderRight("moderation");
         
