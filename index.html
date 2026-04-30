@@ -10470,6 +10470,392 @@
         })();
         /* === /T73 V12 FINAL === */
 
+
+        /* === T73 V13 REAL REPORT TABLE + DIRECT FILES + GOSS SHOP CONSTRUCTOR === */
+        (function(){
+            const T13_REPORT_MARK_EMAIL = 'REPORT_TABLE_MARK_V13';
+            const T13_REPORT_MEMBER_EMAIL = 'REPORT_TABLE_MEMBER_V13';
+            const T13_GOSS_SHOP_EMAIL = 'GOSS_SHOP_ITEMS_V13';
+            const T13_BUCKETS = ['report-screenshots', 'reports', 'screenshots'];
+            let t13Files = [];
+            let t13WeekOffset = 0;
+
+            function t13(id){ return document.getElementById(id); }
+            function t13Esc(v){ return String(v ?? '').replace(/[&<>'"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s])); }
+            function t13NowId(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+            function t13Today(){ return new Date().toISOString().slice(0,10); }
+            function t13IsCreator(){ return !!(currentUser && currentUser.email === creatorEmail); }
+            function t13IsAnyLeader(){
+                if (!currentUser) return false;
+                if (t13IsCreator()) return true;
+                try { if (adminEmails.includes(currentUser.email) || apLeadershipEmails.includes(currentUser.email)) return true; } catch(e){}
+                try { if (dynamicModLeaders.includes(currentUser.id) || dynamicApLeaders.includes(currentUser.id) || dynamicFsbLeaders.includes(currentUser.id)) return true; } catch(e){}
+                try { if (Array.isArray(dynamicGossLeaders) && dynamicGossLeaders.some(r => r.link === currentUser.id)) return true; } catch(e){}
+                try { if (typeof GOSS_ORGS !== 'undefined' && typeof hasGossLeadership === 'function' && GOSS_ORGS.some(o => hasGossLeadership(o.id))) return true; } catch(e){}
+                return false;
+            }
+            function t13CanEditOrg(orgId){
+                if (!currentUser) return false;
+                if (t13IsCreator()) return true;
+                try { if (Array.isArray(dynamicGossLeaders) && dynamicGossLeaders.some(r => r.link === currentUser.id && (r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId))) return true; } catch(e){}
+                try { if (typeof hasGossLeadership === 'function' && hasGossLeadership(orgId)) return true; } catch(e){}
+                return false;
+            }
+            function t13InjectStyle(){
+                if (t13('t73V13Style')) return;
+                document.head.insertAdjacentHTML('beforeend', `<style id="t73V13Style">
+                    .t73-v13-note{padding:1rem 1.15rem;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.08);border-radius:16px;color:var(--color-text-muted);line-height:1.55;margin-top:.8rem;}
+                    .t73-v13-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.8rem;margin:1rem 0;align-items:end;}
+                    .t73-v13-table{display:grid;gap:1rem;margin-top:1rem;}
+                    .t73-v13-user-row{border:1px solid rgba(191,198,255,.22);background:rgba(7,10,22,.72);border-radius:20px;padding:1rem;box-shadow:0 12px 30px rgba(0,0,0,.35);}
+                    .t73-v13-user-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:.85rem;}
+                    .t73-v13-days{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr));gap:.65rem;overflow-x:auto;padding-bottom:.3rem;}
+                    .t73-v13-day{min-width:150px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);border-radius:16px;padding:.75rem;display:grid;gap:.45rem;}
+                    .t73-v13-day.has{border-color:rgba(82,199,123,.55);box-shadow:inset 0 0 20px rgba(82,199,123,.08);}
+                    .t73-v13-day.miss{border-color:rgba(255,107,136,.35);}
+                    .t73-v13-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.11em;color:var(--color-text-faint);font-weight:900;margin-top:.2rem;}
+                    .t73-v13-select,.t73-v13-input{width:100%;padding:.55rem .65rem;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(4,6,12,.9);color:#fff;font-weight:800;outline:none;}
+                    .t73-v13-select:disabled,.t73-v13-input:disabled{opacity:.7;cursor:not-allowed;}
+                    .t73-v13-proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.65rem;margin-top:.75rem;}
+                    .t73-v13-proof{position:relative;display:block;min-height:92px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.35);}
+                    .t73-v13-proof img{width:100%;height:100%;min-height:92px;object-fit:cover;display:block;}
+                    .t73-v13-proof button{position:absolute;top:.25rem;right:.25rem;width:26px;height:26px;border-radius:50%;background:rgba(255,107,136,.92);color:#fff;font-weight:900;}
+                    .t73-v13-drop{border:2px dashed rgba(82,199,123,.45);border-radius:18px;padding:1rem;background:rgba(82,199,123,.06);display:grid;gap:.7rem;}
+                    .t73-v13-shop-builder{border:1px solid rgba(255,191,71,.35);background:rgba(255,191,71,.06);border-radius:18px;padding:1rem;margin-top:1rem;display:grid;gap:1rem;}
+                    .t73-v13-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.8rem;}
+                    .t73-v13-item{border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.28);border-radius:16px;padding:1rem;display:grid;gap:.55rem;}
+                    .t73-v13-mini{font-size:.82rem;color:var(--color-text-muted);line-height:1.45;}
+                    .t73-v13-saveflash{font-size:.78rem;color:var(--color-success);min-height:1rem;}
+                    @media(max-width:760px){.t73-v13-days{grid-template-columns:repeat(7,155px)}.t73-v13-tools{grid-template-columns:1fr}}
+                </style>`);
+            }
+            function t13EnsureMode(mode){ try { if (Array.isArray(allModesList) && !allModesList.includes(mode)) allModesList.push(mode); } catch(e){} }
+            function t13Show(id, yes, display){ const el=t13(id); if (el) el.style.display = yes ? (display || 'inline-block') : 'none'; }
+
+            function t13EnsureReportDom(){
+                t13InjectStyle();
+                t13EnsureMode('reports_table');
+                const modNav = t13('subNavModeration') || t13('subNavGeneral') || document.querySelector('.sub-nav');
+                if (modNav && !t13('reportsTableBtn')) modNav.insertAdjacentHTML('beforeend','<button class="mode-btn" data-mode="reports_table" type="button" id="reportsTableBtn">📊 Таблица отчетов</button>');
+                const game = t13('game') || document.querySelector('.game-wrap') || document.querySelector('.page');
+                if (game && !t13('mode-reports_table')) {
+                    game.insertAdjacentHTML('beforeend', `<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;">
+                        <div class="section-head"><h2 style="color:#52c77b;">Таблица отчётов</h2><p>Редактируемая таблица: лидер меняет отчетность и отметку дня.</p></div>
+                        <div class="rt-controls"><button class="btn btn-secondary" id="rtPrevWeekBtn" type="button">⬅️ Прошлая неделя</button><h3 id="rtCurrentWeekLabel" style="margin:0;font-size:1rem;">Текущая неделя</h3><button class="btn btn-secondary" id="rtNextWeekBtn" type="button">Следующая неделя ➡️</button></div>
+                        <div id="reportsTableWrapper"><div class="message-text" style="text-align:center;padding:2rem;">Нажмите обновить таблицу.</div></div>
+                    </section>`);
+                }
+                const table = t13('mode-reports_table');
+                if (table && !t13('t73V13ReportsTop')) {
+                    const head = table.querySelector('.section-head') || table;
+                    head.insertAdjacentHTML('beforeend', `<div id="t73V13ReportsTop" class="t73-v13-note"><b>Таблица включена:</b> лидер может вручную добавлять человека и менять два блока: <b>Отчетность</b> и <b>Отметка дня</b>. Изменения сохраняются сразу.</div>`);
+                }
+                if (table && !t13('t73V13ReportTools')) {
+                    const wrap = t13('reportsTableWrapper') || table;
+                    wrap.insertAdjacentHTML('beforebegin', `<div id="t73V13ReportTools" class="t73-v13-tools">
+                        <button class="btn btn-primary" type="button" id="t73V13ReloadTable">🔄 Обновить таблицу</button>
+                        <input class="support-input" id="t73V13ManualNick" placeholder="Ник для новой строки">
+                        <input class="support-input" id="t73V13ManualEmail" placeholder="Email/ID, если есть">
+                        <button class="btn btn-secondary" type="button" id="t73V13AddMember">➕ Добавить строку</button>
+                    </div><div id="t73V13TableSaveInfo" class="t73-v13-saveflash"></div>`);
+                }
+                const fileInput = t13('reportFileInput');
+                if (fileInput) {
+                    fileInput.setAttribute('multiple','multiple');
+                    fileInput.setAttribute('accept','image/*');
+                    const parent = fileInput.closest('.admin-field') || fileInput.parentElement;
+                    if (parent && !parent.classList.contains('t73-v13-drop')) parent.classList.add('t73-v13-drop');
+                    if (!t13('reportFilePreview')) fileInput.insertAdjacentHTML('afterend','<div id="reportFilePreview" class="t73-v13-proof-grid"><div class="t73-v13-mini">Скриншоты пока не выбраны.</div></div>');
+                    if (!t13('t73V13FileHint')) fileInput.insertAdjacentHTML('beforebegin','<div id="t73V13FileHint" class="t73-v13-mini"><b>Прямая загрузка:</b> можно выбрать много скриншотов сразу. Сайт загрузит их в Supabase Storage, а если bucket не настроен — сохранит fallback.</div>');
+                    if (!t13('reportQualityInput')) {
+                        const dateField = t13('reportDateInput')?.closest('.admin-field') || t13('reportDateInput');
+                        if (dateField) dateField.insertAdjacentHTML('beforebegin','<div class="admin-field"><label>Тип сдачи:</label><select id="reportQualityInput" class="support-input"><option value="Норма">Норма</option><option value="Перенорма">Перенорма</option><option value="Натяг">Натяг</option></select></div>');
+                    }
+                }
+                const open = t13('openReportsTableFromForm');
+                if (open) open.onclick = () => switchMode('reports_table', t13('reportsTableBtn') || open);
+            }
+
+            function t13BindReports(){
+                t13EnsureReportDom();
+                t13Show('reportsTableBtn', !!currentUser || t13IsAnyLeader());
+                const reportForm = t13('reportFormArea');
+                const reportWarn = t13('reportAccessWarning');
+                if (currentUser && reportForm) reportForm.style.display = 'block';
+                if (currentUser && reportWarn) reportWarn.style.display = 'none';
+                const inp = t13('reportFileInput');
+                if (inp && inp.dataset.v13Bound !== '1') {
+                    inp.dataset.v13Bound = '1';
+                    inp.addEventListener('change', () => { t13Files = Array.from(inp.files || []); t13RenderPreview(); });
+                    t13RenderPreview();
+                }
+                const sub = t13('submitReportBtn');
+                if (sub && sub.dataset.v13Bound !== '1') { sub.dataset.v13Bound='1'; sub.addEventListener('click', t13SubmitReport, true); }
+                const prev = t13('rtPrevWeekBtn'); if (prev) prev.onclick = () => { t13WeekOffset++; t13LoadReportsTable(); };
+                const next = t13('rtNextWeekBtn'); if (next) next.onclick = () => { if (t13WeekOffset > 0) t13WeekOffset--; t13LoadReportsTable(); };
+                const reload = t13('t73V13ReloadTable'); if (reload) reload.onclick = () => t13LoadReportsTable();
+                const add = t13('t73V13AddMember'); if (add) add.onclick = t13AddTableMember;
+                document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+                    if (btn.dataset.v13ModeBound === '1') return;
+                    btn.dataset.v13ModeBound = '1';
+                    btn.addEventListener('click', () => switchMode(btn.dataset.mode, btn));
+                });
+            }
+            function t13RenderPreview(){
+                const box = t13('reportFilePreview'); if (!box) return;
+                if (!t13Files.length) { box.innerHTML = '<div class="t73-v13-mini">Скриншоты пока не выбраны.</div>'; return; }
+                box.innerHTML = t13Files.map((f,i)=>`<div class="t73-v13-proof"><img src="${t13Esc(URL.createObjectURL(f))}" alt="screen"><button type="button" data-rm="${i}">×</button></div>`).join('');
+                box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { t13Files.splice(Number(b.dataset.rm), 1); t13RenderPreview(); });
+            }
+            function t13ReadDataUrl(file){ return new Promise((resolve,reject)=>{ const r = new FileReader(); r.onload=()=>resolve(String(r.result || '')); r.onerror=()=>reject(r.error || new Error('Не удалось прочитать файл')); r.readAsDataURL(file); }); }
+            async function t13UploadFile(file, index){
+                const safe = String(file.name || ('screen_'+index+'.png')).replace(/[^a-zA-Z0-9_.-]+/g,'_');
+                const path = 'reports/' + (currentUser ? currentUser.id : 'guest') + '/' + t13Today() + '/' + Date.now() + '_' + index + '_' + safe;
+                for (const bucket of T13_BUCKETS) {
+                    try {
+                        const up = await supa.storage.from(bucket).upload(path, file, { cacheControl:'3600', upsert:true, contentType:file.type || 'image/png' });
+                        if (!up.error) {
+                            const pub = supa.storage.from(bucket).getPublicUrl(path);
+                            if (pub?.data?.publicUrl) return { url: pub.data.publicUrl, name: file.name, bucket, kind:'storage' };
+                        }
+                    } catch(e){}
+                }
+                return { url: await t13ReadDataUrl(file), name: file.name, kind:'base64' };
+            }
+            async function t13SubmitReport(ev){
+                ev.preventDefault(); ev.stopImmediatePropagation();
+                const res = t13('reportResultText');
+                if (!currentUser) { if(res){res.textContent='Сначала войдите в аккаунт.';res.style.color='var(--color-error)';} return; }
+                const nick = (t13('reportNickInput')?.value || '').trim();
+                const work = (t13('reportWorkInput')?.value || '').trim();
+                const day = (t13('reportDateInput')?.value || '').trim();
+                const rawLink = (t13('reportLinkInput')?.value || '').trim();
+                const quality = (t13('reportQualityInput')?.value || 'Норма').trim();
+                if (!nick || !work || !day) { if(res){res.textContent='Заполните ник, работу и дату.';res.style.color='var(--color-error)';} return; }
+                if (!rawLink && !t13Files.length) { if(res){res.textContent='Прикрепите ссылку или выберите один/несколько скриншотов.';res.style.color='var(--color-error)';} return; }
+                const btn=t13('submitReportBtn'); if(btn){btn.disabled=true;btn.textContent='Загружаю файлы...';}
+                try {
+                    const proofs = [];
+                    if (rawLink) proofs.push({url:rawLink,name:'Ссылка',kind:'link'});
+                    for (let i=0;i<t13Files.length;i++) { if(res){res.textContent='Загружаю файл '+(i+1)+' из '+t13Files.length+'...';res.style.color='var(--color-text-muted)';} proofs.push(await t13UploadFile(t13Files[i], i)); }
+                    const payload = { version:'v13', nick, work, day, quality, proofs, userId:currentUser.id, email:currentUser.email, createdAt:new Date().toISOString() };
+                    const { error } = await supa.from('reports').insert([{ id:t13NowId('rep_v13'), email:currentUser.email, link:'T73_PROOFS:' + JSON.stringify(proofs), date:JSON.stringify(payload), status:'На проверке', xp:0 }]);
+                    if (error) throw error;
+                    ['reportNickInput','reportWorkInput','reportDateInput','reportLinkInput'].forEach(id=>{const el=t13(id); if(el) el.value='';});
+                    if(t13('reportQualityInput')) t13('reportQualityInput').value='Норма';
+                    t13Files=[]; if(t13('reportFileInput')) t13('reportFileInput').value=''; t13RenderPreview();
+                    if(res){res.textContent='Отчёт отправлен. Файлов прикреплено: '+proofs.length+'.';res.style.color='var(--color-success)';}
+                    setTimeout(()=>t13LoadReportsTable(), 300);
+                } catch(e) { if(res){res.textContent='Ошибка отправки: '+(e.message || e);res.style.color='var(--color-error)';} }
+                finally { if(btn){btn.disabled=false;btn.textContent='Отправить Отчет';} }
+            }
+            function t13Dates(){ const arr=[]; const base=new Date(); base.setHours(0,0,0,0); base.setDate(base.getDate() - t13WeekOffset*7); for(let i=6;i>=0;i--){ const d=new Date(base); d.setDate(base.getDate()-i); arr.push(d.toISOString().slice(0,10)); } return arr; }
+            function t13ParseReport(row){
+                const raw = String(row?.date || '');
+                const out = { nick:'', day:'', quality:'', work:'', proofs:[], email:row?.email || '', id:row?.id || '', status:row?.status || '', xp:row?.xp || 0 };
+                try { const j = JSON.parse(raw); Object.assign(out, { nick:j.nick || j.nickname || '', day:j.day || j.date || j.reportDate || '', quality:j.quality || j.type || '', work:j.work || j.comment || '', proofs:Array.isArray(j.proofs)?j.proofs:[] }); } catch(e) {
+                    const n=raw.match(/Ник:\s*([^|]+)/i); if(n) out.nick=n[1].trim();
+                    const d=raw.match(/Дата:\s*([0-9-]+)/i); if(d) out.day=d[1].trim();
+                    const q=raw.match(/(?:Тип|Тип сдачи):\s*([^|]+)/i); if(q) out.quality=q[1].trim();
+                    const w=raw.match(/Работа:\s*([\s\S]+)/i); if(w) out.work=w[1].trim();
+                }
+                const link = String(row?.link || '');
+                if (link.startsWith('T73_PROOFS:')) { try { const a=JSON.parse(link.slice(11)); out.proofs = Array.isArray(a)?a.map(x => typeof x === 'string' ? {url:x,name:'Доказательство'} : x):out.proofs; } catch(e){} }
+                else if (link && !out.proofs.length) out.proofs = [{url:link,name:'Доказательство'}];
+                if (!out.nick) out.nick = row?.email || 'Без ника';
+                return out;
+            }
+            function t13ExcludedEmails(){ return ['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','REPORT_TABLE_MARK','REPORT_TABLE_MARK_V12',T13_REPORT_MARK_EMAIL,T13_REPORT_MEMBER_EMAIL,'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT_CHECK',T13_GOSS_SHOP_EMAIL]; }
+            async function t13AddTableMember(){
+                if (!t13IsAnyLeader()) return alert('Добавлять строки может только лидер.');
+                const nick = (t13('t73V13ManualNick')?.value || '').trim();
+                const email = (t13('t73V13ManualEmail')?.value || '').trim();
+                if (!nick) return alert('Введите ник.');
+                await supa.from('reports').delete().eq('email', T13_REPORT_MEMBER_EMAIL).eq('link', email || nick);
+                const payload = { nick, email, addedBy: currentUser.email || currentUser.id, addedAt:new Date().toISOString() };
+                const { error } = await supa.from('reports').insert([{ id:t13NowId('rtmember'), email:T13_REPORT_MEMBER_EMAIL, link:email || nick, date:JSON.stringify(payload), status:'active', xp:0 }]);
+                if (error) return alert('Не удалось добавить строку: ' + error.message);
+                if(t13('t73V13ManualNick')) t13('t73V13ManualNick').value='';
+                if(t13('t73V13ManualEmail')) t13('t73V13ManualEmail').value='';
+                await t13LoadReportsTable();
+            }
+            async function t13LoadReportsTable(){
+                t13EnsureReportDom();
+                const box = t13('reportsTableWrapper'); if (!box) return;
+                const canEdit = t13IsAnyLeader();
+                box.innerHTML = '<div class="message-text" style="text-align:center;padding:2rem;">Загрузка таблицы отчётов...</div>';
+                const lbl=t13('rtCurrentWeekLabel'); if(lbl) lbl.textContent = t13WeekOffset===0 ? 'Текущая неделя' : (t13WeekOffset + ' нед. назад');
+                const next=t13('rtNextWeekBtn'); if(next) next.disabled = t13WeekOffset===0;
+                let allReports=[];
+                try { const r = await supa.from('reports').select('*').order('id',{ascending:false}).limit(1800); allReports = r.data || []; } catch(e){ box.innerHTML='<div class="message-text" style="color:var(--color-error);">Ошибка загрузки: '+t13Esc(e.message||e)+'</div>'; return; }
+                const excluded = t13ExcludedEmails();
+                const real = allReports.filter(r => !excluded.includes(r.email)).map(t13ParseReport);
+                const marks = {};
+                allReports.filter(r => r.email === T13_REPORT_MARK_EMAIL || r.email === 'REPORT_TABLE_MARK_V12' || r.email === 'REPORT_TABLE_MARK').forEach(r => { try { const j=JSON.parse(r.date || '{}'); marks[r.link] = j; } catch(e){ const parts=String(r.status||'').split('|'); marks[r.link]={section1:parts[0]||'', section2:parts[1]||''}; } });
+                const members = {};
+                allReports.filter(r => r.email === T13_REPORT_MEMBER_EMAIL).forEach(r => { try { const j=JSON.parse(r.date || '{}'); members[r.link] = { user_id:r.link, nickname:j.nick || r.link, email:j.email || r.link, manual:true }; } catch(e){ members[r.link] = { user_id:r.link, nickname:r.link, email:r.link, manual:true }; } });
+                try {
+                    const role = await supa.from('reports').select('*').eq('email','USER_ROLE').eq('status','moderator');
+                    const ids = (role.data || []).map(r => r.link).filter(Boolean);
+                    if (ids.length) {
+                        const us = await supa.from('user_stats').select('user_id,nickname,email').in('user_id', ids);
+                        (us.data || []).forEach(u => { members[u.user_id || u.email || u.nickname] = u; });
+                    }
+                } catch(e){}
+                real.forEach(rep => { const key=rep.email || rep.nick; if (!members[key]) members[key] = {user_id:key,nickname:rep.nick,email:rep.email}; });
+                const users = Object.values(members).filter(u => u.nickname || u.email || u.user_id);
+                if (!users.length) { box.innerHTML='<div class="message-text">Пока нет строк. Лидер может добавить первую строку выше.</div>'; return; }
+                const dates=t13Dates();
+                const reportsBy={};
+                real.forEach(rep => { if (!rep.day) return; const keys=[rep.nick+'|'+rep.day, rep.email+'|'+rep.day]; keys.forEach(k=>{ if(k && !reportsBy[k]) reportsBy[k]=rep; }); });
+                let html = '<div class="t73-v13-table">';
+                users.sort((a,b)=>String(a.nickname||a.email||a.user_id).localeCompare(String(b.nickname||b.email||b.user_id),'ru')).forEach(u => {
+                    const name = u.nickname || u.email || u.user_id || 'Без ника';
+                    const uid = u.user_id || u.email || name;
+                    html += '<div class="t73-v13-user-row"><div class="t73-v13-user-head"><div><strong style="font-size:1.1rem;color:#fff;">'+t13Esc(name)+'</strong><div class="t73-v13-mini">'+t13Esc(u.email || uid)+'</div></div>'+(u.manual && canEdit?'<button class="btn btn-secondary" type="button" onclick="t73V13RemoveTableMember(\''+t13Esc(uid)+'\')">Удалить строку</button>':'')+'</div><div class="t73-v13-days">';
+                    dates.forEach(day => {
+                        const rep = reportsBy[name+'|'+day] || reportsBy[(u.email||'')+'|'+day] || reportsBy[uid+'|'+day];
+                        const markKey = uid + '|' + day;
+                        const mark = marks[markKey] || marks[name+'|'+day] || {};
+                        const sec1 = mark.section1 || (rep ? (rep.status === 'На проверке' ? (rep.quality || 'На проверке') : rep.status) : '');
+                        const sec2 = mark.section2 || (rep ? 'Сдано' : '');
+                        const proofs = rep?.proofs || [];
+                        const cls = rep ? 'has' : (day < t13Today() ? 'miss' : '');
+                        const disabled = canEdit ? '' : 'disabled';
+                        html += '<div class="t73-v13-day '+cls+'" data-uid="'+t13Esc(uid)+'" data-nick="'+t13Esc(name)+'" data-day="'+day+'"><div style="font-weight:900;color:#fff;">'+day.slice(5).split('-').reverse().join('.')+'</div>';
+                        html += '<div class="t73-v13-label">Отчетность</div><select class="t73-v13-select" data-sec1 '+disabled+' onchange="t73V13SaveTableCell(this)">'+t13Option('', '—', sec1)+t13Option('Норма','Норма',sec1)+t13Option('Перенорма','Перенорма',sec1)+t13Option('Натяг','Натяг',sec1)+t13Option('Герой дня','Герой дня',sec1)+t13Option('Отказ','Отказ',sec1)+t13Option('Нет отчета','Нет отчета',sec1)+t13Option('На проверке','На проверке',sec1)+'</select>';
+                        html += '<div class="t73-v13-label">Отметка дня</div><select class="t73-v13-select" data-sec2 '+disabled+' onchange="t73V13SaveTableCell(this)">'+t13Option('', '—', sec2)+t13Option('Сдано','Сдано',sec2)+t13Option('Неактив','Неактив',sec2)+t13Option('Нет отчета','Нет отчета',sec2)+t13Option('Освобождён','Освобождён',sec2)+t13Option('Проверить','Проверить',sec2)+'</select>';
+                        html += '<div class="t73-v13-mini">'+(rep ? ('Заявлено: '+t13Esc(rep.quality || '—')+'<br>Скринов: '+proofs.length) : 'Отчета нет')+'</div>';
+                        if (proofs.length) html += '<div style="display:flex;flex-wrap:wrap;gap:.25rem;">'+proofs.slice(0,4).map((p,i)=>'<a class="badge" target="_blank" rel="noreferrer" href="'+t13Esc(p.url || p)+'">Скрин '+(i+1)+'</a>').join('')+'</div>';
+                        html += '<div class="t73-v13-saveflash" data-save-info></div></div>';
+                    });
+                    html += '</div></div>';
+                });
+                html += '</div>';
+                box.innerHTML = html;
+            }
+            function t13Option(value, label, current){ return '<option value="'+t13Esc(value)+'" '+(String(current)===String(value)?'selected':'')+'>'+t13Esc(label)+'</option>'; }
+            window.t73V13SaveTableCell = async function(sel){
+                if (!t13IsAnyLeader()) return alert('Менять таблицу может только лидер.');
+                const cell = sel.closest('.t73-v13-day'); if (!cell) return;
+                const s1 = cell.querySelector('[data-sec1]')?.value || '';
+                const s2 = cell.querySelector('[data-sec2]')?.value || '';
+                const uid = cell.dataset.uid || cell.dataset.nick;
+                const day = cell.dataset.day;
+                const link = uid + '|' + day;
+                const payload = { userId:uid, nick:cell.dataset.nick || '', day, section1:s1, section2:s2, updatedBy:currentUser.email || currentUser.id, updatedAt:new Date().toISOString() };
+                const info = cell.querySelector('[data-save-info]'); if (info) info.textContent='Сохранение...';
+                await supa.from('reports').delete().eq('email', T13_REPORT_MARK_EMAIL).eq('link', link);
+                const { error } = await supa.from('reports').insert([{ id:t13NowId('rtmark13'), email:T13_REPORT_MARK_EMAIL, link, date:JSON.stringify(payload), status:s1+'|'+s2, xp:t13XpFor(s1) }]);
+                if (info) { info.textContent = error ? ('Ошибка: '+error.message) : 'Сохранено'; info.style.color = error ? 'var(--color-error)' : 'var(--color-success)'; }
+            };
+            window.t73V13RemoveTableMember = async function(uid){
+                if (!t13IsAnyLeader()) return alert('Удалять строки может только лидер.');
+                if (!confirm('Удалить ручную строку из таблицы?')) return;
+                await supa.from('reports').delete().eq('email', T13_REPORT_MEMBER_EMAIL).eq('link', uid);
+                await t13LoadReportsTable();
+            };
+            function t13XpFor(s){ return s==='Норма'?15:s==='Перенорма'?30:s==='Натяг'?7:s==='Герой дня'?60:0; }
+
+            function t13SelectedOrgId(){
+                const active = document.querySelector('.gov-org-switch-v4.active,[data-org-id].active,.gov-org-switch-v3.active');
+                if (active?.dataset?.orgId) return active.dataset.orgId;
+                const title = (t13('gossV4Title')?.textContent || t13('gossV3Title')?.textContent || '').toLowerCase();
+                try { const found = GOSS_ORGS.find(o => title.includes(String(o.short).toLowerCase()) || title.includes(String(o.name).toLowerCase())); if (found) return found.id; } catch(e){}
+                return 'fsb';
+            }
+            function t13EnsureGossConstructor(){
+                t13InjectStyle();
+                const root = t13('gossV4Content') || t13('gossV3Content');
+                if (!root) return;
+                const orgId = t13SelectedOrgId();
+                const org = (typeof GOSS_ORGS !== 'undefined' ? GOSS_ORGS.find(o => o.id === orgId) : null) || {id:orgId,short:orgId,name:orgId,icon:'🏛️'};
+                const isManage = /Панель руководства/i.test(root.textContent || '') || document.querySelector('[data-view="manage"].active') || document.querySelector('.gov-action-switch-v4.active[data-view="manage"]');
+                if (!isManage) return;
+                if (!t13CanEditOrg(org.id)) return;
+                let box = t13('t73V13GossShopConstructor');
+                if (!box) {
+                    root.insertAdjacentHTML('beforeend', `<div id="t73V13GossShopConstructor" class="t73-v13-shop-builder">
+                        <div class="gov-v4-head"><div><h3 style="color:#ffbf47;margin:0;">🛒 Конструктор магазина организации</h3><p class="gov-v4-sub">Добавляйте товары для выбранной ГОСС организации. Блок появляется в панели руководства каждой организации.</p></div><button class="btn btn-secondary" type="button" id="t73V13ReloadGossShop">🔄 Обновить</button></div>
+                        <div class="t73-v13-tools"><label>Организация<select id="t73V13ShopOrg" class="support-input"></select></label><input id="t73V13ShopName" class="support-input" placeholder="Название товара"><input id="t73V13ShopPrice" class="support-input" type="number" placeholder="Цена"><select id="t73V13ShopCurrency" class="support-input"><option value="Баллы организации">Баллы организации</option><option value="XP">XP</option><option value="Баллы ФСБ">Баллы ФСБ</option></select></div>
+                        <textarea id="t73V13ShopDesc" class="support-input" rows="2" placeholder="Описание товара"></textarea>
+                        <div class="t73-v13-tools"><button id="t73V13AddShopItem" class="btn btn-primary" type="button">➕ Добавить товар</button><button id="t73V13SaveShop" class="btn btn-secondary" type="button">💾 Сохранить магазин</button></div>
+                        <div id="t73V13ShopItems" class="t73-v13-items"></div><div id="t73V13ShopInfo" class="t73-v13-saveflash"></div>
+                    </div>`);
+                    const sel = t13('t73V13ShopOrg');
+                    if (sel && typeof GOSS_ORGS !== 'undefined') sel.innerHTML = GOSS_ORGS.map(o => '<option value="'+t13Esc(o.id)+'">'+t13Esc(o.icon+' '+o.short)+'</option>').join('');
+                    if (sel) sel.onchange = () => t13LoadGossShopBuilder(sel.value);
+                    const add = t13('t73V13AddShopItem'); if (add) add.onclick = t13AddGossShopItem;
+                    const save = t13('t73V13SaveShop'); if (save) save.onclick = t13SaveGossShop;
+                    const reload = t13('t73V13ReloadGossShop'); if (reload) reload.onclick = () => t13LoadGossShopBuilder(t13('t73V13ShopOrg')?.value || org.id);
+                }
+                if (t13('t73V13ShopOrg')) t13('t73V13ShopOrg').value = org.id;
+                t13LoadGossShopBuilder(org.id);
+            }
+            function t13ShopDraftKey(orgId){ return 't73_goss_shop_draft_' + orgId; }
+            async function t13LoadGossShopItems(orgId){
+                try {
+                    const { data } = await supa.from('reports').select('*').eq('email', T13_GOSS_SHOP_EMAIL).eq('link', orgId).order('id',{ascending:false}).limit(1);
+                    if (data && data[0]) { const arr = JSON.parse(data[0].date || '[]'); return Array.isArray(arr) ? arr : []; }
+                } catch(e){}
+                try { return JSON.parse(localStorage.getItem(t13ShopDraftKey(orgId)) || '[]') || []; } catch(e){ return []; }
+            }
+            async function t13LoadGossShopBuilder(orgId){
+                const items = await t13LoadGossShopItems(orgId || t13SelectedOrgId());
+                window.t73V13CurrentGossShopItems = items;
+                t13RenderGossShopItems();
+            }
+            function t13RenderGossShopItems(){
+                const box=t13('t73V13ShopItems'); if(!box) return;
+                const items = window.t73V13CurrentGossShopItems || [];
+                if (!items.length) { box.innerHTML='<div class="t73-v13-mini">Товаров пока нет. Добавьте первый товар выше.</div>'; return; }
+                box.innerHTML = items.map((it,i)=>`<div class="t73-v13-item"><strong style="color:#fff;">${t13Esc(it.name)}</strong><div class="t73-v13-mini">${t13Esc(it.desc || 'Без описания')}</div><div class="badge xp">${t13Esc(it.price)} ${t13Esc(it.currency || 'баллов')}</div><button class="btn btn-secondary" type="button" onclick="t73V13DeleteGossShopItem(${i})">Удалить</button></div>`).join('');
+            }
+            function t13AddGossShopItem(){
+                const name=(t13('t73V13ShopName')?.value||'').trim();
+                const desc=(t13('t73V13ShopDesc')?.value||'').trim();
+                const price=Number(t13('t73V13ShopPrice')?.value||0);
+                const currency=t13('t73V13ShopCurrency')?.value || 'Баллы организации';
+                if(!name || !price) return alert('Введите название и цену товара.');
+                const items = window.t73V13CurrentGossShopItems || [];
+                items.push({id:t13NowId('gossitem'), name, desc, price, currency, createdAt:new Date().toISOString()});
+                window.t73V13CurrentGossShopItems = items;
+                ['t73V13ShopName','t73V13ShopDesc','t73V13ShopPrice'].forEach(id=>{const el=t13(id); if(el) el.value='';});
+                t13RenderGossShopItems();
+            }
+            window.t73V13DeleteGossShopItem = function(index){ const items=window.t73V13CurrentGossShopItems || []; items.splice(index,1); window.t73V13CurrentGossShopItems=items; t13RenderGossShopItems(); };
+            async function t13SaveGossShop(){
+                const orgId = t13('t73V13ShopOrg')?.value || t13SelectedOrgId();
+                if (!t13CanEditOrg(orgId)) return alert('Сохранять магазин этой организации может только её руководство.');
+                const items = window.t73V13CurrentGossShopItems || [];
+                const info=t13('t73V13ShopInfo'); if(info) info.textContent='Сохранение магазина...';
+                localStorage.setItem(t13ShopDraftKey(orgId), JSON.stringify(items));
+                await supa.from('reports').delete().eq('email', T13_GOSS_SHOP_EMAIL).eq('link', orgId);
+                const { error } = await supa.from('reports').insert([{ id:t13NowId('gossshop'), email:T13_GOSS_SHOP_EMAIL, link:orgId, date:JSON.stringify(items), status:'active', xp:items.length }]);
+                if(info){ info.textContent = error ? ('Ошибка Supabase: '+error.message+'; сохранено локально.') : 'Магазин сохранён: '+items.length+' товар(ов).'; info.style.color = error ? 'var(--color-warning)' : 'var(--color-success)'; }
+            }
+
+            const prevSwitchModeV13 = typeof switchMode === 'function' ? switchMode : null;
+            switchMode = function(mode, btn){
+                t13EnsureReportDom();
+                if (prevSwitchModeV13) prevSwitchModeV13(mode, btn);
+                if (mode === 'reports_table') t13LoadReportsTable();
+                if (mode === 'goss_center_v4' || mode === 'goss_center_v3' || String(mode||'').startsWith('goss_')) setTimeout(t13EnsureGossConstructor, 250);
+                t13BindReports();
+            };
+            const prevCheckRolesV13 = typeof checkRolesAndAccess === 'function' ? checkRolesAndAccess : null;
+            checkRolesAndAccess = function(){ if (prevCheckRolesV13) prevCheckRolesV13(); t13BindReports(); setTimeout(t13EnsureGossConstructor, 200); };
+            loadReportsTable = t13LoadReportsTable;
+            window.t73V13LoadReportsTable = t13LoadReportsTable;
+            window.t73V13EnsureGossConstructor = t13EnsureGossConstructor;
+
+            function t13Boot(){ t13BindReports(); t13EnsureGossConstructor(); if (t13('reportsTableWrapper')) t13LoadReportsTable(); }
+            t13Boot();
+            setTimeout(t13Boot, 500); setTimeout(t13Boot, 1500); setTimeout(t13Boot, 3500);
+            new MutationObserver(()=>{ t13BindReports(); setTimeout(t13EnsureGossConstructor, 100); }).observe(document.body,{childList:true,subtree:true});
+        })();
+        /* === /T73 V13 REAL REPORT TABLE + DIRECT FILES + GOSS SHOP CONSTRUCTOR === */
+
         // Запуск
         renderRight("moderation");
         
