@@ -1758,6 +1758,16 @@
         </div>
         
         <div class="feed" id="reportFormArea" style="display:none;">
+          <article id="reportSubsectionCard" class="message-card t73-report-subsection" style="min-height:auto; gap:1rem;">
+            <div class="channel"><span class="channel-dot" style="background:#52c77b;"></span># отчетности / быстрый доступ</div>
+            <div class="section-head"><h2 style="font-size:1.25rem;color:#52c77b;">Подраздел отчётностей</h2><p>Сдача отчёта с пометкой: норма, перенорма или натяг. Руководство потом подтверждает итог в таблице.</p></div>
+            <div class="t73-report-status-grid">
+              <div class="t73-status-info"><strong>✅ Норма</strong><span>Обычный закрытый норматив.</span></div>
+              <div class="t73-status-info"><strong>⚡ Перенорма</strong><span>Сделано больше обычного.</span></div>
+              <div class="t73-status-info"><strong>🪢 Натяг</strong><span>Минимально дотянул до сдачи.</span></div>
+            </div>
+            <button class="btn btn-secondary" type="button" id="openReportsTableFromForm" style="width:100%;border-color:#52c77b;color:#7fe8a0;">📊 Открыть таблицу отчётностей</button>
+          </article>
           <article class="message-card" style="min-height: auto; gap: 1.5rem;">
             <div class="channel"><span class="channel-dot" style="background:#a26cff;"></span># tambov-73 / reports</div>
             <div class="author-row">
@@ -1768,11 +1778,14 @@
               <div class="support-answer-row-inner" style="flex-direction: column; gap: 1rem;">
                 <div class="admin-field"><label>Ваш NickName:</label><input id="reportNickInput" class="support-input" type="text" placeholder="Введите никнейм"></div>
                 <div class="admin-field"><label>Проделанная работа за день:</label><textarea id="reportWorkInput" class="support-input" rows="3" placeholder="Что вы сегодня сделали?"></textarea></div>
+                <div class="admin-field"><label>Тип сдачи:</label><select id="reportQualityInput" class="support-input"><option value="Норма">Норма</option><option value="Перенорма">Перенорма</option><option value="Натяг">Натяг</option></select></div>
                 <div class="admin-field"><label>Дата (Только сегодня и вчера):</label><input id="reportDateInput" class="support-input" type="date"></div>
                 <div class="admin-field"><label>Ссылка на доказательства (Imgur/Yapx):</label><input id="reportLinkInput" class="support-input" type="url" placeholder="https://..."></div>
                 <div class="admin-field" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
                     <label style="color: #fff; font-weight: bold;">ИЛИ загрузите скриншот напрямую:</label>
-                    <input id="reportFileInput" class="support-input" type="file" accept="image/*" style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
+                    <input id="reportFileInput" class="support-input" type="file" accept="image/*" multiple style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
+                    <div id="reportUploadHint" style="font-size:.85rem;color:var(--color-text-muted);margin-top:.6rem;">Можно выбрать сразу много скриншотов. До отправки их можно удалить из списка ниже.</div>
+                    <div id="reportFilePreview" class="t73-report-preview"></div>
                 </div>
                 <button class="support-check-btn" type="button" id="submitReportBtn" style="margin-top: 1rem; width: 100%;">Отправить Отчет</button>
               </div>
@@ -4684,7 +4697,7 @@
 
                     let shortDate = d.slice(5).split('-').reverse().join('.');
                     let statusClass = 'status-none';
-                    if (currentStatus === 'Норма' || currentStatus === 'Перенорма') statusClass = 'status-good';
+                    if (currentStatus === 'Норма' || currentStatus === 'Перенорма' || currentStatus === 'Натяг') statusClass = 'status-good';
                     if (currentStatus === 'Герой дня') statusClass = 'status-hero';
                     if (currentStatus === 'Неактив') statusClass = 'status-inactive';
                     if (currentStatus === 'Нет отчета' || currentStatus === 'Не засчитано' || currentStatus === 'Отказ') statusClass = 'status-missing';
@@ -4699,6 +4712,7 @@
                                         <option value="none" ${currentStatus === 'none' ? 'selected' : ''}>-</option>
                                         <option value="Норма" ${currentStatus === 'Норма' ? 'selected' : ''}>Норма</option>
                                         <option value="Перенорма" ${currentStatus === 'Перенорма' ? 'selected' : ''}>Перенорма</option>
+                                        <option value="Натяг" ${currentStatus === 'Натяг' ? 'selected' : ''}>Натяг</option>
                                         <option value="Герой дня" ${currentStatus === 'Герой дня' ? 'selected' : ''}>Герой дня</option>
                                         <option value="Неактив" ${currentStatus === 'Неактив' ? 'selected' : ''}>Неактив</option>
                                         <option value="Нет отчета" ${currentStatus === 'Нет отчета' ? 'selected' : ''}>Нет отчета</option>
@@ -4727,7 +4741,7 @@
             if (val === 'Нет отчета' || val === 'Не засчитано' || val === 'Отказ') statusClass = 'status-missing';
             selectEl.className = `status-select ${statusClass}`;
             
-            let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Герой дня') xpAmount = 60;
+            let xpAmount = 0; if(val === 'Норма') xpAmount = 15; if(val === 'Перенорма') xpAmount = 30; if(val === 'Натяг') xpAmount = 7; if(val === 'Герой дня') xpAmount = 60;
             
             selectEl.style.opacity = '0.5'; selectEl.disabled = true;
 
@@ -9283,6 +9297,221 @@
         installTambovHoverFxV7();
         /* === /V7 FIX === */
 
+
+
+        /* === V8 REPORTS + MODAL FIX 2026-04-30 === */
+        (function installReportUploadsAndModalFixV8(){
+            const BUCKETS = ['report-screenshots','reports','screenshots'];
+            let reportFiles = [];
+            const $ = (id) => document.getElementById(id);
+            const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[s]));
+            const isReportLeader = () => !!(currentUser && (currentUser.email === creatorEmail || adminEmails.includes(currentUser.email) || dynamicModLeaders.includes(currentUser.id)));
+            function addStyle(){
+                if ($('t73ReportsV8Style')) return;
+                const s = document.createElement('style');
+                s.id = 't73ReportsV8Style';
+                s.textContent = `
+                    .t73-report-status-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.75rem}
+                    .t73-status-info{padding:1rem;border-radius:16px;background:rgba(0,0,0,.34);border:1px solid rgba(127,232,160,.22);display:grid;gap:.3rem}
+                    .t73-status-info strong{color:#fff}.t73-status-info span{color:var(--color-text-muted);font-size:.9rem}
+                    .t73-report-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:.7rem;margin-top:.85rem}
+                    .t73-preview-item{position:relative;min-height:112px;border-radius:14px;overflow:hidden;background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.15);display:grid;place-items:center}
+                    .t73-preview-item img{width:100%;height:112px;object-fit:cover}.t73-preview-name{position:absolute;left:0;right:0;bottom:0;padding:.35rem .45rem;background:linear-gradient(180deg,transparent,rgba(0,0,0,.86));font-size:.72rem;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+                    .t73-preview-remove{position:absolute;top:.35rem;right:.35rem;width:28px;height:28px;border-radius:999px;background:rgba(255,59,96,.88);color:#fff;font-weight:900;display:grid;place-items:center;border:1px solid rgba(255,255,255,.28)}
+                    .t73-proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.65rem;margin:.8rem 0}
+                    .t73-proof-card{min-height:92px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.38);display:grid;place-items:center;text-decoration:none;color:#fff;font-weight:800}.t73-proof-card img{width:100%;height:110px;object-fit:cover}
+                    .t73-report-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin:.55rem 0}.t73-report-pill{display:inline-flex;padding:.32rem .65rem;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);font-size:.78rem;color:#fff;font-weight:900}
+                    .t73-modal-x{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);font-size:1.25rem;z-index:5}#gossProfileModal .fix-modal-card{position:relative}#gossProfileCancelBtn{display:inline-flex!important;opacity:1!important;pointer-events:auto!important}
+                `;
+                document.head.appendChild(s);
+            }
+            function fixProfileModal(){
+                const modal = $('gossProfileModal'); if (!modal || modal.dataset.v8Fixed === '1') return;
+                modal.dataset.v8Fixed = '1';
+                const card = modal.querySelector('.fix-modal-card');
+                if (card && !$('gossProfileCloseX')) card.insertAdjacentHTML('afterbegin','<button id="gossProfileCloseX" class="t73-modal-x" type="button">×</button>');
+                const cancel = $('gossProfileCancelBtn'), save = $('gossProfileSaveBtn');
+                if (cancel) { cancel.textContent = 'Закрыть и заполнить позже'; cancel.disabled = false; cancel.style.opacity = '1'; }
+                if (save) { save.textContent = '💾 Сохранить и закрыть'; save.disabled = false; }
+                const close = () => { modal.style.display = 'none'; modal.dataset.onboarding = '0'; };
+                $('gossProfileCloseX')?.addEventListener('click', close);
+                cancel?.addEventListener('click', close);
+                modal.addEventListener('mousedown', e => { if (e.target === modal) close(); });
+                document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.style.display !== 'none') close(); });
+                save?.addEventListener('click', async (e) => {
+                    e.preventDefault(); e.stopImmediatePropagation();
+                    if (!currentUser) return alert('Сначала войдите в аккаунт.');
+                    const orgId = modal.dataset.org || 'fsb';
+                    const org = (typeof findGossOrg === 'function' ? findGossOrg(orgId) : null) || {id:orgId, short:orgId.toUpperCase()};
+                    const payload = {
+                        nick:($('gossProfileNick')?.value || currentNickname || currentUser.email || '').trim(),
+                        post:($('gossProfilePost')?.value || 'Не указано').trim(),
+                        age:($('gossProfileAge')?.value || '').trim(),
+                        forum:($('gossProfileForum')?.value || '').trim(),
+                        vk:($('gossProfileVk')?.value || '').trim(),
+                        discord:($('gossProfileDiscord')?.value || '').trim(),
+                        appointed:($('gossProfileAppointed')?.value || new Date().toISOString().slice(0,10)).trim(),
+                        timezone:($('gossProfileTimezone')?.value || '').trim(),
+                        org:org.short,
+                        savedAt:new Date().toLocaleString('ru-RU')
+                    };
+                    save.disabled = true; save.textContent = 'Сохраняю...';
+                    try {
+                        const { data: old, error: oldError } = await supa.from('reports').select('id').eq('email','GOSS_PROFILE').eq('link',org.id).eq('status',currentUser.id).order('id',{ascending:false}).limit(1);
+                        if (oldError) throw oldError;
+                        const result = old && old[0]
+                            ? await supa.from('reports').update({date:JSON.stringify(payload),xp:0}).eq('id',old[0].id)
+                            : await supa.from('reports').insert([{id:'gossprofile_'+Date.now()+'_'+Math.random().toString(16).slice(2),email:'GOSS_PROFILE',link:org.id,status:currentUser.id,date:JSON.stringify(payload),xp:0}]);
+                        if (result.error) throw result.error;
+                        close();
+                        if (typeof window.govV4Refresh === 'function') await window.govV4Refresh();
+                    } catch(err) { alert('Не удалось сохранить данные: '+(err?.message || err)); }
+                    finally { save.disabled = false; save.textContent = '💾 Сохранить и закрыть'; }
+                }, true);
+            }
+            function compress(file){
+                return new Promise((resolve,reject)=>{
+                    if (typeof compressImage === 'function') { try { compressImage(file, resolve); return; } catch(e){} }
+                    const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(r.error || new Error('Не удалось прочитать файл')); r.readAsDataURL(file);
+                });
+            }
+            async function uploadOne(file, i){
+                const safe = String(file.name || ('screen_'+i+'.jpg')).replace(/[^a-zA-Zа-яА-Я0-9._-]+/g,'_').slice(-80);
+                const path = `${currentUser?.id || 'guest'}/${new Date().toISOString().slice(0,10)}/${Date.now()}_${i}_${safe}`;
+                for (const bucket of BUCKETS) {
+                    try {
+                        const { error } = await supa.storage.from(bucket).upload(path, file, {cacheControl:'3600', upsert:false, contentType:file.type || 'image/jpeg'});
+                        if (!error) {
+                            const { data } = supa.storage.from(bucket).getPublicUrl(path);
+                            if (data?.publicUrl) return {url:data.publicUrl,name:file.name,kind:'storage',bucket,path};
+                        }
+                    } catch(e) {}
+                }
+                return {url:await compress(file),name:file.name,kind:'base64'};
+            }
+            function refreshPreview(){
+                const box = $('reportFilePreview'); if (!box) return;
+                if (!reportFiles.length) { box.innerHTML=''; return; }
+                box.innerHTML = reportFiles.map((f,i)=>`<div class="t73-preview-item"><img src="${URL.createObjectURL(f)}"><button class="t73-preview-remove" type="button" data-rm="${i}">×</button><div class="t73-preview-name">${esc(f.name)}</div></div>`).join('');
+                box.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click',()=>{ reportFiles.splice(Number(b.dataset.rm),1); refreshPreview(); }));
+            }
+            function parsePayload(row){
+                const raw = String(row.date || ''), marker = ' | JSON: '; let p = null;
+                if (raw.includes(marker)) { try { p = JSON.parse(raw.slice(raw.indexOf(marker)+marker.length)); } catch(e){} }
+                if (!p) p = {
+                    nick:(raw.match(/Ник:\s*([^|]+)/)||[,''])[1].trim(),
+                    date:(raw.match(/Дата:\s*([\d-]+)/)||[,''])[1].trim(),
+                    work:(raw.match(/Работа:\s*([^|]+)/)||[,''])[1].trim(),
+                    requestedStatus:(raw.match(/Тип сдачи:\s*([^|]+)/)||[,''])[1].trim(),
+                    proofs:[]
+                };
+                if (!Array.isArray(p.proofs)) p.proofs = [];
+                if (row.link && !p.proofs.some(x => x.url === row.link)) p.proofs.unshift({url:row.link,name:'Доказательство'});
+                return p;
+            }
+            function proofHtml(proof,i){
+                const url = String(proof.url || ''), name = proof.name || ('Скрин '+(i+1));
+                const img = url.startsWith('data:image') || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(url) || url.includes('/storage/v1/object/public/');
+                return img ? `<a class="t73-proof-card" href="${esc(url)}" target="_blank" rel="noreferrer"><img src="${esc(url)}" alt="${esc(name)}"></a>` : `<a class="t73-proof-card" href="${esc(url)}" target="_blank" rel="noreferrer"><span>📎 ${esc(name)}</span></a>`;
+            }
+            async function submitReport(){
+                const res = $('reportResultText');
+                if (!currentUser || !isModerator) { if (res) { res.textContent='Доступно только действующим модераторам.'; res.style.color='var(--color-error)'; } return; }
+                const nick = ($('reportNickInput')?.value || '').trim(), work = ($('reportWorkInput')?.value || '').trim(), date = ($('reportDateInput')?.value || '').trim(), link = ($('reportLinkInput')?.value || '').trim(), requestedStatus = ($('reportQualityInput')?.value || 'Норма').trim();
+                if (!nick || !work || !date) { res.textContent='Заполните ник, работу и дату.'; res.style.color='var(--color-error)'; return; }
+                if (!link && !reportFiles.length) { res.textContent='Прикрепите ссылку или один/несколько скриншотов.'; res.style.color='var(--color-error)'; return; }
+                const btn = $('submitReportBtn'); if (btn) { btn.disabled = true; btn.textContent = 'Загружаю...'; }
+                res.textContent='Загрузка скриншотов и отправка отчёта...'; res.style.color='var(--color-text-muted)';
+                try {
+                    const proofs = []; if (link) proofs.push({url:link,name:'Ссылка',kind:'link'});
+                    for (let i=0;i<reportFiles.length;i++){ res.textContent=`Загружаю файл ${i+1} из ${reportFiles.length}...`; proofs.push(await uploadOne(reportFiles[i],i)); }
+                    const payload = {version:'v8',nick,work,date,requestedStatus,proofs,userId:currentUser.id,email:currentUser.email,created:new Date().toLocaleString('ru-RU')};
+                    const combined = `Ник: ${nick} | Дата: ${date} | Работа: ${work} | Тип сдачи: ${requestedStatus} | Доказательства: ${proofs.length} файл(ов) | JSON: ${JSON.stringify(payload)}`;
+                    const { error } = await supa.from('reports').insert([{id:'rep_'+Date.now()+'_'+Math.random().toString(16).slice(2),email:currentUser.email,link:(proofs[0]?.url || ''),date:combined,status:'На проверке',xp:0}]);
+                    if (error) throw error;
+                    res.textContent='Отчёт отправлен. Руководство увидит все доказательства и подтвердит норму/перенорму/натяг.'; res.style.color='var(--color-success)';
+                    $('reportNickInput').value=''; $('reportWorkInput').value=''; $('reportDateInput').value=''; $('reportLinkInput').value=''; if ($('reportQualityInput')) $('reportQualityInput').value='Норма';
+                    reportFiles=[]; refreshPreview(); if ($('reportFileInput')) $('reportFileInput').value=''; try{playSound('win')}catch(e){}
+                } catch(err) { res.textContent='Ошибка отправки: '+(err?.message || err); res.style.color='var(--color-error)'; }
+                finally { if (btn) { btn.disabled=false; btn.textContent='Отправить Отчет'; } }
+            }
+            async function renderReportsList(){
+                const list = $('reportsListArea'); if (!list) return;
+                if (list.style.display === 'flex') { list.style.display='none'; return; }
+                list.style.display='flex'; list.innerHTML='<div class="message-text">Загрузка данных...</div>';
+                try {
+                    const excluded = '("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP","GOSS_PROFILE","GOSS_USER_REPORT","GOSS_REPORT_CHECK")';
+                    const {data,error} = await supa.from('reports').select('*').not('email','in',excluded).order('id',{ascending:false}).limit(50);
+                    if (error) throw error;
+                    if (!data?.length) { list.innerHTML='<div class="message-text">Отчётов пока нет.</div>'; return; }
+                    list.innerHTML = data.map(r=>{
+                        const p = parsePayload(r), pending = String(r.status||'').includes('На проверке') || String(r.status||'').includes('Ожидает');
+                        const color = r.xp > 0 ? 'var(--color-success)' : (String(r.status).includes('Отказ') || String(r.status).includes('Не засчитано') ? 'var(--color-error)' : 'var(--color-warning)');
+                        return `<div class="message-card" style="min-height:auto;padding:1.1rem;gap:.8rem;">
+                            <div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap"><strong style="color:#fff">${esc(p.nick || r.email || 'Неизвестно')}</strong><span style="color:var(--color-text-faint);font-size:.85rem">${esc(p.date || '')}</span></div>
+                            <div class="t73-report-meta"><span class="t73-report-pill">Заявлено: ${esc(p.requestedStatus || '—')}</span><span class="t73-report-pill">Итог: ${esc(r.status || 'Без статуса')}</span><span class="t73-report-pill">XP: ${Number(r.xp || 0)}</span></div>
+                            <div style="color:var(--color-text-muted);font-size:.95rem">${esc(p.work || 'Без описания')}</div>
+                            ${p.proofs.length ? `<div class="t73-proof-grid">${p.proofs.map(proofHtml).join('')}</div>` : ''}
+                            <span style="color:${color};font-weight:900">${esc(r.status || 'Без статуса')} (${Number(r.xp || 0)} XP)</span>
+                            ${pending && isReportLeader() ? `<div style="display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.35rem">
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#52c77b;color:#52c77b" onclick="processReport('${esc(r.id)}','Норма',15)">Норма (15)</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#3dd68c;color:#3dd68c" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма (30)</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#19d8ef;color:#19d8ef" onclick="processReport('${esc(r.id)}','Натяг',7)">Натяг (7)</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:#ffbf47;color:#ffbf47" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой (60)</button>
+                                <button class="btn btn-secondary" style="flex:1;padding:.45rem;font-size:.78rem;border-color:var(--color-error);color:var(--color-error)" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button>
+                            </div>` : ''}
+                        </div>`;
+                    }).join('');
+                } catch(err) { list.innerHTML=`<div class="message-text" style="color:var(--color-error)">Ошибка: ${esc(err?.message || err)}</div>`; }
+            }
+            function bindReports(){
+                const inp = $('reportFileInput');
+                if (inp && inp.dataset.v8Bound !== '1') {
+                    inp.dataset.v8Bound='1';
+                    inp.addEventListener('change',()=>{ reportFiles = reportFiles.concat(Array.from(inp.files||[]).filter(f=>f.type?.startsWith('image/'))); inp.value=''; refreshPreview(); });
+                }
+                const submit = $('submitReportBtn');
+                if (submit && submit.dataset.v8Bound !== '1') { const fresh = submit.cloneNode(true); fresh.dataset.v8Bound='1'; submit.replaceWith(fresh); fresh.addEventListener('click',submitReport); }
+                const view = $('viewReportsBtn');
+                if (view && view.dataset.v8Bound !== '1') { const fresh = view.cloneNode(true); fresh.dataset.v8Bound='1'; view.replaceWith(fresh); fresh.addEventListener('click',renderReportsList); }
+                const open = $('openReportsTableFromForm');
+                if (open && open.dataset.v8Bound !== '1') { open.dataset.v8Bound='1'; open.addEventListener('click',()=>switchMode('reports_table',$('reportsTableBtn')||open)); }
+            }
+            window.processReport = async function(id,statusText,xpAmount){
+                if (statusText === 'Натяг' && (!xpAmount && xpAmount !== 0)) xpAmount = 7;
+                await supa.from('reports').update({status:statusText,xp:xpAmount}).eq('id',id);
+                if (currentUser) state.reportXp = await loadReportXpForCurrentUser();
+                const list = $('reportsListArea'); if (list) list.style.display='none';
+                $('viewReportsBtn')?.click();
+                if (typeof loadReportsTable === 'function') setTimeout(()=>loadReportsTable(),250);
+                try{updateShopStats();updateModStats()}catch(e){}
+            };
+            const prevUpdate = window.updateReportStatusDirectly;
+            window.updateReportStatusDirectly = async function(selectEl,nick,date,existingId){
+                if (selectEl.value !== 'Натяг') return prevUpdate(selectEl,nick,date,existingId);
+                selectEl.className='status-select status-good'; selectEl.disabled=true; selectEl.style.opacity='.5';
+                if (existingId) await supa.from('reports').update({status:'Натяг',xp:7}).eq('id',existingId);
+                else {
+                    const fake = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством | Тип сдачи: Натяг`;
+                    const id = 'rep_manual_'+Date.now();
+                    await supa.from('reports').insert([{id,email:currentUser.email,link:'',date:fake,status:'Натяг',xp:7}]);
+                    selectEl.setAttribute('onchange',`updateReportStatusDirectly(this, '${nick}', '${date}', '${id}')`);
+                }
+                selectEl.disabled=false; selectEl.style.opacity='1'; setTimeout(()=>{ if (typeof loadReportsTable === 'function') loadReportsTable(); },700);
+            };
+            const prevCheck = checkRolesAndAccess;
+            checkRolesAndAccess = function(){
+                prevCheck();
+                const show = (id, yes) => { const el = $(id); if (el) el.style.display = yes ? 'inline-block' : 'none'; };
+                const canReport = !!(currentUser && isModerator);
+                show('reportTabBtn', canReport);
+                show('inactiveTabBtn', canReport);
+                show('reportsTableBtn', !!(currentUser && (isModerator || isReportLeader())));
+            };
+            addStyle(); fixProfileModal(); bindReports();
+            new MutationObserver(()=>{ fixProfileModal(); bindReports(); }).observe(document.body,{childList:true,subtree:true});
+        })();
+        /* === /V8 REPORTS + MODAL FIX === */
 
         // Запуск
         renderRight("moderation");
