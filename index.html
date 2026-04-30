@@ -11568,5 +11568,135 @@
         })();
         /* === /T73 V16 HOTFIX === */
 
+
+        /* === T73 V17: GOSS REPORTS ONLY + GLOBAL GOSS LEADERSHIP === */
+        (function(){
+          const G_MARK='GOSS_REPORT_MARK_V17';
+          const G_MEMBER='GOSS_REPORT_MEMBER_V17';
+          const G_UPLOAD='GOSS_REPORT_UPLOAD_V17';
+          const G_LOG='GOSS_ORG_LOG_V17';
+          const G_POINTS='GOSS_POINTS_V17';
+          const G_BUCKETS=['goss-report-screenshots','report-screenshots','reports','screenshots'];
+          let gWeek=0, gFiles=[];
+          const $g=id=>document.getElementById(id);
+          const escG=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+          const jsonG=(s,d={})=>{try{return typeof s==='string'?JSON.parse(s):(s||d)}catch(e){return d}};
+          const orgG=()=>{try{return currentOrg()}catch(e){return findGossOrg(fixSelectedOrgId||'fsb')}};
+          function isAllGoss(){
+            try{
+              if(!currentUser) return false;
+              if(currentUser.email===creatorEmail || adminEmails.includes(currentUser.email)) return true;
+              return Array.isArray(dynamicGossLeaders) && dynamicGossLeaders.some(r=>r.link===currentUser.id && (r.status==='goss_admin_all'||r.status==='goss_senior_all'));
+            }catch(e){return false;}
+          }
+          function canGoss(orgId){
+            try{return !!currentUser && (isAllGoss() || (typeof hasGossLeadership==='function' && hasGossLeadership(orgId)));}catch(e){return false;}
+          }
+          function cssG(){
+            if($g('t73v17Css')) return;
+            document.head.insertAdjacentHTML('beforeend',`<style id="t73v17Css">
+              #v16ReportTableBtnMod,#v16ReportBtnMod,#v16OpenBar,#v16OpenTableTop,#v16OpenReportTop,#reportsTableBtnModStatic{display:none!important;visibility:hidden!important;pointer-events:none!important}
+              .g17-grid{display:grid;gap:1rem}.g17-tools{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;margin:0 0 1rem}.g17-tools .support-input{max-width:260px}.g17-card{border:1px solid rgba(255,107,136,.24);background:rgba(0,0,0,.28);border-radius:18px;padding:1rem}.g17-days{display:flex;gap:.65rem;overflow-x:auto;padding:.25rem 0 .7rem}.g17-day{min-width:190px;border:1px solid rgba(255,255,255,.13);background:rgba(4,6,12,.84);border-radius:15px;padding:.72rem;display:grid;gap:.48rem}.g17-mini{font-size:.8rem;color:var(--color-text-muted);line-height:1.4}.g17-label{font-size:.74rem;color:var(--color-text-muted);font-weight:900;text-transform:uppercase;letter-spacing:.05em}.g17-select,.g17-input{width:100%;border:1px solid rgba(255,255,255,.18);background:rgba(4,6,12,.92);color:#fff;border-radius:10px;padding:.58rem;font-weight:800}.g17-pill{display:inline-flex;border:1px solid rgba(82,199,123,.4);background:rgba(82,199,123,.12);color:#b8ffd0;border-radius:999px;padding:.24rem .55rem;font-size:.75rem;font-weight:900;margin:.12rem}.g17-upload{border:2px dashed rgba(255,107,136,.45);background:rgba(255,107,136,.08);border-radius:18px;padding:1rem}.g17-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:.65rem;margin-top:.75rem}.g17-file{position:relative;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.32);border-radius:14px;padding:.42rem}.g17-file img{width:100%;height:82px;object-fit:cover;border-radius:10px}.g17-file button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#ff4b69;color:#fff;font-weight:900}.g17-log{border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.25);border-radius:15px;padding:.85rem}@media(max-width:860px){.g17-tools{display:grid}.g17-tools .support-input{max-width:none}.g17-day{min-width:78vw}.g17-preview{grid-template-columns:repeat(2,1fr)}}`);
+          }
+          function cleanModTables(){
+            cssG();
+            ['v16ReportTableBtnMod','v16ReportBtnMod','v16OpenBar','v16OpenTableTop','v16OpenReportTop','reportsTableBtnModStatic'].forEach(id=>{const x=$g(id); if(x) x.remove();});
+            const b=$g('reportsTableBtn'); if(b){ b.textContent='Таблица модеров'; b.style.display='inline-flex'; }
+            const h=$g('mode-reports_table')?.querySelector('.section-head h2'); if(h) h.textContent='Таблица Отчетов Модерации';
+            const p=$g('mode-reports_table')?.querySelector('.section-head p'); if(p) p.textContent='Старая таблица модераторов. ГОСС отчетность находится только в разделе организаций.';
+          }
+          const oldPromptGoss=typeof maybePromptGossProfile==='function'?maybePromptGossProfile:null;
+          maybePromptGossProfile=async function(skip){ if(isAllGoss()) return; if(oldPromptGoss) return oldPromptGoss(skip); };
+          function daysG(){const b=new Date(); const d=b.getDay()||7; b.setDate(b.getDate()-d+1-gWeek*7); return Array.from({length:7},(_,i)=>{const x=new Date(b);x.setDate(b.getDate()+i);return x.toISOString().slice(0,10)})}
+          function dateG(d){return new Date(d+'T00:00:00').toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})}
+          async function logG(orgId, action, payload){
+            try{await supa.from('reports').insert([{id:'glog17_'+Date.now()+Math.random(),email:G_LOG,link:orgId,status:currentUser?currentUser.id:'system',date:JSON.stringify({action,payload:payload||{},by:currentUser?currentUser.email:'',at:new Date().toISOString()}),xp:0}]);}catch(e){}
+          }
+          async function staffG(orgId, days){
+            const map=new Map(); const put=o=>{const key=String(o.key||o.userId||o.id||o.name||'').trim(); if(key) map.set(key,{...(map.get(key)||{}),...o,key});};
+            try{(await loadGossProfiles(orgId)||[]).forEach(r=>{const d=r.data||{};put({key:r.userId||r.id||d.nick,name:d.nick||r.userId||r.id,post:d.post||''});});}catch(e){}
+            try{const {data}=await supa.from('reports').select('*').eq('email',G_MEMBER).eq('link',orgId).limit(700);(data||[]).forEach(r=>{const p=jsonG(r.date,{});put({key:r.status||r.id,name:p.nick||r.status,post:p.post||'',manual:true});});}catch(e){}
+            try{const {data}=await supa.from('reports').select('*').eq('email',G_UPLOAD).eq('link',orgId).limit(1200);(data||[]).forEach(r=>{const p=jsonG(r.date,{}); if(!days||days.includes(p.day)) put({key:p.userId||r.status||p.nick||r.id,name:p.nick||r.status,post:p.post||'Отчётность'});});}catch(e){}
+            return [...map.values()].sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'ru'));
+          }
+          async function marksG(orgId){
+            const m=new Map();
+            try{const {data}=await supa.from('reports').select('*').eq('email',G_MARK).eq('link',orgId).limit(3000);(data||[]).forEach(r=>{const p=jsonG(r.date,{}); if(r.status&&p.day)m.set(r.status+'|'+p.day,p);});}catch(e){}
+            return m;
+          }
+          async function proofsG(orgId, days){
+            const m=new Map();
+            try{const {data}=await supa.from('reports').select('*').eq('email',G_UPLOAD).eq('link',orgId).limit(2000);(data||[]).forEach(r=>{const p=jsonG(r.date,{}); if(!days.includes(p.day)) return; const key=(p.userId||r.status||p.nick||r.id)+'|'+p.day; const arr=m.get(key)||[]; arr.push({quality:p.quality||'На проверке',files:Array.isArray(p.files)?p.files:[],work:p.work||''}); m.set(key,arr);});}catch(e){}
+            return m;
+          }
+          async function renderGossReportsOnly(){
+            const org=orgG(), root=$g('gossDashView'); if(!root) return; cssG();
+            const days=daysG(), edit=canGoss(org.id);
+            root.innerHTML='<div class="message-card">⏳ Загружаю таблицу отчетов ГОСС...</div>';
+            const [staff,marks,proofs]=await Promise.all([staffG(org.id,days),marksG(org.id),proofsG(org.id,days)]);
+            const ro=['Нет отчета','Норма','Перенорма','Натяг','Герой дня','Отказ','На проверке'], dopt=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];
+            let html=`<div class="g17-grid"><div class="section-head"><h2 style="color:#ff6b88;">📊 Таблица отчетов ГОСС · ${escG(org.short||org.name)}</h2><p>Это таблица именно выбранной ГОСС организации. Новые таблицы из раздела модерации убраны.</p></div><div class="g17-tools"><button class="btn btn-secondary" id="g17Prev" type="button">⬅️ Прошлая</button><button class="btn btn-secondary" id="g17This" type="button">Текущая</button><button class="btn btn-secondary" id="g17Next" type="button">Следующая ➡️</button>${edit?'<input id="g17Nick" class="support-input" placeholder="Nick_Name"><input id="g17Post" class="support-input" placeholder="Должность"><button class="btn btn-primary" id="g17AddRow" type="button">➕ Добавить строку</button>':''}</div><div class="g17-mini">Неделя: <b>${dateG(days[0])} — ${dateG(days[6])}</b>. Редактирование: <b>${edit?'доступно':'только руководство'}</b>.</div>`;
+            if(!staff.length) html+='<div class="gov-denied">Строк пока нет. Руководство может добавить строку вручную, либо сотрудник сдаст ГОСС отчет файлами.</div>';
+            else html+='<div class="g17-grid">'+staff.map(u=>`<div class="g17-card"><strong style="font-size:1.08rem;color:#fff;">${escG(u.name||u.key)}</strong><div class="g17-mini">${escG(u.post||'Без должности')} · ${escG(u.key)}</div><div class="g17-days">${days.map(day=>{const mk=marks.get(u.key+'|'+day)||{};const pf=proofs.get(u.key+'|'+day)||[];const pills=pf.length?pf.map(p=>`<span class="g17-pill">📎 ${escG(p.quality)} · ${p.files.length}</span>`).join(''):'<span class="g17-mini">Файлов нет</span>';return `<div class="g17-day"><b style="color:#ff9fb4;">${dateG(day)}</b><label class="g17-label">Отчетность<select class="g17-select g17-cell" data-user="${escG(u.key)}" data-day="${day}" data-k="report" ${edit?'':'disabled'}>${ro.map(o=>`<option value="${o}" ${String(mk.report||'Нет отчета')===o?'selected':''}>${o}</option>`).join('')}</select></label><label class="g17-label">Отметка дня<select class="g17-select g17-cell" data-user="${escG(u.key)}" data-day="${day}" data-k="dayStatus" ${edit?'':'disabled'}>${dopt.map(o=>`<option value="${o}" ${String(mk.dayStatus||'Проверить')===o?'selected':''}>${o}</option>`).join('')}</select></label><input class="g17-input g17-note" data-user="${escG(u.key)}" data-day="${day}" value="${escG(mk.note||'')}" placeholder="Комментарий" ${edit?'':'disabled'}><div>${pills}</div></div>`}).join('')}</div></div>`).join('')+'</div>';
+            root.innerHTML=html+'</div>';
+            $g('g17Prev')?.addEventListener('click',()=>{gWeek++;renderGossReportsOnly()});
+            $g('g17This')?.addEventListener('click',()=>{gWeek=0;renderGossReportsOnly()});
+            $g('g17Next')?.addEventListener('click',()=>{if(gWeek>0)gWeek--;renderGossReportsOnly()});
+            $g('g17AddRow')?.addEventListener('click',async()=>{const nick=($g('g17Nick')?.value||'').trim(), post=($g('g17Post')?.value||'').trim(); if(!nick)return alert('Введите ник.'); await supa.from('reports').insert([{id:'gmem17_'+Date.now()+Math.random(),email:G_MEMBER,link:org.id,status:'manual_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_'),date:JSON.stringify({nick,post}),xp:0}]); await logG(org.id,'Добавлена строка в ГОСС таблицу',{nick,post}); renderGossReportsOnly();});
+          }
+          async function saveCellG(user,day){
+            const org=orgG(); if(!canGoss(org.id)) return alert('Менять ГОСС таблицу может только руководство организации или руководство всех ГОСС.');
+            const card=document.querySelector(`.g17-cell[data-user="${CSS.escape(user)}"][data-day="${CSS.escape(day)}"]`)?.closest('.g17-day');
+            const payload={userKey:user,day,report:card?.querySelector('[data-k="report"]')?.value||'Нет отчета',dayStatus:card?.querySelector('[data-k="dayStatus"]')?.value||'Проверить',note:card?.querySelector('.g17-note')?.value||'',by:currentUser?.email||'',at:new Date().toISOString()};
+            try{const {data:old}=await supa.from('reports').select('id').eq('email',G_MARK).eq('link',org.id).eq('status',user).eq('date',JSON.stringify({day})).limit(1); if(old&&old[0]) await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old[0].id); else await supa.from('reports').insert([{id:'gmark17_'+Date.now()+Math.random(),email:G_MARK,link:org.id,status:user,date:JSON.stringify(payload),xp:0}]); await logG(org.id,'Изменена ячейка ГОСС отчетов',payload);}catch(e){alert('Ошибка сохранения: '+e.message)}
+          }
+          document.addEventListener('change',e=>{if(e.target.classList?.contains('g17-cell')) saveCellG(e.target.dataset.user,e.target.dataset.day)},true);
+          document.addEventListener('input',e=>{if(e.target.classList?.contains('g17-note')){clearTimeout(e.target._g17); e.target._g17=setTimeout(()=>saveCellG(e.target.dataset.user,e.target.dataset.day),650)}},true);
+          function previewG(){const box=$g('g17Preview'); if(!box)return; box.innerHTML=gFiles.length?gFiles.map((f,i)=>`<div class="g17-file"><button type="button" data-i="${i}">×</button><img src="${URL.createObjectURL(f)}"><div class="g17-mini">${escG(f.name)}<br>${Math.round(f.size/1024)} KB</div></div>`).join(''):'<div class="g17-mini">Файлы ещё не выбраны.</div>'; box.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{gFiles.splice(+b.dataset.i,1);previewG()});}
+          async function compressG(file){const data=await new Promise(r=>{const rd=new FileReader();rd.onload=()=>r(rd.result);rd.readAsDataURL(file)});const img=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.src=data});let w=img.width,h=img.height,max=/iPhone|Android/i.test(navigator.userAgent)?900:1280;if(w>h&&w>max){h=Math.round(h*max/w);w=max}else if(h>w&&h>max){w=Math.round(w*max/h);h=max}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.64));return{blob,fallback:c.toDataURL('image/jpeg',.55)}}
+          async function uploadG(file,i,orgId){const c=await compressG(file);for(const bucket of G_BUCKETS){try{const path=`goss/${orgId}/${currentUser.id}/${Date.now()}_${i}_${file.name.replace(/[^a-z0-9_.-]+/gi,'_')}.jpg`;const up=await supa.storage.from(bucket).upload(path,c.blob,{contentType:'image/jpeg'});if(!up.error)return{url:supa.storage.from(bucket).getPublicUrl(path).data.publicUrl,name:file.name,bucket}}catch(e){}}return{url:c.fallback,name:file.name,fallback:true}}
+          function renderSubmitG(){
+            const org=orgG(), root=$g('gossDashView'); if(!root)return; cssG(); gFiles=[];
+            root.innerHTML=`<div class="g17-grid"><div class="section-head"><h2 style="color:#ff6b88;">📎 Сдать ГОСС отчет · ${escG(org.short||org.name)}</h2><p>Прямая загрузка файлов для ГОСС: можно выбрать много скриншотов сразу.</p></div><div class="g17-upload"><div class="g17-tools"><input id="g17ReportNick" class="support-input" placeholder="Nick_Name" value="${escG(currentNickname||'')}"><input id="g17ReportDate" class="support-input" type="date" value="${new Date().toISOString().slice(0,10)}"><select id="g17ReportQuality" class="support-input"><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>На проверке</option></select></div><textarea id="g17ReportWork" class="support-input" rows="3" placeholder="Что сделано за день"></textarea><input id="g17ReportLink" class="support-input" placeholder="Ссылка, если есть"><input id="g17ReportFiles" class="support-input" type="file" multiple accept="image/*,.png,.jpg,.jpeg,.webp"><div id="g17Preview" class="g17-preview"></div><button id="g17Send" class="btn btn-primary" type="button" style="width:100%;margin-top:1rem;">📎 Отправить ГОСС отчет с файлами</button><div id="g17Result" class="g17-mini" style="margin-top:.7rem;"></div></div></div>`;
+            $g('g17ReportFiles').onchange=()=>{gFiles=gFiles.concat([...$g('g17ReportFiles').files].filter(f=>/^image\//.test(f.type))).slice(0,/iPhone|Android/i.test(navigator.userAgent)?10:35);$g('g17ReportFiles').value='';previewG();};
+            $g('g17Send').onclick=async()=>{const res=$g('g17Result'),btn=$g('g17Send'); if(!currentUser){res.textContent='Войдите в аккаунт.';return} const nick=($g('g17ReportNick').value||'').trim(), day=$g('g17ReportDate').value, quality=$g('g17ReportQuality').value, work=($g('g17ReportWork').value||'').trim(), link=($g('g17ReportLink').value||'').trim(); if(!nick||!work){res.textContent='Заполните ник и работу.';return} if(!link&&!gFiles.length){res.textContent='Прикрепите ссылку или скриншоты.';return} btn.disabled=true;btn.textContent='Загружаю...';const files=[]; if(link)files.push({url:link,name:'Ссылка'}); for(let i=0;i<gFiles.length;i++)files.push(await uploadG(gFiles[i],i,org.id)); const payload={version:'v17',orgId:org.id,nick,day,quality,work,files,userId:currentUser.id,email:currentUser.email,at:new Date().toISOString()}; const {error}=await supa.from('reports').insert([{id:'gupload17_'+Date.now()+Math.random(),email:G_UPLOAD,link:org.id,status:currentUser.id,date:JSON.stringify(payload),xp:0}]); btn.disabled=false;btn.textContent='📎 Отправить ГОСС отчет с файлами'; if(error){res.style.color='var(--color-error)';res.textContent='Ошибка: '+error.message}else{await logG(org.id,'Сдан ГОСС отчет с файлами',{nick,day,quality,files:files.length});gFiles=[];previewG();res.style.color='var(--color-success)';res.textContent='✅ ГОСС отчет отправлен. Файлов: '+files.length;}};
+            previewG();
+          }
+          async function renderLogsG(){const org=orgG(),root=$g('gossDashView');if(!root)return;root.innerHTML='<div class="message-card">Загружаю логи организации...</div>';let rows=[];try{const {data}=await supa.from('reports').select('*').in('email',[G_LOG,G_UPLOAD,G_MARK,G_POINTS]).eq('link',org.id).order('id',{ascending:false}).limit(300);rows=data||[]}catch(e){}root.innerHTML=`<div class="section-head"><h2 style="color:#ffbf47;">🧾 Логи организации · ${escG(org.short||org.name)}</h2><p>Отдельные логи этой организации, а не общий список всех ГОСС.</p></div><button class="btn btn-secondary" id="g17ReloadLogs" type="button">🔄 Обновить</button><div class="g17-grid">${rows.length?rows.map(r=>{const p=jsonG(r.date,{});return `<div class="g17-log"><b>${escG(p.action||r.email)}</b><div class="g17-mini">${escG(p.at||r.id)} · ${escG(p.by||r.status||'')}</div><pre style="white-space:pre-wrap;overflow:auto;font-size:.82rem;color:var(--color-text-muted);">${escG(JSON.stringify(p.payload||p,null,2))}</pre></div>`}).join(''):'<div class="gov-denied">Логов этой организации пока нет.</div>'}</div>`;$g('g17ReloadLogs').onclick=renderLogsG;}
+          async function renderGlobalG(){
+            const root=$g('gossDashView'); if(!root)return; if(!isAllGoss()){root.innerHTML='<div class="gov-denied">Доступно только руководству всех ГОСС.</div>';return}
+            const orgs=typeof GOSS_ORGS!=='undefined'?GOSS_ORGS:[]; let roles=[];try{const {data}=await supa.from('reports').select('*').eq('email','ADMIN_ROLE').limit(1200);roles=(data||[]).filter(r=>r.status==='goss_admin_all'||r.status==='goss_senior_all'||String(r.status||'').startsWith('goss_lead_'))}catch(e){}
+            root.innerHTML=`<div class="section-head"><h2 style="color:#ffbf47;">👑 Руководство всех ГОСС</h2><p>Отдельная таблица для пользователей с доступом ко всем ГОСС. Они больше не должны регистрироваться в таблице каждой организации.</p></div><div class="g17-card"><div class="g17-tools"><input id="g17User" class="support-input" placeholder="User ID"><select id="g17Role" class="support-input"><option value="goss_admin_all">Руководство всех ГОСС</option><option value="goss_senior_all">СС всех ГОСС</option>${orgs.map(o=>`<option value="goss_lead_${o.id}">Руководство ${escG(o.short)}</option>`).join('')}</select><button id="g17Give" class="btn btn-primary" type="button">Выдать</button><button id="g17Take" class="btn btn-secondary" type="button">Забрать</button></div><div class="g17-tools"><select id="g17PtsOrg" class="support-input">${orgs.map(o=>`<option value="${o.id}">${escG(o.short)}</option>`).join('')}</select><input id="g17PtsUser" class="support-input" placeholder="User ID для баллов"><input id="g17PtsAmount" class="support-input" type="number" placeholder="Баллы"><input id="g17PtsReason" class="support-input" placeholder="Причина"><button id="g17PtsBtn" class="btn btn-primary" type="button">Выдать / списать баллы</button></div></div><h3 style="margin-top:1rem;">Текущие ГОСС доступы</h3><div class="g17-grid">${roles.length?roles.map(r=>`<div class="g17-log"><b>${escG(r.link)}</b><div class="g17-mini">${escG(r.status)}</div></div>`).join(''):'<div class="gov-denied">Пока нет выданных ГОСС доступов.</div>'}</div>`;
+            $g('g17Give').onclick=async()=>{const uid=($g('g17User').value||'').trim(),role=$g('g17Role').value;if(!uid)return alert('Введите User ID.');await supa.from('reports').insert([{id:'grole17_'+Date.now()+Math.random(),email:'ADMIN_ROLE',link:uid,status:role,date:new Date().toISOString(),xp:0}]);await logG('all','Выдан ГОСС доступ',{uid,role});alert('Доступ выдан.');await loadRolesAndAccess();renderGlobalG();};
+            $g('g17Take').onclick=async()=>{const uid=($g('g17User').value||'').trim(),role=$g('g17Role').value;if(!uid)return alert('Введите User ID.');await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid).eq('status',role);await logG('all','Забран ГОСС доступ',{uid,role});alert('Доступ забран.');await loadRolesAndAccess();renderGlobalG();};
+            $g('g17PtsBtn').onclick=async()=>{const orgId=$g('g17PtsOrg').value,uid=($g('g17PtsUser').value||'').trim(),amount=Number($g('g17PtsAmount').value||0),reason=($g('g17PtsReason').value||'').trim();if(!uid||!amount)return alert('Введите User ID и баллы.');await supa.from('reports').insert([{id:'gpts17_'+Date.now()+Math.random(),email:G_POINTS,link:orgId,status:uid,date:JSON.stringify({amount,reason,by:currentUser.email,at:new Date().toISOString()}),xp:amount}]);await logG(orgId,'Изменены баллы ГОСС',{uid,amount,reason});alert('Баллы записаны.');};
+          }
+          renderGossActionNav=function(){
+            const nav=$g('gossOrgActionNav'); if(!nav)return; const org=orgG(), allowed=(typeof canUseOrgMode==='function'&&canUseOrgMode(org.id))||isAllGoss();
+            nav.style.display=$g('subNavOrganizations')?.style.display==='none'?'none':'flex';
+            const tabs=[{view:'staff',label:'📋 Информация / старший состав',mode:'goss_dashboard'},{view:'reports',label:'📊 Таблица отчетов ГОСС',mode:'goss_dashboard'},{view:'submit',label:'📎 Сдать ГОСС отчет',mode:'goss_dashboard'},{view:'org_logs',label:'🧾 Логи организации',mode:'goss_dashboard'}];
+            if(isAllGoss())tabs.push({view:'global_admin',label:'👑 Руководство всех ГОСС',mode:'goss_dashboard'});
+            if(org.id==='fsb'){tabs.unshift({view:'academy',label:'🛡️ Академия',mode:'fsb'});tabs.push({view:'shop',label:'🛒 Магазин',mode:'fsb_shop'});if(allowed)tabs.push({view:'admin',label:'👑 Руководство ФСБ',mode:'fsb_admin'},{view:'logs',label:'🧾 Логи ФСБ',mode:'fsb_admin_log'});}
+            nav.innerHTML=tabs.map(t=>`<button class="mode-btn gov-action-switch ${t.view===fixSelectedOrgView&&t.mode==='goss_dashboard'?'active':''}" data-mode="${t.mode}" data-view="${t.view}" type="button" ${(!allowed&&t.mode==='goss_dashboard'&&t.view!=='submit')?'style="display:none;"':''}>${t.label}</button>`).join('');
+            nav.querySelectorAll('.gov-action-switch').forEach(btn=>bindPress(btn,()=>{fixSelectedOrgView=btn.dataset.view||'staff';switchMode(btn.dataset.mode||'goss_dashboard',btn)}));
+          };
+          renderGossDashboard=async function(){
+            cleanModTables();
+            const org=orgG(), allowed=(typeof canUseOrgMode==='function'&&canUseOrgMode(org.id))||isAllGoss();
+            setText('gossDashTitle',org.icon+' '+org.name); setText('gossDashLead','ГОСС отчетность, старший состав, логи и доступы. Таблицы модерации здесь не используются.'); setText('gossDashOrgShort',org.short); setText('gossDashAccess',allowed?'Руководство':'Нет доступа');
+            const denied=$g('gossDashDenied'),content=$g('gossDashContent'); if(denied)denied.style.display=allowed?'none':'block'; if(content)content.style.display=allowed?'grid':'none';
+            renderGossActionNav(); if(!allowed && fixSelectedOrgView!=='submit')return;
+            if(fixSelectedOrgView==='reports')return renderGossReportsOnly();
+            if(fixSelectedOrgView==='submit')return renderSubmitG();
+            if(fixSelectedOrgView==='org_logs')return renderLogsG();
+            if(fixSelectedOrgView==='global_admin')return renderGlobalG();
+            if(fixSelectedOrgView==='shop'&&typeof renderGossShopInfoView==='function')return renderGossShopInfoView();
+            return renderGossStaffView();
+          };
+          setTimeout(cleanModTables,100); setTimeout(cleanModTables,1200); setTimeout(cleanModTables,2600);
+          new MutationObserver(()=>cleanModTables()).observe(document.body,{childList:true,subtree:true});
+        })();
+        /* === /T73 V17 GOSS-ONLY REPORTS === */
+
     });
   </script>
