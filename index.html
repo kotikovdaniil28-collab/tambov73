@@ -13866,5 +13866,343 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V53 === -->
 
+<!-- === T73 V54 MOBILE LAYOUT FIX === -->
+<script id="t73-v54-mobile-layout-fix">
+(function(){
+  'use strict';
+  if (window.__T73_V54_MOBILE_LAYOUT_FIX__) return;
+  window.__T73_V54_MOBILE_LAYOUT_FIX__ = true;
+
+  const css = `
+    @media (max-width: 860px), (pointer: coarse) {
+      html, body { overflow-x: hidden !important; }
+
+      .page {
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+      }
+
+      .topbar {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: .55rem .6rem !important;
+        text-align: left !important;
+        padding: .6rem !important;
+        margin-bottom: .75rem !important;
+        position: relative !important;
+        top: 0 !important;
+        overflow: visible !important;
+      }
+
+      .topbar .brand {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: .55rem !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        text-align: left !important;
+      }
+
+      .topbar .logo {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        border-radius: 12px !important;
+      }
+
+      .topbar .logo svg {
+        width: 22px !important;
+        height: 22px !important;
+      }
+
+      .topbar .brand > div:last-child {
+        min-width: 0 !important;
+      }
+
+      .topbar .brand-title,
+      .topbar .brand-sub {
+        text-align: left !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: calc(100vw - 172px) !important;
+      }
+
+      .topbar .brand-title {
+        font-size: 1rem !important;
+        line-height: 1.1 !important;
+        letter-spacing: .04em !important;
+      }
+
+      .topbar .brand-sub {
+        font-size: .76rem !important;
+        line-height: 1.2 !important;
+        margin-top: .08rem !important;
+      }
+
+      .topbar > div:last-child {
+        display: contents !important;
+      }
+
+      .topbar > div:last-child > div:not(#authStatus) {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        gap: .32rem !important;
+        min-width: max-content !important;
+      }
+
+      .topbar .icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        padding: 0 !important;
+        border-radius: 12px !important;
+        flex: 0 0 36px !important;
+      }
+
+      #authStatus {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        gap: .5rem !important;
+        padding: .45rem .6rem !important;
+        margin: .15rem 0 0 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+      }
+
+      #userEmailDisplay {
+        display: block !important;
+        min-width: 0 !important;
+        max-width: calc(100vw - 150px) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        font-size: .78rem !important;
+      }
+
+      #loginBtnUI,
+      #logoutBtnUI {
+        flex: 0 0 auto !important;
+        padding: .42rem .7rem !important;
+        min-height: 32px !important;
+        font-size: .76rem !important;
+      }
+
+      .info-banner {
+        margin-top: .25rem !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+      }
+
+      .nav-container,
+      .main-nav,
+      .sub-nav,
+      [id^="subNav"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      #adminPanelArea,
+      #adminPanelAreaInactives,
+      #reportFormArea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        clear: both !important;
+      }
+
+      #viewReportsBtn,
+      #viewInactivesBtn,
+      #v27GossViewReportsBtn,
+      #v30GossReviewBtn,
+      #v25GossViewReportsBtn,
+      #govV4CheckReportsBtn,
+      #govV4RefreshReportsBtn {
+        width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        white-space: normal !important;
+        text-align: center !important;
+      }
+
+      .gov-v4-head,
+      .gov-v3-head,
+      .t73-v22-head,
+      .g20-head,
+      .g19-head,
+      .mod-report-header {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: .75rem !important;
+        width: 100% !important;
+        text-align: left !important;
+      }
+
+      .gov-v4-actions,
+      .gov-v3-actions,
+      .t73-v22-actions,
+      .g20-actions,
+      .g19-actions,
+      .mod-report-actions-v31,
+      .goss-report-actions-v31 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: .55rem !important;
+        width: 100% !important;
+        justify-content: stretch !important;
+        align-items: stretch !important;
+      }
+
+      .gov-v4-actions .btn,
+      .gov-v3-actions .btn,
+      .t73-v22-actions .btn,
+      .g20-actions .btn,
+      .g19-actions .btn,
+      .mod-report-actions-v31 .btn,
+      .goss-report-actions-v31 .btn {
+        width: 100% !important;
+      }
+
+      #reportsListArea {
+        display: none;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        clear: both !important;
+        float: none !important;
+        grid-column: 1 / -1 !important;
+        margin-top: 1rem !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      #reportsListArea[style*="flex"],
+      #reportsListArea[style*="block"] {
+        width: 100% !important;
+      }
+
+      #reportsListArea .mod-report-card,
+      #reportsListArea [class*="report-card"],
+      #reportsListArea .message-card,
+      #reportsListArea .rule-item {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+      }
+
+      #reportsListArea .mod-report-days {
+        display: flex !important;
+        gap: .55rem !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: .65rem !important;
+        scroll-snap-type: x proximity !important;
+      }
+
+      #reportsListArea .report-day-item {
+        flex: 0 0 132px !important;
+        min-width: 132px !important;
+        max-width: 132px !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .topbar .brand-sub { display: none !important; }
+      .topbar .brand-title { max-width: calc(100vw - 162px) !important; }
+      #userEmailDisplay { max-width: calc(100vw - 130px) !important; }
+      .topbar .icon-btn {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        flex-basis: 34px !important;
+      }
+    }
+  `;
+
+  function injectMobileFix(){
+    const old = document.getElementById('t73-v54-mobile-style');
+    if (old) old.remove();
+    const style = document.createElement('style');
+    style.id = 't73-v54-mobile-style';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function moveReportsArea(){
+    const area = document.getElementById('reportsListArea');
+    const admin = document.getElementById('adminPanelArea');
+    if (area && admin && area.previousElementSibling !== admin) {
+      admin.insertAdjacentElement('afterend', area);
+    }
+    if (area) {
+      area.style.setProperty('width', '100%', 'important');
+      area.style.setProperty('max-width', '100%', 'important');
+      area.style.setProperty('max-height', 'none', 'important');
+      area.style.setProperty('overflow', 'visible', 'important');
+      area.style.setProperty('float', 'none', 'important');
+      area.style.setProperty('clear', 'both', 'important');
+    }
+  }
+
+  function fixButtons(){
+    ['viewReportsBtn','viewInactivesBtn','v27GossViewReportsBtn','v30GossReviewBtn','v25GossViewReportsBtn','govV4CheckReportsBtn','govV4RefreshReportsBtn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.style.setProperty('width', '100%', 'important');
+      btn.style.setProperty('max-width', '100%', 'important');
+      btn.style.setProperty('display', 'flex', 'important');
+      btn.style.setProperty('justify-content', 'center', 'important');
+      btn.style.setProperty('white-space', 'normal', 'important');
+      btn.style.setProperty('margin-left', '0', 'important');
+      btn.style.setProperty('margin-right', '0', 'important');
+    });
+  }
+
+  function run(){
+    injectMobileFix();
+    moveReportsArea();
+    fixButtons();
+  }
+
+  document.addEventListener('click', function(event){
+    if (event.target && event.target.closest && event.target.closest('#viewReportsBtn,#v27GossViewReportsBtn,#v30GossReviewBtn,#v25GossViewReportsBtn,#govV4CheckReportsBtn')) {
+      setTimeout(run, 80);
+      setTimeout(moveReportsArea, 250);
+    }
+  }, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+  [120, 450, 900, 1800, 3200].forEach(ms => setTimeout(run, ms));
+
+  new MutationObserver(function(){
+    clearTimeout(window.__T73_V54_MOBILE_TICK__);
+    window.__T73_V54_MOBILE_TICK__ = setTimeout(function(){ moveReportsArea(); fixButtons(); }, 100);
+  }).observe(document.documentElement, { childList:true, subtree:true });
+})();
+</script>
+<!-- === /T73 V54 MOBILE LAYOUT FIX === -->
+
+
 </body>
 </html>
