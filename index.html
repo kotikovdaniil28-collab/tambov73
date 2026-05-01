@@ -16896,5 +16896,260 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V64 === -->
+
+<!-- === T73 V65: реальные XP за проверенные отчёты === -->
+<style id="t73-v65-real-report-xp-style">
+  .t73-v65-xp-note {
+    margin: .85rem 0 0;
+    padding: .75rem .9rem;
+    border-radius: 14px;
+    border: 1px solid rgba(127,232,160,.28);
+    background: linear-gradient(135deg, rgba(82,199,123,.12), rgba(108,204,255,.07));
+    color: var(--color-text-muted);
+    font-size: .9rem;
+    line-height: 1.45;
+  }
+  .t73-v65-xp-note b { color: #7fe8a0; }
+</style>
+<script id="t73-v65-real-report-xp-script">
+(function(){
+  'use strict';
+  if (window.__T73_V65_REAL_REPORT_XP__) return;
+  window.__T73_V65_REAL_REPORT_XP__ = true;
+
+  var REWARD_XP = {
+    'Норма': 15,
+    'Перенорма': 30,
+    'Герой дня': 60,
+    'Натяг': 7,
+    'Не засчитано': 0,
+    'Отказ': 0,
+    'Нет отчета': 0,
+    'Нет отчёта': 0,
+    'none': 0,
+    'На проверке': 0
+  };
+  window.T73_REPORT_REWARD_XP = Object.assign({}, REWARD_XP);
+
+  var SERVICE_EMAILS = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB',
+    'CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP',
+    'AP_POINTS','FSB_POINTS','FSB_SPEND','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_PROFILE','GOSS_REPORT_TABLE',
+    'GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19',
+    'GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','FSB_SHOP_LOG',
+    'REPORT_TABLE_MARK','REPORT_TABLE_MARK_V15','REPORT_TABLE_MEMBER_V15'
+  ]);
+
+  function $(id){ return document.getElementById(id); }
+  function esc(value){ return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
+  function norm(value){ return String(value == null ? '' : value).trim().toLowerCase(); }
+  function xpForStatus(status, fallback){
+    var s = String(status == null ? '' : status).trim();
+    if (Object.prototype.hasOwnProperty.call(REWARD_XP, s)) return REWARD_XP[s];
+    var n = Number(fallback);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    return null;
+  }
+  function parseMaybeJson(value){
+    try { return typeof value === 'string' ? JSON.parse(value) : (value || {}); } catch(e) { return {}; }
+  }
+  function extractPayload(row){
+    if (!row) return {};
+    var direct = parseMaybeJson(row.date);
+    if (direct && (direct.version || direct.email || direct.userId || direct.nick || direct.nickname)) return direct;
+    var s = String(row.date || '');
+    var m = s.match(/JSON:\s*(\{[\s\S]*\})\s*$/i);
+    if (m) return parseMaybeJson(m[1]);
+    return direct || {};
+  }
+  function ownerEmailFromRow(row){
+    var p = extractPayload(row);
+    var email = String((p && (p.email || p.userEmail)) || '').trim();
+    if (email && email.indexOf('@') > -1) return email;
+    var rowEmail = String(row && row.email || '').trim();
+    if (rowEmail && rowEmail.indexOf('@') > -1 && !SERVICE_EMAILS.has(rowEmail)) return rowEmail;
+    return '';
+  }
+  function ownerNickFromText(text){
+    var m = String(text || '').match(/(?:Ник|NickName|Nickname|Nick|Пользователь)\s*:?\s*([^\n|;]+)/i);
+    return m ? m[1].trim() : '';
+  }
+  async function currentAuthUser(c){
+    try { if (window.currentUser && window.currentUser.email) return window.currentUser; } catch(e) {}
+    if (!c || !c.auth) return null;
+    try { var r = await c.auth.getUser(); if (r && r.data && r.data.user) { window.currentUser = r.data.user; return r.data.user; } } catch(e) {}
+    try { var s = await c.auth.getSession(); var u = s && s.data && s.data.session && s.data.session.user; if (u) { window.currentUser = u; return u; } } catch(e) {}
+    return null;
+  }
+  async function findEmailByNick(c, nick){
+    nick = String(nick || '').trim();
+    if (!c || !nick) return '';
+    try {
+      var res = await c.from('user_stats').select('email,nickname,user_id').limit(1000);
+      var rows = res.data || [];
+      var exact = rows.find(function(u){ return norm(u.nickname) === norm(nick); });
+      if (exact && exact.email) return exact.email;
+      var soft = rows.find(function(u){ return norm(u.nickname).includes(norm(nick)) || norm(nick).includes(norm(u.nickname)); });
+      if (soft && soft.email) return soft.email;
+    } catch(e) {}
+    return '';
+  }
+  async function refreshCurrentRealXp(){
+    var c = client();
+    if (!c) return;
+    var u = await currentAuthUser(c);
+    if (!u || !u.email) return;
+    try {
+      var res = await c.from('reports').select('xp,email').eq('email', u.email);
+      var sum = (res.data || []).reduce(function(acc, row){ return acc + Math.max(0, Number(row.xp || 0)); }, 0);
+      try { if (typeof state !== 'undefined' && state) state.reportXp = sum; } catch(e) {}
+      try { if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
+      try { if (typeof updateModStats === 'function') updateModStats(); } catch(e) {}
+      try { if (typeof updateSupportStats === 'function') updateSupportStats(); } catch(e) {}
+      var shopReal = $('shopRealXp'); if (shopReal) shopReal.textContent = sum;
+      var profileReal = $('profileRealXp'); if (profileReal) profileReal.textContent = sum;
+    } catch(e) {}
+  }
+  async function refreshReportViews(){
+    try { if (window.T73_V63_REPORT_SYNC && typeof window.T73_V63_REPORT_SYNC.refresh === 'function') setTimeout(function(){ window.T73_V63_REPORT_SYNC.refresh(); }, 120); } catch(e) {}
+    try { if (typeof window.loadReportsTable === 'function') setTimeout(function(){ window.loadReportsTable(); }, 220); } catch(e) {}
+    try { if (window.T73_V44_MOD_TABLE && typeof window.T73_V44_MOD_TABLE.load === 'function') setTimeout(function(){ window.T73_V44_MOD_TABLE.load(); }, 320); } catch(e) {}
+    try { if (typeof window.loadCreatorPanelData === 'function') setTimeout(function(){ window.loadCreatorPanelData(); }, 450); } catch(e) {}
+    try { if (typeof window.loadUsersForAdmin === 'function') setTimeout(function(){ window.loadUsersForAdmin(); }, 550); } catch(e) {}
+  }
+  async function approveReportRealXp(id, statusText, xpAmount){
+    var c = client();
+    if (!c) throw new Error('Supabase не загрузился');
+    var finalXp = xpForStatus(statusText, xpAmount);
+    var update = { status: statusText, xp: finalXp };
+
+    try {
+      var got = await c.from('reports').select('*').eq('id', id).maybeSingle();
+      var row = got && got.data;
+      var ownerEmail = ownerEmailFromRow(row);
+      if (ownerEmail && (!row.email || SERVICE_EMAILS.has(String(row.email)) || String(row.email).indexOf('@') === -1)) {
+        update.email = ownerEmail;
+      }
+    } catch(e) {}
+
+    var res = await c.from('reports').update(update).eq('id', id);
+    if (res.error) throw res.error;
+    await refreshCurrentRealXp();
+    await refreshReportViews();
+    return finalXp;
+  }
+
+  window.processReport = async function(id, statusText, xpAmount){
+    try {
+      await approveReportRealXp(id, statusText, xpAmount);
+      var oldBtn = $('viewReportsBtn');
+      if (oldBtn && !$('viewReportsBtnV63')) { oldBtn.click(); setTimeout(function(){ oldBtn.click(); }, 120); }
+    } catch(err) {
+      alert('Ошибка начисления XP за отчёт: ' + (err && err.message ? err.message : err));
+    }
+  };
+
+  window.t73UpdateReportMainV9 = async function(selectEl, nick, date, existingId, email){
+    var c = client();
+    if (!c || !selectEl) return;
+    var val = selectEl.value;
+    var finalXp = xpForStatus(val, 0);
+    selectEl.disabled = true;
+    selectEl.style.opacity = '.55';
+    try {
+      if (existingId) {
+        if (val === 'none') await c.from('reports').update({ status:'На проверке', xp:0 }).eq('id', existingId);
+        else await approveReportRealXp(existingId, val, finalXp);
+      } else if (val !== 'none') {
+        var targetEmail = email || await findEmailByNick(c, nick);
+        var user = await currentAuthUser(c);
+        var payload = { version:'v65_manual_real_xp', nick:nick, date:date, work:'Выставлено руководством в таблице', requestedStatus:val, proofs:[], email:targetEmail || '' };
+        var id = 'rep_manual_v65_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        var fake = 'Ник: ' + nick + ' | Дата: ' + date + ' | Работа: Выставлено руководством в таблице | Тип сдачи: ' + val + ' | JSON: ' + JSON.stringify(payload);
+        var ins = await c.from('reports').insert([{ id:id, email: targetEmail || (user && user.email) || '', link:'', date:fake, status:val, xp:finalXp }]);
+        if (ins.error) throw ins.error;
+        selectEl.setAttribute('onchange', 't73UpdateReportMainV9(this, ' + JSON.stringify(nick) + ', ' + JSON.stringify(date) + ', ' + JSON.stringify(id) + ', ' + JSON.stringify(targetEmail || '') + ')');
+      }
+      await refreshCurrentRealXp();
+      await refreshReportViews();
+    } catch(err) {
+      alert('Не удалось изменить отчётность: ' + (err && err.message ? err.message : err));
+    } finally {
+      selectEl.disabled = false;
+      selectEl.style.opacity = '1';
+    }
+  };
+
+  window.updateReportStatusDirectly = async function(selectEl, nick, date, existingId){
+    var c = client();
+    if (!c || !selectEl) return;
+    var val = selectEl.value;
+    var finalXp = xpForStatus(val, 0);
+    selectEl.disabled = true;
+    selectEl.style.opacity = '.55';
+    try {
+      if (existingId) {
+        if (val === 'none') await c.from('reports').delete().eq('id', existingId);
+        else await approveReportRealXp(existingId, val, finalXp);
+      } else if (val !== 'none') {
+        var targetEmail = await findEmailByNick(c, nick);
+        var user = await currentAuthUser(c);
+        var payload = { version:'v65_direct_table_real_xp', nick:nick, date:date, work:'Выставлено руководством', requestedStatus:val, proofs:[], email:targetEmail || '' };
+        var id = 'rep_manual_v65_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        var fake = 'Ник: ' + nick + ' | Дата: ' + date + ' | Работа: Выставлено руководством | Тип сдачи: ' + val + ' | JSON: ' + JSON.stringify(payload);
+        var ins = await c.from('reports').insert([{ id:id, email: targetEmail || (user && user.email) || '', link:'', date:fake, status:val, xp:finalXp }]);
+        if (ins.error) throw ins.error;
+        selectEl.setAttribute('onchange', 'updateReportStatusDirectly(this, ' + JSON.stringify(nick) + ', ' + JSON.stringify(date) + ', ' + JSON.stringify(id) + ')');
+      }
+      await refreshCurrentRealXp();
+      await refreshReportViews();
+    } catch(err) {
+      alert('Не удалось изменить статус отчёта: ' + (err && err.message ? err.message : err));
+    } finally {
+      selectEl.disabled = false;
+      selectEl.style.opacity = '1';
+    }
+  };
+
+  function fixVerdictButtons(){
+    document.querySelectorAll('[data-v63-process][data-status]').forEach(function(btn){
+      btn.dataset.xp = String(xpForStatus(btn.dataset.status, btn.dataset.xp));
+      if (btn.dataset.status === 'Норма') btn.textContent = 'Норма (15 XP)';
+      if (btn.dataset.status === 'Перенорма') btn.textContent = 'Перенорма (30 XP)';
+      if (btn.dataset.status === 'Герой дня') btn.textContent = 'Герой дня (60 XP)';
+    });
+  }
+  function ensureNote(){
+    var form = $('reportFormArea') || $('mode-report');
+    if (!form || $('t73-v65-xp-note')) return;
+    var btn = $('viewReportsBtnV63') || $('viewReportsBtn') || $('submitReportBtnV62') || $('submitReportBtnV57');
+    var html = '<div id="t73-v65-xp-note" class="t73-v65-xp-note"><b>Real XP за отчёты:</b> Норма = 15 XP, Перенорма = 30 XP, Герой дня = 60 XP. Эти значения записываются прямо в отчёт и считаются как реальные XP пользователя.</div>';
+    if (btn) btn.insertAdjacentHTML('beforebegin', html); else form.insertAdjacentHTML('beforeend', html);
+  }
+  function boot(){ fixVerdictButtons(); ensureNote(); refreshCurrentRealXp(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [120, 500, 1200, 2500, 5200].forEach(function(ms){ setTimeout(boot, ms); });
+  try {
+    new MutationObserver(function(){
+      clearTimeout(window.__T73_V65_XP_TIMER__);
+      window.__T73_V65_XP_TIMER__ = setTimeout(boot, 90);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  } catch(e) {}
+
+  window.T73_V65_REAL_REPORT_XP = {
+    rewards: Object.assign({}, REWARD_XP),
+    approve: approveReportRealXp,
+    refresh: refreshCurrentRealXp
+  };
+})();
+</script>
+<!-- === /T73 V65 === -->
 </body>
 </html>
