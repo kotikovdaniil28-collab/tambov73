@@ -18433,12 +18433,12 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
 
 
-<!-- === T73 V73: different music selector — relax / lo-fi / phonk / synth === -->
+<!-- === T73 V74: music selector — real mandela/montagem phonk + relax === -->
 <style>
-  #musicTrackSelect.t73-v73-music-select{
+  #musicTrackSelect.t73-v74-music-select{
     height: 44px;
-    max-width: 245px;
-    min-width: 190px;
+    max-width: 265px;
+    min-width: 205px;
     padding: 0 .85rem;
     border-radius: 14px;
     border: 1px solid rgba(191,198,255,.22);
@@ -18449,11 +18449,11 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     box-shadow: 0 8px 24px rgba(0,0,0,.24);
     cursor: pointer;
   }
-  #musicTrackSelect.t73-v73-music-select:focus{
+  #musicTrackSelect.t73-v74-music-select:focus{
     border-color: rgba(127,232,160,.62);
     box-shadow: 0 0 0 3px rgba(127,232,160,.14), 0 8px 24px rgba(0,0,0,.24);
   }
-  #musicTrackSelect.t73-v73-music-select option{
+  #musicTrackSelect.t73-v74-music-select option{
     background:#101023;
     color:#fff;
   }
@@ -18461,7 +18461,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     .topbar > div:last-child > div:not(#authStatus){
       grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     }
-    #musicTrackSelect.t73-v73-music-select{
+    #musicTrackSelect.t73-v74-music-select{
       grid-column: 1 / -1 !important;
       width: 100% !important;
       max-width: 100% !important;
@@ -18477,25 +18477,28 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <script>
 (function(){
   'use strict';
-  if (window.__T73_V73_MUSIC_STUDIO__) return;
-  window.__T73_V73_MUSIC_STUDIO__ = true;
+  if (window.__T73_V74_MUSIC_STUDIO__) return;
+  window.__T73_V74_MUSIC_STUDIO__ = true;
 
   var TRACKS = [
     { name:'🌙 Relax Classic — как раньше', mood:'relax', bpm:66, root:57, scale:[0,2,3,5,7,8,10,12], melody:[0,2,4,2,5,4,2,0,3,5,7,5,4,2,0,-1], melodyEvery:4, wave:'sine', noteDur:.88, noteVol:.055, pad:true, padVol:.032, padWave:'sine', beat:'none', delay:.36, feedback:.24, filter:1800 },
     { name:'🧘 Deep Relax Pad', mood:'ambient', bpm:58, root:55, scale:[0,2,3,5,7,10,12], melody:[0,-1,2,-1,3,-1,5,-1,7,-1,5,-1,3,2,0,-1], melodyEvery:8, wave:'sine', noteDur:1.3, noteVol:.045, pad:true, padVol:.05, padWave:'triangle', beat:'none', delay:.48, feedback:.34, filter:1300 },
     { name:'🌧️ Rain Calm', mood:'ambient', bpm:62, root:60, scale:[0,2,4,7,9,12], melody:[0,2,-1,4,2,0,-1,7,9,7,4,2,0,-1,-1,-1], melodyEvery:4, wave:'triangle', noteDur:.95, noteVol:.048, pad:true, padVol:.036, rain:true, beat:'none', delay:.42, feedback:.28, filter:1600 },
     { name:'☕ Lo‑Fi Study Beat', mood:'lofi', bpm:82, root:53, scale:[0,2,3,5,7,8,10,12], melody:[7,5,3,-1,2,3,5,-1,7,10,8,7,5,3,2,0], melodyEvery:4, wave:'triangle', noteDur:.36, noteVol:.05, pad:true, padVol:.026, beat:'lofi', bass:true, delay:.24, feedback:.18, filter:2100 },
-    { name:'🌌 Night Ambient', mood:'space', bpm:70, root:50, scale:[0,2,5,7,10,12], melody:[0,-1,5,-1,7,-1,10,-1,12,10,7,5,2,-1,0,-1], melodyEvery:6, wave:'sine', noteDur:1.0, noteVol:.043, pad:true, padVol:.042, beat:'none', delay:.56, feedback:.38, filter:1200 },
     { name:'✨ Soft Dream Pluck', mood:'dream', bpm:76, root:59, scale:[0,2,4,7,9,11,12], melody:[0,4,7,11,9,7,4,2,0,2,4,7,12,11,9,7], melodyEvery:3, wave:'triangle', noteDur:.32, noteVol:.047, pad:true, padVol:.024, beat:'soft', delay:.30, feedback:.22, filter:2400 },
-    { name:'🪐 Space Melody', mood:'space', bpm:74, root:48, scale:[0,3,5,7,10,12], melody:[0,3,5,7,10,12,10,7,5,3,0,-1,7,10,12,-1], melodyEvery:4, wave:'sine', noteDur:.72, noteVol:.044, pad:true, padVol:.034, beat:'none', delay:.62, feedback:.42, filter:1100 },
-    { name:'🔥 Phonk Drift', mood:'phonk', bpm:128, root:45, scale:[0,2,3,5,7,8,10,12], melody:[12,10,7,8,7,5,3,2,12,10,8,7,5,3,2,0], melodyEvery:2, wave:'square', noteDur:.14, noteVol:.04, beat:'phonk', bass:true, cowbell:true, delay:.12, feedback:.12, filter:2600 },
-    { name:'😈 Dark Phonk Bass', mood:'phonk', bpm:140, root:42, scale:[0,2,3,5,7,8,10,12], melody:[12,12,10,7,8,7,5,3,12,10,8,7,5,3,2,0], melodyEvery:2, wave:'square', noteDur:.12, noteVol:.042, beat:'darkphonk', bass:true, cowbell:true, delay:.10, feedback:.10, filter:3000 },
-    { name:'🚗 Drift Night', mood:'drift', bpm:122, root:47, scale:[0,2,3,7,8,10,12], melody:[7,8,10,12,10,8,7,3,7,8,12,10,8,7,3,0], melodyEvery:2, wave:'sawtooth', noteDur:.16, noteVol:.032, beat:'drift', bass:true, cowbell:true, delay:.16, feedback:.14, filter:2800 },
+    { name:'🌌 Night Ambient', mood:'space', bpm:70, root:50, scale:[0,2,5,7,10,12], melody:[0,-1,5,-1,7,-1,10,-1,12,10,7,5,2,-1,0,-1], melodyEvery:6, wave:'sine', noteDur:1.0, noteVol:.043, pad:true, padVol:.042, beat:'none', delay:.56, feedback:.38, filter:1200 },
+
+    { name:'🔥 MANDELA Phonk — man man', mood:'mandela', bpm:150, root:43, scale:[0,1,3,5,6,7,10,12], melody:[12,12,10,7,6,7,10,12,15,12,10,7,6,3,1,0], melodyEvery:1, wave:'square', noteDur:.075, noteVol:.044, beat:'mandela', bass:true, cowbell:true, chant:true, siren:true, delay:.06, feedback:.07, filter:4400 },
+    { name:'🇧🇷 Montagem Funk 150', mood:'mandela', bpm:150, root:45, scale:[0,2,3,5,7,8,10,12], melody:[12,10,12,15,12,10,8,7,15,12,10,8,7,5,3,2], melodyEvery:2, wave:'square', noteDur:.09, noteVol:.040, beat:'montagem', bass:true, cowbell:true, siren:true, delay:.08, feedback:.09, filter:3900 },
+    { name:'⚡ TikTok Aggro Phonk', mood:'mandela', bpm:156, root:41, scale:[0,1,3,5,6,7,10,12], melody:[12,10,7,12,10,7,15,12,10,7,6,7,10,12,15,12], melodyEvery:1, wave:'square', noteDur:.07, noteVol:.042, beat:'mandela', bass:true, cowbell:true, chant:true, siren:true, delay:.05, feedback:.06, filter:4600 },
+    { name:'😈 Dark Cowbell Phonk', mood:'phonk', bpm:142, root:42, scale:[0,2,3,5,7,8,10,12], melody:[12,12,10,7,8,7,5,3,12,10,8,7,5,3,2,0], melodyEvery:2, wave:'square', noteDur:.12, noteVol:.044, beat:'darkphonk', bass:true, cowbell:true, delay:.10, feedback:.10, filter:3100 },
+    { name:'🚗 Drift Phonk Cowbell', mood:'drift', bpm:128, root:45, scale:[0,2,3,7,8,10,12], melody:[7,8,10,12,10,8,7,3,7,8,12,10,8,7,3,0], melodyEvery:2, wave:'sawtooth', noteDur:.15, noteVol:.036, beat:'drift', bass:true, cowbell:true, delay:.15, feedback:.14, filter:2800 },
+    { name:'🐺 Memphis Phonk 808', mood:'phonk', bpm:130, root:40, scale:[0,2,3,5,7,10,12], melody:[12,-1,10,-1,7,-1,5,-1,12,10,7,5,3,2,0,-1], melodyEvery:2, wave:'triangle', noteDur:.16, noteVol:.030, beat:'memphis', bass:true, cowbell:false, pad:true, padVol:.014, delay:.12, feedback:.12, filter:1900 },
     { name:'🎮 Cyber Bass', mood:'cyber', bpm:110, root:43, scale:[0,2,3,5,7,10,12], melody:[0,7,10,7,12,10,7,5,0,5,7,10,12,10,7,0], melodyEvery:4, wave:'sawtooth', noteDur:.28, noteVol:.034, beat:'cyber', bass:true, pad:true, padVol:.018, delay:.18, feedback:.14, filter:2400 },
     { name:'🌆 Synthwave Drive', mood:'synthwave', bpm:96, root:48, scale:[0,2,4,7,9,11,12], melody:[0,4,7,9,11,12,11,9,7,4,2,0,7,9,11,12], melodyEvery:4, wave:'sawtooth', noteDur:.34, noteVol:.036, beat:'synth', bass:true, pad:true, padVol:.022, delay:.28, feedback:.20, filter:2200 }
   ];
 
-  var STORE_KEY = 't73_music_track_v73';
+  var STORE_KEY = 't73_music_track_v74';
   var enabled = false;
   var currentIndex = savedTrack();
   var ctx = null, master = null, delayNode = null, feedbackNode = null, delayGain = null, noiseBuffer = null;
@@ -18510,6 +18513,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function savedTrack(){
     try {
       var v = localStorage.getItem(STORE_KEY);
+      if (v == null) v = localStorage.getItem('t73_music_track_v73');
       if (v == null) v = localStorage.getItem('t73_music_track_v72');
       return clampTrack(v);
     } catch(e){ return 0; }
@@ -18555,7 +18559,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if (!getCtx()) return;
     delayNode.delayTime.setTargetAtTime(t.delay || .22, ctx.currentTime, .02);
     feedbackNode.gain.setTargetAtTime(clamp(t.feedback || .16, 0, .55), ctx.currentTime, .02);
-    delayGain.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' ? .10 : .18, ctx.currentTime, .02);
+    delayGain.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' || t.mood === 'mandela' ? .10 : .18, ctx.currentTime, .02);
   }
 
   function createFilter(freq, q){
@@ -18574,6 +18578,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     var filter = createFilter(opts.filter || track().filter || 2200, opts.q || .8);
     osc.type = opts.wave || track().wave || 'sine';
     osc.frequency.setValueAtTime(freq, when);
+    if (opts.slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, opts.slideTo), when + Math.max(.03, dur * .85));
     if (opts.detune) osc.detune.setValueAtTime(opts.detune, when);
     var v = opts.vol || .04;
     var a = opts.attack == null ? .018 : opts.attack;
@@ -18638,6 +18643,79 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     playTone(f, when, dur || .20, { wave: track().mood === 'phonk' || track().mood === 'drift' ? 'sawtooth' : 'triangle', vol: track().mood === 'phonk' ? .07 : .045, attack:.006, release:.04, filter: track().mood === 'phonk' ? 520 : 680, delay:false });
   }
 
+  function play808(semi, when, dur){
+    if (!ctx || !master) return;
+    var t = track();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    var filter = createFilter(190, .7);
+    osc.type = 'sine';
+    var f = midiToFreq(t.root + semi - 24);
+    osc.frequency.setValueAtTime(f * 1.85, when);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(28, f), when + .055);
+    gain.gain.setValueAtTime(.0001, when);
+    gain.gain.exponentialRampToValueAtTime(t.mood === 'mandela' ? .18 : .13, when + .008);
+    gain.gain.exponentialRampToValueAtTime(.0001, when + (dur || .42));
+    osc.connect(filter); filter.connect(gain); gain.connect(master);
+    osc.start(when); osc.stop(when + (dur || .42) + .05);
+  }
+
+  function clap(when){
+    playNoise(when, .055, { vol:.040, freq:1600, type:'bandpass', q:.75 });
+    playNoise(when + .018, .052, { vol:.034, freq:1900, type:'bandpass', q:.75 });
+    playNoise(when + .036, .060, { vol:.030, freq:2200, type:'bandpass', q:.75 });
+  }
+
+  function siren(when, up){
+    playTone(up ? 420 : 1100, when, .18, { wave:'sawtooth', slideTo: up ? 1300 : 260, vol:.028, attack:.004, release:.025, filter:3900, delay:true });
+  }
+
+  function formantVoice(syllable, when, pitch, dur, vol){
+    if (!ctx || !master) return;
+    var defs = { man:[690,1180], de:[520,1780], la:[760,1320] };
+    var fm = defs[syllable] || defs.man;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    var f1 = ctx.createBiquadFilter();
+    var f2 = ctx.createBiquadFilter();
+    f1.type = 'bandpass'; f1.frequency.value = fm[0]; f1.Q.value = 7;
+    f2.type = 'bandpass'; f2.frequency.value = fm[1]; f2.Q.value = 8;
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(pitch || 142, when);
+    gain.gain.setValueAtTime(.0001, when);
+    gain.gain.exponentialRampToValueAtTime(vol || .036, when + .008);
+    gain.gain.exponentialRampToValueAtTime(.0001, when + (dur || .11));
+    osc.connect(f1); osc.connect(f2);
+    f1.connect(gain); f2.connect(gain);
+    gain.connect(master); gain.connect(delayNode);
+    osc.start(when); osc.stop(when + (dur || .11) + .04);
+  }
+
+  function mandelaChant(when, stepLen){
+    var p = track().root <= 42 ? 126 : 142;
+    formantVoice('man', when + stepLen * .00, p, .105, .040);
+    formantVoice('man', when + stepLen * .55, p, .105, .038);
+    formantVoice('man', when + stepLen * 1.10, p, .105, .038);
+    formantVoice('de',  when + stepLen * 1.68, p * 1.08, .095, .034);
+    formantVoice('la',  when + stepLen * 2.15, p * .96, .125, .036);
+  }
+
+  function scheduleMandelaBeat(t, s, when, st, stepLen){
+    var kicks = t.beat === 'mandela' ? [0,2,4,7,8,10,12,15] : [0,3,6,8,11,12,14];
+    var bells = t.beat === 'mandela' ? [12,12,10,7,6,7,10,12,15,12,10,7,6,3,1,0] : [12,10,12,15,12,10,8,7,15,12,10,8,7,5,3,2];
+    if (kicks.indexOf(st) !== -1) kick(when, true);
+    if (st === 4 || st === 12) clap(when);
+    if ([1,3,5,7,9,11,13,15].indexOf(st) !== -1) hat(when, false);
+    if ([0,4,8,12,14].indexOf(st) !== -1) {
+      var bassSeq = [0,3,0,7,5];
+      var ix = [0,4,8,12,14].indexOf(st);
+      play808(t.scale[bassSeq[ix] % t.scale.length] || 0, when, stepLen * 2.7);
+    }
+    if (t.cowbell) cowbell(when, bells[st]);
+    if (t.siren && (st === 6 || st === 14)) siren(when, st === 14);
+    if (t.chant && st === 0) mandelaChant(when, stepLen);
+  }
+
   function startNoiseBed(){
     stopNoiseBed();
     var t = track();
@@ -18680,7 +18758,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     }
 
     if (t.bass && st % 4 === 0) {
-      var bassSeq = t.mood === 'phonk' || t.mood === 'drift' ? [0,0,3,0,7,5,3,0] : [0,0,5,3];
+      var bassSeq = t.mood === 'phonk' || t.mood === 'drift' || t.mood === 'mandela' ? [0,0,3,0,7,5,3,0] : [0,0,5,3];
       bassNote(t.scale[bassSeq[(Math.floor(s / 4)) % bassSeq.length] % t.scale.length] || 0, when, stepLen * 2.2);
     }
 
@@ -18692,10 +18770,13 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       if (st === 0) kick(when, false);
       if (st === 8) snare(when, true);
       if (st === 2 || st === 6 || st === 10 || st === 14) hat(when, true);
-    } else if (t.beat === 'phonk' || t.beat === 'darkphonk' || t.beat === 'drift') {
+    } else if (t.beat === 'mandela' || t.beat === 'montagem') {
+      scheduleMandelaBeat(t, s, when, st, stepLen);
+    } else if (t.beat === 'phonk' || t.beat === 'darkphonk' || t.beat === 'drift' || t.beat === 'memphis') {
       if ([0,3,6,10,12,14].indexOf(st) !== -1) kick(when, true);
       if (st === 4 || st === 12) snare(when, false);
       if (st % 2 === 0 || t.beat === 'darkphonk') hat(when, false);
+      if (t.beat === 'memphis' && (st === 0 || st === 8)) play808(t.scale[[0,3][st === 8 ? 1 : 0]] || 0, when, stepLen * 3.2);
       if (t.cowbell && st % 2 === 0) {
         var cb = [12,10,7,8,7,5,3,2,12,10,8,7,5,3,2,0];
         cowbell(when, cb[(s / 2) % cb.length | 0]);
@@ -18729,7 +18810,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     step = 0;
     nextStepTime = ctx.currentTime + .05;
     master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' ? .72 : .62, ctx.currentTime, .06);
+    master.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' || t.mood === 'mandela' ? .72 : .62, ctx.currentTime, .06);
     startNoiseBed();
     scheduler = setInterval(schedulerTick, 70);
     schedulerTick();
@@ -18770,21 +18851,21 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     var btn = document.getElementById('musicToggleBtn');
     if (!btn) return;
 
-    if (btn.dataset.t73v73MusicReady !== '1') {
+    if (btn.dataset.t73v74MusicReady !== '1') {
       var fresh = btn.cloneNode(true);
-      fresh.dataset.t73v73MusicReady = '1';
+      fresh.dataset.t73v74MusicReady = '1';
       btn.replaceWith(fresh);
       btn = fresh;
     }
 
     var oldV72 = document.getElementById('musicTrackSelect');
-    if (oldV72 && oldV72.className.indexOf('t73-v73-music-select') === -1) oldV72.remove();
+    if (oldV72 && oldV72.className.indexOf('t73-v74-music-select') === -1) oldV72.remove();
 
     var wrap = btn.parentElement;
     if (wrap && !document.getElementById('musicTrackSelect')) {
       var select = document.createElement('select');
       select.id = 'musicTrackSelect';
-      select.className = 't73-v73-music-select';
+      select.className = 't73-v74-music-select';
       select.title = 'Выбор фоновой музыки';
       select.setAttribute('aria-label', 'Выбор фоновой музыки');
       select.innerHTML = TRACKS.map(function(t, i){
@@ -18795,8 +18876,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       select.addEventListener('change', function(){ setTrack(this.value, true); });
     }
 
-    if (btn.dataset.t73v73ClickReady !== '1') {
-      btn.dataset.t73v73ClickReady = '1';
+    if (btn.dataset.t73v74ClickReady !== '1') {
+      btn.dataset.t73v74ClickReady = '1';
       btn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -18809,7 +18890,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   [250, 700, 1500, 3000].forEach(function(ms){ setTimeout(boot, ms); });
 
-  window.T73_V73_MUSIC_STUDIO = {
+  window.T73_V74_MUSIC_STUDIO = {
     tracks: TRACKS,
     play: playCurrent,
     pause: pauseCurrent,
@@ -18818,7 +18899,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   };
 })();
 </script>
-<!-- === /T73 V73 === -->
+<!-- === /T73 V74 === -->
 
 </body>
 </html>
