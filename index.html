@@ -11384,12 +11384,7 @@
                 const load=$15('t73V15LoadOrgLogs'); if(load) load.onclick=loadOrgLogs15;
                 injectOrgLogShortcut15();
             }
-            function injectOrgLogShortcut15(){
-                const c=$15('gossV4Content')||$15('gossV3Content'); if(!c || $15('t73V15OpenThisOrgLogs')) return;
-                const orgId=selectedOrgId15();
-                c.insertAdjacentHTML('afterbegin',`<div class="gov-v4-card t73-v15-card" style="margin-bottom:1rem;"><div class="gov-v4-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи ${esc15(org15(orgId).short)}</h3><p class="gov-v4-sub">Откройте отдельный журнал именно этой организации.</p></div><button id="t73V15OpenThisOrgLogs" class="btn btn-secondary" type="button">Открыть логи</button></div></div>`);
-                const b=$15('t73V15OpenThisOrgLogs'); if(b) b.onclick=()=>{currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs', $15('gossOrgLogsTabBtnV15')||b);};
-            }
+            function injectOrgLogShortcut15(){ return; }
             async function loadOrgLogs15(){
                 const sel=$15('t73V15OrgLogsSelect'); const orgId=sel?.value||currentOrgLogs15||'fsb'; currentOrgLogs15=orgId; const org=org15(orgId);
                 const info=$15('t73V15OrgLogsInfo'), list=$15('t73V15OrgLogsList'); if(!list) return;
@@ -11587,7 +11582,7 @@
             .g19-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.32);-webkit-overflow-scrolling:touch}.g19-table{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0}.g19-table th,.g19-table td{padding:.7rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:top}.g19-table th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,rgba(255,107,136,.30),rgba(108,140,255,.16))}.g19-table th:first-child,.g19-table td:first-child{position:sticky;left:0;z-index:3;text-align:left;background:rgba(13,16,32,.98);min-width:190px}.g19-cell{display:grid;gap:.4rem;min-width:150px}.g19-input,.g19-select,.g19-area{width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.55rem;font-weight:800}.g19-area{min-height:44px;resize:vertical}.g19-pill{display:inline-flex;gap:.25rem;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.75rem;font-weight:900;margin:.1rem}.g19-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.g19-form .full{grid-column:1/-1}.g19-drop{border:2px dashed rgba(255,107,136,.48);border-radius:18px;padding:1rem;background:rgba(255,107,136,.08)}.g19-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.g19-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.g19-proof img{width:100%;height:84px;object-fit:cover;border-radius:10px}.g19-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#ff4b69;color:#fff;font-weight:900}.g19-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}.g19-item{padding:1rem;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.30);display:grid;gap:.5rem}@media(max-width:760px){.g19-form{grid-template-columns:1fr}.g19-actions .btn{width:100%}.g19-table{min-width:980px}.g19-preview{grid-template-columns:repeat(2,1fr)}#gossOrgActionNavV4 .mode-btn{flex:1 1 100%}}
           </style>`)}
           function hideBad(){['reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportBtnMod','v16OpenBar','v16OpenTableTop','v16OpenReportTop','v16ReportTableBtnGen'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});document.querySelectorAll('#subNavModeration [data-mode="reports_table"]').forEach(e=>e.style.display='none')}
-          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🧾 Логи организации',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
+          async function nav(){ return; }
           async function profiles(oid){const m=new Map();try{const d=(await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||k,post:p.post||'—'})})}catch(e){}try{const d=(await supa.from('reports').select('*').eq('email',E.member).eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||p.name||k,post:p.post||'—'})})}catch(e){}return[...m.values()].sort((a,b)=>a.nick.localeCompare(b.nick,'ru'))}
           async function tableLoad(oid,wk){try{const d=(await supa.from('reports').select('*').eq('email',E.table).eq('link',oid).eq('status',wk).order('id',{ascending:false}).limit(1)).data||[];return d[0]?{id:d[0].id,data:parse(d[0].date,{})}:{id:null,data:{}}}catch(e){return{id:null,data:{}}}}
           async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
@@ -11642,7 +11637,7 @@
           async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
           async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдать отчёт». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
           async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
-          async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
+          async function nav(){ return; }
           let timer;function tick(){clearTimeout(timer);timer=setTimeout(nav,220)}
           document.addEventListener('click',e=>{if(e.target.closest?.('.gov-org-switch-v4,.gov-action-switch-v4'))setTimeout(tick,180)},true);
           setTimeout(tick,600);setTimeout(tick,1800);setTimeout(tick,3600);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V20={renderTableHub,renderManageHub,nav};
@@ -18924,7 +18919,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function supa(){return window.supa||window.t73Supa||window.supabaseClient||window.__T73_SUPA||null}
   function orgs(){return (typeof GOSS_ORGS!=='undefined'&&Array.isArray(GOSS_ORGS))?GOSS_ORGS:[{id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},{id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},{id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚔'},{id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},{id:'army',short:'Армия',name:'Армия',icon:'🎖️'},{id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},{id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},{id:'fsin',short:'ФСИН',name:'ФСИН',icon:'🔒'}]}
   function selectedOrg(){var id=document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId||document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId||document.querySelector('.gov-org-switch.active')?.dataset?.orgId;if(!id){var title=(($('gossV4Title')?.textContent||'')+' '+($('gossV3Title')?.textContent||'')+' '+($('gossV4Org')?.textContent||'')+' '+($('gossV3Org')?.textContent||'')).toLowerCase();orgs().some(function(o){if(title.indexOf(String(o.short).toLowerCase())!==-1||title.indexOf(String(o.name).toLowerCase())!==-1){id=o.id;return true}return false})}return orgs().find(function(o){return o.id===(id||'fsb')})||orgs()[0]}
-  function gossRoot(){ return $("gossV4Content") || $("gossV3Content") || $("gossDashView") || $("mode-goss_center_v4") || $("mode-fsb") || document.querySelector("#mode-goss_center_v4 .gov-v4-shell,#mode-goss_center_v3 .gov-v3-shell"); }
+  function gossRoot(){var p4=$('mode-goss_center_v4'),p3=$('mode-goss_center_v3');if(p4&&getComputedStyle(p4).display!=='none'&&$('gossV4Content'))return $('gossV4Content');if(p3&&getComputedStyle(p3).display!=='none'&&$('gossV3Content'))return $('gossV3Content');return $('gossV4Content')||$('gossV3Content')||$('gossDashView')||null}
   function parse(v){try{return v?JSON.parse(v):{}}catch(e){return {}}} function isCreator(){return !!(window.currentUser&&typeof creatorEmail!=='undefined'&&currentUser.email===creatorEmail)}
   async function roleRows(uid){var c=supa();if(!c||!uid)return[];try{var r=await c.from('reports').select('*').eq('email','ADMIN_ROLE').eq('link',uid).limit(1000);return r.data||[]}catch(e){return[]}}
   async function canLeadOrg(orgId){if(!window.currentUser)return false;if(isCreator())return true;var rows=await roleRows(currentUser.id);return rows.some(function(r){return r.status==='goss_admin_all'||r.status==='goss_lead_'+orgId})}
@@ -18953,1215 +18948,201 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function removeConfirmUi(){document.querySelectorAll('#authModal *').forEach(function(el){var t=String(el.textContent||'').toLowerCase();if((t.indexOf('подтверд')!==-1&&t.indexOf('почт')!==-1)||t.indexOf('email not confirmed')!==-1||t.indexOf('confirm your email')!==-1){if(el.id!=='authErrorMsg'&&el.tagName!=='INPUT')el.remove()}})}
   function authMsg(text,color){var e=$('authErrorMsg');if(e){e.textContent=text;e.style.display='block';e.style.color=color||'var(--color-error)'}}
   function patchAuthNoConfirm(){removeConfirmUi();var reg=$('authRegisterSubmit');if(!reg||reg.dataset.t73v75NoConfirm==='1')return;var fresh=reg.cloneNode(true);fresh.dataset.t73v75NoConfirm='1';reg.replaceWith(fresh);fresh.onclick=async function(e){e.preventDefault();e.stopPropagation();var c=supa(),email=String($('authEmail')?.value||'').trim().toLowerCase(),nick=String($('authNickname')?.value||'').trim(),pass=String($('authPassword')?.value||'');if(!c||!c.auth)return authMsg('Supabase ещё не загрузился. Обновите страницу.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return authMsg('Введите Email.');if(nick.length<3)return authMsg('Введите Nickname минимум 3 символа.');if(pass.length<6)return authMsg('Пароль должен быть минимум 6 символов.');authMsg('Создаю аккаунт и пробую войти без подтверждения почты...','var(--color-primary)');var sign=await c.auth.signUp({email:email,password:pass,options:{data:{nickname:nick}}});if(sign.error)return authMsg(sign.error.message);try{await c.from('user_stats').upsert([{user_id:sign.data?.user?.id||email,email:email,nickname:nick}],{onConflict:'user_id'})}catch(err){}var login=await c.auth.signInWithPassword({email:email,password:pass});if(!login.error){authMsg('Аккаунт создан. Входим...','var(--color-success)');setTimeout(function(){location.reload()},500);return}if(/email.*confirm|confirm.*email|not confirmed|подтверд/i.test(login.error.message||''))authMsg('Аккаунт создан. На сайте подтверждение почты убрано. Если вход всё равно блокируется, выключите Confirm email в Supabase: Authentication → Providers → Email.','var(--color-warning)');else authMsg('Аккаунт создан, но вход не выполнен: '+login.error.message)};if(!$('t73V75AuthNote')&&fresh.parentElement)fresh.insertAdjacentHTML('afterend','<div id="t73V75AuthNote" class="t73-v75-auth-note">Подтверждение почты на стороне сайта отключено: после регистрации сайт сразу пробует войти.</div>')}
-  document.addEventListener('click',function(e){var btn=e.target&&e.target.closest&&e.target.closest('button,a,.mode-btn');if(!btn)return;var inGoss=!!btn.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,#gossV4Content,#gossV3Content,#gossDashView,[id^="mode-goss"]');var txt=String(btn.textContent||'').toLowerCase().replace(/ё/g,'е');var reportIntent=(btn.dataset&&btn.dataset.view==='reports')||/провер.*отчет|отчеты состава/.test(txt)||btn.id==='govV4CheckReportsBtn'||btn.id==='v27GossViewReportsBtn';if(inGoss&&reportIntent){e.preventDefault();e.stopImmediatePropagation();showGossReports();return false}setTimeout(function(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()},120)},true)
+  document.addEventListener('click',function(e){var btn=e.target&&e.target.closest&&e.target.closest('button,a,.mode-btn');if(!btn)return;var inGoss=!!btn.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,#gossV4Content,#gossV3Content,#gossDashView,[id^="mode-goss"]');var txt=String(btn.textContent||'').toLowerCase().replace(/ё/g,'е');var reportIntent=(btn.dataset&&btn.dataset.view==='reports')||/провер.*отчет|отчеты состава/.test(txt)||btn.id==='govV4CheckReportsBtn'||btn.id==='v27GossViewReportsBtn';if(false&&inGoss&&reportIntent){e.preventDefault();e.stopImmediatePropagation();showGossReports();return false}setTimeout(function(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()},120)},true)
   function boot(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()} if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();[250,700,1500,3000,5500].forEach(function(ms){setTimeout(boot,ms)});try{new MutationObserver(function(){clearTimeout(window.__t73v75mo);window.__t73v75mo=setTimeout(boot,180)}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
   window.T73_V75_FINAL={showReports:showGossReports,processReport:processReport,injectPoints:injectPointsCard,enhanceShop:enhanceShopBuilders,patchAuth:patchAuthNoConfirm};
 })();
 </script>
 <!-- === /T73 V75 === -->
 
-<!-- === T73 V76: фикс списков пользователей ГОСС + честный тренажёр с расширенными вопросами === -->
-<style id="t73-v76-goss-fix-style">
-  .t73-v76-note{margin:.55rem 0 0;padding:.65rem .8rem;border-radius:14px;border:1px solid rgba(127,232,160,.30);background:rgba(127,232,160,.08);color:var(--color-text-muted);font-size:.88rem;line-height:1.45}
-  .t73-v76-trainer{display:grid;gap:1rem}.t73-v76-card{padding:1.1rem;border-radius:20px;border:1px solid rgba(255,107,136,.30);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(7,9,18,.98));box-shadow:0 14px 36px rgba(0,0,0,.36)}
-  .t73-v76-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}.t73-v76-muted{color:var(--color-text-muted);font-size:.93rem;line-height:1.5}.t73-v76-pill{display:inline-flex;align-items:center;border-radius:999px;padding:.36rem .72rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font-weight:900;font-size:.82rem}
-  .t73-v76-question{font-size:1.05rem;line-height:1.55;color:#fff;margin:.35rem 0 0}.t73-v76-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:.9rem;align-items:stretch}.t73-v76-option{width:100%;min-height:136px;padding:1rem;border-radius:18px;border:1px solid rgba(191,198,255,.22);background:rgba(13,16,32,.84);color:#fff;text-align:left;font-weight:850;line-height:1.35;display:flex;flex-direction:column;gap:.65rem;justify-content:center;cursor:pointer}.t73-v76-option:hover{border-color:#ff6b88;background:rgba(255,107,136,.12)}.t73-v76-option.good{border-color:rgba(127,232,160,.75);background:rgba(127,232,160,.14)}.t73-v76-option.bad{border-color:rgba(255,107,136,.78);background:rgba(255,107,136,.16)}.t73-v76-option:disabled{cursor:not-allowed;opacity:.88}.t73-v76-tag{display:inline-flex;width:max-content;border-radius:999px;padding:.22rem .58rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--color-text-muted);font-size:.75rem;letter-spacing:.07em;text-transform:uppercase}.t73-v76-feedback{margin-top:.85rem;padding:.85rem 1rem;border-radius:16px;border:1px solid rgba(127,232,160,.28);background:rgba(127,232,160,.08);color:#fff;line-height:1.45}@media(max-width:760px){.t73-v76-options{grid-template-columns:1fr}.t73-v76-option{min-height:116px}}
+
+<!-- === T73 V81: SAFE GOSS/СС PATCH ONLY — moderation from v75 untouched === -->
+<style id="t73-v81-goss-ss-style">
+  #gossOrgActionNavV4{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;padding-bottom:.35rem;}
+  #gossOrgActionNavV4 .mode-btn{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;white-space:nowrap;}
+  #gossOrgActionNavV4 #g20Submit,#gossOrgActionNavV4 #g20Table,#gossOrgActionNavV4 #g20Shop,#gossOrgActionNavV4 #g20Manage,#gossOrgActionNavV4 #g19Logs,#gossOrgActionNavV4 #g19Global,#gossOrgActionNavV4 #gossOrgLogsTabBtnV15{display:none!important;}
+  .t73-v81-card{border:1px solid rgba(127,232,160,.24);background:linear-gradient(145deg,rgba(9,18,16,.92),rgba(7,9,18,.98));box-shadow:0 14px 34px rgba(0,0,0,.38);border-radius:20px;padding:1.05rem;margin-bottom:1rem;}
+  .t73-v81-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+  .t73-v81-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45;}
+  .t73-v81-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;}
+  .t73-v81-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;}
+  .t73-v81-form .full{grid-column:1/-1;}
+  .t73-v81-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.88rem;}
+  .t73-v81-actions{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.8rem;}
+  .t73-v81-pill{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.28rem .65rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;font-size:.78rem;font-weight:900;}
+  .t73-v81-report{display:grid;gap:.72rem;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);padding:1rem;}
+  .t73-v81-statusbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;}
+  .t73-v81-statusbar .btn{width:100%;justify-content:center;}
+  .t73-v81-daygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:.65rem;}
+  .t73-v81-day{border-radius:16px;border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.28);padding:.75rem;display:grid;gap:.45rem;}
+  .t73-v81-day strong{color:#fff;}
+  .t73-v81-empty{padding:1rem;border-radius:16px;border:1px solid rgba(255,191,71,.35);background:rgba(255,191,71,.08);color:#fff;}
+  .t73-v81-ok{color:var(--color-success)!important;}
+  @media(max-width:760px){.t73-v81-form{grid-template-columns:1fr}.t73-v81-statusbar{grid-template-columns:1fr 1fr}.t73-v81-actions .btn{width:100%;}.t73-v81-card{padding:.9rem;}}
 </style>
-<script id="t73-v76-goss-fix-script">
+<script id="t73-v81-goss-ss-only">
 (function(){
   'use strict';
-  if (window.__T73_V76_GOSS_USERS_TRAINER__) return;
-  window.__T73_V76_GOSS_USERS_TRAINER__ = true;
+  if (window.__T73_V81_GOSS_SS_ONLY__) return;
+  window.__T73_V81_GOSS_SS_ONLY__ = true;
 
-  var USER_SELECT_IDS = ['gossLeadUserSelect','gossV3SeniorUser','govV4SeniorUser','v22User','v23LeadUser','v24User','v26SeniorUser','v26bUser','g19User','t73V75PointsUser','leadershipUserSelect','hiddenCheckUser','leadAddModSelect','apAdminUserSelect','leadAddApSelect','fsbAdminUserSelect','leadAddFsbSelect','creatorUserSelect','creatorAdminSelect'];
-  var ORG_META = {
-    government:{short:'Правительство', name:'Правительство', icon:'🏛️', topic:'обращение гражданина', case1:'проверку структуры', case2:'постановление', case3:'заседание', case4:'конфликт отделов'},
-    fsb:{short:'ФСБ', name:'ФСБ', icon:'🛡️', topic:'оперативную проверку', case1:'допуск к информации', case2:'собеседование кандидата', case3:'утечку данных', case4:'служебную рацию'},
-    gibdd:{short:'ГИБДД', name:'ГИБДД', icon:'🚔', topic:'жалобу на инспектора', case1:'оформление ДТП', case2:'штраф без основания', case3:'пост ДПС', case4:'опасную погоню'},
-    umvd:{short:'УМВД', name:'УМВД', icon:'👮', topic:'вызов гражданина', case1:'задержание', case2:'патруль', case3:'обыск', case4:'жалобу на сотрудника'},
-    army:{short:'Армия', name:'Армия', icon:'🎖️', topic:'наряд на посту', case1:'КПП', case2:'учения', case3:'рапорт', case4:'проверку склада'},
-    hospital:{short:'Больница', name:'Больница', icon:'🏥', topic:'обращение пациента', case1:'очередь в больнице', case2:'медкарту', case3:'выезд на вызов', case4:'склад лекарств'},
-    smi:{short:'СМИ', name:'СМИ', icon:'🎙️', topic:'эфир', case1:'объявление', case2:'интервью', case3:'новость без источника', case4:'редакционный отчёт'},
-    fsin:{short:'ФСИН', name:'ФСИН', icon:'🔒', topic:'режимный инцидент', case1:'обход камер', case2:'допуск посетителя', case3:'документ заключённого', case4:'служебную связь'}
-  };
-  ORG_META.mvd = ORG_META.umvd;
-
-  function q(from, text, good, bad1, bad2, reply){
-    return { from:from, text:text, options:[
-      { text:good, good:true, reply:reply },
-      { text:bad1, good:false, reply:'Неверно: такой вариант нарушает порядок или не даёт проверки фактов.' },
-      { text:bad2, good:false, reply:'Неверно: старший состав должен действовать по процедуре и фиксировать итог.' }
-    ]};
-  }
-  function buildBank(){
-    var bank = {};
-    Object.keys(ORG_META).forEach(function(id){
-      var m = ORG_META[id];
-      bank[id] = [
-        q('Проверка', 'Поступило ' + m.topic + ', но доказательства неполные. Как действует старший состав ' + m.short + '?', 'Запросить материалы, сверить факты и оформить итог', 'Выбрать виновного сразу и закрыть обращение', 'Игнорировать ситуацию до повторной жалобы', 'Верно: решение принимается по фактам, а не по догадкам.'),
-        q('Процедура', 'Сотрудник нарушил порядок в ситуации: ' + m.case1 + '. Какой первый шаг руководителя?', 'Остановить ошибку, разобрать порядок и зафиксировать', 'Поддержать сотрудника только из-за должности', 'Скрыть нарушение, если никто не заметил', 'Верно: сначала контроль процедуры и фиксация.'),
-        q('Кандидат', 'Кандидат проходит ' + m.case2 + ', но не понимает базовые обязанности. Какой вердикт корректен?', 'Отказать или отправить учить слабые темы', 'Принять ради количества сотрудников', 'Пропустить проверку и поставить в состав', 'Верно: неподготовленного кандидата нельзя ставить без подготовки.'),
-        q('Документы', 'В документе по теме «' + m.case3 + '» нет даты, основания и ответственного. Что делать?', 'Вернуть на правку и указать обязательные пункты', 'Принять документ, если текст выглядит длинным', 'Удалить документ без объяснения автору', 'Верно: документ должен быть проверяемым и понятным.'),
-        q('Дисциплина', 'Во время работы появился спор по теме «' + m.case4 + '» и он мешает составу. Как реагировать?', 'Развести стороны, сверить правила и закрепить итог', 'Поддержать знакомого без разбора деталей', 'Оставить конфликт до следующей смены', 'Верно: конфликт решается регламентом и фиксируется.'),
-        q('Отчёт', 'Отчёт по работе ' + m.short + ' объёмный, но не содержит доказательств. Что выберет проверяющий?', 'Вернуть отчёт и попросить подтверждения работы', 'Одобрить отчёт только за большой текст', 'Отказать навсегда без права исправить', 'Верно: объём текста не заменяет доказательства.'),
-        q('Рация', 'В служебной связи ' + m.short + ' начался флуд во время важной координации. Что делает СС?', 'Пресечь флуд, вернуть формат и отметить повтор', 'Поддержать разговор для поднятия настроения', 'Отключить связь всем без альтернативы', 'Верно: служебная связь должна помогать управлению.'),
-        q('Жалоба', 'Игрок пишет эмоционально, но вопрос относится к компетенции ' + m.short + '. Какой ответ правильный?', 'Спокойно принять вопрос и перейти к фактам', 'Закрыть диалог только из-за эмоций', 'Ответить тем же тоном и закончить спор', 'Верно: тон должен быть спокойным, а факты — проверенными.')
-      ];
-    });
-    return bank;
-  }
-  var BANK = buildBank(), userCache = { at:0, rows:[] }, round = null;
-
+  var E = { report:'GOSS_USER_REPORT', table:'GOSS_REPORT_TABLE_V19', member:'GOSS_REPORT_MEMBER_V19', profile:'GOSS_PROFILE', access:'ADMIN_ROLE', log:'GOSS_ORG_LOG_V19', points:'GOSS_POINTS_V19' };
+  var weekOffset = 0, usersCache = {at:0, rows:[]}, rolesCache = {at:0, rows:[]};
   function $(id){ return document.getElementById(id); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); }
-  function norm(v){ return String(v == null ? '' : v).trim(); }
-  function parse(v){ try { return v ? JSON.parse(v) : {}; } catch(e){ return {}; } }
-  function client(){
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e){}
-    try { if (window.supa && typeof window.supa.from === 'function') return window.supa; } catch(e){}
-    try { if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa; } catch(e){}
-    try { if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; } catch(e){}
-    try { if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA; } catch(e){}
-    return null;
-  }
-  async function authUser(){
-    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){}
-    if (window.currentUser) return window.currentUser;
-    var c = client();
-    try { if (c && c.auth && typeof c.auth.getUser === 'function') { var r = await c.auth.getUser(); return r && r.data ? r.data.user : null; } } catch(e){}
-    return null;
-  }
-  function addUser(map, id, nick, email){
-    id = norm(id);
-    if (!id || id === 'undefined' || id === 'null' || id === 'Нет пользователей') return;
-    var old = map[id] || { id:id, user_id:id, nick:'', nickname:'', email:'' };
-    var label = norm(nick || old.nick || old.nickname || email || id);
-    old.nick = label; old.nickname = label; old.email = norm(old.email || email || '');
-    map[id] = old;
-  }
-  async function collectUsers(force){
-    if (!force && userCache.rows.length && Date.now() - userCache.at < 45000) return userCache.rows.slice();
-    var map = {}, c = client();
-    try { if (window.T73_V71_GOSS_USERLIST_FINAL && typeof window.T73_V71_GOSS_USERLIST_FINAL.collect === 'function') { var d = await window.T73_V71_GOSS_USERLIST_FINAL.collect(); (d.users || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } } catch(e){}
-    try { (window.adminUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
-    try { (window.creatorUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
-    if (c) {
-      try { var us = await c.from('user_stats').select('user_id,nickname,email').limit(2000); (us.data || []).forEach(function(u){ addUser(map, u.user_id, u.nickname || u.email || u.user_id, u.email); }); } catch(e){}
-      try { var reps = await c.from('reports').select('email,link,status,date').limit(4000); (reps.data || []).forEach(function(r){
-        var p = parse(r.date), email = String(r.email || '');
-        if (email === 'ADMIN_ROLE') addUser(map, r.link, r.link, '');
-        if (email === 'GOSS_PROFILE' || email.indexOf('GOSS_PROFILE') === 0 || email === 'GOSS_USER_REPORT' || email.indexOf('REPORT_TABLE_MEMBER') === 0) addUser(map, p.userId || p.user_id || p.id || r.status || r.link, p.nick || p.nickname || p.name || r.status || r.link, p.email || '');
-        if (p && (p.userId || p.user_id || p.id || p.nick || p.nickname || p.email)) addUser(map, p.userId || p.user_id || p.id || r.status || r.link, p.nick || p.nickname || p.name || p.email || r.status || r.link, p.email || '');
-      }); } catch(e){}
-    }
-    var u = await authUser();
-    if (u) addUser(map, u.id, window.currentNickname || u.email || u.id, u.email || '');
-    var rows = Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), 'ru'); });
-    try { window.adminUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
-    try { window.creatorUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
-    try { if (typeof adminUsersList !== 'undefined') adminUsersList = window.adminUsersList.slice(); } catch(e){}
-    try { if (typeof creatorUsersList !== 'undefined') creatorUsersList = window.creatorUsersList.slice(); } catch(e){}
-    userCache = { at:Date.now(), rows:rows };
-    return rows.slice();
-  }
-  function optionHtml(u){ var label = u.nick || u.nickname || u.email || u.id; if (u.email && label.indexOf(u.email) === -1) label += ' · ' + u.email; return '<option value="' + esc(u.id) + '">' + esc(label) + '</option>'; }
-  function emptySelect(sel){ var t = norm(sel && sel.textContent).toLowerCase(); return !sel || !sel.options || !sel.options.length || t.indexOf('нет пользователей') !== -1 || t.indexOf('загрузка') !== -1 || t.indexOf('не удалось загрузить') !== -1; }
-  function note(sel){ if (!sel || !sel.parentElement || sel.parentElement.querySelector('.t73-v76-note')) return; var d = document.createElement('div'); d.className = 't73-v76-note'; d.textContent = 'Список пользователей загружен фикс-патчем V76: руководитель ГОСС теперь видит людей для выдачи/снятия СС.'; sel.parentElement.appendChild(d); }
-  async function fillSelects(force){
-    var targets = USER_SELECT_IDS.map(function(id){ return $(id); }).filter(Boolean);
-    if (!targets.length && !force) return;
-    var users = await collectUsers(!!force);
-    targets.forEach(function(sel){
-      if (!sel) return;
-      if (users.length) {
-        if (force || emptySelect(sel) || sel.id === 'govV4SeniorUser' || sel.id === 'gossV3SeniorUser' || sel.id === 'v23LeadUser' || sel.id === 'v24User') {
-          var old = sel.value; sel.innerHTML = users.map(optionHtml).join('');
-          if (old && users.some(function(u){ return u.id === old; })) sel.value = old;
-          sel.dataset.t73v76Filled = '1'; note(sel);
-        }
-      } else if (emptySelect(sel)) {
-        sel.innerHTML = '<option value="">Не удалось загрузить список — проверьте доступ к user_stats/reports</option>';
-      }
-    });
-  }
-  var oldLoad = null;
-  try { if (typeof loadUsersForAdmin === 'function') oldLoad = loadUsersForAdmin; } catch(e){}
-  async function patchedLoadUsersForAdmin(){ try { if (oldLoad) await oldLoad.apply(this, arguments); } catch(e){} await fillSelects(true); return window.adminUsersList || []; }
-  try { loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
-  try { window.loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
-
-  function creatorMail(){ try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return creatorEmail; } catch(e){} try { return window.creatorEmail || ''; } catch(e){} return ''; }
-  function orgList(){
-    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS)) return GOSS_ORGS; } catch(e){}
-    return Object.keys(ORG_META).filter(function(id){ return id !== 'mvd'; }).map(function(id){ return { id:id, short:ORG_META[id].short, name:ORG_META[id].name, icon:ORG_META[id].icon }; });
-  }
-  function currentOrg(){
-    var id = null, active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active');
-    if (active && active.dataset) id = active.dataset.orgId;
-    if (!id) {
-      var txt = (($('gossV4Title') && $('gossV4Title').textContent) || '') + ' ' + (($('gossV4Org') && $('gossV4Org').textContent) || '');
-      orgList().some(function(o){ if (txt.toLowerCase().indexOf(String(o.short).toLowerCase()) !== -1 || txt.toLowerCase().indexOf(String(o.name).toLowerCase()) !== -1) { id = o.id; return true; } return false; });
-    }
-    return orgList().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgList()[0];
-  }
-  function root(){ var p = $('mode-goss_center_v4'); if (p && getComputedStyle(p).display !== 'none') return $('gossV4Content'); return $('gossV4Content'); }
-  function trainerActive(){
-    var p = $('mode-goss_center_v4'), r = root();
-    if (!p || getComputedStyle(p).display === 'none' || !r) return false;
-    var active = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active');
-    // V79: не считаем тренажёр активным только потому, что он уже лежит в контейнере.
-    // Иначе после смены фракции/режима v76 оставлял один тренажёр и ломал вкладки ГОСС.
-    if (active && active.dataset && active.dataset.view) return active.dataset.view === 'trainer';
-    var nav = $('gossOrgActionNavV4');
-    if (nav && nav.querySelector('.gov-action-switch-v4')) return false;
-    return /тренаж[её]р/i.test(r.textContent || '') && !/Панель руководства|Таблица старшего|Проверка отч[её]тов|Сдать (гос )?отч[её]т|Мои данные|Магазин/i.test(r.textContent || '');
-  }
-  function shuffle(arr){ return arr.map(function(x){ return {v:x, r:Math.random()}; }).sort(function(a,b){ return a.r-b.r; }).map(function(x){ return x.v; }); }
-  function makeRound(orgId){ var list = BANK[orgId] || BANK.fsb || []; var qn = list[Math.floor(Math.random() * list.length)]; round = { orgId:orgId, q:qn, options:shuffle(qn.options.slice()), answered:false }; return round; }
-  function getRound(orgId){ if (!round || round.orgId !== orgId || !round.q) return makeRound(orgId); return round; }
-  function renderTrainer(force){
-    if (!trainerActive() && !force) return;
-    var r = root(); if (!r) return;
-    if (r.querySelector('#t73V76Trainer') && !force) return;
-    var org = currentOrg(), qn = getRound(org.id), count = (BANK[org.id] || BANK.fsb || []).length;
-    var html = '';
-    html += '<div id="t73V76Trainer" class="t73-v76-trainer">';
-    html += '<div class="t73-v76-card"><div class="t73-v76-head"><div><h3 style="margin:0;color:#ff6b88;">🎮 ГОСС тренажёр — ' + esc(org.short) + '</h3><div class="t73-v76-muted">Добавлен расширенный банк вопросов. Варианты специально укорочены и перемешиваются, поэтому выбирать самый длинный текст больше не помогает.</div></div><span class="t73-v76-pill">' + esc(count) + ' вопросов</span></div></div>';
-    html += '<div class="t73-v76-card"><span class="t73-v76-pill">' + esc(qn.from) + '</span><div class="t73-v76-question">' + esc(qn.text) + '</div><div class="t73-v76-options">';
-    html += qn.options.map(function(o,i){ return '<button class="t73-v76-option" data-i="' + i + '" type="button"><span class="t73-v76-tag">Вариант ' + String.fromCharCode(65+i) + '</span><span>' + esc(o.text) + '</span></button>'; }).join('');
-    html += '</div><div id="t73V76Feedback"></div></div><div class="gov-v4-actions"><button id="t73V76Next" class="btn btn-secondary" type="button">Следующая ситуация</button></div></div>';
-    r.innerHTML = html;
-    r.querySelectorAll('.t73-v76-option').forEach(function(btn){ btn.onclick = function(){
-      if (round.answered) return; round.answered = true;
-      var o = round.options[Number(btn.dataset.i)];
-      r.querySelectorAll('.t73-v76-option').forEach(function(b,idx){ b.disabled = true; if (round.options[idx].good) b.classList.add('good'); });
-      btn.classList.add(o.good ? 'good' : 'bad');
-      var f = $('t73V76Feedback'); if (f) f.innerHTML = '<div class="t73-v76-feedback">' + (o.good ? '✅ ' : '❌ ') + esc(o.reply) + '</div>';
-      try { if (typeof playSound === 'function') playSound(o.good ? 'ok' : 'fail'); } catch(e){}
-    }; });
-    var next = $('t73V76Next'); if (next) next.onclick = function(){ makeRound(currentOrg().id); renderTrainer(true); };
-  }
-  function boot(){ fillSelects(false); renderTrainer(false); }
-  document.addEventListener('click', function(e){
-    var t = e.target;
-    setTimeout(function(){ fillSelects(false); renderTrainer(false); }, 120);
-    if (t && t.closest && t.closest('.gov-org-switch-v4,.gov-action-switch-v4,[data-mode="goss_center_v4"]')) setTimeout(function(){ fillSelects(true); renderTrainer(false); }, 420);
-  }, true);
-  document.addEventListener('focusin', function(e){ if (e.target && e.target.tagName === 'SELECT' && USER_SELECT_IDS.indexOf(e.target.id) !== -1) fillSelects(true); }, true);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [250,700,1500,3000,5500,8500].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73_v76_timer); window.__t73_v76_timer = setTimeout(boot, 180); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V76_GOSS_FIX = { collectUsers:function(){ return collectUsers(true); }, fillUsers:function(){ return fillSelects(true); }, renderTrainer:function(){ return renderTrainer(true); }, questions:BANK };
-})();
-</script>
-<!-- === /T73 V76 === -->
-
-<!-- === T73 V77: видимая выдача статуса старшего состава в панели руководства === -->
-<style id="t73-v77-senior-style">
-  .t73-v77-card{padding:1.05rem;border-radius:20px;border:1px solid rgba(255,107,136,.34);background:linear-gradient(145deg,rgba(18,12,24,.96),rgba(6,8,18,.98));box-shadow:0 16px 40px rgba(0,0,0,.38);display:grid;gap:.9rem;margin-bottom:1rem}
-  .t73-v77-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.85rem;flex-wrap:wrap}.t73-v77-title{margin:0;color:#ff6b88;font-size:1.12rem}.t73-v77-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45}.t73-v77-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.t73-v77-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-size:.88rem;font-weight:900}.t73-v77-form .full{grid-column:1/-1}.t73-v77-input,.t73-v77-select{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(4,6,12,.9);color:#fff;padding:.82rem .95rem;outline:none}.t73-v77-input:focus,.t73-v77-select:focus{border-color:rgba(255,107,136,.75);box-shadow:0 0 0 3px rgba(255,107,136,.12)}.t73-v77-actions{display:flex;gap:.6rem;flex-wrap:wrap}.t73-v77-badge{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.32rem .68rem;border:1px solid rgba(127,232,160,.34);background:rgba(127,232,160,.10);color:#dfffea;font-weight:900;font-size:.78rem}.t73-v77-list{display:grid;gap:.5rem}.t73-v77-row{padding:.7rem .8rem;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);display:flex;justify-content:space-between;gap:.7rem;align-items:center;flex-wrap:wrap}.t73-v77-help{padding:.72rem .85rem;border-radius:14px;border:1px solid rgba(255,191,71,.32);background:rgba(255,191,71,.08);color:#ffe2a0;font-size:.88rem;line-height:1.4}@media(max-width:760px){.t73-v77-form{grid-template-columns:1fr}.t73-v77-actions .btn{width:100%}}
-</style>
-<script id="t73-v77-senior-panel-fix">
-(function(){
-  'use strict';
-  if (window.__T73_V77_SENIOR_PANEL_FIX__) return;
-  window.__T73_V77_SENIOR_PANEL_FIX__ = true;
-
-  var ACCESS_EMAIL = 'ADMIN_ROLE';
-  var LOG_EMAIL = 'GOSS_ORG_LOG_V77';
-  var cache = { at:0, users:[], roles:[] };
-  var SELECT_IDS = ['t73V77SeniorUser','v23LeadUser','v26SeniorUser','v26bUser','gossV3SeniorUser','govV4SeniorUser','gossLeadUserSelect'];
-
-  function $(id){ return document.getElementById(id); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); }
-  function norm(v){ return String(v == null ? '' : v).trim(); }
-  function rid(p){ return p + '_' + Date.now() + '_' + Math.random().toString(36).slice(2); }
-  function now(){ return new Date().toLocaleString('ru-RU'); }
-  function parse(v){ try { return v ? JSON.parse(v) : {}; } catch(e){ return {}; } }
-  function supa(){
-    try { if (typeof window.supa !== 'undefined' && window.supa && window.supa.from) return window.supa; } catch(e){}
-    try { if (window.t73Supa && window.t73Supa.from) return window.t73Supa; } catch(e){}
-    try { if (window.supabaseClient && window.supabaseClient.from) return window.supabaseClient; } catch(e){}
-    try { if (window.__T73_SUPA && window.__T73_SUPA.from) return window.__T73_SUPA; } catch(e){}
-    return null;
-  }
-  async function authUser(){
-    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){}
-    try { if (window.currentUser) return window.currentUser; } catch(e){}
-    var c = supa();
-    try { if (c && c.auth && c.auth.getUser) { var r = await c.auth.getUser(); return r && r.data ? r.data.user : null; } } catch(e){}
-    return null;
-  }
-  function creatorMail(){ try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return creatorEmail; } catch(e){} try { return window.creatorEmail || ''; } catch(e){} return ''; }
-  function orgList(){
-    try { if (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) return window.GOSS_ORGS; } catch(e){}
-    return [
-      {id:'prav',short:'Правительство',name:'Правительство',icon:'🏛️'},
-      {id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},
-      {id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚔'},
-      {id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},
-      {id:'army',short:'Армия',name:'Армия',icon:'🎖️'},
-      {id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},
-      {id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},
-      {id:'fsin',short:'ФСИН',name:'ФСИН',icon:'🔒'}
-    ];
-  }
-  function currentOrg(){
-    var id = null;
-    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
-    if (active && active.dataset) id = active.dataset.orgId || active.dataset.org || active.dataset.id;
-    if (!id) {
-      var txt = [
-        $('gossV4Title') && $('gossV4Title').textContent,
-        $('gossV3Title') && $('gossV3Title').textContent,
-        $('gossV4Org') && $('gossV4Org').textContent,
-        $('gossV3Org') && $('gossV3Org').textContent
-      ].join(' ').toLowerCase();
-      orgList().some(function(o){
-        var s = String(o.short || '').toLowerCase(), n = String(o.name || '').toLowerCase();
-        if ((s && txt.indexOf(s) !== -1) || (n && txt.indexOf(n) !== -1)) { id = o.id; return true; }
-        return false;
-      });
-    }
-    return orgList().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgList()[0];
-  }
-  function root(){
-    var p4 = $('mode-goss_center_v4'), p3 = $('mode-goss_center_v3');
-    try { if (p4 && getComputedStyle(p4).display !== 'none' && $('gossV4Content')) return $('gossV4Content'); } catch(e){}
-    try { if (p3 && getComputedStyle(p3).display !== 'none' && $('gossV3Content')) return $('gossV3Content'); } catch(e){}
-    return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || null;
-  }
-  function addUser(map, id, nick, email){
-    id = norm(id || email || nick);
-    if (!id || id === 'undefined' || id === 'null' || /нет пользователей/i.test(id)) return;
-    var old = map[id] || { id:id, user_id:id, nick:'', nickname:'', email:'' };
-    var label = norm(nick || old.nick || old.nickname || email || id);
-    old.nick = label;
-    old.nickname = label;
-    old.email = norm(old.email || email || '');
-    map[id] = old;
-  }
-  async function collectRoles(force){
-    if (!force && cache.roles.length && Date.now() - cache.at < 35000) return cache.roles.slice();
-    var c = supa(); if (!c) return [];
-    try {
-      var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email', ACCESS_EMAIL).limit(8000);
-      cache.roles = r.data || [];
-      return cache.roles.slice();
-    } catch(e){ return cache.roles.slice(); }
-  }
-  async function collectUsers(force){
-    if (!force && cache.users.length && Date.now() - cache.at < 35000) return cache.users.slice();
-    var map = {}, c = supa();
-    try { if (window.T73_V76_GOSS_FIX && window.T73_V76_GOSS_FIX.collectUsers) { var u76 = await window.T73_V76_GOSS_FIX.collectUsers(); (u76 || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } } catch(e){}
-    try { if (window.T73_V71_GOSS_USERLIST_FINAL && window.T73_V71_GOSS_USERLIST_FINAL.collect) { var u71 = await window.T73_V71_GOSS_USERLIST_FINAL.collect(); (u71.users || u71 || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } } catch(e){}
-    try { (window.adminUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
-    try { (window.creatorUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
-    if (c) {
-      try { var us = await c.from('user_stats').select('user_id,nickname,email').limit(4000); (us.data || []).forEach(function(u){ addUser(map, u.user_id, u.nickname || u.email || u.user_id, u.email); }); } catch(e){}
-      try { var reps = await c.from('reports').select('email,link,status,date').limit(8000); (reps.data || []).forEach(function(r){
-        var p = parse(r.date), email = String(r.email || ''), link = r.link, status = r.status;
-        if (email === ACCESS_EMAIL) addUser(map, link, link, '');
-        if (email === 'GOSS_PROFILE' || email.indexOf('GOSS_PROFILE') === 0 || email === 'GOSS_USER_REPORT' || email.indexOf('GOSS_REPORT_MEMBER') === 0 || email.indexOf('REPORT_TABLE_MEMBER') === 0) {
-          addUser(map, p.userId || p.user_id || p.id || status || link, p.nick || p.nickname || p.name || status || link, p.email || '');
-        }
-        if (p && (p.userId || p.user_id || p.id || p.nick || p.nickname || p.email)) addUser(map, p.userId || p.user_id || p.id || status || link, p.nick || p.nickname || p.name || p.email || status || link, p.email || '');
-      }); } catch(e){}
-    }
-    var au = await authUser();
-    if (au) addUser(map, au.id, window.currentNickname || au.email || au.id, au.email || '');
-    var rows = Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), 'ru'); });
-    try { window.adminUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
-    try { window.creatorUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
-    try { if (typeof adminUsersList !== 'undefined') adminUsersList = window.adminUsersList.slice(); } catch(e){}
-    try { if (typeof creatorUsersList !== 'undefined') creatorUsersList = window.creatorUsersList.slice(); } catch(e){}
-    cache.at = Date.now(); cache.users = rows;
-    return rows.slice();
-  }
-  function optionHtml(u){
-    var label = u.nick || u.nickname || u.email || u.id;
-    if (u.email && String(label).indexOf(u.email) === -1) label += ' · ' + u.email;
-    var search = [u.id,u.user_id,u.nick,u.nickname,u.email].join(' ').toLowerCase();
-    return '<option value="' + esc(u.id) + '" data-search="' + esc(search) + '">' + esc(label) + '</option>';
-  }
-  async function canGrant(orgId){
-    var u = await authUser();
-    if (!u) return false;
-    try { var ce = creatorMail(); if (ce && u.email === ce) return true; } catch(e){}
-    var roles = await collectRoles(false);
-    return roles.some(function(r){
-      return r.link === u.id && (r.status === 'goss_admin_all' || r.status === 'goss_senior_all' || r.status === 'goss_lead_' + orgId || r.status === 'goss_senior_' + orgId);
-    });
-  }
-  async function canGlobal(){
-    var u = await authUser();
-    if (!u) return false;
-    try { var ce = creatorMail(); if (ce && u.email === ce) return true; } catch(e){}
-    var roles = await collectRoles(false);
-    return roles.some(function(r){ return r.link === u.id && (r.status === 'goss_admin_all' || r.status === 'goss_senior_all'); });
-  }
-  function isManageVisible(){
-    var r = root(); if (!r) return false;
-    var txt = String(r.textContent || '').toLowerCase().replace(/ё/g,'е');
-    if (r.querySelector('#t73V77SeniorCard')) return true;
-    if (/госс тренажер|следующая ситуация|вариант a|магазин госс|сдать госс отчет|проверка госс отчетов/.test(txt)) return false;
-    if (document.querySelector('.gov-action-switch-v4.active[data-view="manage"],.gov-action-switch-v3.active[data-view="manage"],#g20Manage.active,#v26LeadershipPanelBtn.active')) return true;
-    if (/панель руководства|управление|выдать доступ|выдать старший состав|старшего состава/.test(txt)) return true;
-    return false;
-  }
-  async function fillKnownSelects(force){
-    var users = await collectUsers(!!force);
-    SELECT_IDS.forEach(function(id){
-      var sel = $(id); if (!sel || sel.id === 't73V77SeniorUser') return;
-      var text = String(sel.textContent || '').toLowerCase();
-      if (users.length && (force || !sel.options.length || text.indexOf('нет пользователей') !== -1 || text.indexOf('загрузка') !== -1 || text.indexOf('не удалось') !== -1)) {
-        var old = sel.value;
-        sel.innerHTML = users.map(optionHtml).join('');
-        if (old && users.some(function(u){ return u.id === old; })) sel.value = old;
-      }
-    });
-  }
-  function roleLabel(st, org){
-    return String(st || '')
-      .replace('goss_senior_all','СС всех ГОСС')
-      .replace('goss_admin_all','Руководство всех ГОСС')
-      .replace('goss_senior_' + org.id, 'СС ' + org.short)
-      .replace('goss_lead_' + org.id, 'Руководство ' + org.short)
-      .replace('goss_senior_','СС ')
-      .replace('goss_lead_','Руководство ');
-  }
-  async function renderSeniorCard(force){
-    var r = root(); if (!r || (!force && !isManageVisible())) return;
-    var org = currentOrg();
-    if (!(await canGrant(org.id))) return;
-    await fillKnownSelects(true);
-    var users = await collectUsers(true), all = await canGlobal(), roles = await collectRoles(true);
-    var relevant = roles.filter(function(x){ return ['goss_senior_' + org.id, 'goss_senior_all'].indexOf(x.status) !== -1; });
-    var opts = users.length ? users.map(optionHtml).join('') : '<option value="">Список пуст — впишите UID/email ниже</option>';
-    var roleOpts = '<option value="goss_senior_' + esc(org.id) + '">Старший состав — ' + esc(org.short) + '</option>' + (all ? '<option value="goss_senior_all">Старший состав всех ГОСС</option>' : '');
-    var rightsHtml = relevant.length ? relevant.map(function(x){
-      var u = users.filter(function(y){ return y.id === x.link; })[0] || {nick:x.link,email:''};
-      return '<div class="t73-v77-row"><div><b>' + esc(u.nick || x.link) + '</b><div class="t73-v77-muted">' + esc(u.email || x.link || '') + '</div></div><span class="t73-v77-badge">' + esc(roleLabel(x.status, org)) + '</span></div>';
-    }).join('') : '<div class="t73-v77-help">Пока никому не выдан статус СС по этой организации.</div>';
-    var html = '';
-    html += '<div id="t73V77SeniorCard" class="t73-v77-card">';
-    html += '<div class="t73-v77-head"><div><h3 class="t73-v77-title">👥 Выдать статус старшего состава — ' + esc(org.short) + '</h3><div class="t73-v77-muted">Этот блок специально вынесен наверх панели руководства: выберите пользователя, статус СС и нажмите выдачу. Если список не загрузился, используйте поле UID/email вручную.</div></div><span class="t73-v77-badge">V77 fix</span></div>';
-    html += '<div class="t73-v77-form"><label class="full">Поиск пользователя<input id="t73V77SeniorSearch" class="t73-v77-input" placeholder="Начните вводить ник, email или UID"></label><label>Пользователь<select id="t73V77SeniorUser" class="t73-v77-select">' + opts + '</select></label><label>Статус<select id="t73V77SeniorRole" class="t73-v77-select">' + roleOpts + '</select></label><label class="full">UID/email вручную, если пользователя нет в списке<input id="t73V77SeniorManual" class="t73-v77-input" placeholder="Вставьте ID пользователя из Supabase/Auth или email"></label><label class="full">Комментарий<input id="t73V77SeniorComment" class="t73-v77-input" placeholder="Например: назначен по решению руководства"></label></div>';
-    html += '<div class="t73-v77-actions"><button id="t73V77GrantSenior" class="btn btn-primary" type="button">➕ Выдать статус СС</button><button id="t73V77RemoveSenior" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" type="button">➖ Снять статус СС</button><button id="t73V77RefreshUsers" class="btn btn-secondary" type="button">🔄 Обновить пользователей</button></div>';
-    html += '<div class="t73-v77-list"><div class="t73-v77-muted"><b>Текущий СС:</b></div>' + rightsHtml + '</div></div>';
-    var old = $('t73V77SeniorCard');
-    if (old) old.outerHTML = html;
-    else {
-      var first = r.querySelector('.t73-v26-card,.t73-v23-card,.gov-v4-card,.gov-v3-access-card,.g20-compact-card,.t73-v75-card,.g19-card');
-      if (first) first.insertAdjacentHTML('beforebegin', html);
-      else r.insertAdjacentHTML('afterbegin', html);
-    }
-    bindCard();
-  }
-  function selectedUser(){
-    var manual = norm($('t73V77SeniorManual') && $('t73V77SeniorManual').value);
-    if (manual) return manual;
-    return norm($('t73V77SeniorUser') && $('t73V77SeniorUser').value);
-  }
-  function bindCard(){
-    var search = $('t73V77SeniorSearch'), sel = $('t73V77SeniorUser');
-    if (search && sel) search.oninput = function(){
-      var q = String(search.value || '').toLowerCase();
-      Array.prototype.forEach.call(sel.options, function(o){
-        var s = String(o.dataset.search || o.textContent || '').toLowerCase();
-        o.hidden = !!q && s.indexOf(q) === -1;
-      });
-      var first = Array.prototype.filter.call(sel.options, function(o){ return !o.hidden && o.value; })[0];
-      if (first) sel.value = first.value;
-    };
-    var grant = $('t73V77GrantSenior'), remove = $('t73V77RemoveSenior'), refresh = $('t73V77RefreshUsers');
-    if (refresh) refresh.onclick = function(){ cache.at = 0; renderSeniorCard(true); };
-    if (grant) grant.onclick = async function(){
-      var c = supa(), user = selectedUser(), role = norm($('t73V77SeniorRole') && $('t73V77SeniorRole').value), comment = norm($('t73V77SeniorComment') && $('t73V77SeniorComment').value), org = currentOrg();
-      if (!c) return alert('Supabase ещё не загрузился. Обновите страницу.');
-      if (!user || !role) return alert('Выберите пользователя или впишите UID/email вручную.');
-      var date = 'V77: выдан статус СС · ' + role + ' · выдал: ' + ((await authUser())?.email || 'unknown') + ' · ' + now() + (comment ? ' · ' + comment : '');
-      try { await c.from('reports').delete().eq('email', ACCESS_EMAIL).eq('link', user).eq('status', role); } catch(e){}
-      var res = await c.from('reports').insert([{ id:rid('goss_senior_v77'), email:ACCESS_EMAIL, link:user, status:role, date:date, xp:0 }]);
-      if (res.error) return alert('Ошибка выдачи СС: ' + res.error.message);
-      try { await c.from('reports').insert([{ id:rid('goss_log_v77'), email:LOG_EMAIL, link:org.id, status:'grant_senior', date:date, xp:0 }]); } catch(e){}
-      cache.at = 0; alert('Статус старшего состава выдан.'); renderSeniorCard(true);
-    };
-    if (remove) remove.onclick = async function(){
-      var c = supa(), user = selectedUser(), role = norm($('t73V77SeniorRole') && $('t73V77SeniorRole').value), comment = norm($('t73V77SeniorComment') && $('t73V77SeniorComment').value), org = currentOrg();
-      if (!c) return alert('Supabase ещё не загрузился. Обновите страницу.');
-      if (!user || !role) return alert('Выберите пользователя или впишите UID/email вручную.');
-      var res = await c.from('reports').delete().eq('email', ACCESS_EMAIL).eq('link', user).eq('status', role);
-      if (res.error) return alert('Ошибка снятия СС: ' + res.error.message);
-      try { await c.from('reports').insert([{ id:rid('goss_log_v77'), email:LOG_EMAIL, link:org.id, status:'remove_senior', date:'V77: снят статус СС · ' + role + ' · снял: ' + ((await authUser())?.email || 'unknown') + ' · ' + now() + (comment ? ' · ' + comment : ''), xp:0 }]); } catch(e){}
-      cache.at = 0; alert('Статус старшего состава снят.'); renderSeniorCard(true);
-    };
-  }
-  var oldLoad = null;
-  try { if (typeof window.loadUsersForAdmin === 'function') oldLoad = window.loadUsersForAdmin; } catch(e){}
-  async function patchedLoadUsersForAdmin(){
-    try { if (oldLoad) await oldLoad.apply(this, arguments); } catch(e){}
-    await fillKnownSelects(true);
-    setTimeout(function(){ renderSeniorCard(false); }, 120);
-    return window.adminUsersList || [];
-  }
-  try { window.loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
-  try { if (typeof loadUsersForAdmin !== 'undefined') loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
-
-  function schedule(force){ clearTimeout(window.__t73_v77_senior_timer); window.__t73_v77_senior_timer = setTimeout(function(){ renderSeniorCard(!!force); fillKnownSelects(false); }, 160); }
-  document.addEventListener('click', function(e){
-    var t = e.target;
-    if (!t || !t.closest) return;
-    if (t.closest('#g20Manage,#v26LeadershipPanelBtn,#v23OpenLeadership,#v23BackManage,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode="goss_center_v4"],[data-mode="goss_center_v3"],#gossV4Content,#gossV3Content')) schedule(false);
-  }, true);
-  document.addEventListener('focusin', function(e){ if (e.target && e.target.tagName === 'SELECT' && SELECT_IDS.indexOf(e.target.id) !== -1) fillKnownSelects(true); }, true);
-  function boot(){ fillKnownSelects(false); renderSeniorCard(false); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [250,700,1400,2600,4200,7000].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ schedule(false); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V77_SENIOR_PANEL_FIX = { render:function(){ return renderSeniorCard(true); }, users:function(){ return collectUsers(true); }, fill:function(){ return fillKnownSelects(true); } };
-})();
-</script>
-<!-- === /T73 V77 === -->
-
-
-
-<!-- === T73 V78: единый ГОСС-отчёт + проверка карточками + запись в таблицу === -->
-<style id="t73-v78-goss-reports-style">
-  .t73-v78-hidden { display: none !important; visibility: hidden !important; pointer-events: none !important; }
-  .t73-v78-host { display: grid; gap: 1rem; width: 100%; max-width: 100%; grid-column: 1 / -1; }
-  .t73-v78-card { padding: 1rem; border-radius: 18px; border: 1px solid rgba(255,107,136,.28); background: linear-gradient(145deg,rgba(13,16,32,.94),rgba(6,8,15,.98)); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
-  .t73-v78-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
-  .t73-v78-title { color:#ff6b88; margin:0; font-size:1.15rem; }
-  .t73-v78-muted { color: var(--color-text-muted); font-size: .9rem; line-height: 1.45; }
-  .t73-v78-actions { display:flex; gap:.55rem; flex-wrap:wrap; align-items:center; }
-  .t73-v78-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap:.85rem; }
-  .t73-v78-report { padding: .95rem; border-radius: 16px; border: 1px solid rgba(191,198,255,.16); background: rgba(0,0,0,.30); display: grid; gap:.65rem; }
-  .t73-v78-name { color:#fff; font-weight: 900; font-size: 1rem; }
-  .t73-v78-pill { display:inline-flex; width:max-content; max-width:100%; align-items:center; gap:.35rem; padding:.3rem .62rem; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.07); color:#fff; font-size:.78rem; font-weight:900; }
-  .t73-v78-pill.ok { border-color:rgba(82,199,123,.4); color:#b8ffd0; background:rgba(82,199,123,.10); }
-  .t73-v78-pill.warn { border-color:rgba(255,191,71,.42); color:#ffe3a4; background:rgba(255,191,71,.10); }
-  .t73-v78-pill.bad { border-color:rgba(255,107,136,.45); color:#ffc2cf; background:rgba(255,107,136,.10); }
-  .t73-v78-proof-list { display:grid; gap:.5rem; grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); }
-  .t73-v78-proof-list img { width:100%; height:86px; object-fit:cover; border-radius:12px; border:1px solid rgba(255,255,255,.14); cursor: zoom-in; }
-  .t73-v78-proof-link { display:inline-flex; align-items:center; justify-content:center; padding:.45rem .6rem; border-radius:12px; border:1px solid rgba(82,199,123,.35); background:rgba(82,199,123,.10); color:#b8ffd0; font-size:.82rem; font-weight:900; text-decoration:none; }
-  .t73-v78-review-buttons { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:.5rem; }
-  .t73-v78-review-buttons .btn { width:100%; justify-content:center; }
-  .t73-v78-table-grid { display:grid; gap:.8rem; }
-  .t73-v78-user-row { padding:.9rem; border-radius:16px; border:1px solid rgba(191,198,255,.16); background:rgba(0,0,0,.28); display:grid; gap:.7rem; }
-  .t73-v78-days { display:grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap:.6rem; }
-  .t73-v78-day { padding:.7rem; border-radius:14px; border:1px solid rgba(255,255,255,.11); background:rgba(4,6,12,.62); display:grid; gap:.4rem; }
-  .t73-v78-select, .t73-v78-note { width:100%; border-radius:10px; border:1px solid rgba(255,255,255,.16); background:rgba(4,6,12,.9); color:#fff; padding:.52rem; font-weight:800; }
-  .t73-v78-note { min-height: 38px; resize: vertical; font-weight: 600; }
-  @media(max-width:760px){ .t73-v78-review-buttons{grid-template-columns:1fr 1fr;} .t73-v78-actions .btn{width:100%;} .t73-v78-grid{grid-template-columns:1fr;} }
-</style>
-<script id="t73-v78-goss-reports-script">
-(function(){
-  'use strict';
-  if (window.__T73_V78_GOSS_REPORTS__) return;
-  window.__T73_V78_GOSS_REPORTS__ = true;
-
-  var REPORT_EMAIL = 'GOSS_USER_REPORT';
-  var TABLE_EMAIL = 'GOSS_REPORT_TABLE_V19';
-  var MEMBER_EMAIL = 'GOSS_REPORT_MEMBER_V19';
-  var LOG_EMAIL = 'GOSS_ORG_LOG_V19';
-  var ACCESS_EMAIL = 'ADMIN_ROLE';
-  var weekOffset = 0;
-
-  function $(id){ return document.getElementById(id); }
-  function supa(){ return window.supa || window.__T73_SUPA || null; }
+  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
   function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
-  function parse(v, d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
-  function now(){ return new Date().toLocaleString('ru-RU'); }
+  function parse(v,d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
   function rid(p){ return p + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
-  function safeText(el){ return String(el && el.textContent || '').replace(/\s+/g,' ').trim(); }
-  function currentUserObj(){ return window.currentUser || null; }
-  function currentNick(){ return window.currentNickname || (window.currentUser && (window.currentUser.user_metadata && window.currentUser.user_metadata.nickname || window.currentUser.email)) || 'Руководство'; }
-  function orgs(){ return (window.GOSS_ORGS && Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) ? window.GOSS_ORGS : [
-    {id:'prav',short:'Правительство',icon:'🏛️'}, {id:'fsb',short:'ФСБ',icon:'🛡️'}, {id:'gibdd',short:'ГИБДД',icon:'🚓'}, {id:'umvd',short:'УМВД',icon:'👮'}, {id:'army',short:'Армия',icon:'🎖️'}, {id:'hospital',short:'Больница',icon:'🏥'}, {id:'smi',short:'СМИ',icon:'🎙️'}, {id:'fsin',short:'ФСИН',icon:'⛓️'}
-  ]; }
-  function currentOrg(){
-    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active,[data-org].active');
-    var id = (active && (active.dataset.orgId || active.dataset.org)) || window.govV4SelectedOrg || window.currentGossOrgId || 'fsb';
-    var org = orgs().find(function(o){ return o.id === id; });
-    return org || { id:id, short:String(id).toUpperCase(), icon:'🏛️', name:String(id).toUpperCase() };
-  }
-  function gossRoot(){ return $("gossV4Content") || $("gossV3Content") || $("gossDashView") || $("mode-goss_center_v4") || $("mode-fsb") || document.querySelector("#mode-goss_center_v4 .gov-v4-shell,#mode-goss_center_v3 .gov-v3-shell"); }
-  function isInGoss(el){ return !!(el && el.closest && el.closest('#gossV4Content,#gossV3Content,#gossDashView,#mode-goss_center_v4,#mode-goss_center_v3,#mode-fsb,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav')); }
-  function statusClass(s){ s = String(s||'').toLowerCase(); if(s.includes('отказ')) return 'bad'; if(s.includes('натяг') || s.includes('провер')) return 'warn'; if(s.includes('норма') || s.includes('перенорма')) return 'ok'; return ''; }
-  function pointsFor(status){ return status === 'Перенорма' ? 30 : status === 'Норма' ? 15 : status === 'Натяг' ? 5 : 0; }
-  function dayStatusFor(status){ return status === 'Отказ' ? 'Отказ' : 'Сдано'; }
-  function isoToday(){ return new Date().toISOString().slice(0,10); }
-  function ruDate(iso){ var m=String(iso||'').match(/(20\d{2})-(\d{2})-(\d{2})/); return m ? (m[3]+'.'+m[2]+'.'+m[1]) : (iso || 'Без даты'); }
-  function dateFromAny(v){
-    var s = String(v || '');
-    var iso = s.match(/(20\d{2})[-.](\d{2})[-.](\d{2})/); if(iso) return iso[1]+'-'+iso[2]+'-'+iso[3];
-    var ru = s.match(/(\d{2})\.(\d{2})\.(20\d{2})/); if(ru) return ru[3]+'-'+ru[2]+'-'+ru[1];
-    return '';
-  }
-  function reportDay(row, p){ return dateFromAny(p && (p.day || p.date || p.createdIso || p.created || p.reviewedAt)) || dateFromAny(row && (row.created_at || row.date || row.id)) || isoToday(); }
-  function weekDaysForDate(day){
-    var d = new Date((day || isoToday()) + 'T00:00:00');
-    if (isNaN(d.getTime())) d = new Date();
-    var diff = (d.getDay() + 6) % 7;
-    d.setDate(d.getDate() - diff);
-    var out=[];
-    for(var i=0;i<7;i++){ var x=new Date(d); x.setDate(d.getDate()+i); out.push(x.toISOString().slice(0,10)); }
-    return out;
-  }
-  function currentWeekDays(){ var d = new Date(); d.setDate(d.getDate() + weekOffset*7); return weekDaysForDate(d.toISOString().slice(0,10)); }
-  function weekKeyFromDays(ds){ return ds[0] + ':' + ds[6]; }
-
-  async function isLeader(orgId){
-    var c = supa(), u = currentUserObj();
-    if (!c || !u) return false;
-    try { if (u.email && typeof creatorEmail !== 'undefined' && u.email === creatorEmail) return true; } catch(e){}
-    try { if (Array.isArray(window.adminEmails) && window.adminEmails.indexOf(u.email) !== -1) return true; } catch(e){}
-    try {
-      var q = await c.from('reports').select('status,link').eq('email', ACCESS_EMAIL).eq('link', u.id).limit(500);
-      var rows = q.data || [];
-      return rows.some(function(r){ return ['goss_admin_all','goss_lead_all','goss_lead_' + orgId].indexOf(r.status) !== -1; });
-    } catch(e) { return false; }
-  }
-
-  function normalizeLabels(){
-    document.querySelectorAll('button,.mode-btn,h2,h3,strong,span').forEach(function(el){
-      if (!isInGoss(el)) return;
-      var t = safeText(el).toLowerCase();
-      if ((t.includes('сдать') || t === 'отчётность' || t === 'отчетность') && t.includes('отч')) {
-        if (el.tagName === 'BUTTON' || el.classList.contains('mode-btn')) el.textContent = '📤 Сдать гос отчёт';
-        else el.textContent = safeText(el).replace(/Сдать отч[ёе]тность|Сдача гос отч[её]та|Отч[ёе]тность/gi, 'Сдать гос отчёт');
-      }
-    });
-    // Убираем старые дубли проверки, которые вставлялись разными версиями. Своя рабочая проверка v78 создаётся отдельно.
-    var seen = false;
-    document.querySelectorAll('#gossV4Content button,#gossV3Content button,#gossDashView button').forEach(function(btn){
-      var t = safeText(btn).toLowerCase();
-      if (btn.dataset && btn.dataset.v78Keep === '1') return;
-      if (t.includes('провер') && t.includes('отч')) {
-        if (!seen) { seen = true; btn.textContent = '✅ Проверить сданные гос отчёты'; btn.dataset.v78Keep = '1'; }
-        else btn.classList.add('t73-v78-hidden');
-      }
-    });
-  }
-
-  function evidenceList(row, p){
-    var out=[];
-    function push(v){
-      if (!v) return;
-      if (Array.isArray(v)) { v.forEach(push); return; }
-      if (typeof v === 'object') { push(v.url || v.href || v.link || v.publicUrl || v.src); return; }
-      String(v).split('\n').map(function(x){ return x.trim(); }).filter(Boolean).forEach(function(x){ out.push(x); });
-    }
-    push(p.proofs); push(p.files); push(p.link); push(p.file); push(row && row.link && row.link !== currentOrg().id ? row.link : '');
-    return Array.from(new Set(out));
-  }
-  function evidenceHtml(row, p){
-    var urls = evidenceList(row, p);
-    if (!urls.length) return '<div class="t73-v78-muted">Доказательств нет.</div>';
-    return '<div class="t73-v78-proof-list">' + urls.slice(0,12).map(function(url, i){
-      var s = esc(url);
-      if (String(url).startsWith('data:image')) return '<img src="'+s+'" alt="Доказательство '+(i+1)+'" onclick="document.getElementById(\'imageModal\')&&(document.getElementById(\'imageModal\').style.display=\'flex\',document.getElementById(\'imageModalSrc\').src=this.src)">';
-      if (/\.(png|jpe?g|webp|gif)(\?|$)/i.test(String(url))) return '<a href="'+s+'" target="_blank" rel="noreferrer"><img src="'+s+'" alt="Доказательство '+(i+1)+'"></a>';
-      return '<a class="t73-v78-proof-link" href="'+s+'" target="_blank" rel="noreferrer">📎 Файл '+(i+1)+'</a>';
-    }).join('') + '</div>';
-  }
-
-  async function loadReports(orgId){
-    var c = supa(); if (!c) return [];
-    try { var r = await c.from('reports').select('*').eq('email', REPORT_EMAIL).eq('link', orgId).order('id', { ascending:false }).limit(300); return r.data || []; } catch(e) { return []; }
-  }
-  function groupByDate(rows){
-    var m = new Map();
-    rows.forEach(function(r){ var p = parse(r.date, {}), d = reportDay(r,p); if(!m.has(d)) m.set(d, []); m.get(d).push(r); });
-    return Array.from(m.entries()).sort(function(a,b){ return b[0].localeCompare(a[0]); });
-  }
-
-  function reportCard(row){
-    var p = parse(row.date, {});
-    var nick = p.nick || p.nickname || p.name || row.status || 'Сотрудник';
-    var day = reportDay(row, p);
-    var review = p.reviewStatus || p.result || (/^(Норма|Перенорма|Натяг|Отказ)$/i.test(String(row.status||'')) ? row.status : 'На проверке');
-    var pending = !/^(Норма|Перенорма|Натяг|Отказ)$/i.test(String(review||''));
-    var points = Number(p.reviewPoints != null ? p.reviewPoints : row.xp || 0);
-    var comment = p.comment || p.work || p.text || 'Без комментария';
-    var type = p.type || 'Гос отчёт';
-    return '<div class="t73-v78-report" data-v78-report-id="'+esc(row.id)+'">'
-      + '<div class="t73-v78-head"><div><div class="t73-v78-name">'+esc(nick)+'</div><div class="t73-v78-muted">'+esc(type)+' · '+esc(ruDate(day))+'</div></div><span class="t73-v78-pill '+statusClass(review)+'">'+esc(review)+' · '+points+' б.</span></div>'
-      + '<div class="t73-v78-muted" style="white-space:pre-wrap;">'+esc(comment)+'</div>'
-      + evidenceHtml(row,p)
-      + (p.reviewedBy || p.checkedBy ? '<div class="t73-v78-muted">Проверил: '+esc(p.reviewedBy || p.checkedBy)+' · '+esc(p.reviewedAt || p.checkedAt || '')+'</div>' : '')
-      + '<div class="t73-v78-review-buttons">'
-      + ['Норма','Перенорма','Натяг','Отказ'].map(function(st){
-          var cls = st === 'Отказ' ? 'var(--color-error)' : st === 'Натяг' ? '#ffbf47' : st === 'Перенорма' ? '#3dd68c' : '#52c77b';
-          return '<button class="btn btn-secondary" data-v78-process="1" data-id="'+esc(row.id)+'" data-status="'+st+'" style="border-color:'+cls+';color:'+cls+';" type="button">'+st+'</button>';
-        }).join('')
-      + '</div>'
-      + (!pending ? '<div class="t73-v78-muted">Можно нажать другой статус — запись в таблице обновится.</div>' : '')
-      + '</div>';
-  }
-
-  async function loadTable(orgId, weekKey){
-    var c = supa(); if(!c) return { id:null, data:{marks:{}} };
-    try {
-      var r = await c.from('reports').select('*').eq('email', TABLE_EMAIL).eq('link', orgId).eq('status', weekKey).order('id', { ascending:false }).limit(1);
-      var row = (r.data || [])[0];
-      return row ? { id: row.id, data: parse(row.date, { marks:{} }) } : { id:null, data:{ marks:{} } };
-    } catch(e){ return { id:null, data:{ marks:{} } }; }
-  }
-  async function saveTableMark(orgId, userId, day, patch){
-    var c = supa(); if(!c) return { error:new Error('Supabase не загружен') };
-    var days = weekDaysForDate(day), key = weekKeyFromDays(days), old = await loadTable(orgId, key);
-    var marks = (old.data && old.data.marks) || old.data || {};
-    marks[userId] = marks[userId] || {};
-    marks[userId][day] = Object.assign({}, marks[userId][day] || {}, patch);
-    var payload = { org:orgId, week:key, marks:marks, by:(currentUserObj() && currentUserObj().email) || currentNick(), at:now(), version:'v78' };
-    if (old.id) return c.from('reports').update({ date: JSON.stringify(payload) }).eq('id', old.id);
-    return c.from('reports').insert([{ id:rid('g78tab'), email:TABLE_EMAIL, link:orgId, status:key, date:JSON.stringify(payload), xp:0 }]);
-  }
-  async function ensureMember(orgId, userId, nick){
-    var c = supa(); if(!c || !userId) return;
-    try {
-      var exists = await c.from('reports').select('id').eq('email', MEMBER_EMAIL).eq('link', orgId).eq('status', userId).limit(1);
-      if (exists.data && exists.data.length) return;
-      await c.from('reports').insert([{ id:rid('g78mem'), email:MEMBER_EMAIL, link:orgId, status:userId, date:JSON.stringify({ nick:nick || userId, post:'—', at:now(), by:(currentUserObj() && currentUserObj().email) || currentNick(), source:'v78 auto from report' }), xp:0 }]);
-    } catch(e) {}
-  }
-  async function processReport(id, status){
-    var c = supa(), org = currentOrg(); if(!c) return alert('Supabase ещё не загрузился.');
-    var one = await c.from('reports').select('*').eq('id', id).limit(1);
-    if (one.error) return alert('Не удалось открыть отчёт: ' + one.error.message);
-    var row = (one.data || [])[0]; if(!row) return alert('Отчёт не найден.');
-    var p = parse(row.date, {}), day = reportDay(row,p), userId = p.userId || p.user_id || p.uid || row.status || id, nick = p.nick || p.nickname || p.name || userId;
-    var points = pointsFor(status);
-    p.reviewStatus = status;
-    p.reviewPoints = points;
-    p.result = status;
-    p.checkedAt = now();
-    p.reviewedAt = p.checkedAt;
-    p.checkedBy = currentNick();
-    p.reviewedBy = currentNick();
-    p.tableDay = day;
-    p.org = p.org || org.id;
-    p.orgName = p.orgName || org.short;
-    p.userId = userId;
-    p.nick = nick;
-    var upd = await c.from('reports').update({ date: JSON.stringify(p), status: status, xp: points }).eq('id', id);
-    if (upd.error) return alert('Не удалось обновить отчёт: ' + upd.error.message);
-    await ensureMember(org.id, userId, nick);
-    var mark = await saveTableMark(org.id, userId, day, { report: status, day: dayStatusFor(status), note: 'Авто из проверки гос отчёта · ' + status, by: currentNick(), at: now(), reportId: id });
-    if (mark && mark.error) return alert('Отчёт обновлён, но таблица не записалась: ' + mark.error.message);
-    try { await c.from('reports').insert([{ id:rid('g78log'), email:LOG_EMAIL, link:org.id, status:'report_review', date:'V78: '+nick+' · '+day+' · '+status+' · '+currentNick()+' · '+now(), xp:points }]); } catch(e) {}
-    await renderReview(true);
-  }
-
-  async function renderReview(force){
-    var root = gossRoot(), c = supa(), org = currentOrg();
-    if (!root || !c) return;
-    if (!(await isLeader(org.id))) { root.innerHTML = '<div class="t73-v78-card"><h3 class="t73-v78-title">Проверка гос отчётов</h3><div class="t73-v78-muted">Этот раздел доступен только руководству выбранной ГОСС-фракции.</div></div>'; return; }
-    root.innerHTML = '<div class="t73-v78-host" id="t73V78ReviewHost"><div class="t73-v78-card"><div class="t73-v78-head"><div><h3 class="t73-v78-title">✅ Проверка сданных гос отчётов — '+esc(org.short)+'</h3><div class="t73-v78-muted">Работает как в модерации: на каждой карточке только 4 решения. После нажатия статус сразу записывается и в сам отчёт, и в недельную таблицу.</div></div><div class="t73-v78-actions"><button class="btn btn-secondary" id="t73V78RefreshReview" data-v78-keep="1" type="button">🔄 Обновить</button><button class="btn btn-primary" id="t73V78OpenCompactTable" data-v78-keep="1" type="button">📊 Открыть удобную таблицу</button></div></div></div><div class="t73-v78-card"><div class="t73-v78-muted">Загрузка отчётов...</div></div></div>';
-    var rows = await loadReports(org.id);
-    var host = $('t73V78ReviewHost'); if(!host) return;
-    if (!rows.length) host.innerHTML += '<div class="t73-v78-card"><div class="t73-v78-muted">Сданных гос отчётов пока нет.</div></div>';
-    else host.innerHTML += groupByDate(rows).map(function(pair){ return '<div class="t73-v78-card"><div class="t73-v78-head"><h3 class="t73-v78-title">'+esc(ruDate(pair[0]))+'</h3><span class="t73-v78-pill">'+pair[1].length+' шт.</span></div><div class="t73-v78-grid" style="margin-top:.9rem;">'+pair[1].map(reportCard).join('')+'</div></div>'; }).join('');
-    var refresh = $('t73V78RefreshReview'); if(refresh) refresh.onclick = function(){ renderReview(true); };
-    var table = $('t73V78OpenCompactTable'); if(table) table.onclick = function(){ renderCompactTable(); };
-    host.querySelectorAll('[data-v78-process]').forEach(function(btn){ btn.onclick = function(){ btn.disabled = true; processReport(btn.dataset.id, btn.dataset.status); }; });
-  }
-
-  async function loadMembers(orgId){
-    var c = supa(), map = new Map(); if(!c) return [];
-    function add(k,nick,post){ if(!k) return; map.set(String(k), { key:String(k), nick:nick || String(k), post:post || '—' }); }
-    try { var prof = await c.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',orgId).limit(1000); (prof.data || []).forEach(function(r){ var p=parse(r.date,{}); add(r.status, p.nick || r.status, p.post); }); } catch(e){}
-    try { var mem = await c.from('reports').select('*').eq('email',MEMBER_EMAIL).eq('link',orgId).limit(1000); (mem.data || []).forEach(function(r){ var p=parse(r.date,{}); add(r.status, p.nick || p.name || r.status, p.post); }); } catch(e){}
-    try { var reps = await c.from('reports').select('*').eq('email',REPORT_EMAIL).eq('link',orgId).order('id',{ascending:false}).limit(300); (reps.data || []).forEach(function(r){ var p=parse(r.date,{}); add(p.userId || r.status, p.nick || p.nickname || r.status, p.post); }); } catch(e){}
-    return Array.from(map.values()).sort(function(a,b){ return a.nick.localeCompare(b.nick, 'ru'); });
-  }
-  async function renderCompactTable(){
-    var root = gossRoot(), org = currentOrg(), c = supa(); if(!root || !c) return;
-    if (!(await isLeader(org.id))) { root.innerHTML = '<div class="t73-v78-card"><h3 class="t73-v78-title">Таблица гос отчётов</h3><div class="t73-v78-muted">Таблица доступна только руководству выбранной ГОСС-фракции.</div></div>'; return; }
-    var ds = currentWeekDays(), wk = weekKeyFromDays(ds);
-    root.innerHTML = '<div class="t73-v78-host" id="t73V78TableHost"><div class="t73-v78-card"><div class="t73-v78-head"><div><h3 class="t73-v78-title">📊 Удобная таблица гос отчётов — '+esc(org.short)+'</h3><div class="t73-v78-muted">Неделя '+esc(ruDate(ds[0]))+' — '+esc(ruDate(ds[6]))+'. Формат карточками, как в модерации, без широкой таблицы.</div></div><div class="t73-v78-actions"><button class="btn btn-secondary" id="t73V78PrevWeek" type="button">⬅️ Прошлая</button><button class="btn btn-secondary" id="t73V78ThisWeek" type="button">Текущая</button><button class="btn btn-secondary" id="t73V78NextWeek" type="button">Следующая ➡️</button><button class="btn btn-primary" id="t73V78BackReview" type="button">✅ К проверке</button></div></div></div><div class="t73-v78-card"><div class="t73-v78-muted">Загрузка таблицы...</div></div></div>';
-    var loaded = await loadTable(org.id, wk), marks = (loaded.data && loaded.data.marks) || loaded.data || {}, members = await loadMembers(org.id);
-    var host = $('t73V78TableHost'); if(!host) return;
-    if(!members.length) { host.innerHTML += '<div class="t73-v78-card"><div class="t73-v78-muted">Строк пока нет. Они появятся автоматически после первой проверки отчёта или после заполнения анкеты СС.</div></div>'; }
-    else {
-      host.innerHTML += '<div class="t73-v78-table-grid">' + members.map(function(u){
-        return '<div class="t73-v78-user-row" data-user="'+esc(u.key)+'"><div class="t73-v78-head"><div><div class="t73-v78-name">'+esc(u.nick)+'</div><div class="t73-v78-muted">'+esc(u.post || '—')+'</div></div><span class="t73-v78-pill">'+esc(u.key)+'</span></div><div class="t73-v78-days">' + ds.map(function(day){
-          var m = (marks[u.key] && marks[u.key][day]) || {};
-          var report = m.report || 'Нет отчета', dstatus = m.day || 'Проверить';
-          return '<div class="t73-v78-day" data-day="'+esc(day)+'"><b>'+esc(ruDate(day))+'</b><label class="t73-v78-muted">Отчётность<select class="t73-v78-select" data-k="report"><option'+(report==='Нет отчета'?' selected':'')+'>Нет отчета</option><option'+(report==='Норма'?' selected':'')+'>Норма</option><option'+(report==='Перенорма'?' selected':'')+'>Перенорма</option><option'+(report==='Натяг'?' selected':'')+'>Натяг</option><option'+(report==='Отказ'?' selected':'')+'>Отказ</option><option'+(report==='На проверке'?' selected':'')+'>На проверке</option></select></label><label class="t73-v78-muted">День<select class="t73-v78-select" data-k="day"><option'+(dstatus==='Проверить'?' selected':'')+'>Проверить</option><option'+(dstatus==='Сдано'?' selected':'')+'>Сдано</option><option'+(dstatus==='Неактив'?' selected':'')+'>Неактив</option><option'+(dstatus==='Нет отчета'?' selected':'')+'>Нет отчета</option><option'+(dstatus==='Освобождён'?' selected':'')+'>Освобождён</option><option'+(dstatus==='Отказ'?' selected':'')+'>Отказ</option></select></label><textarea class="t73-v78-note" placeholder="Комментарий">'+esc(m.note || '')+'</textarea></div>';
-        }).join('') + '</div></div>';
-      }).join('') + '</div>';
-    }
-    $('t73V78PrevWeek').onclick = function(){ weekOffset--; renderCompactTable(); };
-    $('t73V78ThisWeek').onclick = function(){ weekOffset = 0; renderCompactTable(); };
-    $('t73V78NextWeek').onclick = function(){ weekOffset++; renderCompactTable(); };
-    $('t73V78BackReview').onclick = function(){ renderReview(true); };
-    host.querySelectorAll('.t73-v78-select,.t73-v78-note').forEach(function(input){
-      input.addEventListener('change', async function(){
-        var row = input.closest('.t73-v78-user-row'), cell = input.closest('.t73-v78-day');
-        if(!row || !cell) return;
-        var patch = { report: cell.querySelector('[data-k="report"]').value, day: cell.querySelector('[data-k="day"]').value, note: cell.querySelector('.t73-v78-note').value || '', by: currentNick(), at: now() };
-        input.disabled = true;
-        var res = await saveTableMark(org.id, row.dataset.user, cell.dataset.day, patch);
-        input.disabled = false;
-        if(res && res.error) alert('Не удалось сохранить ячейку: ' + res.error.message);
-      });
-    });
-  }
-
-  async function renderSubmitPatch(){
-    normalizeLabels();
-    var root = gossRoot(), org = currentOrg(); if(!root) return;
-    root.querySelectorAll('h2,h3,strong').forEach(function(h){
-      var t = safeText(h).toLowerCase();
-      if ((t.includes('сдать') || t.includes('отчётность') || t.includes('отчетность')) && t.includes('отч')) h.textContent = 'Сдать гос отчёт — ' + org.short;
-    });
-    root.querySelectorAll('button').forEach(function(btn){
-      var t = safeText(btn).toLowerCase();
-      if ((t.includes('отправ') || t.includes('сдать')) && t.includes('отч')) btn.textContent = '📤 Сдать гос отчёт';
-      if (t.includes('провер') && t.includes('отч') && btn.dataset.v78Keep !== '1') btn.classList.add('t73-v78-hidden');
-    });
-  }
-
-  document.addEventListener('click', function(e){
-    var btn = e.target && e.target.closest && e.target.closest('button,.mode-btn');
-    if(!btn || !isInGoss(btn)) return;
-    var text = safeText(btn).toLowerCase();
-    if (text.includes('провер') && text.includes('отч')) {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-      renderReview(true); return;
-    }
-    if ((text.includes('таблица') && text.includes('отч')) || btn.id === 'g20Table') {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-      renderCompactTable(); return;
-    }
-    if ((text.includes('сдать') || text.includes('отчётность') || text.includes('отчетность')) && text.includes('отч')) {
-      setTimeout(renderSubmitPatch, 80); setTimeout(renderSubmitPatch, 260); setTimeout(renderSubmitPatch, 700);
-    }
-  }, true);
-
-  function boot(){ normalizeLabels(); renderSubmitPatch(); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [150, 500, 1100, 2200, 4200, 7000].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73_v78_mut); window.__t73_v78_mut = setTimeout(boot, 90); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V78_GOSS_REPORTS = { review:renderReview, table:renderCompactTable, labels:normalizeLabels, submitPatch:renderSubmitPatch };
-})();
-</script>
-<!-- === /T73 V78 === -->
-
-
-<!-- === T73 V79: восстановление переключения режимов ГОСС после v76/v78 === -->
-<style id="t73-v79-goss-modes-style">
-  #gossOrgActionNavV4.t73-v79-ready{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;}
-  #gossOrgActionNavV4 .t73-v79-mode{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;align-items:center;justify-content:center;white-space:nowrap;}
-  #gossOrgActionNavV4 .t73-v79-mode.active{background:linear-gradient(135deg,#ff6b88,#6c8cff)!important;color:#fff!important;}
-</style>
-<script id="t73-v79-goss-modes-restored">
-(function(){
-  'use strict';
-  if (window.__T73_V79_GOSS_MODES_RESTORED__) return;
-  window.__T73_V79_GOSS_MODES_RESTORED__ = true;
-
-  var ACCESS_EMAIL = 'ADMIN_ROLE';
-  var roleCache = { at:0, rows:[] };
-  var lastView = 'trainer';
-
-  function $(id){ return document.getElementById(id); }
-  function supa(){ return window.supa || window.t73Supa || window.supabaseClient || window.__T73_SUPA || null; }
-  function user(){ return window.currentUser || null; }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch];}); }
-  function visible(el){ try { return !!el && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'; } catch(e){ return !!el; } }
-  function isGossVisible(){ var p = $('mode-goss_center_v4'); return visible(p); }
-  function orgs(){ return (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) ? window.GOSS_ORGS : [
-    {id:'prav',short:'Правительство',icon:'🏛️'}, {id:'fsb',short:'ФСБ',icon:'🛡️'}, {id:'gibdd',short:'ГИБДД',icon:'🚓'}, {id:'umvd',short:'УМВД',icon:'👮'}, {id:'army',short:'Армия',icon:'🎖️'}, {id:'hospital',short:'Больница',icon:'🏥'}, {id:'smi',short:'СМИ',icon:'🎙️'}, {id:'fsin',short:'ФСИН',icon:'⛓️'}
-  ]; }
-  function currentOrg(){
-    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
-    var id = active && active.dataset ? (active.dataset.orgId || active.dataset.org || active.dataset.id) : '';
-    if (!id && window.govV4SelectedOrg) id = window.govV4SelectedOrg;
+  function now(){ return new Date().toLocaleString('ru-RU'); }
+  function client(){ try { return (typeof supa !== 'undefined' && supa && supa.from) ? supa : null; } catch(e){ return null; } }
+  function user(){ try { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || null); } catch(e){ return window.currentUser || null; } }
+  function isCreator(){ var u=user(); try { return !!(u && (u.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1))); } catch(e){ return false; } }
+  function orgs(){ try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){} return [{id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},{id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},{id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚓'},{id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},{id:'army',short:'Армия',name:'Армия',icon:'🎖️'},{id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},{id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},{id:'fsin',short:'ФСИН',name:'ФСИН',icon:'⛓️'}]; }
+  function findOrg(id){ return orgs().filter(function(o){ return o.id === id; })[0] || orgs()[0]; }
+  function selectedOrg(){
+    var b = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+    var id = b && b.dataset ? (b.dataset.orgId || b.dataset.org || b.dataset.id) : '';
     if (!id) {
-      var txt = [ $('gossV4Org') && $('gossV4Org').textContent, $('gossV4Title') && $('gossV4Title').textContent ].join(' ').toLowerCase();
-      orgs().some(function(o){ if (txt.indexOf(String(o.short||'').toLowerCase()) !== -1 || txt.indexOf(String(o.name||'').toLowerCase()) !== -1) { id = o.id; return true; } return false; });
+      var txt = (($('gossV4Title')||{}).textContent || '') + ' ' + (($('gossV4Org')||{}).textContent || '');
+      orgs().some(function(o){ if (txt.indexOf(o.short) !== -1 || txt.indexOf(o.name) !== -1) { id = o.id; return true; } return false; });
     }
-    return orgs().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgs()[0];
+    return findOrg(id || 'fsb');
   }
-  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
-  function isCreator(){ var u=user(); return !!(u && ((window.creatorEmail && u.email === window.creatorEmail) || (Array.isArray(window.adminEmails) && window.adminEmails.indexOf(u.email) !== -1))); }
+  function root(){ return $('gossV4Content'); }
+  function gossVisible(){ var p = $('mode-goss_center_v4'); if (!p) return false; try { return getComputedStyle(p).display !== 'none'; } catch(e){ return true; } }
+
   async function roles(force){
-    if (!force && roleCache.rows.length && Date.now() - roleCache.at < 12000) return roleCache.rows.slice();
-    var c=supa(); if(!c) return roleCache.rows.slice();
-    try { var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email', ACCESS_EMAIL).limit(6000); roleCache={at:Date.now(), rows:r.data||[]}; } catch(e){}
-    return roleCache.rows.slice();
+    var c = client(); if (!c) return [];
+    if (!force && Date.now() - rolesCache.at < 4500) return rolesCache.rows.slice();
+    try { var r = await c.from('reports').select('*').eq('email', E.access).limit(9000); rolesCache = {at:Date.now(), rows:r.data || []}; } catch(e){ rolesCache = {at:Date.now(), rows:[]}; }
+    return rolesCache.rows.slice();
   }
-  async function hasSenior(orgId){ var u=user(); if(!u) return false; if(isCreator()) return true; var rs=await roles(false); return rs.some(function(r){ return r.link===u.id && ['goss_senior_all','goss_admin_all','goss_lead_'+orgId,'goss_senior_'+orgId].indexOf(r.status)!==-1; }); }
-  async function hasLeader(orgId){ var u=user(); if(!u) return false; if(isCreator()) return true; var rs=await roles(false); return rs.some(function(r){ return r.link===u.id && ['goss_admin_all','goss_lead_'+orgId].indexOf(r.status)!==-1; }); }
+  async function canLead(orgId){ var u=user(); if (!u) return false; if (isCreator()) return true; return (await roles(false)).some(function(r){ return r.link === u.id && (r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId); }); }
+  async function canSenior(orgId){ var u=user(); if (!u) return false; if (await canLead(orgId)) return true; return (await roles(false)).some(function(r){ return r.link === u.id && (r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId); }); }
+  async function canAll(){ var u=user(); if (!u) return false; if (isCreator()) return true; return (await roles(false)).some(function(r){ return r.link === u.id && r.status === 'goss_admin_all'; }); }
 
-  function makeBtn(view,label,active){
-    return '<button class="mode-btn gov-action-switch-v4 t73-v79-mode '+(active?'active':'')+'" data-view="'+esc(view)+'" type="button">'+label+'</button>';
+  async function collectUsers(force){
+    var c = client(); if (!c) return [];
+    if (!force && Date.now() - usersCache.at < 6500) return usersCache.rows.slice();
+    var map = {};
+    function add(id,nick,email){ id = String(id || '').trim(); if (!id) return; map[id] = Object.assign(map[id] || {id:id,nick:'',email:''}, { nick:nick || (map[id]||{}).nick || '', email:email || (map[id]||{}).email || '' }); }
+    try { (creatorUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
+    try { (adminUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
+    try { var u=user(); if (u) add(u.id, (window.currentNickname || (u.user_metadata && (u.user_metadata.nickname || u.user_metadata.name)) || u.email), u.email); } catch(e){}
+    try { var s = await c.from('user_stats').select('user_id,nickname,email').limit(9000); (s.data || []).forEach(function(u){ add(u.user_id, u.nickname, u.email); }); } catch(e){}
+    try { var a = await roles(true); a.forEach(function(r){ add(r.link, r.link, ''); }); } catch(e){}
+    try { var p = await c.from('reports').select('status,date,email,link').in('email',[E.profile,E.member,E.report]).limit(9000); (p.data || []).forEach(function(r){ var d=parse(r.date,{}); add(r.status || d.userId || r.link, d.nick || d.nickname || r.status, d.email || ''); }); } catch(e){}
+    var out = Object.keys(map).map(function(k){ return map[k]; }).filter(function(u){ return u.id; }).sort(function(a,b){ return String(a.nick||a.email||a.id).localeCompare(String(b.nick||b.email||b.id),'ru'); });
+    usersCache = {at:Date.now(), rows:out}; return out.slice();
   }
-  async function ensureNav(){
-    if(!isGossVisible()) return;
-    var org = currentOrg();
-    var nav = $('gossOrgActionNavV4');
-    var orgNav = $('subNavOrganizations');
-    if (!nav && orgNav) { orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4"></div>'); nav = $('gossOrgActionNavV4'); }
-    if (!nav) return;
-    var senior = await hasSenior(org.id), leader = await hasLeader(org.id);
-    var active = nav.querySelector('.gov-action-switch-v4.active[data-view]');
-    var view = (active && active.dataset.view) || lastView || 'trainer';
-    if (view === 'reports') view = 'review';
-    if (!senior && view !== 'trainer') view = 'trainer';
-    if (!leader && ['table','review','manage','staff'].indexOf(view)!==-1) view = senior ? 'submit' : 'trainer';
-    lastView = view;
-    var html = '';
-    html += makeBtn('trainer','🎮 Тренажёр',view==='trainer');
-    if (senior) {
-      html += makeBtn('profile','📝 Мои данные',view==='profile');
-      html += makeBtn('submit','📤 Сдать гос отчёт',view==='submit');
-      html += makeBtn('shop','🛒 Магазин',view==='shop');
-    }
-    if (leader) {
-      html += makeBtn('table','📊 Таблица отчётов',view==='table'||view==='staff');
-      html += makeBtn('review','✅ Проверить отчёты',view==='review'||view==='reports');
-      html += makeBtn('manage','👑 Панель руководства',view==='manage');
-    }
-    nav.classList.add('t73-v79-ready');
-    var visibleCount = Array.prototype.filter.call(nav.querySelectorAll('button'), visible).length;
-    var hasSubmit = /сдать\s+гос\s+отч[её]т/i.test(nav.textContent || '');
-    if (nav.dataset.t73v79Built !== '1' || visibleCount <= 1 || (senior && !hasSubmit)) {
-      nav.innerHTML = html;
-      nav.dataset.t73v79Built = '1';
-    } else {
-      normalizeLabels(nav);
-    }
-    bindNav(nav);
-  }
-  function normalizeLabels(scope){
-    (scope || document).querySelectorAll('button,.mode-btn,h2,h3,strong,span').forEach(function(el){
-      var t = String(el.textContent || '');
-      if (/сдать\s*(отч[её]тность|гос\s*отч[её]т)|^\s*отч[её]тность\s*$/i.test(t)) el.textContent = '📤 Сдать гос отчёт';
-      if (/провер/i.test(t) && /отч/i.test(t) && !/проверить отч[её]ты/i.test(t)) el.textContent = '✅ Проверить отчёты';
-    });
-  }
-  function setActive(view){
-    lastView = view;
-    var nav = $('gossOrgActionNavV4');
-    if(nav) nav.querySelectorAll('button[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view || (view==='review' && b.dataset.view==='reports')); });
-  }
-  function nativeSwitch(view){
-    var org = currentOrg();
-    var btn = document.querySelector('.gov-org-switch-v4.active') || document.createElement('button');
-    btn.dataset.mode = 'goss_center_v4';
-    btn.dataset.orgId = org.id;
-    btn.dataset.view = view;
-    try { window.govV4SelectedOrg = org.id; window.govV4SelectedView = view; } catch(e){}
-    if (typeof window.switchMode === 'function') { window.switchMode('goss_center_v4', btn); return true; }
-    return false;
-  }
-  function afterRender(view){
-    setTimeout(function(){ normalizeLabels(root()); ensureNav(); }, 90);
-    setTimeout(function(){
-      var r = root();
-      if (!r) return;
-      if (view !== 'trainer' && r.querySelector('#t73V76Trainer')) route(view, true);
-      normalizeLabels(r); ensureNav();
-    }, 360);
-  }
-  function route(view, secondPass){
-    view = view === 'reports' ? 'review' : view;
-    setActive(view);
-    if (view === 'review') { if (window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.review === 'function') window.T73_V78_GOSS_REPORTS.review(); else nativeSwitch('reports'); afterRender(view); return; }
-    if (view === 'table' || view === 'staff') { if (window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.table === 'function') window.T73_V78_GOSS_REPORTS.table(); else nativeSwitch('staff'); afterRender('table'); return; }
-    nativeSwitch(view);
-    afterRender(view);
-    if (!secondPass && view !== 'trainer') setTimeout(function(){ var r=root(); if(r && r.querySelector('#t73V76Trainer')) route(view, true); }, 780);
-  }
-  function bindNav(nav){
-    nav.querySelectorAll('.t73-v79-mode,.gov-action-switch-v4').forEach(function(btn){
-      if (btn.dataset.t73v79Click === '1') return;
-      btn.dataset.t73v79Click = '1';
-      btn.addEventListener('click', function(e){
-        var view = btn.dataset.view || 'trainer';
-        if (['table','review'].indexOf(view) !== -1 || btn.classList.contains('t73-v79-mode')) {
-          e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-          route(view);
-        } else {
-          lastView = view;
-          setTimeout(function(){ afterRender(view); }, 140);
-        }
-      }, true);
-    });
-  }
-  function boot(){ ensureNav(); normalizeLabels(document); }
-  document.addEventListener('click', function(e){
-    var t = e.target;
-    if (!t || !t.closest) return;
-    if (t.closest('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode="goss_center_v4"],#subNavOrganizations')) {
-      lastView = 'trainer';
-      [100,320,760].forEach(function(ms){ setTimeout(boot, ms); });
-    }
-    if (t.closest('#gossOrgActionNavV4,#gossV4Content')) [160,420,900].forEach(function(ms){ setTimeout(boot, ms); });
-  }, true);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73_v79_mut); window.__t73_v79_mut = setTimeout(boot, 220); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
-  window.T73_V79_GOSS_MODES = { nav:ensureNav, route:route, normalize:normalizeLabels };
-})();
-</script>
-<!-- === /T73 V79 === -->
 
-<!-- === T73 V80: session persistence + clean ГОСС routing + logs not at top === -->
-<style id="t73-v80-goss-routing-style">
-  #gossOrgActionNavV4.t73-v80-ready{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;padding-bottom:.35rem;}
-  #gossOrgActionNavV4 .t73-v80-mode{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;align-items:center;justify-content:center;white-space:nowrap;}
-  #gossOrgActionNavV4 .t73-v80-mode.active{background:linear-gradient(135deg,#6c8cff,#52c77b)!important;color:#fff!important;border-color:rgba(255,255,255,.25)!important;}
-  #gossOrgActionNavV4 #g19Logs,
-  #gossOrgActionNavV4 .t73-v68-org-logs,
-  #gossOrgActionNavV4 #gossOrgLogsTabBtnV15{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-</style>
-<script id="t73-v80-session-goss-routing">
-(function(){
-  'use strict';
-  if (window.__T73_V80_SESSION_GOSS_ROUTING__) return;
-  window.__T73_V80_SESSION_GOSS_ROUTING__ = true;
+  function weekDays(){ var d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7) + weekOffset*7); return Array.from({length:7}, function(_,i){ var x=new Date(d); x.setDate(d.getDate()+i); return x.toISOString().slice(0,10); }); }
+  function weekKeyFromDays(ds){ return ds[0] + '_' + ds[6]; }
+  function dayRu(iso){ var d=new Date(iso+'T12:00:00'); return d.toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit'}); }
+  function dateFromPayload(p){ return String(p.day || p.createdIso || p.created || new Date().toISOString()).slice(0,10); }
+  async function tableLoad(orgId,wk){ var c=client(); if(!c) return {id:null,data:{marks:{}}}; try { var r=await c.from('reports').select('*').eq('email',E.table).eq('link',orgId).eq('status',wk).order('id',{ascending:false}).limit(1); var row=(r.data||[])[0]; return row ? {id:row.id,data:parse(row.date,{marks:{}})} : {id:null,data:{marks:{}}}; } catch(e){ return {id:null,data:{marks:{}}}; } }
+  async function tableSave(orgId,wk,marks){ var c=client(); if(!c) return {error:{message:'Supabase не загружен'}}; var old=await tableLoad(orgId,wk); var payload={org:orgId,week:wk,marks:marks,by:(user()&&user().email)||'',at:now(),version:'v81'}; if(old.id) return await c.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id); return await c.from('reports').insert([{id:rid('g81tab'),email:E.table,link:orgId,status:wk,date:JSON.stringify(payload),xp:0}]); }
+  async function saveSingleMark(orgId,userId,day,patch){ var ds=weekDaysFor(day), wk=weekKeyFromDays(ds), old=await tableLoad(orgId,wk), marks=(old.data && old.data.marks) || {}; marks[userId]=marks[userId]||{}; marks[userId][day]=Object.assign({}, marks[userId][day] || {}, patch); return await tableSave(orgId,wk,marks); }
+  function weekDaysFor(day){ var d=new Date(String(day)+'T12:00:00'); if(isNaN(d)) return weekDays(); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return Array.from({length:7}, function(_,i){ var x=new Date(d); x.setDate(d.getDate()+i); return x.toISOString().slice(0,10); }); }
+  function statusClass(s){ s=String(s||''); if(s==='Норма'||s==='Перенорма') return 't73-v81-ok'; if(s==='Отказ') return 'badge ban'; if(s==='Натяг') return 'badge warn'; return 't73-v81-muted'; }
 
-  var AUTH_STORE = 't73_v80_supabase_session_backup';
-  var ACCESS_EMAIL = 'ADMIN_ROLE';
-  var roleCache = { at:0, rows:[] };
-  var lastView = 'trainer';
-  var bootTimer = 0;
+  async function profiles(orgId){
+    var c=client(), map={}; if(!c) return [];
+    function add(key,nick,post){ key=String(key||'').trim(); if(!key) return; map[key]=Object.assign(map[key]||{key:key,nick:key,post:''},{nick:nick||map[key]?.nick||key,post:post||map[key]?.post||''}); }
+    try { var pr=await c.from('reports').select('*').eq('email',E.profile).eq('link',orgId).order('id',{ascending:true}).limit(1000); (pr.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status,d.nick||r.status,d.post||'СС'); }); } catch(e){}
+    try { var mem=await c.from('reports').select('*').eq('email',E.member).eq('link',orgId).order('id',{ascending:true}).limit(1000); (mem.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status,d.nick||r.status,d.post||''); }); } catch(e){}
+    try { var reps=await c.from('reports').select('*').eq('email',E.report).eq('link',orgId).order('id',{ascending:false}).limit(500); (reps.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status||d.userId,d.nick||r.status,''); }); } catch(e){}
+    try { var us=await collectUsers(false); (await roles(false)).filter(function(r){ return r.status==='goss_senior_all'||r.status==='goss_admin_all'||r.status==='goss_senior_'+orgId||r.status==='goss_lead_'+orgId; }).forEach(function(r){ var u=us.filter(function(x){return x.id===r.link;})[0]||{}; add(r.link,u.nick||u.email||r.link, r.status.indexOf('lead')!==-1||r.status==='goss_admin_all'?'Руководство':'СС'); }); } catch(e){}
+    return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return String(a.nick).localeCompare(String(b.nick),'ru');});
+  }
 
-  function $(id){ return document.getElementById(id); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); }
-  function norm(v){ return String(v == null ? '' : v).trim(); }
-  function client(){
-    try { if (typeof supa !== 'undefined' && supa && supa.auth && supa.from) return supa; } catch(e){}
-    try { if (window.supa && window.supa.auth && window.supa.from) return window.supa; } catch(e){}
-    try { if (window.__T73_SUPA && window.__T73_SUPA.auth && window.__T73_SUPA.from) return window.__T73_SUPA; } catch(e){}
-    try { if (window.t73Supa && window.t73Supa.auth && window.t73Supa.from) return window.t73Supa; } catch(e){}
-    try { if (window.supabaseClient && window.supabaseClient.auth && window.supabaseClient.from) return window.supabaseClient; } catch(e){}
-    return null;
+  async function renderReview(){
+    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
+    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Проверка отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML='<div class="t73-v81-card">Загружаю отчёты...</div>';
+    var rows=[]; try { var q=await c.from('reports').select('*').eq('email',E.report).eq('link',org.id).order('id',{ascending:false}).limit(160); rows=q.data||[]; } catch(e){}
+    var cards = rows.map(function(row){ var p=parse(row.date,{}), day=dateFromPayload(p), uid=row.status||p.userId||'', nick=p.nick||uid||'Пользователь', checked=p.reviewStatus||p.checkedStatus||p.checkedAt; var proofs=[]; if(p.link) proofs.push({url:p.link,name:'Ссылка'}); if(Array.isArray(p.proofs)) proofs=proofs.concat(p.proofs); return '<div class="t73-v81-report" data-report-id="'+esc(row.id)+'" data-user="'+esc(uid)+'" data-day="'+esc(day)+'"><div class="t73-v81-head"><div><strong style="color:#fff;font-size:1.05rem;">'+esc(nick)+'</strong><div class="t73-v81-muted">'+esc(p.type||'Гос отчёт')+' · '+esc(dayRu(day))+' · '+esc(p.created||'')+'</div></div><span class="t73-v81-pill">'+esc(checked ? ('Статус: '+(p.reviewStatus||p.checkedStatus||'Проверен')) : 'На проверке')+'</span></div><div>'+esc(p.comment||'Комментарий не указан')+'</div><div class="t73-v81-actions">'+(proofs.length?proofs.map(function(a,i){return '<a class="btn btn-secondary" target="_blank" rel="noreferrer" href="'+esc(a.url||a)+'">📎 '+esc(a.name||('Файл '+(i+1)))+'</a>';}).join(''):'<span class="t73-v81-muted">Доказательства не прикреплены</span>')+'</div><textarea class="support-input t73-v81-note" rows="2" placeholder="Комментарий руководства"></textarea><div class="t73-v81-statusbar"><button class="btn btn-secondary t73-v81-decision" data-status="Норма" type="button">Норма</button><button class="btn btn-secondary t73-v81-decision" data-status="Перенорма" type="button">Перенорма</button><button class="btn btn-secondary t73-v81-decision" data-status="Натяг" type="button">Натяг</button><button class="btn btn-secondary t73-v81-decision" data-status="Отказ" type="button">Отказ</button></div></div>'; }).join('');
+    r.innerHTML = '<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">✅ Проверка гос отчётов — '+esc(org.short)+'</h3><div class="t73-v81-muted">Без трёх старых кнопок. Выбираешь один из 4 статусов — он сразу попадает в таблицу отчётов.</div></div><button class="btn btn-secondary" id="t73V81ReviewReload" type="button">🔄 Обновить</button></div></div>' + (cards || '<div class="t73-v81-empty">Сданных гос отчётов пока нет.</div>');
+    var reload=$('t73V81ReviewReload'); if(reload) reload.onclick=renderReview;
+    qa('.t73-v81-decision', r).forEach(function(btn){ btn.onclick = async function(){ await decide(btn); }; });
   }
-  function getLexUser(){ try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){} return window.currentUser || null; }
-  function setLexUser(u){
-    if (!u) return;
-    try { currentUser = u; } catch(e){}
-    window.currentUser = u;
-    var nick = (u.user_metadata && (u.user_metadata.nickname || u.user_metadata.name)) || u.email || '';
-    try { if (typeof currentNickname !== 'undefined' && !currentNickname) currentNickname = nick; } catch(e){}
-    if (!window.currentNickname) window.currentNickname = nick;
-    var nameEl = $('userEmailDisplay'); if (nameEl) nameEl.textContent = (window.currentNickname || nick || u.email);
-    var login = $('loginBtnUI'), logout = $('logoutBtnUI'), modal = $('authModal');
-    if (login) login.style.display = 'none';
-    if (logout) logout.style.display = 'flex';
-    if (modal) modal.style.display = 'none';
+  async function decide(btn){
+    var c=client(), card=btn.closest('.t73-v81-report'), org=selectedOrg(); if(!c||!card) return;
+    var id=card.dataset.reportId, uid=card.dataset.user, day=card.dataset.day, status=btn.dataset.status, note=(card.querySelector('.t73-v81-note')||{}).value||'';
+    btn.disabled=true; btn.textContent='Сохраняю...';
+    var old=null; try { var q=await c.from('reports').select('*').eq('id',id).limit(1); old=(q.data||[])[0]; } catch(e){}
+    var p=parse(old && old.date,{}); p.reviewStatus=status; p.checkedStatus=status; p.checkedAt=now(); p.checkedBy=(user()&&user().email)||'Руководство'; p.leaderNote=note;
+    var upd=await c.from('reports').update({date:JSON.stringify(p),xp:status==='Перенорма'?2:(status==='Норма'?1:0)}).eq('id',id);
+    if(upd.error){ alert('Ошибка сохранения отчёта: '+upd.error.message); btn.disabled=false; btn.textContent=status; return; }
+    await saveSingleMark(org.id, uid, day, {report:status, day:status==='Отказ'?'Отказ':'Сдано', note:note, reportId:id, by:(user()&&user().email)||'', at:now()});
+    await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'report_'+status,date:'Проверен гос отчёт: '+status+' · '+uid+' · '+day+' · '+now(),xp:0}]);
+    card.querySelector('.t73-v81-pill').textContent='Статус: '+status; btn.textContent='Готово'; setTimeout(renderReview,350);
   }
-  function saveSession(session){
-    if (!session || !session.access_token || !session.refresh_token) return;
-    try { localStorage.setItem(AUTH_STORE, JSON.stringify({ access_token:session.access_token, refresh_token:session.refresh_token, savedAt:Date.now() })); } catch(e){}
+
+  async function renderTable(){
+    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
+    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Таблица отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML='<div class="t73-v81-card">Загружаю таблицу...</div>';
+    var ds=weekDays(), wk=weekKeyFromDays(ds), saved=await tableLoad(org.id,wk), marks=(saved.data&&saved.data.marks)||{}, staff=await profiles(org.id);
+    var html = '<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">📊 Таблица гос отчётов — '+esc(org.short)+'</h3><div class="t73-v81-muted">Карточки как в модерации: сотрудник → 7 дней недели. Статусы из проверки появляются сразу.</div></div><div class="t73-v81-actions" style="margin-top:0"><button class="btn btn-secondary" id="t73V81Prev" type="button">⬅️ Прошлая</button><button class="btn btn-secondary" id="t73V81This" type="button">Текущая</button><button class="btn btn-secondary" id="t73V81Next" type="button">Следующая ➡️</button></div></div><div class="t73-v81-muted" style="margin-top:.55rem">Неделя: <b>'+esc(dayRu(ds[0]))+'</b> — <b>'+esc(dayRu(ds[6]))+'</b></div></div>';
+    html += staff.length ? staff.map(function(u){ return '<div class="t73-v81-card" data-user="'+esc(u.key)+'"><div class="t73-v81-head"><div><strong style="color:#fff;font-size:1.06rem;">'+esc(u.nick)+'</strong><div class="t73-v81-muted">'+esc(u.post||'Сотрудник')+'</div></div><span class="t73-v81-pill">'+esc(org.short)+'</span></div><div class="t73-v81-daygrid" style="margin-top:.8rem">'+ds.map(function(d){ var m=(marks[u.key]&&marks[u.key][d])||{}; var st=m.report||'Нет отчёта'; return '<div class="t73-v81-day" data-day="'+esc(d)+'"><strong>'+esc(dayRu(d))+'</strong><span class="'+esc(statusClass(st))+'">'+esc(st)+'</span><select class="support-input t73-v81-table-status"><option '+(st==='Нет отчёта'?'selected':'')+'>Нет отчёта</option><option '+(st==='Норма'?'selected':'')+'>Норма</option><option '+(st==='Перенорма'?'selected':'')+'>Перенорма</option><option '+(st==='Натяг'?'selected':'')+'>Натяг</option><option '+(st==='Отказ'?'selected':'')+'>Отказ</option></select><textarea class="support-input t73-v81-table-note" rows="2" placeholder="Комментарий">'+esc(m.note||'')+'</textarea></div>'; }).join('')+'</div></div>'; }).join('') : '<div class="t73-v81-empty">Сотрудников/отчётов пока нет. Они появятся после заполнения данных СС или сдачи первого гос отчёта.</div>';
+    r.innerHTML=html;
+    $('t73V81Prev').onclick=function(){weekOffset--;renderTable();}; $('t73V81This').onclick=function(){weekOffset=0;renderTable();}; $('t73V81Next').onclick=function(){weekOffset++;renderTable();};
+    qa('.t73-v81-table-status,.t73-v81-table-note', r).forEach(function(el){ el.onchange = async function(){ var card=el.closest('[data-user]'), day=el.closest('[data-day]'); if(!card||!day)return; var status=day.querySelector('.t73-v81-table-status').value, note=day.querySelector('.t73-v81-table-note').value; await saveSingleMark(org.id, card.dataset.user, day.dataset.day, {report:status, day:status==='Отказ'?'Отказ':(status==='Нет отчёта'?'Нет отчёта':'Сдано'), note:note, by:(user()&&user().email)||'', at:now()}); renderTable(); }; });
   }
-  async function restoreSession(){
-    var c = client(); if (!c || !c.auth) return null;
+
+  async function renderManage(){
+    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
+    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Панель руководства доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    var all=await canAll(), users=await collectUsers(true), rs=await roles(true), options=users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nick||u.email||u.id)+' — '+esc(u.email||u.id)+'</option>';}).join('');
+    var senior = rs.filter(function(x){ return all ? /^goss_(senior|lead|admin)/.test(String(x.status||'')) : (x.status==='goss_senior_'+org.id || x.status==='goss_lead_'+org.id); });
+    r.innerHTML='<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">👑 Панель руководства — '+esc(org.short)+'</h3><div class="t73-v81-muted">Отдельный блок выдачи статуса старшего состава. Если список не загрузился — вставь UID вручную.</div></div><button class="btn btn-secondary" id="t73V81ManageReload" type="button">🔄 Обновить</button></div><div class="t73-v81-form" style="margin-top:1rem"><label class="full">Поиск пользователя<input id="t73V81UserSearch" class="support-input" placeholder="Ник / email / UID"></label><label class="full">Пользователь<select id="t73V81SeniorUser" class="support-input">'+(options||'<option value="">Нет пользователей</option>')+'</select></label><label class="full">Ручной UID/email<input id="t73V81ManualUser" class="support-input" placeholder="если пользователя нет в списке"></label><label>Доступ<select id="t73V81SeniorScope" class="support-input"><option value="one">СС '+esc(org.short)+'</option>'+(all?'<option value="all">СС всех ГОСС</option>':'')+'</select></label><label>Комментарий<input id="t73V81SeniorNote" class="support-input" placeholder="Причина выдачи/снятия"></label></div><div class="t73-v81-actions"><button class="btn btn-secondary" id="t73V81GrantSenior" type="button" style="border-color:var(--color-success);color:var(--color-success)">➕ Выдать статус СС</button><button class="btn btn-secondary" id="t73V81RemoveSenior" type="button" style="border-color:var(--color-error);color:var(--color-error)">➖ Снять статус СС</button></div><div id="t73V81ManageMsg" class="t73-v81-muted" style="margin-top:.7rem"></div></div><div class="t73-v81-card"><h3 style="margin:0 0 .8rem;color:#fff;">Текущие доступы</h3><div class="t73-v81-grid">'+(senior.length?senior.map(function(x){ var u=users.filter(function(z){return z.id===x.link;})[0]||{}; return '<div class="t73-v81-report"><strong style="color:#fff">'+esc(u.nick||u.email||x.link)+'</strong><span class="t73-v81-pill">'+esc(roleText(x.status,org))+'</span><div class="t73-v81-muted">'+esc(x.date||'')+'</div></div>'; }).join(''):'<div class="t73-v81-empty">Пока нет выданных доступов.</div>')+'</div></div>';
+    $('t73V81ManageReload').onclick=renderManage;
+    var search=$('t73V81UserSearch'), sel=$('t73V81SeniorUser'); if(search&&sel){ search.oninput=function(){ var q=String(search.value||'').toLowerCase(); qa('option',sel).forEach(function(o){ o.hidden = q && String(o.textContent||'').toLowerCase().indexOf(q)===-1 && String(o.value||'').toLowerCase().indexOf(q)===-1; }); }; }
+    $('t73V81GrantSenior').onclick=function(){ changeSenior(true); }; $('t73V81RemoveSenior').onclick=function(){ changeSenior(false); };
+  }
+  function roleText(st,org){ if(st==='goss_admin_all')return'Руководство всех ГОСС'; if(st==='goss_senior_all')return'СС всех ГОСС'; if(String(st).indexOf('goss_lead_')===0)return'Руководство '+findOrg(st.replace('goss_lead_','')).short; if(String(st).indexOf('goss_senior_')===0)return'СС '+findOrg(st.replace('goss_senior_','')).short; return st; }
+  async function changeSenior(grant){ var c=client(), org=selectedOrg(), all=await canAll(); if(!c)return; var uid=String(($('t73V81ManualUser')||{}).value||'').trim() || String(($('t73V81SeniorUser')||{}).value||'').trim(); var scope=($('t73V81SeniorScope')||{}).value||'one', note=($('t73V81SeniorNote')||{}).value||'', msg=$('t73V81ManageMsg'); if(!uid)return alert('Выберите пользователя или вставьте UID/email.'); if(scope==='all'&&!all)return alert('СС всех ГОСС может выдавать только руководство всех ГОСС.'); var status=scope==='all'?'goss_senior_all':'goss_senior_'+org.id; if(msg)msg.textContent='Сохраняю...'; if(grant){ await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',status); var ins=await c.from('reports').insert([{id:rid('g81senior'),email:E.access,link:uid,status:status,date:now()+(note?' · '+note:''),xp:0}]); if(ins.error){ if(msg)msg.textContent='Ошибка: '+ins.error.message; return alert(ins.error.message); } await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'grant_senior',date:'Выдан СС: '+uid+' · '+roleText(status,org)+' · '+now(),xp:0}]); } else { var del=await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',status); if(del.error){ if(msg)msg.textContent='Ошибка: '+del.error.message; return alert(del.error.message); } await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'remove_senior',date:'Снят СС: '+uid+' · '+roleText(status,org)+' · '+now(),xp:0}]); } if(msg){msg.textContent=grant?'Статус СС выдан.':'Статус СС снят.';msg.classList.add('t73-v81-ok');} rolesCache.at=0; usersCache.at=0; setTimeout(renderManage,450); }
+
+  function fixLabels(){
+    if(!gossVisible()) return;
+    var nav=$('gossOrgActionNavV4'); if(nav){
+      qa('#g20Submit,#g20Table,#g20Shop,#g20Manage,#g19Logs,#g19Global,#gossOrgLogsTabBtnV15',nav).forEach(function(b){ b.style.display='none'; });
+      qa('button',nav).forEach(function(b){ var v=b.dataset.view||'', t=String(b.textContent||'').replace(/\s+/g,' ').trim(); if(v==='submit'||/отч[её]тност/i.test(t)) b.innerHTML='📤 Сдать гос отчёт'; if(v==='staff') b.innerHTML='📊 Таблица отчётов'; if(v==='reports') b.innerHTML='✅ Проверить отчёты'; if(v==='manage') b.innerHTML='👑 Панель руководства'; });
+    }
+    var r=root(); if(r){
+      qa('#t73V15OpenThisOrgLogs,.t73-v15-card',r).forEach(function(x){ x.remove(); });
+      qa('h3,button,p,span,div',r).forEach(function(el){ if(el.childElementCount) return; var txt=el.textContent||''; if(/Сдать\s+отч[её]тность/i.test(txt)) el.textContent=txt.replace(/Сдать\s+отч[её]тность/ig,'Сдать гос отчёт'); if(/^Отч[её]тность$/i.test(txt.trim())) el.textContent='Гос отчёт'; });
+    }
+  }
+  function patchTrainerBank(){
+    if(window.__T73_V81_TRAINER_BANK_DONE__) return; window.__T73_V81_TRAINER_BANK_DONE__=true;
     try {
-      var gs = await c.auth.getSession();
-      var session = gs && gs.data && gs.data.session;
-      if (session && session.user) { saveSession(session); setLexUser(session.user); return session.user; }
-    } catch(e){}
-    try {
-      var raw = localStorage.getItem(AUTH_STORE); if (!raw) return null;
-      var s = JSON.parse(raw || '{}');
-      if (!s.access_token || !s.refresh_token) return null;
-      var ss = await c.auth.setSession({ access_token:s.access_token, refresh_token:s.refresh_token });
-      var session2 = ss && ss.data && ss.data.session;
-      if (session2 && session2.user) { saveSession(session2); setLexUser(session2.user); return session2.user; }
-    } catch(e){}
-    return null;
-  }
-  function patchAuthPersistence(){
-    var c = client(); if (!c || !c.auth || c.__t73v80AuthPatched) return;
-    c.__t73v80AuthPatched = true;
-    var oldSignIn = c.auth.signInWithPassword ? c.auth.signInWithPassword.bind(c.auth) : null;
-    if (oldSignIn) c.auth.signInWithPassword = async function(args){
-      var res = await oldSignIn(args);
-      if (res && res.data && res.data.session) { saveSession(res.data.session); setLexUser(res.data.session.user); }
-      return res;
-    };
-    var oldSignOut = c.auth.signOut ? c.auth.signOut.bind(c.auth) : null;
-    if (oldSignOut) c.auth.signOut = async function(){
-      try { localStorage.removeItem(AUTH_STORE); } catch(e){}
-      return oldSignOut.apply(null, arguments);
-    };
-    try { c.auth.onAuthStateChange(function(event, session){ if (session) { saveSession(session); if (session.user) setLexUser(session.user); } if (event === 'SIGNED_OUT') localStorage.removeItem(AUTH_STORE); }); } catch(e){}
-    var login = $('authLoginSubmit');
-    if (login && login.dataset.t73v80 !== '1') {
-      login.dataset.t73v80 = '1';
-      login.onclick = async function(){
-        var email = norm(($('authEmail') || {}).value || '').toLowerCase();
-        var password = String(($('authPassword') || {}).value || '');
-        var msg = $('authErrorMsg');
-        function out(t, color){ if (msg) { msg.textContent = t; msg.style.color = color || 'var(--color-error)'; msg.style.display = 'block'; } }
-        if (!email || !password) return out('Введите Email и пароль.');
-        out('Вхожу...', 'var(--color-primary)');
-        var r = await c.auth.signInWithPassword({ email:email, password:password });
-        if (r.error) return out(r.error.message);
-        if (r.data && r.data.session) { saveSession(r.data.session); setLexUser(r.data.session.user); }
-        try { await restoreSession(); } catch(e){}
-        window.location.reload();
+      if (typeof GOV_TRAINERS_V4 === 'undefined') return;
+      var data = {
+        government:['Проверка без основания|Перенести проверку|Начать сразу|Скрыть проверку','Конфликт в составе|Собрать факты|Выбрать старшего|Закрыть тему','Приказ без даты|Вернуть на правку|Подписать сразу|Удалить приказ'],
+        fsb:['Заявка неполная|Вернуть на правку|Принять сразу|Удалить молча','Слив информации|Собрать факты|Обвинить публично|Игнорировать','Слабое собеседование|Отказать с причиной|Принять по заявке|Не фиксировать'],
+        gibdd:['Спор по штрафу|Проверить факты|Отменить сразу|Наказать жалобу','Пост оставлен|Выяснить причину|Не реагировать|Уволить сразу','ДТП без ясности|Собрать схему|Выбрать случайно|Уехать'],
+        umvd:['Заявление без скринов|Принять и проверить|Отказать сразу|Наказать заявителя','Спорное задержание|Проверить основания|Верить сотруднику|Отпустить всех','Патруль без дела|Дать задачу|Не трогать|Максимум сразу'],
+        army:['КПП просит пропуск|Отказать по порядку|Пропустить сразу|Грубить игроку','Склад без отчёта|Проверить записи|Раздать имущество|Скрыть факт','Срыв строя|Восстановить строй|Отменить строй|Кричать без меры'],
+        hospital:['Пациент жалуется|Проверить помощь|Закрыть жалобу|Обвинить пациента','Нет выезда|Назначить медика|Закрыть вызов|Не проверять','Ошибка в карте|Исправить данные|Оставить как есть|Уволить сразу'],
+        smi:['Эфир без темы|Скорректировать эфир|Не вмешиваться|Разрешить всё','Объявление с ошибкой|Вернуть правку|Пустить сразу|Уволить сразу','Провокация гостя|Держать нейтралитет|Ответить тем же|Сорвать эфир'],
+        fsin:['Срыв режима|Зафиксировать факт|Ответить агрессией|Игнорировать','Допуск без заявки|Проверить основание|Пропустить сразу|Грубо выгнать','Обход не проведён|Назначить обход|Скрыть факт|Отменить обход']
       };
-    }
+      Object.keys(data).forEach(function(orgId){ var pack=GOV_TRAINERS_V4[orgId]; if(!pack||!Array.isArray(pack.scenarios)) return; data[orgId].forEach(function(row,i){ var a=row.split('|'); pack.scenarios.push({from:'Ситуация СС',text:a[0]+'. Какое решение принять?',options:[{text:a[1],good:true,reply:'Верно: решение по фактам и регламенту.'},{text:a[2],good:false,reply:'Неверно: так можно нарушить порядок.'},{text:a[3],good:false,reply:'Неверно: СС должен фиксировать действия.'}]}); }); });
+    } catch(e){}
   }
-
-  function orgList(){
-    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){}
-    try { if (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) return window.GOSS_ORGS; } catch(e){}
-    return [
-      {id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},
-      {id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},
-      {id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚓'},
-      {id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},
-      {id:'army',short:'Армия',name:'Армия',icon:'🎖️'},
-      {id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},
-      {id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},
-      {id:'fsin',short:'ФСИН',name:'ФСИН',icon:'⛓️'}
-    ];
-  }
-  function currentOrg(){
-    var id = '';
-    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
-    if (active && active.dataset) id = active.dataset.orgId || active.dataset.org || active.dataset.id || '';
-    if (!id) { try { id = window.govV4SelectedOrg || ''; } catch(e){} }
-    if (!id) {
-      var txt = [ $('gossV4Org') && $('gossV4Org').textContent, $('gossV4Title') && $('gossV4Title').textContent ].join(' ').toLowerCase();
-      orgList().some(function(o){ var s=String(o.short||'').toLowerCase(), n=String(o.name||'').toLowerCase(); if ((s && txt.indexOf(s)!==-1) || (n && txt.indexOf(n)!==-1)) { id=o.id; return true; } return false; });
-    }
-    return orgList().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgList()[0];
-  }
-  function gossVisible(){ var p = $('mode-goss_center_v4'); try { return !!p && getComputedStyle(p).display !== 'none'; } catch(e){ return !!p; } }
-  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || null; }
-  function isCreator(u){
-    u = u || getLexUser(); if (!u) return false;
-    try { if (typeof creatorEmail !== 'undefined' && u.email === creatorEmail) return true; } catch(e){}
-    try { if (Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1) return true; } catch(e){}
-    return false;
-  }
-  async function roles(force){
-    if (!force && roleCache.rows.length && Date.now() - roleCache.at < 12000) return roleCache.rows.slice();
-    var c = client(); if (!c) return roleCache.rows.slice();
-    try { var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email', ACCESS_EMAIL).limit(8000); roleCache = { at:Date.now(), rows:r.data || [] }; } catch(e){}
-    return roleCache.rows.slice();
-  }
-  async function access(orgId){
-    var u = getLexUser() || await restoreSession();
-    if (!u) return { senior:false, leader:false };
-    if (isCreator(u)) return { senior:true, leader:true };
-    var rs = await roles(false);
-    var seniorStatuses = ['goss_senior_all','goss_admin_all','goss_lead_'+orgId,'goss_senior_'+orgId];
-    var leaderStatuses = ['goss_admin_all','goss_lead_'+orgId];
-    return {
-      senior: rs.some(function(r){ return r.link === u.id && seniorStatuses.indexOf(r.status) !== -1; }),
-      leader: rs.some(function(r){ return r.link === u.id && leaderStatuses.indexOf(r.status) !== -1; })
-    };
-  }
-  function btn(view,label,active){ return '<button class="mode-btn gov-action-switch-v4 t73-v80-mode '+(active?'active':'')+'" data-view="'+esc(view)+'" type="button">'+label+'</button>'; }
-  function setActive(view){
-    lastView = view;
-    var nav = $('gossOrgActionNavV4'); if (!nav) return;
-    nav.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view || (view==='table' && b.dataset.view==='staff') || (view==='review' && b.dataset.view==='reports')); });
-  }
-  function stripTopLogs(){
-    ['t73V15OpenThisOrgLogs','g19Logs','gossOrgLogsTabBtnV15'].forEach(function(id){
-      var el = $(id); if (!el) return;
-      var inNav = el.closest && el.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.sub-nav');
-      if (inNav) { el.style.display = 'none'; return; }
-      var card = el.closest && el.closest('.gov-v4-card,.gov-v3-access-card,.t73-v15-card,.t73-v68-log-card,.g19-card,.t73-v23-card,.t73-v24-card');
-      if (card) card.remove();
-    });
-    document.querySelectorAll('#gossOrgActionNavV4 .t73-v68-org-logs,#gossOrgActionNavV3 .t73-v68-org-logs,#gossOrgActionNav .t73-v68-org-logs').forEach(function(el){ el.style.display='none'; });
-  }
-  async function buildNav(){
-    if (!gossVisible()) { stripTopLogs(); return; }
-    await restoreSession();
-    patchAuthPersistence();
-    var org = currentOrg();
-    var nav = $('gossOrgActionNavV4');
-    var orgNav = $('subNavOrganizations');
-    if (!nav && orgNav) { orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4"></div>'); nav = $('gossOrgActionNavV4'); }
-    if (!nav) return;
-    var ac = await access(org.id);
-    var view = lastView || (nav.querySelector('.active[data-view]') && nav.querySelector('.active[data-view]').dataset.view) || 'trainer';
-    if (!ac.senior && view !== 'trainer') view = 'trainer';
-    if (!ac.leader && ['table','review','reports','staff','manage'].indexOf(view) !== -1) view = ac.senior ? 'submit' : 'trainer';
-    var html = btn('trainer','🎮 Тренажёр',view==='trainer');
-    if (ac.senior) {
-      html += btn('profile','📝 Мои данные',view==='profile');
-      html += btn('submit','📤 Сдать гос отчёт',view==='submit');
-      html += btn('shop','🛒 Магазин',view==='shop');
-    }
-    if (ac.leader) {
-      html += btn('table','📊 Таблица отчётов',view==='table'||view==='staff');
-      html += btn('review','✅ Проверить отчёты',view==='review'||view==='reports');
-      html += btn('manage','👑 Панель руководства',view==='manage');
-    }
-    if (nav.dataset.t73v80Html !== html) {
-      nav.innerHTML = html;
-      nav.dataset.t73v80Html = html;
-      nav.dataset.t73v79Built = '1';
-    }
-    nav.classList.add('t73-v80-ready');
-    stripTopLogs();
-  }
-  function nativeSwitch(view){
-    var org = currentOrg();
-    var fake = document.querySelector('.gov-org-switch-v4.active') || document.createElement('button');
-    fake.dataset.mode = 'goss_center_v4';
-    fake.dataset.orgId = org.id;
-    fake.dataset.view = view;
-    try { window.govV4SelectedOrg = org.id; window.govV4SelectedView = view; } catch(e){}
-    if (typeof switchMode === 'function') { switchMode('goss_center_v4', fake); return true; }
-    if (typeof window.switchMode === 'function') { window.switchMode('goss_center_v4', fake); return true; }
-    return false;
-  }
-  function route(view){
-    view = view || 'trainer';
-    if (view === 'reports') view = 'review';
-    if (view === 'staff') view = 'table';
-    setActive(view);
-    if (view === 'review' && window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.review === 'function') {
-      window.T73_V78_GOSS_REPORTS.review(); setTimeout(function(){ setActive('review'); stripTopLogs(); buildNav(); }, 180); return;
-    }
-    if (view === 'table' && window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.table === 'function') {
-      window.T73_V78_GOSS_REPORTS.table(); setTimeout(function(){ setActive('table'); stripTopLogs(); buildNav(); }, 180); return;
-    }
-    var nativeView = view;
-    nativeSwitch(nativeView);
-    setTimeout(function(){ setActive(view); stripTopLogs(); buildNav(); }, 160);
-    setTimeout(function(){ setActive(view); stripTopLogs(); }, 520);
-  }
-  document.addEventListener('click', function(e){
-    var t = e.target;
-    if (!t || !t.closest) return;
-    var b = t.closest('#gossOrgActionNavV4 [data-view],#gossOrgActionNavV3 [data-view],#gossOrgActionNav [data-view]');
-    if (b) {
-      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-      route(b.dataset.view || 'trainer');
-      return false;
-    }
-    if (t.closest('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode="goss_center_v4"],#subNavOrganizations')) {
-      lastView = 'trainer';
-      schedule(120); schedule(420); schedule(900);
-    }
-  }, true);
-  function schedule(ms){ clearTimeout(bootTimer); bootTimer = setTimeout(function(){ buildNav(); stripTopLogs(); }, ms || 160); }
-  function boot(){ patchAuthPersistence(); restoreSession().then(function(){ buildNav(); stripTopLogs(); }); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [250,800,1600,3200,5500].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ schedule(260); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V80_SESSION_GOSS_ROUTING = { refresh:boot, route:route, restoreSession:restoreSession, stripLogs:stripTopLogs };
+  function activeView(){ var b=document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active,#gossOrgActionNavV4 [data-view].active'); return b && b.dataset ? b.dataset.view : ''; }
+  function afterRoute(view){ fixLabels(); if(view==='reports') renderReview(); else if(view==='staff') renderTable(); else if(view==='manage') renderManage(); }
+  document.addEventListener('click', function(e){ var b=e.target && e.target.closest && e.target.closest('#gossOrgActionNavV4 [data-view]'); if(b){ var view=b.dataset.view||''; setTimeout(function(){ afterRoute(view); },180); setTimeout(function(){ afterRoute(view); },520); } var org=e.target && e.target.closest && e.target.closest('.gov-org-switch-v4,[data-mode="goss_center_v4"]'); if(org){ setTimeout(fixLabels,180); setTimeout(fixLabels,650); } }, false);
+  function boot(){ patchTrainerBank(); fixLabels(); var v=activeView(); if(v==='reports') renderReview(); if(v==='staff') renderTable(); if(v==='manage') renderManage(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  [250,800,1600,3200,5200].forEach(function(ms){ setTimeout(boot,ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__t73v81mo); window.__t73v81mo=setTimeout(boot,220); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
+  window.T73_V81_GOSS_SS = { review:renderReview, table:renderTable, manage:renderManage, labels:fixLabels };
 })();
 </script>
-<!-- === /T73 V80 === -->
+<!-- === /T73 V81 === -->
 
 </body>
 </html>
