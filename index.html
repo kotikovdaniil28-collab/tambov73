@@ -13174,338 +13174,123 @@
   new MutationObserver(() => { clearTimeout(window.__t73V33ModHeroTimer); window.__t73V33ModHeroTimer = setTimeout(boot, 80); }).observe(document.documentElement, {childList:true, subtree:true});
 })();
 </script>
+<style id="t73-v44-clean-mobile-mod-table-style">
+/* === T73 V44: чистая таблица модераторов + нормальные мобильные вкладки === */
+#subNavModeration,#subNavSupport,#subNavGeneral,#subNavOrganizations{display:none!important;}
+#subNavModeration.t73-v44-active-subnav,#subNavSupport.t73-v44-active-subnav,#subNavGeneral.t73-v44-active-subnav,#subNavOrganizations.t73-v44-active-subnav{display:flex!important;}
+body:not(.t73-v44-cat-organizations) #gossOrgActionNav,
+body:not(.t73-v44-cat-organizations) #gossOrgActionNavV3,
+body:not(.t73-v44-cat-organizations) #gossOrgActionNavV4{display:none!important;}
+body.t73-v44-cat-organizations #gossOrgActionNav,
+body.t73-v44-cat-organizations #gossOrgActionNavV3{display:none!important;}
+body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:flex!important;}
 
-
-<style id="t73-v42-rewrite-mod-table-style">
-/* === T73 V42: таблица модераторов переписана с нуля, без ГОСС/СС и без старых конфликтов === */
-#mode-reports_table.t73-v42-mod-table{
-  overflow:visible!important;
-  border-color:rgba(127,232,160,.28)!important;
-  background:
-    radial-gradient(circle at 0 0,rgba(82,199,123,.13),transparent 46%),
-    radial-gradient(circle at 100% 0,rgba(108,140,255,.12),transparent 44%),
-    linear-gradient(155deg,rgba(9,16,18,.96),rgba(8,10,18,.99))!important;
-}
-#mode-reports_table.t73-v42-mod-table .section-head h2{color:#dfffea!important;text-shadow:0 0 24px rgba(127,232,160,.25)!important}
-.t73-v42-table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.85rem;flex-wrap:wrap;margin:.15rem 0 1rem;padding:.85rem;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(0,0,0,.24)}
-.t73-v42-table-toolbar h3{margin:0;flex:1;text-align:center;color:#fff;font-weight:900;letter-spacing:.03em}
-.t73-v42-table-note{padding:.85rem 1rem;border-radius:16px;background:linear-gradient(135deg,rgba(82,199,123,.12),rgba(108,204,255,.08));border:1px solid rgba(127,232,160,.24);color:var(--color-text-muted);font-size:.92rem}
-.t73-v42-scroll-note{display:none;color:var(--color-text-faint);font-size:.84rem;margin:-.35rem 0 .25rem}
-.t73-v42-list{display:grid;gap:1.1rem;overflow:visible!important}.t73-v42-card{position:relative;overflow:visible!important;border-radius:20px;padding:1rem;background:radial-gradient(circle at 0 0,rgba(127,232,160,.13),transparent 42%),linear-gradient(145deg,rgba(12,16,31,.96),rgba(7,9,18,.99));border:1px solid rgba(191,198,255,.22);box-shadow:0 14px 44px rgba(0,0,0,.42)}
-.t73-v42-head{display:flex;justify-content:space-between;gap:.85rem;align-items:flex-start;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.8rem;margin-bottom:.72rem}.t73-v42-name{font-weight:950;color:#fff;font-size:1.06rem;overflow-wrap:anywhere}.t73-v42-email{color:var(--color-text-faint);font-size:.78rem;margin-top:.12rem;overflow-wrap:anywhere}.t73-v42-xp{font-weight:950;color:#7fe8a0;text-shadow:0 0 16px rgba(127,232,160,.22);white-space:nowrap}
-.t73-v42-days{display:flex;gap:.65rem;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;touch-action:pan-x!important;scroll-snap-type:x proximity;padding:.15rem .05rem .55rem;max-width:100%}.t73-v42-days::-webkit-scrollbar{height:8px}.t73-v42-days::-webkit-scrollbar-thumb{background:rgba(127,232,160,.45);border-radius:999px}.t73-v42-day{flex:0 0 132px;min-width:132px;scroll-snap-align:start;border-radius:14px;padding:.74rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);min-height:92px}.t73-v42-date{font-size:.9rem;font-weight:950;color:#fff;letter-spacing:.04em}.t73-v42-status,.t73-v42-select{width:100%;min-height:34px;border-radius:10px;font-size:.76rem;font-weight:950;text-align:center}.t73-v42-status{display:grid;place-items:center;padding:.38rem .28rem}.t73-v42-select{padding:.36rem .42rem;border:1px solid rgba(255,255,255,.15);outline:none;color:#fff;background:#111827;cursor:pointer}.t73-v42-select option{background:#111827;color:#fff;font-weight:800}.t73-v42-good{background:rgba(22,163,74,.20)!important;color:#4ade80!important;border-color:#16a34a!important}.t73-v42-hero{background:rgba(59,130,246,.22)!important;color:#60a5fa!important;border-color:#3b82f6!important}.t73-v42-inactive{background:rgba(234,88,12,.20)!important;color:#fb923c!important;border-color:#ea580c!important}.t73-v42-missing{background:rgba(239,68,68,.20)!important;color:#ff6b88!important;border-color:#ef4444!important}.t73-v42-empty{background:rgba(255,255,255,.055)!important;color:var(--color-text-faint)!important;border-color:rgba(255,255,255,.08)!important}
-/* убираем красный вид названия ГОСС-организации */
-#gossDashOrgShort,#gossV3Org,#gossV4Org,#gossV3OrgShort,#gossV4OrgShort,#gossOrgName,#gossCurrentOrgName,.goss-current-org-name{
-  display:inline-flex!important;align-items:center!important;gap:.38rem!important;width:max-content!important;max-width:100%!important;padding:.34rem .78rem!important;border-radius:999px!important;background:linear-gradient(135deg,rgba(127,232,160,.18),rgba(108,204,255,.12))!important;border:1px solid rgba(127,232,160,.34)!important;color:#d9ffe8!important;text-shadow:none!important;box-shadow:0 0 18px rgba(127,232,160,.12)!important;font-weight:950!important;
-}
-#mode-fsb .stat-value,#gossV3Content .stat-value,#gossV4Content .stat-value,#gossDashView .stat-value{color:#d9ffe8!important;text-shadow:none!important}
-#mode-fsb [style*="color:#ff6b88"],#gossV3Content [style*="color:#ff6b88"],#gossV4Content [style*="color:#ff6b88"],#gossDashView [style*="color:#ff6b88"]{color:#d9ffe8!important;text-shadow:none!important}
-@media(max-width:820px){.t73-v42-table-toolbar{display:grid;grid-template-columns:1fr}.t73-v42-table-toolbar .btn{width:100%}.t73-v42-scroll-note{display:block}.t73-v42-card{padding:.85rem}.t73-v42-head{display:grid;grid-template-columns:1fr}.t73-v42-xp{white-space:normal}.t73-v42-day{flex-basis:42vw;min-width:136px}.main-nav,.sub-nav,#subNavGeneral,#subNavModeration,#subNavSupport,#subNavOrganizations,#gossOrgActionNavV3,.gov-v3-actions{max-width:100%!important;width:100%!important;display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;overflow-y:hidden!important;justify-content:flex-start!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-x!important;padding-bottom:.55rem!important}.main-nav button,.sub-nav button,#gossOrgActionNavV3 button,.gov-v3-actions button{flex:0 0 auto!important;white-space:nowrap!important}}
+#mode-reports_table.t73-v44-mod-table{overflow:visible!important;background:radial-gradient(circle at 0 0,rgba(82,199,123,.16),transparent 46%),linear-gradient(155deg,rgba(10,23,14,.97),rgba(6,8,15,.99))!important;border-color:rgba(127,232,160,.28)!important;}
+#mode-reports_table.t73-v44-mod-table .section-head h2{color:#dfffea!important;text-shadow:0 0 22px rgba(127,232,160,.18)!important;}
+.t73-v44-rt-toolbar{display:flex;gap:.75rem;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:.25rem 0 1rem;padding:.8rem;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.26)}
+.t73-v44-rt-toolbar h3{margin:0;flex:1;text-align:center;color:#fff;font-weight:950;letter-spacing:.03em}.t73-v44-rt-note{padding:.8rem 1rem;border-radius:16px;border:1px solid rgba(127,232,160,.24);background:linear-gradient(135deg,rgba(82,199,123,.13),rgba(108,204,255,.07));color:var(--color-text-muted);font-size:.9rem}.t73-v44-scroll-note{display:none;color:var(--color-text-faint);font-size:.82rem;margin:-.35rem 0 .15rem}.t73-v44-list{display:grid;gap:1rem;overflow:visible!important}.t73-v44-card{position:relative;overflow:visible!important;border-radius:20px;padding:1rem;background:radial-gradient(circle at 0 0,rgba(127,232,160,.12),transparent 45%),linear-gradient(145deg,rgba(12,16,31,.96),rgba(7,9,18,.99));border:1px solid rgba(191,198,255,.22);box-shadow:0 14px 42px rgba(0,0,0,.44)}.t73-v44-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.85rem;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:.8rem;margin-bottom:.78rem}.t73-v44-name{font-weight:950;color:#fff;font-size:1.06rem;overflow-wrap:anywhere}.t73-v44-mail{color:var(--color-text-faint);font-size:.78rem;margin-top:.12rem;overflow-wrap:anywhere}.t73-v44-xp{font-weight:950;color:#7fe8a0;text-shadow:0 0 14px rgba(127,232,160,.2);white-space:nowrap}.t73-v44-days{display:flex;gap:.62rem;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;touch-action:pan-x!important;scroll-snap-type:x proximity;padding:.12rem .05rem .55rem;max-width:100%}.t73-v44-days::-webkit-scrollbar{height:8px}.t73-v44-days::-webkit-scrollbar-thumb{background:rgba(127,232,160,.45);border-radius:999px}.t73-v44-day{flex:0 0 132px;min-width:132px;scroll-snap-align:start;border-radius:14px;padding:.74rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);min-height:92px}.t73-v44-date{font-size:.88rem;font-weight:950;color:#fff;letter-spacing:.04em}.t73-v44-status,.t73-v44-select{width:100%;min-height:34px;border-radius:10px;font-size:.75rem;font-weight:950;text-align:center}.t73-v44-status{display:grid;place-items:center;padding:.38rem .26rem}.t73-v44-select{padding:.35rem .42rem;border:1px solid rgba(255,255,255,.16);outline:none;color:#fff;background:#111827;cursor:pointer}.t73-v44-select option{background:#111827;color:#fff;font-weight:800}.t73-v44-good{background:rgba(22,163,74,.20)!important;color:#4ade80!important;border-color:#16a34a!important}.t73-v44-hero{background:rgba(59,130,246,.22)!important;color:#60a5fa!important;border-color:#3b82f6!important}.t73-v44-inactive{background:rgba(234,88,12,.20)!important;color:#fb923c!important;border-color:#ea580c!important}.t73-v44-missing{background:rgba(239,68,68,.20)!important;color:#ff6b88!important;border-color:#ef4444!important}.t73-v44-empty{background:rgba(255,255,255,.055)!important;color:var(--color-text-faint)!important;border-color:rgba(255,255,255,.08)!important}.t73-v44-error{border:1px solid rgba(255,107,136,.35);background:rgba(255,107,136,.08);border-radius:16px;padding:1rem;color:#ffb1c1}.t73-v44-emptybox{border:1px solid rgba(191,198,255,.18);background:rgba(255,255,255,.04);border-radius:16px;padding:1rem;color:var(--color-text-muted);text-align:center}.t73-v44-org-pill{display:inline-flex!important;align-items:center;gap:.4rem;width:max-content!important;max-width:100%;padding:.34rem .75rem!important;border-radius:999px!important;border:1px solid rgba(127,232,160,.38)!important;background:linear-gradient(135deg,rgba(127,232,160,.16),rgba(108,204,255,.10))!important;color:#dfffea!important;text-shadow:none!important;box-shadow:0 8px 24px rgba(82,199,123,.12)!important}
+#mode-goss h2,#gossV4Content h3,#gossV3Content h3,#gossOrgPanel h3,#gossOrgArea h3,.gov-v4-card h3[style*="ff6b88"],.gov-v3-access-card h3[style*="ff6b88"],.t73-v26-card h3[style*="ff6b88"]{color:#dfffea!important;text-shadow:0 0 18px rgba(127,232,160,.14)!important}.gov-v4-card .channel-dot[style*="ff6b88"]{background:#7fe8a0!important;box-shadow:0 0 14px rgba(127,232,160,.55)!important}
+@media(max-width:820px){html,body{overflow-y:auto!important;touch-action:pan-y!important}.page{width:100%!important;max-width:100%!important;padding-left:.65rem!important;padding-right:.65rem!important;overflow:visible!important}.nav-container{width:100%!important;max-width:100%!important;overflow:hidden!important;gap:.62rem!important}.main-nav,#subNavModeration.t73-v44-active-subnav,#subNavSupport.t73-v44-active-subnav,#subNavGeneral.t73-v44-active-subnav,#subNavOrganizations.t73-v44-active-subnav,body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions,.gov-v4-tabs,.gov-v3-actions,.gov-v4-actions,.goss-v4-actions{display:flex!important;flex-wrap:nowrap!important;justify-content:flex-start!important;align-items:center!important;width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-x!important;scroll-snap-type:none!important;padding:.38rem!important;border-radius:18px!important}.main-nav::-webkit-scrollbar,.sub-nav::-webkit-scrollbar,#gossOrgActionNavV4::-webkit-scrollbar,.gov-v4-tabs::-webkit-scrollbar,.gov-v3-actions::-webkit-scrollbar,.gov-v4-actions::-webkit-scrollbar{display:none!important}.main-cat-btn,.mode-btn,#gossOrgActionNavV4 button,.gov-v4-tabs button,.gov-v3-actions button,.gov-v4-actions button,.goss-v4-actions button{flex:0 0 auto!important;white-space:nowrap!important;min-width:max-content!important;font-size:.78rem!important;padding:.62rem .86rem!important}.hero,.game-wrap{grid-template-columns:1fr!important}.panel,.hero-card,.rules,.game-card,.side{max-width:100%!important;overflow:visible!important}.t73-v44-rt-toolbar{display:grid;grid-template-columns:1fr}.t73-v44-rt-toolbar .btn{width:100%}.t73-v44-scroll-note{display:block}.t73-v44-card{padding:.84rem}.t73-v44-head{display:grid;grid-template-columns:1fr}.t73-v44-xp{white-space:normal}.t73-v44-day{flex-basis:42vw;min-width:136px}.gov-v4-card,.gov-v3-access-card,.t73-v26-card{overflow:visible!important}}
 </style>
 <script>
-/* === T73 V42 FINAL: старая по смыслу, полностью переписанная таблица модераторов === */
-(() => {
-  if (window.__T73_V42_REWRITE_MOD_TABLE__) return;
-  window.__T73_V42_REWRITE_MOD_TABLE__ = true;
-
-  const SERVICE_EMAILS = new Set([
-    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB',
-    'CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP',
-    'REPORT_TABLE_MARK','REPORT_TABLE_MARK_V12','REPORT_TABLE_MARK_V13','REPORT_TABLE_MEMBER_V13',
-    'AP_POINTS','FSB_POINTS','FSB_SPEND','FSB_SHOP','SHOP_FSB','FSB_SHOP_LOG',
-    'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT','GOSS_REPORT_CHECK','GOSS_REPORT_TABLE','GOSS_TABLE_MARK',
-    'GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19',
-    'GOSS_POINTS','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP','GOSS_SHOP_ITEM','GOSS_SHOP_BUY',
-    'GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','GOSS_ACCESS',
-    'GOSS_ADMIN_ALL','GOSS_SENIOR_ALL','GOSS_LEADER','GOSS_SENIOR'
-  ]);
-  const ORG_NAMES = ['Правительство','ФСБ','ГИБДД','УМВД','Армия','Больница','СМИ','ФСИН'];
-  const $ = id => document.getElementById(id);
-  const qa = (s, r=document) => Array.from(r.querySelectorAll(s));
-  const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-
-  function supaClient(){
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') { window.supa = supa; return supa; } } catch(e) {}
-    if (window.supa && typeof window.supa.from === 'function') return window.supa;
-    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
-    return null;
-  }
-  function user(){ try { return currentUser || window.currentUser || null; } catch(e) { return window.currentUser || null; } }
-  function creator(){ try { return creatorEmail || ''; } catch(e) { return ''; } }
-  function admins(){ try { return Array.isArray(adminEmails) ? adminEmails : []; } catch(e) { return []; } }
-  function modLeaders(){ try { return Array.isArray(dynamicModLeaders) ? dynamicModLeaders : []; } catch(e) { return []; } }
-  function canEditModTable(){ const u=user(); return !!(u && (u.email === creator() || admins().includes(u.email) || modLeaders().map(String).includes(String(u.id)))); }
-  function weekOffset(){ const n = Number(window.currentTableWeekOffset || 0); return Number.isFinite(n) && n > 0 ? n : 0; }
-  function setWeekOffset(n){ window.currentTableWeekOffset = Math.max(0, Number(n) || 0); try { currentTableWeekOffset = window.currentTableWeekOffset; } catch(e) {} }
-  function weekDays(){ const t = new Date(); t.setHours(0,0,0,0); t.setDate(t.getDate() - weekOffset() * 7); const out=[]; for(let i=6;i>=0;i--){ const d=new Date(t); d.setDate(t.getDate()-i); out.push(d.toISOString().slice(0,10)); } return out; }
-  function normStatus(s){ s=String(s||'').trim(); if(!s || s==='none' || s==='На проверке') return 'none'; if(s==='Отказ') return 'Не засчитано'; if(s==='Натяг') return 'Герой дня'; return s; }
-  function displayStatus(s){ s=normStatus(s); if(s==='none') return '-'; if(s==='Не засчитано') return 'Отказ'; return s; }
-  function xpForStatus(s){ s=normStatus(s); return s==='Норма' ? 15 : s==='Перенорма' ? 30 : s==='Герой дня' ? 60 : 0; }
-  function statusClass(s){ s=normStatus(s); if(s==='Норма' || s==='Перенорма') return 't73-v42-good'; if(s==='Герой дня') return 't73-v42-hero'; if(s==='Неактив') return 't73-v42-inactive'; if(s==='Нет отчета' || s==='Не засчитано') return 't73-v42-missing'; return 't73-v42-empty'; }
-  function isServiceReport(row){
-    const email=String(row?.email||'');
-    const blob=[row?.email,row?.status,row?.link,row?.date].map(v=>String(v||'')).join(' ');
-    return SERVICE_EMAILS.has(email) || /GOSS|ГОСС|СС всех ГОСС|Руководство всех ГОСС|goss_/i.test(blob);
-  }
-  function reportForNickAndDay(reports, nick, day){
-    const nl=String(nick||'').toLowerCase();
-    if(!nl) return null;
-    return reports.find(r => {
-      const txt=String(r.date||'').toLowerCase();
-      return txt.includes(nl) && String(r.date||'').includes(day);
-    }) || null;
-  }
-
-  function buildShell(){
-    let sec = $('mode-reports_table');
-    const host = $('game') || document.querySelector('.game-wrap') || document.querySelector('main') || document.body;
-    if(!sec && host){ host.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>'); sec=$('mode-reports_table'); }
-    if(!sec) return null;
-    sec.className = 'panel game-card fade-in t73-v42-mod-table';
-    sec.dataset.t73Owner = 'moderation';
-    sec.style.display = sec.style.display === 'none' ? 'none' : 'grid';
-    sec.innerHTML = `
-      <div class="section-head">
-        <h2>Таблица Отчетов Модерации</h2>
-        <p>Формат старой таблицы: карточка модератора, Real XP и семь дней недели. В таблицу попадают только пользователи со статусом moderator.</p>
-      </div>
-      <div class="t73-v42-table-toolbar">
-        <button class="btn btn-secondary" id="rtPrevWeekBtn" type="button">⬅️ Прошлая неделя</button>
-        <h3 id="rtCurrentWeekLabel">Текущая неделя</h3>
-        <button class="btn btn-secondary" id="rtNextWeekBtn" type="button">Следующая неделя ➡️</button>
-      </div>
-      <div class="t73-v42-table-note">Автовыставление сохранено: после проверки отчёта статус <b>Норма / Перенорма / Герой дня / Отказ</b> сразу отражается здесь.</div>
-      <div class="t73-v42-scroll-note">↔️ На телефоне свайпайте дни влево/вправо.</div>
-      <div id="reportsTableWrapper"><div class="message-text" style="text-align:center;padding:2rem;">Загрузка таблицы...</div></div>
-    `;
-    bindWeekButtons();
-    return $('reportsTableWrapper');
-  }
-  function bindWeekButtons(){
-    const prev=$('rtPrevWeekBtn'), next=$('rtNextWeekBtn'), label=$('rtCurrentWeekLabel');
-    if(label) label.textContent = weekOffset()===0 ? 'Текущая неделя' : `${weekOffset()} нед. назад`;
-    if(next) next.disabled = weekOffset()===0;
-    if(prev) prev.onclick = e => { e.preventDefault(); setWeekOffset(weekOffset()+1); loadModReportsTableV42(); };
-    if(next) next.onclick = e => { e.preventDefault(); if(weekOffset()>0) setWeekOffset(weekOffset()-1); loadModReportsTableV42(); };
-  }
-
-  async function getModeratorIds(supa){
-    const {data, error} = await supa.from('reports').select('link,status,email').eq('email','USER_ROLE').eq('status','moderator');
-    if(error) throw error;
-    return Array.from(new Set((data||[]).map(r => String(r.link||'').trim()).filter(Boolean)));
-  }
-
-  async function loadModReportsTableV42(){
-    const wrap = buildShell();
-    if(!wrap) return;
-    const supa = supaClient();
-    if(!supa){ wrap.innerHTML = '<div class="message-card" style="min-height:auto;color:var(--color-error);">Supabase не подключился. Обнови страницу и проверь подключение Supabase.</div>'; return; }
-    wrap.innerHTML = '<div class="message-text" style="text-align:center;padding:2rem;">⏳ Загружаю таблицу модераторов...</div>';
-    try{
-      bindWeekButtons();
-      const ids = await getModeratorIds(supa);
-      if(!ids.length){ wrap.innerHTML = '<div class="message-card" style="min-height:auto;text-align:center;">Модераторы не найдены. В таблицу попадают только пользователи, которым выдан статус <b>moderator</b>.</div>'; return; }
-      const [usersRes, reportsRes, inactRes] = await Promise.all([
-        supa.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id', ids),
-        supa.from('reports').select('*').order('id',{ascending:false}).limit(5000),
-        supa.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено').limit(1000)
-      ]);
-      if(usersRes.error) throw usersRes.error;
-      if(reportsRes.error) throw reportsRes.error;
-      const idSet = new Set(ids.map(String));
-      const seen = new Set();
-      let mods = (usersRes.data||[]).filter(u => u && u.user_id && u.email && idSet.has(String(u.user_id))).filter(u => { const k=String(u.user_id); if(seen.has(k)) return false; seen.add(k); return true; });
-      const reports = (reportsRes.data||[]).filter(r => !isServiceReport(r));
-      const inactives = inactRes.data || [];
-      const days = weekDays();
-      const actual = new Date(); actual.setHours(0,0,0,0);
-      const editable = canEditModTable();
-      if(!editable){ const adminSet=new Set(admins()); const leadSet=new Set(modLeaders().map(String)); mods = mods.filter(m => !adminSet.has(m.email) && m.email !== creator() && !leadSet.has(String(m.user_id))); }
-      mods.forEach(m => { let total=0; reports.forEach(r => { if(String(r.email||'') === String(m.email||'') && Number(r.xp||0)>0) total += Number(r.xp||0); }); m.realXp = Math.max(0, total - Number(m.shop_spent||0)); });
-      mods.sort((a,b) => String(a.nickname||a.email||'').localeCompare(String(b.nickname||b.email||''),'ru'));
-      let html = '<div class="t73-v42-list">';
-      for(const mod of mods){
-        const nick = String(mod.nickname || mod.email || 'Без ника').trim();
-        html += `<article class="t73-v42-card" data-mod-id="${esc(mod.user_id)}"><div class="t73-v42-head"><div><div class="t73-v42-name">${esc(nick)}</div><div class="t73-v42-email">${esc(mod.email||'')}</div></div><div class="t73-v42-xp">${Number(mod.realXp||0)} Real XP</div></div><div class="t73-v42-days">`;
-        for(const day of days){
-          const rep = reportForNickAndDay(reports, nick, day);
-          let inactive=false;
-          for(const row of inactives){
-            const txt=String(row.date||'').toLowerCase();
-            if(!txt.includes(nick.toLowerCase())) continue;
-            const from=txt.match(/с:\s*([\d-]+)/i), to=txt.match(/по:\s*([\d-]+)/i);
-            if(from && to){ const dd=new Date(day); dd.setHours(0,0,0,0); if(dd>=new Date(from[1]) && dd<=new Date(to[1])) inactive=true; }
-          }
-          let st='none';
-          if(rep) st = normStatus(rep.status);
-          else if(inactive) st = 'Неактив';
-          else { const dd=new Date(day); dd.setHours(0,0,0,0); if(dd < actual) st='Нет отчета'; }
-          const cls=statusClass(st), short=day.slice(5).split('-').reverse().join('.');
-          if(editable){
-            html += `<div class="t73-v42-day ${cls}"><div class="t73-v42-date">${esc(short)}</div><select class="t73-v42-select ${cls}" data-id="${rep?esc(rep.id):''}" data-email="${esc(mod.email||'')}" data-nick="${esc(nick)}" data-date="${esc(day)}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${(st==='Не засчитано')?'selected':''}>Отказ</option></select></div>`;
-          } else {
-            html += `<div class="t73-v42-day ${cls}"><div class="t73-v42-date">${esc(short)}</div><div class="t73-v42-status ${cls}">${esc(displayStatus(st))}</div></div>`;
-          }
-        }
-        html += '</div></article>';
-      }
-      wrap.innerHTML = html + '</div>';
-      wrap.querySelectorAll('.t73-v42-select').forEach(sel => sel.onchange = () => updateReportStatusDirectlyV42(sel));
-    } catch(e){
-      wrap.innerHTML = `<div class="message-card" style="min-height:auto;color:var(--color-error);">Ошибка таблицы модераторов: ${esc(e?.message || e)}</div>`;
-    }
-  }
-
-  async function updateReportStatusDirectlyV42(sel){
-    const supa = supaClient();
-    if(!supa){ alert('Supabase не подключился. Обнови страницу.'); return; }
-    let val = normStatus(sel.value);
-    const id = String(sel.dataset.id||'');
-    const nick = String(sel.dataset.nick||'');
-    const date = String(sel.dataset.date||'');
-    const email = String(sel.dataset.email||user()?.email||'manual');
-    const xp = xpForStatus(val);
-    sel.disabled = true; sel.style.opacity = '.55'; sel.className = 't73-v42-select ' + statusClass(val);
-    try{
-      if(id){
-        if(val === 'none'){
-          const res = await supa.from('reports').delete().eq('id', id);
-          if(res.error) throw res.error;
-          sel.dataset.id = '';
-        } else {
-          const res = await supa.from('reports').update({status: val, xp}).eq('id', id);
-          if(res.error) throw res.error;
-        }
-      } else if(val !== 'none'){
-        const newId = 'rep_manual_' + Date.now() + '_' + Math.random().toString(16).slice(2);
-        const dateText = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`;
-        const res = await supa.from('reports').insert([{id:newId,email,link:'',date:dateText,status:val,xp}]);
-        if(res.error) throw res.error;
-        sel.dataset.id = newId;
-      }
-      setTimeout(loadModReportsTableV42, 350);
-    } catch(e){ alert('Ошибка сохранения статуса: ' + (e?.message || e)); }
-    finally { sel.disabled=false; sel.style.opacity='1'; }
-  }
-
-  function openModTable(btn){
-    qa('.game-card[id^="mode-"],section[id^="mode-"]').forEach(sec => { if(sec.id) sec.style.display = sec.id === 'mode-reports_table' ? 'grid' : 'none'; });
-    qa('.mode-btn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    document.documentElement.setAttribute('data-site-theme','shop');
-    buildShell();
-    setTimeout(loadModReportsTableV42, 30);
-  }
-  function bindTableButton(){
-    const main = $('reportsTableBtn');
-    if(main){
-      main.textContent = '📊 Таблица Отчетов';
-      main.dataset.mode = 'reports_table';
-      main.style.display = canEditModTable() ? 'inline-flex' : 'none';
-      main.onclick = e => { e.preventDefault(); e.stopPropagation(); openModTable(main); return false; };
-    }
-    ['reportsTableBtnModV15','reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportTableBtnGen','v16OpenTableTop','v25ModViewReportsBtn'].forEach(id => { const el=$(id); if(el){ el.style.display='none'; el.onclick=null; el.setAttribute('aria-hidden','true'); }});
-  }
-  function prettyGossNames(){
-    const exact = new Set(ORG_NAMES);
-    qa('#gossDashOrgShort,#gossV3Org,#gossV4Org,#gossV3OrgShort,#gossV4OrgShort,#gossOrgName,#gossCurrentOrgName,.goss-current-org-name,.stat-value').forEach(el => {
-      const raw = String(el.textContent||'').replace(/^[🏛️🛡️🚓🏥🎙️⚔️🔒💼\s]+/u,'').trim();
-      if(exact.has(raw)){
-        el.textContent = '🏛️ ' + raw;
-        el.style.color = '#d9ffe8';
-        el.style.textShadow = 'none';
-      }
-    });
-  }
-
-  const previousSwitchMode = window.switchMode;
-  window.switchMode = function(mode, btn){
-    if(mode === 'reports_table'){ openModTable(btn || $('reportsTableBtn')); return; }
-    const result = typeof previousSwitchMode === 'function' ? previousSwitchMode.apply(this, arguments) : undefined;
-    setTimeout(() => { bindTableButton(); prettyGossNames(); }, 80);
-    return result;
-  };
-
-  window.loadReportsTable = loadModReportsTableV42;
-  try { loadReportsTable = loadModReportsTableV42; } catch(e) {}
-  window.updateReportStatusDirectly = function(sel, nick, date, id){
-    if(sel){ if(nick) sel.dataset.nick=nick; if(date) sel.dataset.date=date; if(id) sel.dataset.id=id; }
-    return updateReportStatusDirectlyV42(sel);
-  };
-
-  const oldProcessReport = window.processReport;
-  if(typeof oldProcessReport === 'function' && !oldProcessReport.__t73v42Wrapped){
-    const wrapped = async function(){
-      const out = await oldProcessReport.apply(this, arguments);
-      setTimeout(() => { try { loadModReportsTableV42(); } catch(e){} }, 500);
-      return out;
-    };
-    wrapped.__t73v42Wrapped = true;
-    window.processReport = wrapped;
-  }
-
-  document.addEventListener('click', e => {
-    const btn = e.target && e.target.closest && e.target.closest('#reportsTableBtn,[data-mode="reports_table"]');
-    if(!btn) return;
-    e.preventDefault(); e.stopImmediatePropagation();
-    openModTable(btn);
-    return false;
-  }, true);
-
-  function enforce(){
-    bindTableButton();
-    prettyGossNames();
-    if(window.loadReportsTable !== loadModReportsTableV42){ window.loadReportsTable = loadModReportsTableV42; try { loadReportsTable = loadModReportsTableV42; } catch(e){} }
-    const sec=$('mode-reports_table');
-    if(sec && getComputedStyle(sec).display !== 'none' && sec.dataset.t73Owner !== 'moderation-v42'){
-      sec.dataset.t73Owner='moderation-v42';
-      buildShell();
-      loadModReportsTableV42();
-    }
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enforce); else enforce();
-  setTimeout(enforce, 300); setTimeout(enforce, 1200); setTimeout(enforce, 2600); setInterval(enforce, 1800);
-  new MutationObserver(() => { clearTimeout(window.__t73V42EnforceTimer); window.__t73V42EnforceTimer=setTimeout(enforce, 120); }).observe(document.documentElement,{childList:true,subtree:true});
-  window.T73_V42_MOD_TABLE = { open: openModTable, load: loadModReportsTableV42 };
-})();
-</script>
-<script>
-/* === T73 V43 SUPABASE GLOBAL BRIDGE ===
-   Фикс для таблицы модераторов: основной код создаёт `const supa`, но поздние патчи таблицы
-   читают `window.supa/window.supabaseClient`. Из-за этого таблица могла писать
-   «Supabase не подключился», хотя сайт уже подключён к базе. */
+/* === T73 V44 CLEAN FIX: таблица модеров без вечной загрузки + мобильные вкладки === */
 (function(){
-  const T73_SUPABASE_URL = 'https://icfihnroblyjjflsfepq.supabase.co';
-  const T73_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
-
-  function hasClient(c){ return !!(c && typeof c.from === 'function'); }
-  function ensureT73SupabaseBridge(){
-    if (hasClient(window.supa)) { window.supabaseClient = window.supa; return window.supa; }
-    if (hasClient(window.supabaseClient)) { window.supa = window.supabaseClient; return window.supabaseClient; }
-    if (window.supabase && typeof window.supabase.createClient === 'function') {
-      try {
-        const client = window.supabase.createClient(T73_SUPABASE_URL, T73_SUPABASE_KEY);
-        window.supa = client;
-        window.supabaseClient = client;
-        window.t73SupaReady = true;
-        return client;
-      } catch(e) {
-        console.warn('T73 v43: Supabase bridge createClient failed', e);
-      }
+  if(window.__T73_V44_CLEAN_FIX__) return;
+  window.__T73_V44_CLEAN_FIX__ = true;
+  const URL='https://icfihnroblyjjflsfepq.supabase.co';
+  const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIY3Npcm5yb2JseWpqZmxzZmVwcSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzc1ODYwMTA5LCJleHAiOjIwOTE0MzYxMDl9.INVALID';
+  const REAL_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+  const SERVICE = new Set(['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP','AP_POINTS','FSB_POINTS','FSB_SPEND','SHOP_FSB','ROULETTE_FSB','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_PROFILE','GOSS_REPORT_TABLE','GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG']);
+  const ORGS=['Правительство','ФСБ','ГИБДД','УМВД','Армия','Больница','СМИ','ФСИН'];
+  const $=id=>document.getElementById(id), qa=(s,r=document)=>Array.from(r.querySelectorAll(s));
+  const esc=s=>String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  let clientCache=null;
+  function supaClient(){
+    if(clientCache && typeof clientCache.from==='function') return clientCache;
+    for(const k of ['supa','supabaseClient','t73Supa']){ if(window[k] && typeof window[k].from==='function'){ clientCache=window[k]; return clientCache; } }
+    if(window.supabase && typeof window.supabase.createClient==='function'){
+      try{ clientCache=window.supabase.createClient(URL, REAL_KEY); window.t73Supa=clientCache; window.supabaseClient=clientCache; return clientCache; }catch(e){ console.warn('T73 v44 supa create failed',e); }
     }
     return null;
   }
-
-  window.ensureT73SupabaseBridge = ensureT73SupabaseBridge;
-
-  let tries = 0;
-  const timer = setInterval(function(){
-    tries++;
-    if (ensureT73SupabaseBridge() || tries > 30) clearInterval(timer);
-  }, 200);
-  document.addEventListener('DOMContentLoaded', ensureT73SupabaseBridge);
-  window.addEventListener('load', ensureT73SupabaseBridge);
+  function withTimeout(p,ms,label){ let t; return Promise.race([p,new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error(label||'База слишком долго отвечает')),ms);})]).finally(()=>clearTimeout(t)); }
+  async function currentAuth(){ const c=supaClient(); if(!c||!c.auth) return null; try{ const r=await withTimeout(c.auth.getUser(),5000,'Не удалось получить пользователя'); return r?.data?.user||null; }catch(e){ return null; } }
+  function creatorEmail(){ return 'daniiltimosin72@gmail.com'; }
+  function adminEmails(){ return [creatorEmail(),'leha.br222@gmail.com','isayevrufat37@gmail.com','maksimladnyj4@gmail.com']; }
+  async function isModLeader(client){
+    const u=await currentAuth(); if(!u) return false; if(adminEmails().includes(u.email)||u.email===creatorEmail()) return true;
+    try{ const r=await withTimeout(client.from('reports').select('id').eq('email','ADMIN_ROLE').eq('link',u.id).eq('status','leadership').limit(1),6000,'Проверка прав долго отвечает'); return !!(r.data&&r.data.length); }catch(e){ return false; }
+  }
+  function weekOffset(){ return Number(window.__t73V44WeekOffset||0); }
+  function setWeekOffset(v){ window.__t73V44WeekOffset=Math.max(0,Number(v)||0); }
+  function weekDays(){ const today=new Date(); today.setHours(0,0,0,0); today.setDate(today.getDate()-(weekOffset()*7)); const arr=[]; for(let i=6;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); arr.push(d.toISOString().slice(0,10)); } return arr; }
+  function norm(s){ s=String(s||'none').trim(); if(s==='Отказ') return 'Не засчитано'; if(s==='Натяг') return 'none'; return s||'none'; }
+  function disp(s){ s=norm(s); if(s==='none') return '-'; if(s==='Не засчитано') return 'Отказ'; return s; }
+  function cls(s){ s=norm(s); if(s==='Норма'||s==='Перенорма') return 't73-v44-good'; if(s==='Герой дня') return 't73-v44-hero'; if(s==='Неактив') return 't73-v44-inactive'; if(s==='Нет отчета'||s==='Не засчитано') return 't73-v44-missing'; return 't73-v44-empty'; }
+  function xp(s){ s=norm(s); if(s==='Норма') return 15; if(s==='Перенорма') return 30; if(s==='Герой дня') return 60; return 0; }
+  function isService(r){ return SERVICE.has(String(r?.email||'')); }
+  function findReport(reports,mod,day){ const nick=String(mod.nickname||'').toLowerCase(); const email=String(mod.email||'').toLowerCase(); return (reports||[]).find(r=>{ const txt=String(r.date||'').toLowerCase(); if(!txt.includes(day)) return false; if(String(r.email||'').toLowerCase()===email) return true; if(nick && txt.includes(nick)) return true; return false; }); }
+  function isInactive(inactives,nick,day){ nick=String(nick||'').toLowerCase(); if(!nick) return false; return (inactives||[]).some(row=>{ const txt=String(row.date||'').toLowerCase(); if(!txt.includes(nick)) return false; const from=txt.match(/с:\s*([\d-]+)/i), to=txt.match(/по:\s*([\d-]+)/i); if(!from||!to) return false; const d=new Date(day); d.setHours(0,0,0,0); return d>=new Date(from[1]) && d<=new Date(to[1]); }); }
+  function shell(){
+    let sec=$('mode-reports_table'); const host=$('game')||document.body;
+    if(!sec){ host.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>'); sec=$('mode-reports_table'); }
+    sec.className='panel game-card fade-in t73-v44-mod-table';
+    sec.dataset.t73Owner='moderation-v44';
+    sec.innerHTML='<div class="section-head"><h2>Таблица Отчетов Модерации</h2><p>Карточки модераторов, Real XP и семь дней недели. В таблице только пользователи со статусом moderator.</p></div><div class="t73-v44-rt-toolbar"><button class="btn btn-secondary" id="rtPrevWeekBtn" type="button">⬅️ Прошлая неделя</button><h3 id="rtCurrentWeekLabel">Текущая неделя</h3><button class="btn btn-secondary" id="rtNextWeekBtn" type="button">Следующая неделя ➡️</button></div><div class="t73-v44-rt-note">Автоматическая таблица сохранена: после проверки отчёта статус <b>Норма / Перенорма / Герой дня / Отказ</b> сразу отображается здесь.</div><div class="t73-v44-scroll-note">↔️ На телефоне свайпайте даты влево/вправо.</div><div id="reportsTableWrapper"><div class="message-text" style="text-align:center;padding:2rem;">Загрузка таблицы...</div></div>';
+    bindWeek(); return $('reportsTableWrapper');
+  }
+  function bindWeek(){ const p=$('rtPrevWeekBtn'), n=$('rtNextWeekBtn'), l=$('rtCurrentWeekLabel'); if(l) l.textContent=weekOffset()===0?'Текущая неделя':`${weekOffset()} нед. назад`; if(n) n.disabled=weekOffset()===0; if(p) p.onclick=e=>{e.preventDefault();setWeekOffset(weekOffset()+1);loadModTableV44();}; if(n) n.onclick=e=>{e.preventDefault();if(weekOffset()>0)setWeekOffset(weekOffset()-1);loadModTableV44();}; }
+  async function loadModTableV44(){
+    const wrap=shell(); if(!wrap) return;
+    const client=supaClient();
+    if(!client){ wrap.innerHTML='<div class="t73-v44-error">Supabase ещё не загрузился. Подожди пару секунд и нажми «Таблица Отчетов» ещё раз.</div>'; return; }
+    wrap.innerHTML='<div class="message-text" style="text-align:center;padding:2rem;">⏳ Загружаю таблицу модераторов...</div>';
+    try{
+      bindWeek();
+      const rolesRes=await withTimeout(client.from('reports').select('link,status,email').eq('email','USER_ROLE').eq('status','moderator'),10000,'Не удалось загрузить роли модераторов');
+      if(rolesRes.error) throw rolesRes.error;
+      const modIds=Array.from(new Set((rolesRes.data||[]).map(r=>String(r.link||'').trim()).filter(Boolean)));
+      if(!modIds.length){ wrap.innerHTML='<div class="t73-v44-emptybox">Модераторы не найдены. В таблицу попадают только пользователи, которым выдан статус <b>moderator</b>.</div>'; return; }
+      const usersRes=await withTimeout(client.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id',modIds),10000,'Не удалось загрузить пользователей');
+      if(usersRes.error) throw usersRes.error;
+      const mods=(usersRes.data||[]).filter(u=>u&&u.user_id&&modIds.includes(String(u.user_id))&&u.email);
+      if(!mods.length){ wrap.innerHTML='<div class="t73-v44-emptybox">Роли moderator есть, но профили пользователей не найдены в user_stats.</div>'; return; }
+      const modEmails=Array.from(new Set(mods.map(m=>String(m.email||'')).filter(Boolean)));
+      const repsRes=await withTimeout(client.from('reports').select('*').in('email',modEmails).order('id',{ascending:false}).limit(1200),12000,'Не удалось загрузить отчёты модераторов');
+      if(repsRes.error) throw repsRes.error;
+      const manualRes=await withTimeout(client.from('reports').select('*').not('email','in','("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP","MANUAL_XP","AP_POINTS","FSB_POINTS","FSB_SPEND","SHOP_FSB","ROULETTE_FSB","GOSS_USER_REPORT","GOSS_REPORT_CHECK","GOSS_PROFILE","GOSS_REPORT_TABLE","GOSS_REPORT_TABLE_V13","GOSS_REPORT_TABLE_V15","GOSS_REPORT_TABLE_V16","GOSS_REPORT_TABLE_V19","GOSS_REPORT_MEMBER_V19","GOSS_REPORT_PROOF_V19","GOSS_POINTS_V19","GOSS_ORG_LOG","GOSS_ORG_LOG_V19","GOSS_ORG_LOG_V24","GOSS_SHOP_ITEMS_V13","GOSS_SHOP_ITEMS_V19","GOSS_SHOP_ITEMS_V24","GOSS_SHOP_ITEMS_V26","GOSS_SHOP_PURCHASE","FSB_SHOP_LOG")').order('id',{ascending:false}).limit(1200),12000,'Не удалось загрузить ручные отметки');
+      const inactiveRes=await withTimeout(client.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено').limit(600),10000,'Не удалось загрузить неактивы');
+      const reports=[...(repsRes.data||[]),...((manualRes.data||[]).filter(r=>!isService(r)))];
+      const inactives=inactiveRes.data||[];
+      const leader=await isModLeader(client);
+      const days=weekDays(); const today=new Date(); today.setHours(0,0,0,0);
+      mods.forEach(m=>{ const nick=String(m.nickname||'').toLowerCase(); const mail=String(m.email||'').toLowerCase(); const seen=new Set(); let total=0; for(const r of reports){ const id=String(r.id||Math.random()); if(seen.has(id)) continue; const txt=String(r.date||'').toLowerCase(); const ok=String(r.email||'').toLowerCase()===mail || (nick && txt.includes(nick)); if(ok && Number(r.xp||0)>0){ total+=Number(r.xp||0); seen.add(id); } } m.realXp=Math.max(0,total-Number(m.shop_spent||0)); });
+      mods.sort((a,b)=>String(a.nickname||a.email||'').localeCompare(String(b.nickname||b.email||''),'ru'));
+      let html='<div class="t73-v44-list">';
+      for(const mod of mods){ const nick=String(mod.nickname||mod.email||'Без ника').trim(); html+=`<article class="t73-v44-card"><div class="t73-v44-head"><div><div class="t73-v44-name">${esc(nick)}</div><div class="t73-v44-mail">${esc(mod.email)}</div></div><div class="t73-v44-xp">${Number(mod.realXp||0)} Real XP</div></div><div class="t73-v44-days">`; for(const d of days){ const rep=findReport(reports,mod,d); let st='none'; if(rep) st=norm(rep.status); else if(isInactive(inactives,nick,d)) st='Неактив'; else { const dd=new Date(d); dd.setHours(0,0,0,0); if(dd<today) st='Нет отчета'; } const c=cls(st), short=d.slice(5).split('-').reverse().join('.'); if(leader){ html+=`<div class="t73-v44-day ${c}"><div class="t73-v44-date">${esc(short)}</div><select class="t73-v44-select ${c}" data-id="${rep?esc(rep.id):''}" data-email="${esc(mod.email)}" data-nick="${esc(nick)}" data-date="${esc(d)}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${st==='Не засчитано'?'selected':''}>Отказ</option></select></div>`; } else { html+=`<div class="t73-v44-day ${c}"><div class="t73-v44-date">${esc(short)}</div><div class="t73-v44-status ${c}">${esc(disp(st))}</div></div>`; } } html+='</div></article>'; }
+      wrap.innerHTML=html+'</div>';
+      wrap.querySelectorAll('.t73-v44-select').forEach(sel=>sel.onchange=()=>updateStatusV44(sel));
+    }catch(e){ wrap.innerHTML=`<div class="t73-v44-error">Ошибка таблицы модераторов: ${esc(e?.message||e)}<br><button class="btn btn-secondary" type="button" style="margin-top:.8rem" onclick="window.T73_V44_MOD_TABLE.load()">Повторить загрузку</button></div>`; }
+  }
+  async function updateStatusV44(sel){ const client=supaClient(); if(!client){ alert('Supabase ещё не загрузился.'); return; } let val=norm(sel.value); const id=String(sel.dataset.id||''); const nick=String(sel.dataset.nick||''); const date=String(sel.dataset.date||''); const email=String(sel.dataset.email||''); sel.disabled=true; sel.style.opacity='.55'; sel.className='t73-v44-select '+cls(val); try{ if(id){ if(val==='none'){ const r=await client.from('reports').delete().eq('id',id); if(r.error) throw r.error; sel.dataset.id=''; } else { const r=await client.from('reports').update({status:val,xp:xp(val)}).eq('id',id); if(r.error) throw r.error; } } else if(val!=='none'){ const newId='rep_manual_'+Date.now()+'_'+Math.random().toString(16).slice(2); const data=`Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`; const r=await client.from('reports').insert([{id:newId,email,link:'',date:data,status:val,xp:xp(val)}]); if(r.error) throw r.error; sel.dataset.id=newId; } setTimeout(loadModTableV44,250); }catch(e){ alert('Ошибка сохранения: '+(e?.message||e)); } finally{ sel.disabled=false; sel.style.opacity='1'; } }
+  function openTable(btn){ qa('.game-card[id^="mode-"],section[id^="mode-"]').forEach(sec=>{ if(sec.id) sec.style.display=sec.id==='mode-reports_table'?'grid':'none'; }); qa('.mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.documentElement.setAttribute('data-site-theme','shop'); shell(); setTimeout(loadModTableV44,40); }
+  function bindTableButton(){ const b=$('reportsTableBtn'); if(b){ b.textContent='📊 Таблица Отчетов'; b.dataset.mode='reports_table'; b.style.display='inline-flex'; b.onclick=e=>{e.preventDefault();e.stopPropagation();openTable(b);return false;}; } ['reportsTableBtnModV15','reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportTableBtnGen','v16OpenTableTop','v25ModViewReportsBtn'].forEach(id=>{const el=$(id); if(el){el.style.display='none'; el.onclick=null; el.setAttribute('aria-hidden','true');}}); }
+  const oldSwitch=window.switchMode; window.switchMode=function(mode,btn){ if(mode==='reports_table'){ openTable(btn||$('reportsTableBtn')); return; } const out=typeof oldSwitch==='function'?oldSwitch.apply(this,arguments):undefined; setTimeout(()=>{syncNav();prettyGoss();dedupeGossActions();bindTableButton();},60); return out; };
+  window.loadReportsTable=loadModTableV44; try{ loadReportsTable=loadModTableV44; }catch(e){} window.updateReportStatusDirectly=function(sel,nick,date,id){ if(sel){ if(nick) sel.dataset.nick=nick; if(date) sel.dataset.date=date; if(id) sel.dataset.id=id; } return updateStatusV44(sel); };
+  const oldProcess=window.processReport; if(typeof oldProcess==='function'&&!oldProcess.__t73v44){ const wrapped=async function(){ const out=await oldProcess.apply(this,arguments); const sec=$('mode-reports_table'); if(sec&&getComputedStyle(sec).display!=='none') setTimeout(loadModTableV44,350); return out; }; wrapped.__t73v44=true; window.processReport=wrapped; }
+  document.addEventListener('click',e=>{ const btn=e.target&&e.target.closest&&e.target.closest('#reportsTableBtn,[data-mode="reports_table"]'); if(!btn) return; e.preventDefault(); e.stopImmediatePropagation(); openTable(btn); return false; },true);
+  function activeCat(){ return (document.querySelector('.main-cat-btn.active')?.dataset?.cat)||'moderation'; }
+  function syncNav(){ const cat=activeCat(); document.body.classList.remove('t73-v44-cat-moderation','t73-v44-cat-support','t73-v44-cat-general','t73-v44-cat-organizations'); document.body.classList.add('t73-v44-cat-'+cat); const map={moderation:'subNavModeration',support:'subNavSupport',general:'subNavGeneral',organizations:'subNavOrganizations'}; Object.values(map).forEach(id=>{ const n=$(id); if(n) n.classList.remove('t73-v44-active-subnav'); }); const nav=$(map[cat]||'subNavModeration'); if(nav) nav.classList.add('t73-v44-active-subnav'); const g4=$('gossOrgActionNavV4'); if(g4){ if(cat==='organizations') g4.classList.add('t73-v44-goss-actions'); else g4.classList.remove('t73-v44-goss-actions'); } }
+  document.addEventListener('click',e=>{ const btn=e.target&&e.target.closest&&e.target.closest('.main-cat-btn'); if(!btn) return; setTimeout(()=>{ syncNav(); dedupeGossActions(); },45); },true);
+  function dedupeGossActions(){ ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav'].forEach((id,idx)=>{ const nav=$(id); if(!nav) return; if(id!=='gossOrgActionNavV4') { nav.style.display='none'; return; } const seen=new Set(); qa('button',nav).forEach(b=>{ const key=String(b.textContent||'').replace(/[📋📊✅👑🛒📜🧾📎]/g,'').trim().toLowerCase(); if(seen.has(key)){ b.style.display='none'; } else { seen.add(key); b.style.display='inline-flex'; } }); }); }
+  function prettyGoss(){ qa('#gossV4Content h3,#gossV3Content h3,#gossOrgPanel h3,#gossOrgArea h3,#mode-goss h2,.stat-value,.gov-v4-card h3,.gov-v3-access-card h3').forEach(el=>{ const txt=String(el.textContent||'').replace(/^[🏛️🛡️🚓🏥🎙️⚔️🔒💼\s-]+/u,'').trim(); if(ORGS.includes(txt)){ el.textContent='🏛️ '+txt; el.classList.add('t73-v44-org-pill'); } if(/ГОСС\s*тренаж[её]р/i.test(txt)||/^Тренаж[её]р\s/.test(txt)){ el.style.color='#dfffea'; el.style.textShadow='0 0 18px rgba(127,232,160,.14)'; } }); }
+  function boot(){ bindTableButton(); syncNav(); dedupeGossActions(); prettyGoss(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  setTimeout(boot,300); setTimeout(boot,1200); setTimeout(boot,2600);
+  let moT; new MutationObserver(()=>{ clearTimeout(moT); moT=setTimeout(()=>{ syncNav(); dedupeGossActions(); prettyGoss(); bindTableButton(); },180); }).observe(document.body||document.documentElement,{childList:true,subtree:true});
+  window.T73_V44_MOD_TABLE={open:openTable,load:loadModTableV44,syncNav};
 })();
 </script>
+
 </body>
 </html>
