@@ -18960,466 +18960,310 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V75 === -->
 
-<!-- === T73 V82: ONLY ГОСС/СС fixes === -->
-<style id="t73-v82-goss-fixes-style">
-#gossV4Content .v82-card{padding:1rem;border-radius:18px;border:1px solid rgba(127,232,160,.24);background:rgba(8,12,24,.94);margin-bottom:.85rem}
-#gossV4Content .v82-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap}
-#gossV4Content .v82-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.45}
-#gossV4Content .v82-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem}
-#gossV4Content .v82-mini{padding:.85rem;border-radius:16px;border:1px solid rgba(191,198,255,.16);background:rgba(0,0,0,.30);display:grid;gap:.5rem}
-#gossV4Content .v82-pill{display:inline-flex;padding:.3rem .6rem;border-radius:999px;border:1px solid rgba(127,232,160,.34);background:rgba(127,232,160,.12);color:#dfffea;font-weight:1000;font-size:.78rem}
-#gossV4Content .v82-pill.warn{border-color:rgba(255,191,71,.42);background:rgba(255,191,71,.12);color:#ffe8a8}
-#gossV4Content .v82-pill.bad{border-color:rgba(255,75,105,.42);background:rgba(255,75,105,.12);color:#ffc8d2}
-#gossV4Content .v82-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,191,71,.36);background:rgba(255,191,71,.08);color:#fff}
-#gossV4Content .v82-scroll{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.10)}
-#gossV4Content .v82-table{width:100%;min-width:780px;border-collapse:separate;border-spacing:0}
-#gossV4Content .v82-table th,#gossV4Content .v82-table td{padding:.68rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}
-#gossV4Content .v82-table th{color:#fff;background:rgba(127,232,160,.10);font-size:.78rem;text-transform:uppercase}
-#gossV4Content .v82-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
-#gossV4Content .v82-form .full{grid-column:1/-1}
-#gossV4Content .v82-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.86rem}
-#gossV4Content .v82-input,#gossV4Content .v82-select{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.62rem;font-weight:800}
-#gossV4Content .v82-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
-@media(max-width:760px){#gossV4Content .v82-form{grid-template-columns:1fr}#gossV4Content .v82-actions .btn{width:100%}}
-</style>
-<script id="t73-v82-goss-fixes-script">
+<script>
+/* === T73 V83 GOSS ONLY: stable modes, reports with screenshots, SS tables, logs in every mode === */
 (function(){
-  "use strict";
-  if(window.__T73_V82_GOSS_FIXES__) return;
-  window.__T73_V82_GOSS_FIXES__ = true;
+  if(window.__T73_V83_GOSS_ONLY__) return;
+  window.__T73_V83_GOSS_ONLY__ = true;
 
-  var E = { access:"ADMIN_ROLE", profile:"GOSS_PROFILE", report:"GOSS_USER_REPORT", table:"GOSS_REPORT_TABLE_V82", check:"GOSS_REPORT_CHECK", log:"GOSS_ORG_LOG_V19" };
-  var cache = { roles:null, users:null, profiles:{}, at:0 };
-  var weekOffset = 0;
+  var E = {
+    access:'ADMIN_ROLE', profile:'GOSS_PROFILE', report:'GOSS_USER_REPORT',
+    check:'GOSS_REPORT_CHECK', log:'GOSS_ORG_LOG_V19', points:'GOSS_POINTS_V19'
+  };
+  var ORGS = [
+    {id:'government', short:'Правительство', name:'Правительство', icon:'🏛️'},
+    {id:'fsb', short:'ФСБ', name:'Федеральная служба безопасности', icon:'🛡️'},
+    {id:'gibdd', short:'ГИБДД', name:'ГИБДД', icon:'🚔'},
+    {id:'umvd', short:'УМВД', name:'УМВД', icon:'👮'},
+    {id:'army', short:'Армия', name:'Армия', icon:'🎖️'},
+    {id:'hospital', short:'Больница', name:'Больница', icon:'🏥'},
+    {id:'smi', short:'СМИ', name:'СМИ', icon:'🎙️'},
+    {id:'fsin', short:'ФСИН', name:'ФСИН', icon:'🔒'}
+  ];
+  var state = { view:'trainer', org:'fsb', week:0, reviewMode:false, proofs:[], busy:false };
+  var cache = { roles:null, users:null, profiles:null, reports:null, logs:null, stamp:0 };
 
   function $(id){ return document.getElementById(id); }
-  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function esc(v){ return String(v == null ? "" : v).replace(/[&<>"']/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]; }); }
-  function parse(v){ try { return v ? JSON.parse(v) : {}; } catch(e){ return {}; } }
-  function now(){ return new Date().toLocaleString("ru-RU"); }
-  function rid(p){ return p + "_" + Date.now() + "_" + Math.random().toString(36).slice(2); }
-  function db(){ return window.supa || window.t73Supa || window.supabaseClient || window.__T73_SUPA || null; }
-  function root(){ return $("gossV4Content"); }
-  function orgs(){
-    if(typeof GOSS_ORGS !== "undefined" && Array.isArray(GOSS_ORGS)) return GOSS_ORGS;
-    return [{id:"government",short:"Правительство",name:"Правительство",icon:"🏛️"},{id:"fsb",short:"ФСБ",name:"ФСБ",icon:"🛡️"},{id:"gibdd",short:"ГИБДД",name:"ГИБДД",icon:"🚔"},{id:"umvd",short:"УМВД",name:"УМВД",icon:"👮"},{id:"army",short:"Армия",name:"Армия",icon:"🎖️"},{id:"hospital",short:"Больница",name:"Больница",icon:"🏥"},{id:"smi",short:"СМИ",name:"СМИ",icon:"🎙️"},{id:"fsin",short:"ФСИН",name:"ФСИН",icon:"🔒"}];
+  function qa(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function parse(v,fb){ try{ if(!v) return fb || {}; return typeof v === 'string' ? JSON.parse(v) : v; }catch(e){ return fb || {}; } }
+  function now(){ return new Date().toLocaleString('ru-RU'); }
+  function rid(p){ return (p || 'v83') + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function client(){ try { return window.supa || window.__T73_SUPA || (typeof supa !== 'undefined' ? supa : null); } catch(e){ return window.supa || window.__T73_SUPA || null; } }
+  async function user(){
+    try { if(window.currentUser && window.currentUser.id) return window.currentUser; } catch(e){}
+    var c = client();
+    try { var r = c && c.auth && await c.auth.getUser(); if(r && r.data && r.data.user){ window.currentUser = r.data.user; return r.data.user; } } catch(e){}
+    try { var s = c && c.auth && await c.auth.getSession(); var u = s && s.data && s.data.session && s.data.session.user; if(u){ window.currentUser = u; return u; } } catch(e){}
+    return window.currentUser || null;
   }
-  function findOrg(id){ var a = orgs(); return a.filter(function(o){ return o.id === id; })[0] || a[0]; }
-  function currentOrg(){
-    var b = document.querySelector("#subNavOrganizations .gov-org-switch-v4.active,.gov-org-switch-v4.active");
-    var id = b && b.dataset ? b.dataset.orgId : "";
-    if(!id){
-      var txt = ((($("gossV4Org") || {}).textContent || "") + " " + (($("gossV4Title") || {}).textContent || "")).toLowerCase();
-      orgs().some(function(o){
-        if(txt.indexOf(String(o.short || "").toLowerCase()) !== -1 || txt.indexOf(String(o.name || "").toLowerCase()) !== -1){ id = o.id; return true; }
-        return false;
-      });
-    }
-    return findOrg(id || "fsb");
+  function nickOf(u){ return (window.currentNickname || (u && (u.user_metadata && (u.user_metadata.nickname || u.user_metadata.name))) || (u && u.email) || 'Пользователь'); }
+  function org(id){ id = id || state.org || 'fsb'; return ORGS.filter(function(o){return o.id === id;})[0] || ORGS[1]; }
+  function activeOrg(){
+    var b = document.querySelector('.gov-org-switch-v4.active[data-org-id]') || document.querySelector('.gov-org-switch-v4[data-org-id].active');
+    if(b && b.dataset && b.dataset.orgId) state.org = b.dataset.orgId;
+    return org(state.org);
   }
-  function creator(){
-    try { return !!(window.currentUser && typeof creatorEmail !== "undefined" && currentUser.email === creatorEmail); } catch(e){ return false; }
+  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
+  function navRoot(){ return $('gossOrgActionNavV4') || $('gossOrgActionNavV3') || $('gossOrgActionNav'); }
+  function gossVisible(){
+    var p = $('mode-goss_center_v4') || $('mode-goss_dashboard') || $('mode-fsb');
+    if(!p) return false;
+    try { if(getComputedStyle(p).display === 'none') return false; } catch(e){ if(p.style.display === 'none') return false; }
+    return !!root();
   }
-  function roleOk(status, orgId){
-    status = String(status || "");
-    return status === "goss_senior_" + orgId || status === "goss_senior_all";
+  function dayKey(d){ var z=function(n){return String(n).padStart(2,'0')}; return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); }
+  function ruDay(k){ var a = String(k).split('-'); var d = new Date(Number(a[0]), Number(a[1])-1, Number(a[2])); return d.toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit'}); }
+  function weekDays(offset){ var d = new Date(); d.setHours(0,0,0,0); var day = d.getDay(); var diff = day === 0 ? -6 : 1 - day; d.setDate(d.getDate() + diff + (offset||0)*7); var out=[]; for(var i=0;i<7;i++){ var x = new Date(d); x.setDate(d.getDate()+i); out.push(dayKey(x)); } return out; }
+
+  function ensureStyle(){
+    if($('t73-v83-goss-style')) return;
+    var st = document.createElement('style'); st.id = 't73-v83-goss-style';
+    st.textContent = `
+      #gossOrgActionNavV4{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;margin-top:.6rem!important}
+      #gossOrgActionNavV4 > *:not([data-v83-tab]){display:none!important;visibility:hidden!important;pointer-events:none!important}
+      #gossOrgActionNavV4 [data-v83-tab]{display:inline-flex!important;align-items:center;justify-content:center;gap:.35rem}
+      #gossV4Content #v25GossSubmitReportBar,#gossV4Content .t73-v25-view-goss,#gossV4Content .g20-sheetbar,#gossV4Content #v26LeadershipPanelBtn,#gossV4Content #v23OpenLogs,#gossV4Content #v24OpenLogs,#gossV4Content .t73-v26-card,#gossV4Content .t73-v23-card,#gossV4Content .t73-v24-card{display:none!important;visibility:hidden!important;pointer-events:none!important}
+      .v83-card{padding:1rem;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(5,7,14,.98));box-shadow:0 14px 34px rgba(0,0,0,.22);margin-bottom:1rem}
+      .v83-head{display:flex;gap:1rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.v83-head h3{margin:0;color:#ff9aad}.v83-sub,.v83-muted{color:var(--color-text-muted);font-size:.92rem}.v83-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem}.v83-mini{padding:.9rem;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);display:grid;gap:.55rem}.v83-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.v83-form .full{grid-column:1/-1}.v83-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.88rem}.v83-input,.v83-select,.v83-area{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.65rem;font-weight:800}.v83-area{min-height:96px;resize:vertical}.v83-actions{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center}.v83-pill{display:inline-flex;align-items:center;gap:.25rem;width:max-content;max-width:100%;padding:.28rem .62rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.78rem;font-weight:1000;text-decoration:none}.v83-pill.warn{border-color:rgba(255,191,71,.42);background:rgba(255,191,71,.12);color:#ffe8a8}.v83-pill.bad{border-color:rgba(255,75,105,.45);background:rgba(255,75,105,.12);color:#ffc8d2}.v83-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,191,71,.36);background:rgba(255,191,71,.08);color:#fff}.v83-scroll{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.10);-webkit-overflow-scrolling:touch}.v83-table{width:100%;min-width:880px;border-collapse:separate;border-spacing:0}.v83-table th,.v83-table td{padding:.72rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.04);text-align:left;vertical-align:top}.v83-table th{background:linear-gradient(180deg,rgba(255,107,136,.25),rgba(108,140,255,.14));color:#fff;text-transform:uppercase;font-size:.78rem}.v83-drop{border:2px dashed rgba(255,107,136,.46);border-radius:16px;padding:1rem;background:rgba(255,107,136,.08)}.v83-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.v83-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.v83-proof img{width:100%;height:86px;object-fit:cover;border-radius:10px;cursor:zoom-in}.v83-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;border:0;background:#ff4b69;color:#fff;font-weight:900}.v83-options{display:grid;gap:.55rem;margin-top:.85rem}.v83-option{text-align:left;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;padding:.85rem;font-weight:900}.v83-option.good{border-color:rgba(82,199,123,.7);background:rgba(82,199,123,.16)}.v83-option.bad{border-color:rgba(255,75,105,.7);background:rgba(255,75,105,.14)}.v83-logs{margin-top:1rem;border-color:rgba(108,140,255,.22);background:rgba(108,140,255,.07)}
+      @media(max-width:760px){.v83-form{grid-template-columns:1fr}.v83-actions .btn{width:100%}#gossOrgActionNavV4 [data-v83-tab]{flex:1 1 calc(50% - .35rem);min-height:46px}.v83-table{min-width:760px}}
+    `;
+    document.head.appendChild(st);
   }
-  function roleLabel(status, org){
-    status = String(status || "");
-    if(status === "goss_senior_" + org.id) return "СС " + org.short;
-    if(status === "goss_lead_" + org.id) return "Руководство " + org.short;
-    if(status === "goss_senior_all") return "СС всех ГОСС";
-    if(status === "goss_admin_all") return "Руководство всех ГОСС";
-    return status.replace("goss_senior_", "СС ").replace("goss_lead_", "Руководство ");
+
+  async function rowsByEmail(email, link){
+    var c = client(); if(!c) return [];
+    try { var q = c.from('reports').select('*').eq('email', email); if(link) q = q.eq('link', link); var r = await q; return r && r.data ? r.data : []; } catch(e){ return []; }
   }
-  async function roles(force){
-    var c = db(); if(!c) return [];
-    if(!force && cache.roles && Date.now() - cache.at < 12000) return cache.roles;
-    try {
-      var r = await c.from("reports").select("*").eq("email", E.access).limit(5000);
-      cache.roles = r.data || [];
-    } catch(e){ cache.roles = []; }
-    cache.at = Date.now();
+  async function loadRoles(force){
+    if(cache.roles && !force) return cache.roles;
+    cache.roles = await rowsByEmail(E.access);
     return cache.roles;
   }
-  async function users(force){
-    var c = db(); if(!c) return [];
-    if(!force && cache.users && Date.now() - cache.at < 12000) return cache.users;
-    var map = {};
-    function add(id, nick, email){
-      id = String(id || "").trim();
-      email = String(email || "").trim();
-      nick = String(nick || email || id || "").trim();
-      var key = id || email || nick;
-      if(!key) return;
-      var old = map[key] || {};
-      map[key] = { id:id || old.id || key, nick:nick || old.nick || key, email:email || old.email || "" };
+  async function loadUsers(force){
+    if(cache.users && !force) return cache.users;
+    var c = client(), map = {};
+    function put(o){
+      if(!o) return; var id = String(o.id || o.user_id || o.userId || o.link || o.status || o.email || '').trim(); if(!id) return;
+      var prev = map[id] || {}; map[id] = Object.assign(prev, {id:id, user_id:id, nick:o.nick || o.nickname || o.name || prev.nick || o.email || id, email:o.email || prev.email || ''});
     }
-    try { (window.adminUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
-    try { (window.creatorUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
-    try {
-      var us = await c.from("user_stats").select("user_id,nickname,email").limit(5000);
-      (us.data || []).forEach(function(u){ add(u.user_id, u.nickname, u.email); });
-    } catch(e){}
-    try { (await roles()).forEach(function(r){ add(r.link, r.link, ""); }); } catch(e){}
-    try { if(window.currentUser) add(currentUser.id, window.currentNickname || currentUser.email, currentUser.email); } catch(e){}
-    cache.users = Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), "ru"); });
-    cache.at = Date.now();
+    try { if(window.currentUser) put({id:window.currentUser.id,nick:nickOf(window.currentUser),email:window.currentUser.email}); } catch(e){}
+    try { (window.adminUsersList || []).forEach(function(u){ put(u); }); } catch(e){}
+    try { (window.creatorUsersList || []).forEach(function(u){ put(u); }); } catch(e){}
+    try { if(c){ var us = await c.from('user_stats').select('user_id,nickname,email').limit(5000); (us.data || []).forEach(function(u){ put(u); }); } } catch(e){}
+    try { var all = await rowsByEmail(E.profile); all.forEach(function(r){ var p=parse(r.date,{}); put({id:r.status,nick:p.nick,email:p.email}); }); } catch(e){}
+    try { (await loadRoles()).forEach(function(r){ put({id:r.link}); }); } catch(e){}
+    try { (await rowsByEmail(E.report)).forEach(function(r){ var p=parse(r.date,{}); put({id:r.status || p.userId,nick:p.nick,email:p.email}); }); } catch(e){}
+    cache.users = Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){ return String(a.nick||a.email||a.id).localeCompare(String(b.nick||b.email||b.id),'ru'); });
     return cache.users;
   }
-  async function profiles(orgId, force){
-    var c = db(); if(!c) return {};
-    if(!force && cache.profiles[orgId]) return cache.profiles[orgId];
-    var out = {};
-    try {
-      var r = await c.from("reports").select("*").eq("email", E.profile).eq("link", orgId).order("id", {ascending:false}).limit(1000);
-      (r.data || []).forEach(function(row){
-        if(!out[row.status]) out[row.status] = Object.assign({rowId:row.id,userId:row.status}, parse(row.date));
-      });
-    } catch(e){}
-    cache.profiles[orgId] = out;
-    return out;
+  async function currentRoles(){ var u = await user(); if(!u) return []; return (await loadRoles()).filter(function(r){ return r.link === u.id || r.link === u.email; }); }
+  function creator(u){ try { return !!(u && typeof creatorEmail !== 'undefined' && u.email === creatorEmail); } catch(e){ return false; } }
+  async function canLead(orgId){ var u = await user(); if(!u) return false; if(creator(u)) return true; return (await currentRoles()).some(function(r){ return r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId; }); }
+  async function canAll(){ var u = await user(); if(!u) return false; if(creator(u)) return true; return (await currentRoles()).some(function(r){ return r.status === 'goss_admin_all'; }); }
+  async function hasSpecial(orgId){ var u = await user(); if(!u) return false; if(await canLead(orgId)) return true; return (await currentRoles()).some(function(r){ return r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId; }); }
+  async function accessText(orgId){ if(await canLead(orgId)) return 'Руководство'; if(await hasSpecial(orgId)) return 'Старший состав'; return 'Обычный пользователь'; }
+  async function seniorIds(orgId){
+    var roles = await loadRoles();
+    var set = {};
+    roles.forEach(function(r){ if(r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId || r.status === 'goss_lead_' + orgId || r.status === 'goss_admin_all') set[r.link] = true; });
+    return Object.keys(set);
   }
-  async function canLead(orgId){
-    if(!window.currentUser) return false;
-    if(creator()) return true;
-    return (await roles()).some(function(r){ return r.link === currentUser.id && (r.status === "goss_admin_all" || r.status === "goss_lead_" + orgId); });
-  }
-  async function canAll(){
-    if(!window.currentUser) return false;
-    if(creator()) return true;
-    return (await roles()).some(function(r){ return r.link === currentUser.id && r.status === "goss_admin_all"; });
-  }
-  async function seniorRows(orgId){
-    var org = findOrg(orgId);
-    var rs = await roles();
-    var us = await users();
-    var ps = await profiles(orgId);
-    var by = {};
-    var map = {};
-    us.forEach(function(u){ by[u.id] = u; if(u.email) by[u.email] = u; });
-    rs.filter(function(r){ return roleOk(r.status, orgId); }).forEach(function(r){
-      var u = by[r.link] || {id:r.link,nick:r.link,email:""};
-      var p = ps[r.link] || {};
-      var key = r.link || u.id || u.email;
-      var old = map[key] || {};
-      map[key] = Object.assign({}, old, {
-        key:key,
-        id:u.id || key,
-        email:u.email || old.email || "",
-        nick:p.nick || u.nick || old.nick || key,
-        post:p.post || old.post || roleLabel(r.status, org),
-        forum:p.forum || old.forum || "",
-        vk:p.vk || old.vk || "",
-        discord:p.discord || old.discord || "",
-        appointed:p.appointed || old.appointed || "",
-        timezone:p.timezone || old.timezone || "",
-        status:r.status,
-        statusLabel:roleLabel(r.status, org),
-        accessDate:r.date || old.accessDate || ""
-      });
-    });
-    return Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick).localeCompare(String(b.nick), "ru"); });
+  async function seniorMembers(orgId){
+    var ids = await seniorIds(orgId), users = await loadUsers(), profiles = await rowsByEmail(E.profile, orgId), by = {};
+    users.forEach(function(u){ by[u.id] = Object.assign({}, by[u.id] || {}, u); });
+    profiles.forEach(function(r){ var p=parse(r.date,{}), id=r.status; by[id] = Object.assign({}, by[id] || {id:id}, {profileId:r.id, nick:p.nick || (by[id]&&by[id].nick), post:p.post, age:p.age, forum:p.forum, vk:p.vk, discord:p.discord, appointed:p.appointed, timezone:p.timezone}); });
+    return ids.map(function(id){ return Object.assign({id:id,nick:id}, by[id] || {}); }).sort(function(a,b){ return String(a.nick||a.id).localeCompare(String(b.nick||b.id),'ru'); });
   }
 
-  function weekStart(){
-    var d = new Date();
-    d.setHours(0,0,0,0);
-    var day = d.getDay() || 7;
-    d.setDate(d.getDate() - day + 1 + weekOffset * 7);
-    return d;
-  }
-  function iso(d){ return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0,10); }
-  function weekDays(){
-    var s = weekStart();
-    var a = [];
-    for(var i=0;i<7;i++){ var d = new Date(s); d.setDate(s.getDate()+i); a.push(iso(d)); }
-    return a;
-  }
-  function ruDay(x){
-    var p = String(x).split("-");
-    return p.length === 3 ? p[2] + "." + p[1] : x;
-  }
-  function reportDay(row, p){
-    if(p.day && /^\d{4}-\d{2}-\d{2}/.test(String(p.day))) return String(p.day).slice(0,10);
-    if(p.createdIso && /^\d{4}-\d{2}-\d{2}/.test(String(p.createdIso))) return String(p.createdIso).slice(0,10);
-    var m = String(p.created || "").match(/(\d{2})\.(\d{2})\.(\d{4})/);
-    if(m) return m[3] + "-" + m[2] + "-" + m[1];
-    var t = String(row && row.id || "").match(/_(\d{13})_/);
-    if(t){ var d = new Date(Number(t[1])); if(!isNaN(d.getTime())) return iso(d); }
-    return iso(new Date());
-  }
-  async function loadMarks(orgId, week){
-    var c = db(); if(!c) return {id:null,rows:{}};
-    try {
-      var r = await c.from("reports").select("*").eq("email", E.table).eq("link", orgId).eq("status", week).order("id", {ascending:false}).limit(1);
-      var row = (r.data || [])[0];
-      var p = parse(row && row.date);
-      return {id:row && row.id, rows:p.rows || {}};
-    } catch(e){ return {id:null,rows:{}}; }
-  }
-  async function saveMark(orgId, userId, day, status, note, reportId){
-    var c = db(); if(!c || !userId || !day) return;
-    var week = weekDays()[0];
-    var loaded = await loadMarks(orgId, week);
-    var rows = loaded.rows || {};
-    rows[userId] = rows[userId] || {};
-    rows[userId][day] = Object.assign({}, rows[userId][day] || {}, {status:status,note:note || "",reportId:reportId || (rows[userId][day] || {}).reportId || "",updatedAt:now(),updatedBy:(window.currentUser && currentUser.email) || ""});
-    var payload = {org:orgId,week:week,rows:rows,updatedAt:now(),updatedBy:(window.currentUser && currentUser.email) || ""};
-    if(loaded.id) await c.from("reports").update({date:JSON.stringify(payload),xp:Object.keys(rows).length}).eq("id", loaded.id);
-    else await c.from("reports").insert([{id:rid("g82table"),email:E.table,link:orgId,status:week,date:JSON.stringify(payload),xp:Object.keys(rows).length}]);
-  }
-
-  async function renderStaff(){
-    var r = root();
-    var org = currentOrg();
-    if(!r) return;
-    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Таблица старшего состава доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML = '<div class="v82-card">Загрузка таблицы старшего состава...</div>';
-    var rows = await seniorRows(org.id);
-    var body = rows.map(function(u){
-      var contacts = [];
-      if(u.forum) contacts.push('<a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(u.forum)+'">Форум</a>');
-      if(u.vk) contacts.push("VK: " + esc(u.vk));
-      if(u.discord) contacts.push("Discord: " + esc(u.discord));
-      return '<tr><td><b>'+esc(u.nick || u.id)+'</b><div class="v82-muted">'+esc(u.email || u.id || "")+'</div></td><td><span class="v82-pill">'+esc(u.statusLabel)+'</span></td><td>'+esc(u.post || "Анкета не заполнена")+'</td><td>'+contacts.join("<br>")+'</td><td>'+esc(u.appointed || u.accessDate || "—")+'<div class="v82-muted">'+esc(u.timezone || "")+'</div></td></tr>';
-    }).join("");
-    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">📋 Таблица старшего состава — '+esc(org.short)+'</h3><div class="v82-muted">Показываются только пользователи, у которых реально выдан статус СС/руководства этой ГОСС организации.</div></div><button id="v82RefreshStaff" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="v82-scroll"><table class="v82-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Должность</th><th>Контакты</th><th>Поставлен</th></tr></thead><tbody>'+body+'</tbody></table></div>' : '<div class="v82-empty">В этой организации пока нет пользователей со статусом СС.</div>');
-    $("v82RefreshStaff").onclick = function(){ cache.profiles = {}; cache.roles = null; renderStaff(); };
-  }
-
-  async function renderTable(){
-    var r = root();
-    var org = currentOrg();
-    var ds = weekDays();
-    if(!r) return;
-    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Таблица отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML = '<div class="v82-card">Загрузка таблицы отчётов...</div>';
-    var staff = await seniorRows(org.id);
-    var ids = {};
-    staff.forEach(function(u){ ids[u.id] = true; ids[u.key] = true; });
-    var marks = await loadMarks(org.id, ds[0]);
-    var reports = [];
-    try {
-      var q = await db().from("reports").select("*").eq("email", E.report).eq("link", org.id).order("id", {ascending:false}).limit(300);
-      reports = q.data || [];
-    } catch(e){}
-    var by = {};
-    reports.forEach(function(row){
-      var p = parse(row.date);
-      var uid = p.userId || row.status || "";
-      var d = reportDay(row, p);
-      if(ids[uid] && ds.indexOf(d) !== -1) by[uid + "|" + d] = {row:row,p:p};
-    });
-    var head = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">📊 Таблица отчётов ГОСС — '+esc(org.short)+'</h3><div class="v82-muted">В таблицу попадают только пользователи со статусом старшего состава. Итог появляется сразу после проверки отчёта.</div><div class="v82-muted">Неделя: '+esc(ruDay(ds[0]))+' — '+esc(ruDay(ds[6]))+'</div></div><div class="v82-actions" style="margin:0"><button id="v82Prev" class="btn btn-secondary" type="button">⬅️</button><button id="v82Now" class="btn btn-secondary" type="button">Текущая</button><button id="v82Next" class="btn btn-secondary" type="button">➡️</button></div></div></div>';
-    if(!staff.length){ r.innerHTML = head + '<div class="v82-empty">Нет пользователей со статусом СС. Таблица отчётов будет пустой, пока в «Панели руководства» не выдадут статус старшего состава.</div>'; return; }
-    var table = '<div class="v82-scroll"><table class="v82-table"><thead><tr><th>СС</th>'+ds.map(function(d){return '<th>'+esc(ruDay(d))+'</th>';}).join("")+'</tr></thead><tbody>';
-    staff.forEach(function(u){
-      table += '<tr><td><b>'+esc(u.nick || u.id)+'</b><div class="v82-muted">'+esc(u.statusLabel)+'</div></td>';
-      ds.forEach(function(d){
-        var rep = by[(u.id || u.key)+"|"+d] || by[(u.key || u.id)+"|"+d];
-        var saved = ((marks.rows || {})[u.id] || (marks.rows || {})[u.key] || {})[d] || {};
-        var p = (rep && rep.p) || {};
-        var status = saved.status || p.result || (rep ? (p.checkedAt ? "Проверен" : "На проверке") : "Нет отчёта");
-        var cls = status === "Отказ" ? "bad" : ((status === "Нет отчёта" || status === "На проверке") ? "warn" : "");
-        var opts = ["Нет отчёта","На проверке","Норма","Перенорма","Натяг","Отказ"].map(function(x){ return '<option'+(status===x ? ' selected' : '')+'>'+esc(x)+'</option>'; }).join("");
-        table += '<td data-user="'+esc(u.id || u.key)+'" data-day="'+esc(d)+'"><span class="v82-pill '+cls+'">'+esc(status)+'</span><br><select class="v82-select v82-mark">'+opts+'</select>'+(rep && p.link ? '<br><a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(p.link)+'">отчёт</a>' : '')+'</td>';
-      });
-      table += '</tr>';
-    });
-    table += '</tbody></table></div>';
-    r.innerHTML = head + table;
-    $("v82Prev").onclick = function(){ weekOffset--; renderTable(); };
-    $("v82Now").onclick = function(){ weekOffset = 0; renderTable(); };
-    $("v82Next").onclick = function(){ weekOffset++; renderTable(); };
-    qa(".v82-mark", r).forEach(function(sel){
-      sel.onchange = async function(){
-        var cell = sel.closest("td");
-        await saveMark(org.id, cell.dataset.user, cell.dataset.day, sel.value, "Изменено вручную", "");
-        renderTable();
-      };
-    });
-  }
-
-  async function processReport(row, status, xp){
-    var c = db();
-    var org = currentOrg();
-    if(!c || !row) return;
-    var p = parse(row.date);
-    var uid = p.userId || row.status || "";
-    var d = reportDay(row, p);
-    p.result = status;
-    p.checkedAt = now();
-    p.checkedBy = window.currentNickname || (window.currentUser && currentUser.email) || "Руководство";
-    p.xp = xp;
-    var upd = await c.from("reports").update({date:JSON.stringify(p),xp:xp,status:uid}).eq("id", row.id);
-    if(upd.error){ alert("Не удалось проверить отчёт: " + upd.error.message); return; }
-    try { await c.from("reports").insert([{id:rid("g82check"),email:E.check,link:org.id,status:uid,date:JSON.stringify({org:org.id,userId:uid,reportId:row.id,result:status,xp:xp,checkedAt:p.checkedAt,checkedBy:p.checkedBy}),xp:xp}]); } catch(e){}
-    await saveMark(org.id, uid, d, status, p.comment || "", row.id);
-    await renderReview();
-  }
-  async function renderReview(){
-    var r = root();
-    var org = currentOrg();
-    if(!r) return;
-    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Проверку отчётов видит только руководство '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML = '<div class="v82-card">Загрузка отчётов...</div>';
-    var staff = await seniorRows(org.id);
-    var ids = {};
-    staff.forEach(function(u){ ids[u.id] = true; ids[u.key] = true; });
+  async function appendLogs(html){ return html + await logsHtml(activeOrg().id); }
+  async function logsHtml(orgId){
+    var c = client(); if(!c) return '<div class="v83-card v83-logs"><b>Логи организации</b><div class="v83-muted">Supabase ещё не подключен.</div></div>';
     var rows = [];
-    try {
-      var q = await db().from("reports").select("*").eq("email", E.report).eq("link", org.id).order("id", {ascending:false}).limit(180);
-      rows = (q.data || []).filter(function(row){ var p = parse(row.date); return !!ids[p.userId || row.status || ""]; });
-    } catch(e){}
-    var html = rows.map(function(row, i){
-      var p = parse(row.date);
-      var done = !!p.checkedAt || ["Норма","Перенорма","Натяг","Отказ"].indexOf(p.result) !== -1;
-      var label = p.result || (done ? "Проверен" : "На проверке");
-      var cls = label === "Отказ" ? "bad" : (label === "На проверке" ? "warn" : "");
-      var actions = done ? '<div class="v82-muted">Проверил: '+esc(p.checkedBy || "—")+' · '+esc(p.checkedAt || "")+'</div>' : '<div class="v82-actions"><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Норма" data-xp="15" type="button" style="border-color:#52c77b;color:#52c77b;">Норма</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Перенорма" data-xp="30" type="button" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Натяг" data-xp="7" type="button" style="border-color:#00e5ff;color:#00e5ff;">Натяг</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Отказ" data-xp="0" type="button" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button></div>';
-      return '<div class="v82-mini"><div class="v82-head"><div><b style="color:#fff">'+esc(p.nick || row.status || "Пользователь")+'</b><div class="v82-muted">'+esc(p.type || "ГОСС отчёт")+' · '+esc(p.created || "")+'</div></div><span class="v82-pill '+cls+'">'+esc(label)+'</span></div><div class="v82-muted">'+esc(p.comment || "Без комментария")+'</div>'+(p.link ? '<a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(p.link)+'">📎 Открыть ссылку</a>' : '')+actions+'</div>';
-    }).join("");
-    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">✅ Проверить гос отчёты — '+esc(org.short)+'</h3><div class="v82-muted">Как в модерации: Норма, Перенорма, Натяг, Отказ. После выбора итог сразу записывается в таблицу отчётов.</div></div><button id="v82RefReview" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="v82-grid">'+html+'</div>' : '<div class="v82-empty">Отчётов от пользователей со статусом СС пока нет.</div>');
-    $("v82RefReview").onclick = renderReview;
-    qa(".v82-review", r).forEach(function(b){ b.onclick = function(){ processReport(rows[Number(b.dataset.i)], b.dataset.status, Number(b.dataset.xp || 0)); }; });
+    try { var r = await c.from('reports').select('*').in('email',[E.log,'GOSS_ORG_LOG','GOSS_ORG_LOG_V24',E.check]).eq('link', orgId).order('id',{ascending:false}).limit(12); rows = r.data || []; } catch(e){}
+    var body = rows.length ? rows.map(function(x){ return '<div class="v83-mini"><b>'+esc(x.status || 'лог')+'</b><div class="v83-muted">'+esc(x.date || '')+'</div></div>'; }).join('') : '<div class="v83-empty">Логов этой организации пока нет.</div>';
+    return '<div class="v83-card v83-logs"><div class="v83-head"><div><h3 style="margin:0;color:#bfc6ff">🧾 Логи организации</h3><div class="v83-muted">Логи находятся внизу каждого режима, чтобы не мешать работе.</div></div></div><div class="v83-grid">'+body+'</div></div>';
+  }
+  function evidenceHtml(p){
+    var arr = [];
+    if(p.proofs && Array.isArray(p.proofs)) arr = arr.concat(p.proofs);
+    if(p.link) arr.push(p.link);
+    arr = arr.filter(Boolean);
+    if(!arr.length) return '';
+    return '<div class="v83-preview">'+arr.map(function(x,i){
+      var s = esc(x);
+      if(String(x).indexOf('data:image') === 0) return '<div class="v83-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
+      if(/\.(png|jpg|jpeg|gif|webp)(\?|#|$)/i.test(String(x))) return '<div class="v83-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
+      return '<a class="v83-pill" target="_blank" rel="noreferrer" href="'+s+'">📎 Доказательство '+(i+1)+'</a>';
+    }).join('')+'</div>';
   }
 
-  async function renderManage(){
-    var r = root();
-    var org = currentOrg();
-    if(!r) return;
-    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Панель руководства доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML = '<div class="v82-card">Загрузка панели руководства...</div>';
-    var all = await canAll();
-    var us = await users(true);
-    var rs = (await roles(true)).filter(function(x){ return roleOk(x.status, org.id); });
-    var userOpts = us.map(function(u){ return '<option value="'+esc(u.id)+'">'+esc(u.nick || u.email || u.id)+(u.email ? ' · '+esc(u.email) : '')+'</option>'; }).join("");
-    var current = rs.map(function(x){
-      var u = us.filter(function(y){ return y.id === x.link || y.email === x.link; })[0] || {nick:x.link,email:""};
-      return '<div class="v82-mini"><b>'+esc(u.nick || x.link)+'</b><span class="v82-pill">'+esc(roleLabel(x.status, org))+'</span><div class="v82-muted">'+esc(u.email || x.link || "")+' · '+esc(x.date || "")+'</div></div>';
-    }).join("");
-    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">👑 Панель руководства — '+esc(org.short)+'</h3><div class="v82-muted">Здесь выдаётся именно статус старшего состава ГОСС. Модерация не затрагивается.</div></div><button id="v82ReloadManage" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div class="v82-form" style="margin-top:.9rem"><label class="full">Поиск пользователя<input id="v82SearchUser" class="v82-input" placeholder="Ник / email / UID"></label><label class="full">Пользователь<select id="v82SeniorUser" class="v82-select">'+(userOpts || '<option value="">Нет пользователей</option>')+'</select></label><label>Статус<select id="v82SeniorRole" class="v82-select"><option value="goss_senior_'+esc(org.id)+'">СС '+esc(org.short)+'</option>'+(all ? '<option value="goss_senior_all">СС всех ГОСС</option>' : '')+'</select></label><label>UID / email вручную<input id="v82ManualUser" class="v82-input" placeholder="если пользователя нет в списке"></label><label class="full">Комментарий<input id="v82RoleNote" class="v82-input" placeholder="причина выдачи / снятия"></label></div><div class="v82-actions"><button id="v82GrantSenior" class="btn btn-primary" type="button">➕ Выдать СС</button><button id="v82RemoveSenior" class="btn btn-secondary" type="button" style="border-color:var(--color-error);color:var(--color-error);">➖ Снять СС</button></div><div id="v82ManageMsg" class="v82-muted" style="margin-top:.6rem"></div></div><div class="v82-card"><h3 style="margin:0 0 .8rem;color:#fff;">Текущие статусы СС</h3>'+(current ? '<div class="v82-grid">'+current+'</div>' : '<div class="v82-empty">Статусы СС пока никому не выданы.</div>')+'</div>';
-    $("v82ReloadManage").onclick = function(){ cache.roles = null; cache.users = null; renderManage(); };
-    $("v82SearchUser").oninput = function(){
-      var q = String(this.value || "").toLowerCase();
-      qa("option", $("v82SeniorUser")).forEach(function(o){ o.hidden = q && String(o.textContent + " " + o.value).toLowerCase().indexOf(q) === -1; });
-    };
-    async function change(grant){
-      var c = db();
-      var uid = String($("v82ManualUser").value || "").trim() || String($("v82SeniorUser").value || "").trim();
-      var st = $("v82SeniorRole").value;
-      var note = String($("v82RoleNote").value || "").trim();
-      if(!uid){ alert("Выберите пользователя или вставьте UID/email."); return; }
-      if(st === "goss_senior_all" && !(await canAll())){ alert("СС всех ГОСС может выдавать только руководство всех ГОСС."); return; }
-      $("v82ManageMsg").textContent = "Сохраняю...";
-      if(grant){
-        await c.from("reports").delete().eq("email", E.access).eq("link", uid).eq("status", st);
-        var ins = await c.from("reports").insert([{id:rid("g82senior"),email:E.access,link:uid,status:st,date:now()+(note ? " · "+note : ""),xp:0}]);
-        if(ins.error){ alert("Ошибка выдачи: " + ins.error.message); return; }
-        try { await c.from("reports").insert([{id:rid("g82log"),email:E.log,link:org.id,status:"grant_senior",date:"Выдан "+st+" пользователю "+uid+" · "+now(),xp:0}]); } catch(e){}
-      } else {
-        var del = await c.from("reports").delete().eq("email", E.access).eq("link", uid).eq("status", st);
-        if(del.error){ alert("Ошибка снятия: " + del.error.message); return; }
-        try { await c.from("reports").insert([{id:rid("g82log"),email:E.log,link:org.id,status:"remove_senior",date:"Снят "+st+" у "+uid+" · "+now(),xp:0}]); } catch(e){}
-      }
-      cache.roles = null;
-      $("v82ManageMsg").textContent = grant ? "Статус СС выдан." : "Статус СС снят.";
-      setTimeout(renderManage, 300);
-    }
-    $("v82GrantSenior").onclick = function(){ change(true); };
-    $("v82RemoveSenior").onclick = function(){ change(false); };
+  var TRAIN = {
+    government:[
+      {from:'Гражданин',text:'Жалоба на сотрудника без доказательств. Что делает СС?',good:'Запросить факты и оформить проверку',bad:['Закрыть без ответа','Наказать без проверки']},
+      {from:'Министерство',text:'Нужно решение по проверке организации. Что важно?',good:'Указать дату, факты и ответственного',bad:['Написать только ник','Оставить без структуры']}
+    ],
+    fsb:[
+      {from:'Заявка ФСБ',text:'В заявке нет Discord. Решение СС?',good:'Вернуть на доработку по пункту',bad:['Принять как есть','Удалить без причины']},
+      {from:'Проверка',text:'Есть риск слива информации. Первое действие?',good:'Зафиксировать факты и передать выше',bad:['Обвинить публично','Не вмешиваться']}
+    ],
+    gibdd:[
+      {from:'Жалоба',text:'Игрок спорит со штрафом. Что делает СС?',good:'Проверить доказательства и запись',bad:['Отменить всем подряд','Выдать ещё штраф']},
+      {from:'Патруль',text:'Сотрудник нарушил порядок проверки. Что нужно?',good:'Разобрать факт и дать решение',bad:['Закрыть по дружбе','Игнорировать жалобу']}
+    ],
+    umvd:[
+      {from:'Арест',text:'Жалоба на задержание. Как проверить?',good:'Сверить причину, док-ва и процедуру',bad:['Верить только своим','Сразу удалить жалобу']},
+      {from:'Отдел',text:'Конфликт между сотрудниками. Действие СС?',good:'Собрать стороны и зафиксировать итог',bad:['Выбрать старшего','Оставить без разбора']}
+    ],
+    army:[
+      {from:'КПП',text:'Игрок просит проход без допуска. Что делать?',good:'Отказать и действовать по уставу',bad:['Пустить без записи','Спорить в грубой форме']},
+      {from:'Строй',text:'Нарушен приказ на строю. Реакция СС?',good:'Зафиксировать и разобрать по уставу',bad:['Сразу выгнать всех','Сделать вид что нет']}
+    ],
+    hospital:[
+      {from:'Пациент',text:'Жалоба на отказ в помощи. Что делает СС?',good:'Проверить ситуацию и ответ медика',bad:['Закрыть молча','Обвинить пациента']},
+      {from:'Смена',text:'Не хватает отчёта по дежурству. Решение?',good:'Запросить данные и оформить итог',bad:['Принять пустой отчёт','Удалить без связи']}
+    ],
+    smi:[
+      {from:'Эфир',text:'Эфир начат без темы. Что нужно?',good:'Согласовать тему и правила эфира',bad:['Пустить хаос','Сорвать эфир сразу']},
+      {from:'Редакция',text:'Жалоба на ведущего. Действие СС?',good:'Проверить запись и дать решение',bad:['Скрыть жалобу','Наказать без записи']}
+    ],
+    fsin:[
+      {from:'Режим',text:'Нарушение режима в учреждении. Первое?',good:'Зафиксировать и действовать по регламенту',bad:['Ответить силой сразу','Не замечать']},
+      {from:'Проверка',text:'Сотрудник спорит с заключённым. Что делать?',good:'Разобрать по фактам и журналу',bad:['Верить громкому','Закрыть без итога']}
+    ]
+  };
+  function getRound(orgId){
+    var bank = TRAIN[orgId] || TRAIN.fsb; var base = bank[Math.floor(Math.random()*bank.length)];
+    var opts = [{t:base.good,good:true,reply:'Верно: решение по фактам и регламенту.'}].concat(base.bad.map(function(x){return {t:x,good:false,reply:'Неверно: СС не должен решать без проверки и фиксации.'};}));
+    opts.sort(function(){return Math.random()-.5}); return {from:base.from,text:base.text,opts:opts,answered:false};
   }
-
-  function patchTrainer(){
-    if(window.__T73_V82_TRAINER_PATCH__) return;
-    window.__T73_V82_TRAINER_PATCH__ = true;
-    try {
-      if(typeof GOV_TRAINERS_V4 === "undefined") return;
-      var data = {
-        government:["Жалоба без фактов","Попросить факты","Закрыть сразу","Наказать автора"],
-        fsb:["Неполная заявка","Вернуть правку","Принять сразу","Удалить молча"],
-        gibdd:["Спорный штраф","Проверить запись","Отменить всем","Выдать больше"],
-        umvd:["Жалоба на арест","Проверить основу","Верить своим","Стереть жалобу"],
-        army:["КПП без допуска","Следовать уставу","Пустить всех","Спорить грубо"],
-        hospital:["Жалоба пациента","Проверить помощь","Закрыть молча","Винить пациента"],
-        smi:["Эфир без темы","Согласовать тему","Пустить хаос","Сорвать эфир"],
-        fsin:["Нарушен режим","Зафиксировать","Ответить силой","Не заметить"]
+  async function renderTrainer(){
+    var o = activeOrg(), r = root(); if(!r) return; state.round = state.round || {}; state.round[o.id] = state.round[o.id] || getRound(o.id); var round = state.round[o.id];
+    var html = '<div class="v83-card"><div class="v83-head"><div><h3>🎮 Тренажёр СС — '+esc(o.short)+'</h3><div class="v83-sub">Варианты специально сделаны похожими по длине, чтобы нельзя было проходить по самому длинному ответу.</div></div><span class="v83-pill">'+esc(await accessText(o.id))+'</span></div></div><div class="v83-card"><div class="v83-muted"># '+esc(o.short)+' / тренажёр</div><h3 style="color:#fff;margin:.5rem 0">'+esc(round.from)+'</h3><p>'+esc(round.text)+'</p><div class="v83-options">'+round.opts.map(function(x,i){return '<button class="v83-option" data-i="'+i+'" type="button"><span class="v83-muted">Вариант '+String.fromCharCode(65+i)+'</span><br>'+esc(x.t)+'</button>';}).join('')+'</div><div id="v83TrainerFb" style="margin-top:.75rem"></div></div><div class="v83-actions"><button id="v83NextQ" class="btn btn-secondary" type="button">Следующая ситуация</button></div>';
+    r.innerHTML = await appendLogs(html);
+    qa('.v83-option', r).forEach(function(b){ b.onclick = function(){ if(round.answered) return; round.answered = true; var opt=round.opts[Number(b.dataset.i)]; qa('.v83-option', r).forEach(function(x,ix){x.disabled=true; if(round.opts[ix].good) x.classList.add('good');}); b.classList.add(opt.good?'good':'bad'); var f=$('v83TrainerFb'); if(f) f.innerHTML='<div class="v83-pill '+(opt.good?'':'bad')+'">'+(opt.good?'✅ ':'❌ ')+esc(opt.reply)+'</div>'; }; });
+    var n=$('v83NextQ'); if(n) n.onclick=function(){ state.round[o.id]=getRound(o.id); renderTrainer(); };
+  }
+  async function renderProfile(){
+    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v83-empty">Войдите в аккаунт.</div>'; return; }
+    var rows = (await rowsByEmail(E.profile, o.id)).filter(function(x){return x.status===u.id;}); var p = rows[0] ? parse(rows[0].date,{}) : {};
+    var html = '<div class="v83-card"><h3>📝 Мои данные СС — '+esc(o.short)+'</h3><div class="v83-form"><label>Ник<input id="v83Nick" class="v83-input" value="'+esc(p.nick||nickOf(u))+'"></label><label>Должность<input id="v83Post" class="v83-input" value="'+esc(p.post||'')+'"></label><label>Возраст<input id="v83Age" class="v83-input" value="'+esc(p.age||'')+'"></label><label>Дата постановления<input id="v83Appointed" class="v83-input" value="'+esc(p.appointed||'')+'"></label><label>Форум<input id="v83Forum" class="v83-input" value="'+esc(p.forum||'')+'"></label><label>VK<input id="v83Vk" class="v83-input" value="'+esc(p.vk||'')+'"></label><label>Discord<input id="v83Discord" class="v83-input" value="'+esc(p.discord||'')+'"></label><label>Часовой пояс<input id="v83Tz" class="v83-input" value="'+esc(p.timezone||'')+'"></label></div><div class="v83-actions" style="margin-top:1rem"><button id="v83SaveProfile" class="btn btn-primary" type="button">Сохранить</button><span id="v83ProfileMsg" class="v83-muted"></span></div></div>';
+    r.innerHTML = await appendLogs(html);
+    $('v83SaveProfile').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.short,nick:$('v83Nick').value.trim(),post:$('v83Post').value.trim(),age:$('v83Age').value.trim(),appointed:$('v83Appointed').value.trim(),forum:$('v83Forum').value.trim(),vk:$('v83Vk').value.trim(),discord:$('v83Discord').value.trim(),timezone:$('v83Tz').value.trim(),email:u.email||''}; if(rows[0]) await c.from('reports').delete().eq('id', rows[0].id); var res=await c.from('reports').insert([{id:rid('goss_profile'),email:E.profile,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error) return alert('Ошибка: '+res.error.message); cache.profiles=null; $('v83ProfileMsg').textContent='Сохранено.'; };
+  }
+  async function fileToData(file){
+    return new Promise(function(resolve){
+      if(!file || !/^image\//.test(file.type||'')) return resolve(null);
+      var fr = new FileReader();
+      fr.onload = function(){
+        var img = new Image();
+        img.onload = function(){
+          var max = 1100, w = img.width, h = img.height; if(w>max || h>max){ var k=Math.min(max/w,max/h); w=Math.round(w*k); h=Math.round(h*k); }
+          var canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h; var ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.78));
+        };
+        img.onerror=function(){ resolve(String(fr.result||'')); };
+        img.src = String(fr.result || '');
       };
-      Object.keys(data).forEach(function(id){
-        var pack = GOV_TRAINERS_V4[id];
-        if(!pack || !Array.isArray(pack.scenarios)) return;
-        var x = data[id];
-        pack.scenarios.push({from:"Ситуация СС",text:x[0]+". Что делать?",options:[{text:x[1],good:true,reply:"Верно: решение по фактам и регламенту."},{text:x[2],good:false,reply:"Неверно: решение без проверки ломает порядок."},{text:x[3],good:false,reply:"Неверно: СС должен фиксировать ситуацию."}]});
-      });
-    } catch(e){}
-  }
-  function relabel(){
-    var r = root(); if(!r) return;
-    qa("h1,h2,h3,p,span,button,div,label", r).forEach(function(el){
-      if(el.childElementCount) return;
-      var t = el.textContent || "";
-      if(/Сдать\s+отч[её]тность/i.test(t)) el.textContent = t.replace(/Сдать\s+отч[её]тность/ig, "Сдать гос отчёт");
-      else if(/^Отч[её]тность$/i.test(t.trim())) el.textContent = "Гос отчёт";
+      fr.onerror=function(){ resolve(null); };
+      fr.readAsDataURL(file);
     });
   }
-  function nav(){
-    var n = $("gossOrgActionNavV4");
-    if(!n) return;
-    qa("#g19Submit,#g19Table,#g19Shop,#g19Logs,#g19Global,#g20Submit,#g20Table,#g20Shop,#g20Manage,#gossOrgLogsTabBtnV15,#t73V15OpenThisOrgLogs", n).forEach(function(b){ b.style.display = "none"; });
-    qa(".gov-action-switch-v4,[data-view]", n).forEach(function(b){
-      var v = (b.dataset || {}).view || "";
-      if(v === "trainer") b.innerHTML = "🎮 Тренажёр";
-      if(v === "profile") b.innerHTML = "📝 Мои данные";
-      if(v === "submit") b.innerHTML = "📤 Сдать гос отчёт";
-      if(v === "shop") b.innerHTML = "🛒 Магазин";
-      if(v === "staff") b.innerHTML = "📋 Таблица старшего состава";
-      if(v === "reports") b.innerHTML = "✅ Проверить отчёты";
-      if(v === "manage") b.innerHTML = "👑 Панель руководства";
-    });
-    var leader = !!n.querySelector('[data-view="staff"],[data-view="reports"],[data-view="manage"]');
-    var t = $("v82ReportTableBtn");
-    if(leader && !t){
-      var after = n.querySelector('[data-view="staff"]') || n.querySelector('[data-view="reports"]') || n.lastElementChild;
-      var html = '<button class="mode-btn" id="v82ReportTableBtn" type="button">📊 Таблица отчётов</button>';
-      if(after) after.insertAdjacentHTML("afterend", html); else n.insertAdjacentHTML("beforeend", html);
-      t = $("v82ReportTableBtn");
-    }
-    if(t) t.onclick = function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      qa("#gossOrgActionNavV4 .mode-btn").forEach(function(x){ x.classList.remove("active"); });
-      t.classList.add("active");
-      renderTable();
-    };
+  async function addFiles(files){
+    files = Array.prototype.slice.call(files || []);
+    for(var i=0;i<files.length;i++){ var d=await fileToData(files[i]); if(d) state.proofs.push(d); }
+    renderProofPreview();
   }
-  function boot(){ patchTrainer(); nav(); relabel(); }
+  function renderProofPreview(){
+    var box=$('v83ProofPreview'); if(!box) return;
+    box.innerHTML = state.proofs.map(function(src,i){return '<div class="v83-proof"><img src="'+esc(src)+'"><button data-i="'+i+'" type="button">×</button></div>';}).join('');
+    qa('button', box).forEach(function(b){ b.onclick=function(){ state.proofs.splice(Number(b.dataset.i),1); renderProofPreview(); }; });
+  }
+  async function renderSubmit(){
+    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v83-empty">Войдите в аккаунт.</div>'; return; }
+    state.proofs = [];
+    var mine=(await rowsByEmail(E.report,o.id)).filter(function(x){return x.status===u.id;}).slice(-8).reverse();
+    var list = mine.length ? mine.map(function(x){var p=parse(x.date,{}), st=p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает'); return '<div class="v83-mini"><div class="v83-head"><b>'+esc(p.type||'ГОСС отчёт')+'</b><span class="v83-pill '+(st==='Отказ'?'bad':(st==='Ожидает'?'warn':''))+'">'+esc(st)+'</span></div><div class="v83-muted">'+esc(p.created||'')+'</div><div>'+esc(p.comment||'')+'</div>'+evidenceHtml(p)+'</div>';}).join('') : '<div class="v83-empty">Вы ещё не сдавали гос отчёты в этой организации.</div>';
+    var html='<div class="v83-card"><h3>📤 Сдать гос отчёт — '+esc(o.short)+'</h3><div class="v83-form"><label>Тип отчёта<select id="v83ReportType" class="v83-select"><option>Ежедневный отчёт</option><option>Недельный отчёт</option><option>Отчёт по работе</option><option>Другое</option></select></label><label>Ссылка на доказательства<input id="v83ReportLink" class="v83-input" placeholder="форум / видео / облако"></label><label class="full">Комментарий<textarea id="v83ReportComment" class="v83-area" placeholder="Что сделал, сколько заявок/проверок/работы закрыл"></textarea></label><label class="full">Скриншоты напрямую<input id="v83ReportFiles" class="v83-input" type="file" accept="image/*" multiple></label></div><div id="v83Drop" class="v83-drop" tabindex="0">Перетащи скриншоты сюда или вставь Ctrl+V. Они сожмутся и прикрепятся к отчёту.</div><div id="v83ProofPreview" class="v83-preview"></div><div class="v83-actions" style="margin-top:1rem"><button id="v83SendReport" class="btn btn-primary" type="button">📤 Отправить гос отчёт</button><span id="v83SubmitMsg" class="v83-muted"></span></div></div><div class="v83-card"><h3 style="color:#fff;margin-top:0">Мои последние гос отчёты</h3><div class="v83-grid">'+list+'</div></div>';
+    r.innerHTML = await appendLogs(html);
+    var files=$('v83ReportFiles'), drop=$('v83Drop'); files.onchange=function(){addFiles(files.files); files.value='';};
+    drop.ondragover=function(e){e.preventDefault(); drop.style.borderColor='var(--color-success)';}; drop.ondragleave=function(){drop.style.borderColor='rgba(255,107,136,.46)';}; drop.ondrop=function(e){e.preventDefault(); drop.style.borderColor='rgba(255,107,136,.46)'; addFiles(e.dataTransfer.files);};
+    drop.onpaste=function(e){ if(e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) addFiles(e.clipboardData.files); };
+    $('v83SendReport').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.id,orgName:o.short,type:$('v83ReportType').value,link:$('v83ReportLink').value.trim(),comment:$('v83ReportComment').value.trim(),proofs:state.proofs.slice(),userId:u.id,nick:nickOf(u),created:now(),day:dayKey(new Date()),checkedAt:'',reviewStatus:''}; if(!payload.link && !payload.comment && !payload.proofs.length) return alert('Добавьте комментарий, ссылку или скриншот.'); $('v83SubmitMsg').textContent='Отправляю...'; var res=await c.from('reports').insert([{id:rid('goss_user_report'),email:E.report,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error){$('v83SubmitMsg').textContent='Ошибка: '+res.error.message;return alert('Отчёт не отправился: '+res.error.message);} await c.from('reports').insert([{id:rid('goss_log_submit'),email:E.log,link:o.id,status:'report_submit',date:'Сдан гос отчёт: '+nickOf(u)+' · '+now(),xp:0}]); cache.reports=null; alert('Гос отчёт отправлен.'); renderSubmit(); };
+  }
+  async function renderShop(){
+    var o=activeOrg(), html='<div class="v83-card"><h3>🛒 Магазин ГОСС — '+esc(o.short)+'</h3><p class="v83-sub">Этот режим оставлен отдельно и больше не смешивается с отчётами/панелью руководства.</p>'+(o.id==='fsb'?'<div class="v83-actions"><button id="v83OpenFsbShop" class="btn btn-primary" type="button">Открыть магазин ФСБ</button></div>':'<div class="v83-empty">Для этой организации товары пока не настроены.</div>')+'</div>'; root().innerHTML = await appendLogs(html); var b=$('v83OpenFsbShop'); if(b) b.onclick=function(){ if(typeof switchMode==='function') switchMode('fsb_shop', b); };
+  }
+  async function renderStaff(){
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Таблицу старшего состава видит только руководство '+esc(o.short)+'.</div>'); return; }
+    var staff=await seniorMembers(o.id); var body=staff.map(function(u){return '<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v83-muted">'+esc(u.email||u.id)+'</div></td><td><span class="v83-pill">СС '+esc(o.short)+'</span></td><td>'+esc(u.post||'Анкета не заполнена')+'</td><td>'+(u.forum?'<a class="v83-pill" target="_blank" rel="noreferrer" href="'+esc(u.forum)+'">Форум</a><br>':'')+esc(u.vk||'')+(u.discord?'<br>'+esc(u.discord):'')+'</td><td>'+esc(u.appointed||'—')+'<div class="v83-muted">'+esc(u.timezone||'')+'</div></td></tr>';}).join('');
+    var html='<div class="v83-card"><div class="v83-head"><div><h3>📋 Таблица старшего состава — '+esc(o.short)+'</h3><div class="v83-sub">Показываются только пользователи с выданным статусом СС/руководства этой ГОСС.</div></div><button id="v83StaffRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>'+(staff.length?'<div class="v83-scroll"><table class="v83-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Должность</th><th>Контакты</th><th>Поставлен</th></tr></thead><tbody>'+body+'</tbody></table></div>':'<div class="v83-empty">В этой организации пока нет пользователей со статусом старшего состава.</div>');
+    r.innerHTML = await appendLogs(html); $('v83StaffRefresh').onclick=function(){cache.users=null;cache.roles=null;renderStaff();};
+  }
+  async function getReports(orgId){
+    var rows = await rowsByEmail(E.report, orgId), ids = await seniorIds(orgId), allow={}; ids.forEach(function(x){allow[x]=true;});
+    return rows.filter(function(r){ var p=parse(r.date,{}); return allow[r.status] || allow[p.userId]; }).map(function(r){ var p=parse(r.date,{}); p._row=r; p.day=p.day || (p.created ? dayKey(new Date(p.created)) : ''); return p; });
+  }
+  async function reviewReport(row,status,points){
+    var c=client(), u=await user(); if(!c) return alert('Supabase не подключен'); var p=parse(row.date,{}); p.reviewStatus=status; p.result=status; p.reviewPoints=points; p.checkedAt=now(); p.checkedBy=nickOf(u); var res=await c.from('reports').update({date:JSON.stringify(p),xp:points}).eq('id',row.id); if(res.error) return alert('Ошибка сохранения: '+res.error.message); await c.from('reports').insert([{id:rid('goss_report_check'),email:E.check,link:p.org||row.link,status:(u&&u.id)||'leader',date:'Проверен отчёт: '+status+' · '+(p.nick||row.status||'')+' · '+now(),xp:points}]); await c.from('reports').insert([{id:rid('goss_log_review'),email:E.log,link:p.org||row.link,status:'report_'+status,date:'Отчёт '+(p.nick||row.status||'')+': '+status+' · '+now(),xp:points}]); cache.reports=null; renderReportTable(true);
+  }
+  async function renderReviewList(){
+    var o=activeOrg(), reps=await getReports(o.id); reps.sort(function(a,b){return String(b.created||'').localeCompare(String(a.created||''));}); var unchecked=reps.filter(function(p){return !p.reviewStatus && !p.checkedAt;});
+    var html = '<div class="v83-card"><div class="v83-head"><div><h3>✅ Проверить сданные гос отчёты — '+esc(o.short)+'</h3><div class="v83-sub">Отдельного режима больше нет: проверка находится внутри таблицы отчётов.</div></div><button id="v83BackTable" class="btn btn-secondary" type="button">← К таблице</button></div></div>';
+    html += unchecked.length ? '<div class="v83-grid">'+unchecked.map(function(p,i){return '<div class="v83-mini"><div class="v83-head"><div><b>'+esc(p.nick||p.userId||'Пользователь')+'</b><div class="v83-muted">'+esc(p.type||'ГОСС отчёт')+' · '+esc(p.created||'')+'</div></div><span class="v83-pill warn">Ожидает</span></div><div>'+esc(p.comment||'Без комментария')+'</div>'+evidenceHtml(p)+'<div class="v83-actions"><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Норма" data-p="15" type="button">Норма</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Перенорма" data-p="30" type="button">Перенорма</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Натяг" data-p="7" type="button">Натяг</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Отказ" data-p="0" type="button">Отказ</button></div></div>';}).join('')+'</div>' : '<div class="v83-empty">Новых непроверенных отчётов от СС нет.</div>';
+    root().innerHTML = await appendLogs(html); $('v83BackTable').onclick=function(){state.reviewMode=false;renderReportTable(false);}; qa('.v83-review').forEach(function(b){ b.onclick=function(){ var p=unchecked[Number(b.dataset.i)]; reviewReport(p._row,b.dataset.s,Number(b.dataset.p||0)); }; });
+  }
+  async function renderReportTable(review){
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Таблицу отчётов видит только руководство '+esc(o.short)+'.</div>'); return; }
+    if(review || state.reviewMode) { state.reviewMode=true; return renderReviewList(); }
+    var staff=await seniorMembers(o.id), reps=await getReports(o.id), days=weekDays(state.week), by={}; reps.forEach(function(p){ var k=(p.userId||p._row.status)+'|'+(p.day||''); if(!by[k] || String(p.created||'')>String(by[k].created||'')) by[k]=p; });
+    var header='<div class="v83-card"><div class="v83-head"><div><h3>📊 Таблица отчётов ГОСС — '+esc(o.short)+'</h3><div class="v83-sub">В таблице только пользователи со статусом СС. Проверка открывается кнопкой здесь, а не отдельным режимом.</div><div class="v83-muted">Неделя: '+esc(ruDay(days[0]))+' — '+esc(ruDay(days[6]))+'</div></div><div class="v83-actions"><button id="v83PrevW" class="btn btn-secondary" type="button">⬅️</button><button id="v83NowW" class="btn btn-secondary" type="button">Текущая</button><button id="v83NextW" class="btn btn-secondary" type="button">➡️</button><button id="v83OpenReview" class="btn btn-primary" type="button">Проверить сданные отчёты</button></div></div></div>';
+    var table=''; if(staff.length){ table='<div class="v83-scroll"><table class="v83-table"><thead><tr><th>СС</th>'+days.map(function(d){return '<th>'+esc(ruDay(d))+'</th>';}).join('')+'</tr></thead><tbody>'; staff.forEach(function(u){ table+='<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v83-muted">'+esc(u.post||u.email||'')+'</div></td>'; days.forEach(function(d){ var p=by[u.id+'|'+d], st=p?(p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает')):'—'; var cls=st==='Отказ'?'bad':(st==='Ожидает'?'warn':''); table+='<td><span class="v83-pill '+cls+'">'+esc(st)+'</span>'+(p?'<div class="v83-muted">'+esc(p.type||'отчёт')+'</div>'+evidenceHtml(p):'')+'</td>'; }); table+='</tr>'; }); table+='</tbody></table></div>'; } else table='<div class="v83-empty">Нет пользователей со статусом СС. Сначала выдайте статус в панели руководства.</div>';
+    r.innerHTML = await appendLogs(header+table); $('v83PrevW').onclick=function(){state.week--;renderReportTable(false);}; $('v83NowW').onclick=function(){state.week=0;renderReportTable(false);}; $('v83NextW').onclick=function(){state.week++;renderReportTable(false);}; $('v83OpenReview').onclick=function(){state.reviewMode=true;renderReportTable(true);};
+  }
+  async function renderManage(){
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Панель руководства доступна только руководству '+esc(o.short)+'.</div>'); return; }
+    var users=await loadUsers(), roles=await loadRoles(), all=await canAll(); var current=roles.filter(function(x){return x.status==='goss_senior_'+o.id || x.status==='goss_senior_all';});
+    var opts=users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nick||u.email||u.id)+' · '+esc(u.email||u.id)+'</option>';}).join('');
+    var currentHtml=current.length?current.map(function(x){var u=users.filter(function(y){return y.id===x.link;})[0]||{nick:x.link}; return '<div class="v83-mini"><b>'+esc(u.nick||x.link)+'</b><span class="v83-pill">'+esc(x.status==='goss_senior_all'?'СС всех ГОСС':'СС '+o.short)+'</span><div class="v83-muted">'+esc(u.email||x.link)+' · '+esc(x.date||'')+'</div></div>';}).join(''):'<div class="v83-empty">Статусы СС пока никому не выданы.</div>';
+    var html='<div class="v83-card"><div class="v83-head"><div><h3>👑 Панель руководства — '+esc(o.short)+'</h3><div class="v83-sub">Стабильная версия панели. Старые всплывающие блоки отключены.</div></div><button id="v83ManageRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div class="v83-form" style="margin-top:1rem"><label class="full">Поиск пользователя<input id="v83UserSearch" class="v83-input" placeholder="ник / email / UID"></label><label class="full">Пользователь<select id="v83SeniorUser" class="v83-select">'+(opts||'<option value="">Нет пользователей</option>')+'</select></label><label>Статус<select id="v83SeniorRole" class="v83-select"><option value="goss_senior_'+esc(o.id)+'">СС '+esc(o.short)+'</option>'+(all?'<option value="goss_senior_all">СС всех ГОСС</option>':'')+'</select></label><label>UID / email вручную<input id="v83ManualUid" class="v83-input" placeholder="если пользователя нет в списке"></label><label class="full">Комментарий<input id="v83RoleNote" class="v83-input" placeholder="причина выдачи / снятия"></label></div><div class="v83-actions" style="margin-top:1rem"><button id="v83Grant" class="btn btn-primary" type="button">➕ Выдать СС</button><button id="v83Remove" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" type="button">➖ Снять СС</button><span id="v83ManageMsg" class="v83-muted"></span></div></div><div class="v83-card"><h3 style="color:#fff;margin-top:0">Текущие статусы СС</h3><div class="v83-grid">'+currentHtml+'</div></div>';
+    r.innerHTML = await appendLogs(html); $('v83ManageRefresh').onclick=function(){cache.users=null;cache.roles=null;renderManage();}; $('v83UserSearch').oninput=function(){var q=this.value.toLowerCase(); qa('option',$('v83SeniorUser')).forEach(function(o){ o.hidden = q && String(o.textContent+' '+o.value).toLowerCase().indexOf(q)===-1; });};
+    async function change(grant){ var c=client(), u=await user(); if(!c) return alert('Supabase не подключен'); var uid=$('v83ManualUid').value.trim() || $('v83SeniorUser').value; var st=$('v83SeniorRole').value, note=$('v83RoleNote').value.trim(); if(!uid) return alert('Выберите пользователя или введите UID/email.'); if(st==='goss_senior_all' && !(await canAll())) return alert('СС всех ГОСС может выдавать только руководство всех ГОСС.'); $('v83ManageMsg').textContent='Сохраняю...'; if(grant){ await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); var ins=await c.from('reports').insert([{id:rid('goss_senior'),email:E.access,link:uid,status:st,date:now()+(note?' · '+note:''),xp:0}]); if(ins.error){$('v83ManageMsg').textContent='Ошибка'; return alert(ins.error.message);} await c.from('reports').insert([{id:rid('goss_log_grant'),email:E.log,link:o.id,status:'grant_senior',date:'Выдан '+st+' пользователю '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } else { var del=await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); if(del.error){$('v83ManageMsg').textContent='Ошибка'; return alert(del.error.message);} await c.from('reports').insert([{id:rid('goss_log_remove'),email:E.log,link:o.id,status:'remove_senior',date:'Снят '+st+' у '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } cache.roles=null; cache.users=null; $('v83ManageMsg').textContent=grant?'Статус выдан.':'Статус снят.'; setTimeout(renderManage,350); }
+    $('v83Grant').onclick=function(){change(true);}; $('v83Remove').onclick=function(){change(false);};
+  }
 
-  document.addEventListener("click", function(e){
-    var b = e.target && e.target.closest && e.target.closest("#gossOrgActionNavV4 [data-view]");
-    if(b){
-      var v = b.dataset.view || "";
-      if(v === "staff") setTimeout(renderStaff, 100);
-      if(v === "reports") setTimeout(renderReview, 100);
-      if(v === "manage") setTimeout(renderManage, 100);
-      if(v === "submit") setTimeout(relabel, 160);
-      setTimeout(nav, 180);
-      setTimeout(nav, 600);
-    }
-    if(e.target && e.target.closest && e.target.closest(".gov-org-switch-v4,[data-mode='goss_center_v4']")){
-      setTimeout(boot, 180);
-      setTimeout(boot, 700);
-    }
+  async function allowedTabs(orgId){ var tabs=[['trainer','🎮 Тренажёр',true]]; var special=await hasSpecial(orgId), lead=await canLead(orgId); if(special) tabs.push(['profile','📝 Мои данные',true],['submit','📤 Сдать гос отчёт',true],['shop','🛒 Магазин',true]); if(lead) tabs.push(['staff','📋 Таблица старшего состава',true],['reportTable','📊 Таблица отчётов',true],['manage','👑 Панель руководства',true]); return tabs; }
+  async function enforceNav(){
+    ensureStyle(); if(!gossVisible()) return; var o=activeOrg(), n=navRoot(); if(!n) return;
+    var tabs=await allowedTabs(o.id), allowed=tabs.map(function(t){return t[0];}); if(allowed.indexOf(state.view)<0) state.view='trainer';
+    var html=tabs.map(function(t){return '<button class="mode-btn '+(state.view===t[0]?'active':'')+'" data-v83-tab="1" data-v83-view="'+t[0]+'" type="button">'+t[1]+'</button>';}).join('');
+    if(n.dataset.v83Html !== html){ n.innerHTML=html; n.dataset.v83Html=html; }
+    n.style.display='flex';
+    qa('[data-v83-tab]',n).forEach(function(b){ b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); state.view=b.dataset.v83View; state.reviewMode=false; renderCurrent(); }; });
+    var title=$('gossV4Title'), lead=$('gossV4Lead'), orgBox=$('gossV4Org'), access=$('gossV4Access'); if(title) title.textContent=o.icon+' '+o.name; if(lead) lead.textContent='ГОСС: тренажёры, СС, отчёты, таблицы и панель руководства без лишних режимов.'; if(orgBox) orgBox.textContent=o.short; if(access) access.textContent=await accessText(o.id);
+  }
+  async function renderCurrent(){
+    if(state.busy){ state.pending = true; return; }
+    state.busy=true;
+    try{ await enforceNav(); var o=activeOrg(); var special=await hasSpecial(o.id), lead=await canLead(o.id); if(state.view!=='trainer' && !special && !lead) state.view='trainer'; if(state.view==='profile') await renderProfile(); else if(state.view==='submit') await renderSubmit(); else if(state.view==='shop') await renderShop(); else if(state.view==='staff') await renderStaff(); else if(state.view==='reportTable') await renderReportTable(false); else if(state.view==='manage') await renderManage(); else await renderTrainer(); await enforceNav(); }
+    finally{ state.busy=false; if(state.pending){ state.pending=false; setTimeout(renderCurrent, 0); } }
+  }
+  function boot(delayRender){
+    ensureStyle(); if(!gossVisible()) return; activeOrg(); enforceNav(); if(delayRender !== false) renderCurrent();
+  }
+  document.addEventListener('click', function(e){
+    var orgBtn = e.target && e.target.closest && e.target.closest('.gov-org-switch-v4[data-org-id]');
+    if(orgBtn){ state.org = orgBtn.dataset.orgId || state.org; state.view='trainer'; state.reviewMode=false; cache.reports=null; setTimeout(function(){boot(true);},120); setTimeout(function(){boot(true);},520); }
+    var gossTop = e.target && e.target.closest && e.target.closest('[data-mode="goss_center_v4"],#subNavOrganizations .mode-btn');
+    if(gossTop) { setTimeout(function(){boot(false);},150); setTimeout(function(){boot(true);},650); }
   }, true);
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
-  [250,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  try {
-    new MutationObserver(function(){ clearTimeout(window.__t73v82mo); window.__t73v82mo = setTimeout(boot, 150); }).observe(document.documentElement, {childList:true,subtree:true});
-  } catch(e){}
-  window.T73_V82_GOSS_ONLY = {staff:renderStaff,reportTable:renderTable,review:renderReview,manage:renderManage,nav:nav};
+  document.addEventListener('paste', function(e){ var d=$('v83Drop'); if(d && document.activeElement===d && e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) addFiles(e.clipboardData.files); }, true);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){boot(false);},250); }); else setTimeout(function(){boot(false);},250);
+  [700,1400,2600,4200].forEach(function(ms){ setTimeout(function(){boot(false);},ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__t73v83mo); window.__t73v83mo=setTimeout(function(){ if(gossVisible()) enforceNav(); },90); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
+  window.T73_V83_GOSS_ONLY = {render:renderCurrent,nav:enforceNav,submit:renderSubmit,table:renderReportTable,manage:renderManage,logs:logsHtml};
 })();
-</script>
-<!-- === /T73 V82 === -->
+/* === /T73 V83 GOSS ONLY === */
 
+</script>
 </body>
 </html>
