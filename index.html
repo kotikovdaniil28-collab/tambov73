@@ -14204,5 +14204,567 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V54 MOBILE LAYOUT FIX === -->
 
 
+
+<script>
+/* === T73 V55: mobile report layout + moderator-only reports + date separators === */
+(() => {
+  if (window.__T73_V55_REPORTS_FINAL__) return;
+  window.__T73_V55_REPORTS_FINAL__ = true;
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const norm = (v) => String(v ?? '').trim().toLowerCase();
+  const parse = (v, fallback = {}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fallback); } catch { return fallback; } };
+  const isPending = (s) => {
+    const x = String(s || '').trim();
+    return !x || x === 'На проверке' || x.includes('Ожидает');
+  };
+  const reportStatusColor = (status, xp) => Number(xp || 0) > 0 ? 'var(--color-success)' : (/отказ|не засчитано/i.test(String(status || '')) ? 'var(--color-error)' : 'var(--color-warning)');
+
+  function addStyleV55() {
+    const old = $('t73-v55-final-style');
+    if (old) old.remove();
+    const style = document.createElement('style');
+    style.id = 't73-v55-final-style';
+    style.textContent = `
+      .t73-v55-report-host {
+        width: 100% !important;
+        max-width: 100% !important;
+        clear: both !important;
+        grid-column: 1 / -1 !important;
+        margin-top: 1.2rem !important;
+        display: grid !important;
+        gap: 1.1rem !important;
+        overflow: visible !important;
+      }
+      .t73-v55-date-line {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+        color: var(--color-text-muted);
+        font-weight: 800;
+        letter-spacing: .03em;
+        margin: .35rem 0 .15rem;
+      }
+      .t73-v55-date-line::before,
+      .t73-v55-date-line::after {
+        content: "";
+        height: 1px;
+        flex: 1 1 auto;
+        background: linear-gradient(90deg, transparent, rgba(191,198,255,.32), transparent);
+      }
+      .t73-v55-date-line span {
+        border: 1px solid rgba(191,198,255,.24);
+        background: rgba(13,16,32,.72);
+        border-radius: 999px;
+        padding: .38rem .85rem;
+        white-space: nowrap;
+      }
+      .t73-v55-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+        gap: .9rem !important;
+        width: 100% !important;
+      }
+      .t73-v55-card {
+        display: grid;
+        gap: .65rem;
+        min-width: 0;
+        padding: 1rem;
+        border-radius: 16px;
+        border: 1px solid rgba(191,198,255,.20);
+        background: linear-gradient(145deg, rgba(13,16,32,.92), rgba(5,7,14,.94));
+        box-shadow: 0 10px 24px rgba(0,0,0,.30);
+        overflow: hidden;
+      }
+      .t73-v55-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: .7rem;
+        flex-wrap: wrap;
+      }
+      .t73-v55-name { color: #fff; font-weight: 700; overflow-wrap: anywhere; }
+      .t73-v55-muted { color: var(--color-text-muted); font-size: .88rem; overflow-wrap: anywhere; }
+      .t73-v55-status { font-weight: 800; }
+      .t73-v55-proof-list { display: grid; gap: .5rem; }
+      .t73-v55-proof-list img { max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 12px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.25); }
+      .t73-v55-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .45rem; }
+      .t73-v55-actions .btn { min-width: 0; padding: .48rem .45rem !important; font-size: .78rem !important; }
+      .t73-v55-empty { padding: 1rem; border-radius: 14px; border: 1px solid rgba(191,198,255,.2); color: var(--color-text-muted); background: rgba(13,16,32,.65); }
+
+      #adminPanelArea,
+      #v27GossReportAdminPanel,
+      #v30GossReviewBar,
+      #v55GossReportsArea,
+      #reportsListArea {
+        width: 100% !important;
+        max-width: 100% !important;
+        grid-column: 1 / -1 !important;
+        clear: both !important;
+        float: none !important;
+        box-sizing: border-box !important;
+      }
+      #viewReportsBtn,
+      #v27GossViewReportsBtn,
+      #v30GossReviewBtn,
+      #v25GossViewReportsBtn,
+      #govV4CheckReportsBtn,
+      #govV4RefreshReportsBtn {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: normal !important;
+      }
+
+      @media (max-width: 760px) {
+        .topbar {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          align-items: stretch !important;
+          gap: .75rem !important;
+          text-align: left !important;
+          margin-bottom: 1rem !important;
+        }
+        .topbar .brand {
+          display: flex !important;
+          flex-direction: row !important;
+          justify-content: flex-start !important;
+          align-items: center !important;
+          min-width: 0 !important;
+          gap: .7rem !important;
+        }
+        .topbar .logo {
+          flex: 0 0 42px !important;
+          width: 42px !important;
+          height: 42px !important;
+        }
+        .topbar .brand-title { font-size: 1.2rem !important; max-width: none !important; }
+        .topbar .brand-sub { display: block !important; font-size: .74rem !important; white-space: normal !important; }
+        .topbar > div:last-child {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          gap: .55rem !important;
+          width: 100% !important;
+          justify-content: stretch !important;
+          align-items: stretch !important;
+        }
+        #authStatus {
+          width: 100% !important;
+          max-width: 100% !important;
+          justify-content: space-between !important;
+          box-sizing: border-box !important;
+          order: 1 !important;
+        }
+        .topbar > div:last-child > div:not(#authStatus) {
+          order: 2 !important;
+          width: 100% !important;
+          min-width: 0 !important;
+          display: grid !important;
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          gap: .45rem !important;
+          justify-content: stretch !important;
+          align-items: stretch !important;
+        }
+        .topbar .icon-btn {
+          width: 100% !important;
+          min-width: 0 !important;
+          height: 34px !important;
+          border-radius: 12px !important;
+          font-size: 0 !important;
+          padding: 0 .45rem !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          box-shadow: none !important;
+        }
+        #musicToggleBtn::after { content: 'Музыка'; font-size: .74rem; font-weight: 700; }
+        #sfxToggleBtn::after { content: 'Звуки'; font-size: .74rem; font-weight: 700; }
+        .topbar [data-theme-toggle]::after { content: 'Тема'; font-size: .74rem; font-weight: 700; }
+
+        #reportFormArea,
+        #adminPanelArea,
+        #reportsListArea,
+        #v27GossReportAdminPanel,
+        #v30GossReviewBar,
+        #v55GossReportsArea,
+        .gov-v3-access-card,
+        .gov-v4-card,
+        .t73-v30-card {
+          width: 100% !important;
+          max-width: 100% !important;
+          grid-column: 1 / -1 !important;
+          clear: both !important;
+          float: none !important;
+        }
+        .gov-v3-headline,
+        .gov-v3-head,
+        .gov-v4-head,
+        .g19-head,
+        .g20-head,
+        .t73-v30-card > div:first-child {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          justify-content: flex-start !important;
+          gap: .7rem !important;
+          text-align: left !important;
+        }
+        .gov-v3-headline .btn,
+        .gov-v3-actions .btn,
+        .gov-v4-actions .btn,
+        .g19-actions .btn,
+        .g20-actions .btn,
+        .t73-v30-actions .btn,
+        .t73-v55-actions .btn {
+          width: 100% !important;
+        }
+        .t73-v55-actions { grid-template-columns: 1fr 1fr !important; }
+        .t73-v55-grid { grid-template-columns: 1fr !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function extractNickFromText(text) {
+    const s = String(text || '');
+    const json = parse(s, null);
+    if (json) return json.nick || json.nickname || json.name || json.user || '';
+    const m = s.match(/(?:Ник|NickName|Nickname|Nick|Пользователь)\s*:?\s*([^\n|;]+)/i);
+    return m ? m[1].trim() : '';
+  }
+
+  function reportDay(row) {
+    const p = parse(row?.date, {});
+    const raw = p.day || p.date || p.createdIso || p.created || row?.date || row?.id || '';
+    const s = String(raw);
+    const iso = s.match(/(20\d{2})[-.](\d{2})[-.](\d{2})/);
+    if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+    const ru = s.match(/(\d{2})\.(\d{2})\.(20\d{2})/);
+    if (ru) return `${ru[3]}-${ru[2]}-${ru[1]}`;
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function ruDate(day) {
+    const m = String(day || '').match(/(20\d{2})-(\d{2})-(\d{2})/);
+    if (!m) return day || 'Без даты';
+    return `${m[3]}.${m[2]}.${m[1]}`;
+  }
+
+  async function moderatorDirectory() {
+    const empty = { ids:new Set(), emails:new Set(), nicks:new Set(), users:[] };
+    if (!window.supa) return empty;
+    try {
+      const rolesRes = await supa.from('reports').select('link,status').eq('email','USER_ROLE').eq('status','moderator');
+      const ids = Array.from(new Set((rolesRes.data || []).map(r => String(r.link || '').trim()).filter(Boolean)));
+      if (!ids.length) return empty;
+      const usersRes = await supa.from('user_stats').select('user_id,nickname,email').in('user_id', ids);
+      const users = usersRes.data || [];
+      const out = { ids:new Set(ids.map(norm)), emails:new Set(), nicks:new Set(), users };
+      users.forEach(u => {
+        if (u.email) out.emails.add(norm(u.email));
+        if (u.nickname) out.nicks.add(norm(u.nickname));
+        if (u.user_id) out.ids.add(norm(u.user_id));
+      });
+      return out;
+    } catch (e) {
+      console.warn('T73 V55 moderator directory error', e);
+      return empty;
+    }
+  }
+
+  function isGossReport(row) {
+    const email = String(row?.email || '');
+    const p = parse(row?.date, null);
+    return email === 'GOSS_USER_REPORT' || email.startsWith('GOSS_') || !!(p && (p.org || p.orgName || p.goss || p.reviewStatus));
+  }
+
+  function isTechnicalRow(row) {
+    const email = String(row?.email || '');
+    return ['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP'].includes(email) || email.startsWith('SHOP_') || email.startsWith('ROULETTE_') || email.startsWith('CUSTOM_');
+  }
+
+  function isModReportShape(row) {
+    if (!row || isGossReport(row) || isTechnicalRow(row)) return false;
+    const status = String(row.status || '');
+    const allowed = ['На проверке','Ожидает','Норма','Перенорма','Герой дня','Не засчитано','Отказ'];
+    return allowed.some(x => status.includes(x)) || /Ник:|Nick|Дата:|Работа:/i.test(String(row.date || '')) || !!parse(row.date, {}).proofs;
+  }
+
+  function belongsToModerator(row, dir) {
+    const p = parse(row?.date, {});
+    const candidatesIds = [p.userId, p.user_id, p.uid, row?.user_id, row?.status].map(norm).filter(Boolean);
+    const candidatesEmails = [row?.email, p.email, p.userEmail].map(norm).filter(Boolean);
+    const candidatesNicks = [p.nick, p.nickname, p.name, extractNickFromText(row?.date), row?.email].map(norm).filter(Boolean);
+    if (candidatesIds.some(x => dir.ids.has(x))) return true;
+    if (candidatesEmails.some(x => dir.emails.has(x))) return true;
+    if (candidatesNicks.some(x => dir.nicks.has(x))) return true;
+    return false;
+  }
+
+  function extractEvidence(row, payload = parse(row?.date, {})) {
+    const urls = [];
+    const push = (v) => {
+      if (!v) return;
+      if (Array.isArray(v)) { v.forEach(push); return; }
+      if (typeof v === 'object') { push(v.url || v.href || v.link || v.publicUrl); return; }
+      const s = String(v).trim();
+      if (!s) return;
+      if (s.startsWith('T73V16:')) { try { push(JSON.parse(s.slice(7))); } catch { } return; }
+      if (s.startsWith('[')) { try { push(JSON.parse(s)); } catch { urls.push(s); } return; }
+      s.split('\n').map(x => x.trim()).filter(Boolean).forEach(x => urls.push(x));
+    };
+    push(payload.proofs);
+    push(payload.files);
+    push(payload.link || payload.file);
+    push(row?.link);
+    return Array.from(new Set(urls));
+  }
+
+  function evidenceHtml(row, payload) {
+    const urls = extractEvidence(row, payload);
+    if (!urls.length) return '<div class="t73-v55-muted">Доказательств нет</div>';
+    return `<div class="t73-v55-proof-list">${urls.slice(0, 12).map((url, i) => {
+      const safe = esc(url);
+      if (String(url).startsWith('data:image')) return `<img src="${safe}" alt="Доказательство ${i+1}" onclick="document.getElementById('imageModal') && (document.getElementById('imageModal').style.display='flex', document.getElementById('imageModalSrc').src=this.src)">`;
+      if (/\.(png|jpe?g|webp|gif)(\?|$)/i.test(String(url))) return `<a href="${safe}" target="_blank" rel="noreferrer"><img src="${safe}" alt="Доказательство ${i+1}"></a>`;
+      return `<a class="btn btn-secondary" href="${safe}" target="_blank" rel="noreferrer" style="width:max-content;max-width:100%;padding:.5rem .75rem;font-size:.84rem;">📎 Доказательство ${i+1}</a>`;
+    }).join('')}</div>`;
+  }
+
+  function groupByDate(rows) {
+    const groups = new Map();
+    rows.forEach(r => {
+      const d = reportDay(r);
+      if (!groups.has(d)) groups.set(d, []);
+      groups.get(d).push(r);
+    });
+    return Array.from(groups.entries()).sort((a,b) => b[0].localeCompare(a[0]));
+  }
+
+  function modReportCard(row) {
+    const p = parse(row.date, {});
+    const nick = p.nick || p.nickname || extractNickFromText(row.date) || row.email || 'Модератор';
+    const status = String(row.status || p.quality || 'На проверке');
+    const pending = isPending(status);
+    const work = p.work || p.comment || String(row.date || '');
+    return `<div class="t73-v55-card" data-report-id="${esc(row.id)}">
+      <div class="t73-v55-card-head"><div class="t73-v55-name">${esc(nick)}</div><div class="t73-v55-muted">${esc(ruDate(reportDay(row)))}</div></div>
+      <div class="t73-v55-muted" style="white-space:pre-wrap;">${esc(work)}</div>
+      ${evidenceHtml(row, p)}
+      <div class="t73-v55-status" style="color:${reportStatusColor(status, row.xp)};">${esc(status)} · ${Number(row.xp || 0)} XP</div>
+      ${pending ? `<div class="t73-v55-actions">
+        <button class="btn btn-secondary" data-v55-mod-process data-id="${esc(row.id)}" data-status="Норма" data-xp="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
+        <button class="btn btn-secondary" data-v55-mod-process data-id="${esc(row.id)}" data-status="Перенорма" data-xp="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
+        <button class="btn btn-secondary" data-v55-mod-process data-id="${esc(row.id)}" data-status="Герой дня" data-xp="60" style="border-color:#ffbf47;color:#ffbf47;">Герой дня</button>
+        <button class="btn btn-secondary" data-v55-mod-process data-id="${esc(row.id)}" data-status="Не засчитано" data-xp="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
+      </div>` : ''}
+    </div>`;
+  }
+
+  async function renderModReportsV55(forceOpen = false) {
+    addStyleV55();
+    const area = $('reportsListArea');
+    if (!area || !window.supa) return;
+    movePanelsV55();
+    if (!forceOpen && area.dataset.v55Open === '1') { area.dataset.v55Open = '0'; area.style.display = 'none'; return; }
+    area.dataset.v55Open = '1';
+    area.style.display = 'grid';
+    area.classList.add('t73-v55-report-host');
+    area.innerHTML = '<div class="t73-v55-empty">Загрузка отчётов модерации...</div>';
+    try {
+      const [dir, reportsRes] = await Promise.all([
+        moderatorDirectory(),
+        supa.from('reports').select('*').order('id', { ascending:false }).limit(500)
+      ]);
+      if (reportsRes.error) throw reportsRes.error;
+      const rows = (reportsRes.data || [])
+        .filter(isModReportShape)
+        .filter(r => belongsToModerator(r, dir))
+        .slice(0, 120);
+      if (!rows.length) { area.innerHTML = '<div class="t73-v55-empty">Отчётов от пользователей со статусом moderator пока нет.</div>'; return; }
+      area.innerHTML = groupByDate(rows).map(([day, list]) => `
+        <div class="t73-v55-date-line"><span>${esc(ruDate(day))}</span></div>
+        <div class="t73-v55-grid">${list.map(modReportCard).join('')}</div>
+      `).join('');
+      area.querySelectorAll('[data-v55-mod-process]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          await supa.from('reports').update({ status: btn.dataset.status, xp: Number(btn.dataset.xp || 0) }).eq('id', btn.dataset.id);
+          await renderModReportsV55(true);
+          try { window.loadReportsTable && window.loadReportsTable(); } catch {}
+        });
+      });
+    } catch (err) {
+      area.innerHTML = `<div class="t73-v55-empty" style="color:var(--color-error);">Ошибка загрузки: ${esc(err.message || err)}</div>`;
+    }
+  }
+
+  function currentGossOrg() {
+    const active = document.querySelector('.gov-org-switch-v3.active, .gov-org-switch-v4.active, [data-org-id].active');
+    const id = active?.dataset?.orgId || active?.dataset?.org || (window.currentGossOrgId || 'fsb');
+    const label = active?.textContent?.trim() || id.toUpperCase();
+    return { id, label };
+  }
+
+  function gossCard(row) {
+    const p = parse(row.date, {});
+    const status = p.reviewStatus || p.result || row.status || 'На проверке';
+    const reviewed = !!(p.reviewStatus || p.result || p.checkedAt || p.reviewedAt) && !isPending(status);
+    const nick = p.nick || p.nickname || row.status || 'Сотрудник';
+    return `<div class="t73-v55-card" data-goss-report-id="${esc(row.id)}">
+      <div class="t73-v55-card-head"><div class="t73-v55-name">${esc(nick)}</div><div class="t73-v55-muted">${esc(p.type || 'ГОСС отчёт')} · ${esc(ruDate(reportDay(row)))}</div></div>
+      <div class="t73-v55-muted" style="white-space:pre-wrap;">${esc(p.comment || p.work || 'Без комментария')}</div>
+      ${evidenceHtml(row, p)}
+      <div class="t73-v55-status" style="color:${reportStatusColor(status, row.xp || p.reviewPoints || p.xp)};">${esc(status)} · ${Number(row.xp || p.reviewPoints || p.xp || 0)} балл.</div>
+      ${p.reviewedBy || p.checkedBy ? `<div class="t73-v55-muted">Проверил: ${esc(p.reviewedBy || p.checkedBy)} · ${esc(p.reviewedAt || p.checkedAt || '')}</div>` : ''}
+      ${!reviewed ? `<div class="t73-v55-actions">
+        <button class="btn btn-secondary" data-v55-goss-process data-id="${esc(row.id)}" data-status="Натяг" data-xp="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
+        <button class="btn btn-secondary" data-v55-goss-process data-id="${esc(row.id)}" data-status="Норма" data-xp="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
+        <button class="btn btn-secondary" data-v55-goss-process data-id="${esc(row.id)}" data-status="Перенорма" data-xp="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
+        <button class="btn btn-secondary" data-v55-goss-process data-id="${esc(row.id)}" data-status="Отказ" data-xp="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
+      </div>` : ''}
+    </div>`;
+  }
+
+  async function renderGossReportsV55(forceOpen = false) {
+    addStyleV55();
+    if (!window.supa) return;
+    const org = currentGossOrg();
+    const root = $('gossV3Content') || $('gossV4Content') || $('gossDashView') || $('mode-fsb') || document.querySelector('[id*="goss"]');
+    if (!root) return;
+    let area = $('v55GossReportsArea');
+    if (!area) {
+      root.insertAdjacentHTML('beforeend', '<div id="v55GossReportsArea" class="t73-v55-report-host" style="display:none;"></div>');
+      area = $('v55GossReportsArea');
+    }
+    if (!forceOpen && area.dataset.v55Open === '1') { area.dataset.v55Open = '0'; area.style.display = 'none'; return; }
+    area.dataset.v55Open = '1';
+    area.style.display = 'grid';
+    area.innerHTML = `<div class="t73-v55-empty">Загрузка ГОСС-отчётов — ${esc(org.label)}...</div>`;
+    try {
+      const { data, error } = await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', org.id).order('id', { ascending:false }).limit(160);
+      if (error) throw error;
+      const rows = data || [];
+      if (!rows.length) { area.innerHTML = `<div class="t73-v55-empty">Отчётов по ${esc(org.label)} пока нет.</div>`; return; }
+      area.innerHTML = `<div class="t73-v55-empty">Проверка ГОСС-отчётов — ${esc(org.label)}</div>` + groupByDate(rows).map(([day, list]) => `
+        <div class="t73-v55-date-line"><span>${esc(ruDate(day))}</span></div>
+        <div class="t73-v55-grid">${list.map(gossCard).join('')}</div>
+      `).join('');
+      area.querySelectorAll('[data-v55-goss-process]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          const { data: one } = await supa.from('reports').select('*').eq('id', btn.dataset.id).limit(1);
+          const row = one && one[0];
+          const p = parse(row?.date, {});
+          p.reviewStatus = btn.dataset.status;
+          p.reviewPoints = Number(btn.dataset.xp || 0);
+          p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
+          p.reviewedAt = new Date().toLocaleString('ru-RU');
+          await supa.from('reports').update({ date: JSON.stringify(p), status: btn.dataset.status, xp: Number(btn.dataset.xp || 0) }).eq('id', btn.dataset.id);
+          await renderGossReportsV55(true);
+        });
+      });
+    } catch (err) {
+      area.innerHTML = `<div class="t73-v55-empty" style="color:var(--color-error);">Ошибка загрузки ГОСС-отчётов: ${esc(err.message || err)}</div>`;
+    }
+  }
+
+  async function canSubmitModReport() {
+    if (!window.supa || !window.currentUser?.id) return false;
+    try {
+      const { data } = await supa.from('reports').select('id').eq('email','USER_ROLE').eq('link', currentUser.id).eq('status','moderator').limit(1);
+      return !!(data && data.length);
+    } catch { return false; }
+  }
+
+  function movePanelsV55() {
+    const form = $('reportFormArea');
+    const admin = $('adminPanelArea');
+    const list = $('reportsListArea');
+    if (form && admin && admin.parentElement !== form) form.appendChild(admin);
+    if (form && list && list.parentElement !== form) form.appendChild(list);
+    [admin, list].forEach(el => {
+      if (!el) return;
+      el.style.setProperty('width', '100%', 'important');
+      el.style.setProperty('max-width', '100%', 'important');
+      el.style.setProperty('grid-column', '1 / -1', 'important');
+      el.style.setProperty('clear', 'both', 'important');
+      el.style.setProperty('float', 'none', 'important');
+    });
+    ['viewReportsBtn','v27GossViewReportsBtn','v30GossReviewBtn','v25GossViewReportsBtn','govV4CheckReportsBtn','govV4RefreshReportsBtn'].forEach(id => {
+      const b = $(id);
+      if (!b) return;
+      b.style.setProperty('width', '100%', 'important');
+      b.style.setProperty('max-width', '100%', 'important');
+      b.style.setProperty('margin-left', '0', 'important');
+      b.style.setProperty('margin-right', '0', 'important');
+    });
+  }
+
+  function bindButtonsV55() {
+    addStyleV55();
+    movePanelsV55();
+    const modBtn = $('viewReportsBtn');
+    if (modBtn) {
+      modBtn.textContent = 'Проверить сданные отчеты';
+      modBtn.dataset.v55 = 'mod';
+    }
+    ['v27GossViewReportsBtn','v30GossReviewBtn','v25GossViewReportsBtn','govV4CheckReportsBtn'].forEach(id => {
+      const b = $(id);
+      if (!b) return;
+      b.textContent = 'Проверить сданные ГОСС отчеты';
+      b.dataset.v55 = 'goss';
+    });
+  }
+
+  document.addEventListener('click', async (event) => {
+    const modCheck = event.target.closest?.('#viewReportsBtn');
+    if (modCheck) {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+      await renderModReportsV55(false);
+      return;
+    }
+
+    const submit = event.target.closest?.('#submitReportBtn,#submitReportBtnV16');
+    if (submit) {
+      const ok = await canSubmitModReport();
+      if (!ok) {
+        event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+        alert('Сдавать отчёт модерации могут только пользователи со статусом moderator.');
+      }
+      return;
+    }
+
+    const gossBtn = event.target.closest?.('#v27GossViewReportsBtn,#v30GossReviewBtn,#v25GossViewReportsBtn,#govV4CheckReportsBtn');
+    const gossTextBtn = event.target.closest?.('button');
+    const inGossZone = !!gossTextBtn?.closest?.('#gossV3Content,#gossV4Content,#gossDashView,#mode-fsb');
+    const gossText = String(gossTextBtn?.textContent || '').toLowerCase();
+    if (gossBtn || (inGossZone && gossText.includes('провер') && gossText.includes('отчет'))) {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
+      await renderGossReportsV55(false);
+    }
+  }, true);
+
+  function bootV55() {
+    bindButtonsV55();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV55);
+  else bootV55();
+  [80, 300, 800, 1600, 3200, 5200].forEach(ms => setTimeout(bootV55, ms));
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V55_MUTATION__);
+    window.__T73_V55_MUTATION__ = setTimeout(bootV55, 80);
+  }).observe(document.documentElement, { childList:true, subtree:true });
+
+  window.T73_V55 = { renderModReportsV55, renderGossReportsV55, bindButtonsV55 };
+})();
+</script>
+<!-- === /T73 V55 === -->
+
 </body>
 </html>
