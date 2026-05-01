@@ -17151,5 +17151,494 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V65 === -->
+<!-- === T73 V66: staff punishments for moderation leadership + daily active-punishment notice === -->
+<style>
+  .t73-v66-punish-card{background:linear-gradient(145deg,rgba(27,14,8,.88),rgba(8,12,10,.94));border:1px solid rgba(255,191,71,.38);border-radius:18px;padding:1.25rem;margin:0 0 1.5rem;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .t73-v66-punish-card h3{margin:.1rem 0 .4rem;color:#ffbf47;font-size:1.05rem}.t73-v66-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45}.t73-v66-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}.t73-v66-grid .full{grid-column:1/-1}.t73-v66-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-top:1rem}.t73-v66-statusbox{margin-top:1rem;display:grid;gap:.65rem}.t73-v66-userrow{background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:.85rem;display:grid;gap:.45rem}.t73-v66-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem;border-radius:999px;font-size:.78rem;font-weight:900;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06)}.t73-v66-warn{color:#ffcf66;border-color:rgba(255,191,71,.42)}.t73-v66-rep{color:#ff7b7b;border-color:rgba(255,107,136,.45)}.t73-v66-remove{color:#9fe7b5;border-color:rgba(82,199,123,.4)}.t73-v66-mini-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem}.t73-v66-mini-actions button{padding:.45rem .65rem;border-radius:10px;font-size:.78rem}.t73-v66-notice-backdrop{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px)}.t73-v66-notice{width:min(520px,100%);background:radial-gradient(circle at top left,rgba(255,191,71,.18),transparent 55%),linear-gradient(145deg,rgba(15,17,24,.98),rgba(5,8,12,.99));border:1px solid rgba(255,191,71,.45);border-radius:24px;padding:1.5rem;box-shadow:0 22px 70px rgba(0,0,0,.55)}.t73-v66-notice h3{margin:0 0 .55rem;color:#ffbf47}.t73-v66-notice p{color:var(--color-text-muted);line-height:1.5;margin:.45rem 0}.t73-v66-notice-actions{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:1rem}@media(max-width:720px){.t73-v66-grid,.t73-v66-actions,.t73-v66-notice-actions{grid-template-columns:1fr}.t73-v66-actions .btn{width:100%}}
+</style>
+<script>
+(function(){
+  'use strict';
+  if (window.T73_V66_STAFF_PUNISHMENTS) return;
+  window.T73_V66_STAFF_PUNISHMENTS = true;
+
+  var CREATOR = 'daniiltimosin72@gmail.com';
+  var MOD_LEAD_EMAILS = [CREATOR, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+  var ROLE_EMAIL = 'USER_ROLE';
+  var ST = {
+    MOD: 'moderator',
+    MOD_REMOVED: 'moderator_removed',
+    WARN: 'mod_staff_warning',
+    WARN_CONVERTED: 'mod_staff_warning_converted',
+    WARN_REMOVED: 'mod_staff_warning_removed',
+    REP: 'mod_staff_reprimand',
+    REP_REMOVED: 'mod_staff_reprimand_removed',
+    REMOVED: 'mod_staff_removed'
+  };
+  var ACTIVE = [ST.WARN, ST.REP];
+  var ALL_PUNISH = [ST.WARN, ST.WARN_CONVERTED, ST.WARN_REMOVED, ST.REP, ST.REP_REMOVED, ST.REMOVED];
+
+  function $(id){ return document.getElementById(id); }
+  function client(){ return window.supa || window.__T73_SUPA || null; }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
+  function rid(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function todayKey(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  function parsePayload(row){ try { return JSON.parse(row.date || '{}'); } catch(e){ return { note: row.date || '' }; } }
+  function typeLabel(st){
+    if (st === ST.WARN) return 'Предупреждение';
+    if (st === ST.REP) return 'Выговор';
+    if (st === ST.WARN_CONVERTED) return 'Предупреждение → выговор';
+    if (st === ST.WARN_REMOVED) return 'Предупреждение снято';
+    if (st === ST.REP_REMOVED) return 'Выговор снят';
+    if (st === ST.REMOVED) return 'Снят с состава';
+    return st || 'Запись';
+  }
+  function statusClass(st){ return st === ST.WARN ? 't73-v66-warn' : st === ST.REP ? 't73-v66-rep' : 't73-v66-remove'; }
+
+  async function authUser(){
+    var c = client(); if (!c || !c.auth) return null;
+    try { var r = await c.auth.getUser(); return r && r.data ? r.data.user : null; } catch(e){ return null; }
+  }
+  async function isModLeader(user){
+    if (!user) return false;
+    if (MOD_LEAD_EMAILS.indexOf(user.email) !== -1) return true;
+    var c = client(); if (!c) return false;
+    try {
+      var r = await c.from('reports').select('id').eq('email','ADMIN_ROLE').eq('link',user.id).eq('status','leadership').limit(1);
+      return !!(r.data && r.data.length);
+    } catch(e){ return false; }
+  }
+  async function loadModeratorUsers(){
+    var c = client(); if (!c) return [];
+    try {
+      var roles = await c.from('reports').select('link,status').eq('email', ROLE_EMAIL).eq('status', ST.MOD).limit(3000);
+      var ids = (roles.data || []).map(function(r){ return r.link; }).filter(Boolean);
+      ids = Array.from(new Set(ids));
+      if (!ids.length) return [];
+      var users = await c.from('user_stats').select('user_id,nickname,email').in('user_id', ids.slice(0, 500));
+      var map = {};
+      (users.data || []).forEach(function(u){ map[u.user_id] = u; });
+      return ids.map(function(id){ return map[id] || { user_id:id, nickname:'ID: ' + id, email:'' }; }).sort(function(a,b){ return String(a.nickname || a.email || '').localeCompare(String(b.nickname || b.email || ''), 'ru'); });
+    } catch(e){ console.warn('T73 V66 moderators load error', e); return []; }
+  }
+  async function loadPunishments(userId){
+    var c = client(); if (!c || !userId) return [];
+    try {
+      var r = await c.from('reports').select('*').eq('email', ROLE_EMAIL).eq('link', userId).limit(1000);
+      return (r.data || []).filter(function(x){ return ALL_PUNISH.indexOf(x.status) !== -1; });
+    } catch(e){ console.warn('T73 V66 punishments load error', e); return []; }
+  }
+  async function activePunishments(userId){
+    var rows = await loadPunishments(userId);
+    return rows.filter(function(r){ return ACTIVE.indexOf(r.status) !== -1; });
+  }
+  function countActive(rows){
+    return {
+      warn: rows.filter(function(r){ return r.status === ST.WARN; }).length,
+      rep: rows.filter(function(r){ return r.status === ST.REP; }).length
+    };
+  }
+  async function insertPunishment(user, status, reason, issuedBy, extra){
+    var c = client(); if (!c) throw new Error('Supabase не найден');
+    var payload = Object.assign({
+      version: 'v66_staff_punishment',
+      targetUserId: user.user_id,
+      targetNick: user.nickname || user.email || user.user_id,
+      targetEmail: user.email || '',
+      status: status,
+      reason: reason || 'Без причины',
+      issuedById: issuedBy ? issuedBy.id : '',
+      issuedByEmail: issuedBy ? issuedBy.email : '',
+      issuedAt: new Date().toLocaleString('ru-RU')
+    }, extra || {});
+    var res = await c.from('reports').insert([{ id: rid('modpunish'), email: ROLE_EMAIL, link: user.user_id, status: status, date: JSON.stringify(payload), xp: 0 }]);
+    if (res.error) throw res.error;
+  }
+  async function updateRowsStatus(rows, newStatus, note){
+    var c = client(); if (!c || !rows.length) return;
+    for (var i=0; i<rows.length; i++) {
+      var p = parsePayload(rows[i]);
+      p.closedAt = new Date().toLocaleString('ru-RU');
+      p.closeNote = note || '';
+      p.previousStatus = rows[i].status;
+      await c.from('reports').update({ status: newStatus, date: JSON.stringify(p) }).eq('id', rows[i].id);
+    }
+  }
+  async function removeModeratorRole(user, issuedBy, reason){
+    var c = client(); if (!c) throw new Error('Supabase не найден');
+    await c.from('reports').update({ status: ST.MOD_REMOVED, date: 'Снят за 3 активных выговора · ' + new Date().toLocaleString('ru-RU') }).eq('email', ROLE_EMAIL).eq('link', user.user_id).eq('status', ST.MOD);
+    await insertPunishment(user, ST.REMOVED, reason || '3 активных выговора — снятие с состава', issuedBy, { autoRemoved: true });
+  }
+  async function issuePunishment(kind){
+    var c = client(); if (!c) return alert('Supabase не найден.');
+    var issuedBy = await authUser();
+    if (!(await isModLeader(issuedBy))) return alert('Выдача наказаний доступна только руководству модерации.');
+    var userId = $('t73v66PunishUser') ? $('t73v66PunishUser').value : '';
+    var reason = ($('t73v66PunishReason') ? $('t73v66PunishReason').value : '').trim() || 'Без причины';
+    var mods = await loadModeratorUsers();
+    var target = mods.find(function(u){ return u.user_id === userId; });
+    if (!target) return alert('Выберите действующего модератора.');
+    var active = await activePunishments(userId);
+    var counts = countActive(active);
+    try {
+      if (kind === 'warning') {
+        if (counts.warn >= 1) {
+          await updateRowsStatus(active.filter(function(r){ return r.status === ST.WARN; }), ST.WARN_CONVERTED, 'Второе предупреждение заменено на выговор');
+          await insertPunishment(target, ST.REP, '2 предупреждения → выговор. Причина второго предупреждения: ' + reason, issuedBy, { convertedFromSecondWarning: true });
+          alert('Это было 2-е предупреждение. Оно заменено на выговор.');
+        } else {
+          await insertPunishment(target, ST.WARN, reason, issuedBy);
+          alert('Предупреждение выдано. При 2-м предупреждении оно заменится на выговор.');
+        }
+      } else {
+        await insertPunishment(target, ST.REP, reason, issuedBy);
+        alert('Выговор выдан. При 3 активных выговорах модератор будет снят.');
+      }
+      var after = await activePunishments(userId);
+      var afterCounts = countActive(after);
+      if (afterCounts.rep >= 3) {
+        await removeModeratorRole(target, issuedBy, '3 активных выговора — автоматическое снятие');
+        alert('У модератора 3 активных выговора. Статус модератора снят автоматически.');
+      }
+      if ($('t73v66PunishReason')) $('t73v66PunishReason').value = '';
+      await renderPanelData();
+    } catch(e){
+      console.error('T73 V66 issue error', e);
+      alert('Не удалось выдать наказание: ' + (e && e.message ? e.message : e));
+    }
+  }
+  async function closePunishment(rowId, type){
+    var user = await authUser();
+    if (!(await isModLeader(user))) return alert('Недостаточно прав.');
+    var c = client(); if (!c) return;
+    try {
+      var newStatus = type === 'warn' ? ST.WARN_REMOVED : ST.REP_REMOVED;
+      var rowRes = await c.from('reports').select('*').eq('id', rowId).limit(1);
+      var row = rowRes.data && rowRes.data[0];
+      if (!row) return alert('Запись не найдена.');
+      var p = parsePayload(row);
+      p.removedAt = new Date().toLocaleString('ru-RU');
+      p.removedBy = user ? user.email : '';
+      p.previousStatus = row.status;
+      await c.from('reports').update({ status: newStatus, date: JSON.stringify(p) }).eq('id', rowId);
+      await renderPanelData();
+    } catch(e){ alert('Не удалось снять наказание: ' + (e && e.message ? e.message : e)); }
+  }
+  async function renderPanelData(){
+    var sel = $('t73v66PunishUser');
+    var box = $('t73v66PunishSummary');
+    if (!sel || !box) return;
+    var mods = await loadModeratorUsers();
+    if (!mods.length) {
+      sel.innerHTML = '<option value="">Нет действующих модераторов</option>';
+      box.innerHTML = '<div class="t73-v66-muted">Сначала выдайте кому-нибудь статус модератора.</div>';
+      return;
+    }
+    var old = sel.value;
+    sel.innerHTML = mods.map(function(u){ return '<option value="' + esc(u.user_id) + '">' + esc(u.nickname || u.email || u.user_id) + (u.email ? ' · ' + esc(u.email) : '') + '</option>'; }).join('');
+    if (old && mods.some(function(u){ return u.user_id === old; })) sel.value = old;
+    await renderSelectedUserPunishments();
+  }
+  async function renderSelectedUserPunishments(){
+    var sel = $('t73v66PunishUser'), box = $('t73v66PunishSummary');
+    if (!sel || !box || !sel.value) return;
+    var rows = await loadPunishments(sel.value);
+    var active = rows.filter(function(r){ return ACTIVE.indexOf(r.status) !== -1; });
+    var counts = countActive(active);
+    var html = '<div class="t73-v66-userrow"><div><span class="t73-v66-pill t73-v66-warn">⚠️ Предупреждения: ' + counts.warn + '/2</span> <span class="t73-v66-pill t73-v66-rep">🔥 Выговоры: ' + counts.rep + '/3</span></div><div class="t73-v66-muted">2-е предупреждение автоматически превращается в выговор. 3 активных выговора автоматически снимают статус модератора.</div></div>';
+    if (!rows.length) {
+      html += '<div class="t73-v66-muted">История наказаний пока пустая.</div>';
+      box.innerHTML = html;
+      return;
+    }
+    rows.sort(function(a,b){ return String(b.id).localeCompare(String(a.id)); }).slice(0, 20).forEach(function(r){
+      var p = parsePayload(r);
+      var activeRow = ACTIVE.indexOf(r.status) !== -1;
+      html += '<div class="t73-v66-userrow"><div><span class="t73-v66-pill ' + statusClass(r.status) + '">' + esc(typeLabel(r.status)) + '</span></div><div><b>Причина:</b> ' + esc(p.reason || p.note || 'Без причины') + '</div><div class="t73-v66-muted">Выдал: ' + esc(p.issuedByEmail || 'неизвестно') + ' · ' + esc(p.issuedAt || '') + '</div>';
+      if (activeRow) {
+        html += '<div class="t73-v66-mini-actions"><button class="btn btn-secondary t73-v66-remove-punish" data-id="' + esc(r.id) + '" data-type="' + (r.status === ST.WARN ? 'warn' : 'rep') + '" type="button">✅ Снять ' + (r.status === ST.WARN ? 'предупреждение' : 'выговор') + '</button></div>';
+      }
+      html += '</div>';
+    });
+    box.innerHTML = html;
+    box.querySelectorAll('.t73-v66-remove-punish').forEach(function(btn){ btn.onclick = function(){ closePunishment(btn.dataset.id, btn.dataset.type); }; });
+  }
+  function ensurePanel(){
+    var section = $('mode-leadership');
+    if (!section || $('t73-v66-punish-card')) return;
+    var head = section.querySelector('.section-head');
+    var html = '' +
+      '<div class="t73-v66-punish-card" id="t73-v66-punish-card">' +
+      '<h3>⚖️ Наказания составу модерации</h3>' +
+      '<div class="t73-v66-muted">Система: 2 предупреждения = 1 выговор, 3 активных выговора = автоматическое снятие со статуса модератора. Активные наказания можно снять вручную ниже.</div>' +
+      '<div class="t73-v66-grid">' +
+      '<label class="full">Модератор<select id="t73v66PunishUser" class="support-input"><option>Загрузка...</option></select></label>' +
+      '<label>Тип наказания<select id="t73v66PunishType" class="support-input"><option value="warning">Предупреждение</option><option value="reprimand">Выговор</option></select></label>' +
+      '<label>Причина<input id="t73v66PunishReason" class="support-input" placeholder="Например: нарушение дисциплины / неактив / ошибки в работе"></label>' +
+      '</div>' +
+      '<div class="t73-v66-actions">' +
+      '<button id="t73v66IssuePunishBtn" class="btn btn-primary" type="button">Выдать наказание</button>' +
+      '<button id="t73v66RefreshPunishBtn" class="btn btn-secondary" type="button">🔄 Обновить</button>' +
+      '<button id="t73v66OpenShopBtn" class="btn btn-secondary" type="button">🛒 Открыть магазин</button>' +
+      '</div>' +
+      '<div id="t73v66PunishSummary" class="t73-v66-statusbox"><div class="t73-v66-muted">Загрузка...</div></div>' +
+      '</div>';
+    if (head) head.insertAdjacentHTML('afterend', html); else section.insertAdjacentHTML('afterbegin', html);
+    $('t73v66IssuePunishBtn').onclick = function(){ var type = $('t73v66PunishType').value; issuePunishment(type === 'reprimand' ? 'reprimand' : 'warning'); };
+    $('t73v66RefreshPunishBtn').onclick = renderPanelData;
+    $('t73v66PunishUser').onchange = renderSelectedUserPunishments;
+    $('t73v66OpenShopBtn').onclick = openShop;
+    renderPanelData();
+  }
+  function openShop(){
+    var btn = $('shopTabBtn') || document.querySelector('.mode-btn[data-mode="shop"]');
+    if (btn) { btn.style.display = ''; btn.click(); return; }
+    var shop = $('mode-shop');
+    if (shop) { document.querySelectorAll('[id^="mode-"]').forEach(function(s){ s.style.display = 'none'; }); shop.style.display = 'block'; shop.scrollIntoView({behavior:'smooth', block:'start'}); }
+  }
+  async function showDailyNotice(){
+    var user = await authUser();
+    if (!user || document.querySelector('.t73-v66-notice-backdrop')) return;
+    var active = await activePunishments(user.id);
+    if (!active.length) return;
+    var key = 't73_v66_punish_notice_' + user.id + '_' + todayKey();
+    if (localStorage.getItem(key) === '1') return;
+    localStorage.setItem(key, '1');
+    var counts = countActive(active);
+    var text = [];
+    if (counts.warn) text.push(counts.warn + ' предупрежд.');
+    if (counts.rep) text.push(counts.rep + ' выговор.');
+    var wrap = document.createElement('div');
+    wrap.className = 't73-v66-notice-backdrop';
+    wrap.innerHTML = '<div class="t73-v66-notice"><h3>⚠️ У вас есть активное наказание</h3><p>Активно: <b>' + esc(text.join(' / ')) + '</b></p><p>Рекомендуем снять наказание через магазин, чтобы оно не висело в составе.</p><div class="t73-v66-notice-actions"><button id="t73v66NoticeShop" class="btn btn-primary" type="button">🛒 Перейти в магазин</button><button id="t73v66NoticeClose" class="btn btn-secondary" type="button">Закрыть</button></div><p class="t73-v66-muted" style="font-size:.82rem">Это уведомление показывается не чаще одного раза в день.</p></div>';
+    document.body.appendChild(wrap);
+    $('t73v66NoticeClose').onclick = function(){ wrap.remove(); };
+    $('t73v66NoticeShop').onclick = function(){ wrap.remove(); openShop(); };
+  }
+  async function boot(){
+    ensurePanel();
+    showDailyNotice();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [500, 1500, 3000, 6000].forEach(function(ms){ setTimeout(boot, ms); });
+  try { var c = client(); if (c && c.auth) c.auth.onAuthStateChange(function(){ setTimeout(showDailyNotice, 700); }); } catch(e){}
+  try {
+    new MutationObserver(function(){
+      clearTimeout(window.__T73_V66_PANEL_TIMER__);
+      window.__T73_V66_PANEL_TIMER__ = setTimeout(function(){ ensurePanel(); }, 120);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  } catch(e){}
+})();
+</script>
+<!-- === /T73 V66 === -->
+
+<!-- === T73 V67: ГОСС таблица наказаний (строгие / выговоры / предупреждения) === -->
+<style>
+  .t73-v67-penalty-th{min-width:112px;color:#fff!important;background:linear-gradient(180deg,rgba(255,191,71,.26),rgba(255,107,136,.14))!important;}
+  .t73-v67-penalty-td{min-width:112px;background:rgba(255,191,71,.035)!important;text-align:center!important;vertical-align:middle!important;}
+  .t73-v67-count{width:86px;max-width:100%;border-radius:12px;border:1px solid rgba(255,191,71,.38);background:rgba(8,10,18,.96);color:#fff;font-weight:900;padding:.48rem .55rem;text-align:center;outline:none;}
+  .t73-v67-count:focus{border-color:#ffbf47;box-shadow:0 0 0 3px rgba(255,191,71,.16);}
+  .t73-v67-note{margin:.75rem 0 0;padding:.75rem .9rem;border-radius:14px;border:1px solid rgba(255,191,71,.28);background:rgba(255,191,71,.08);color:var(--color-text-muted);font-size:.9rem;line-height:1.45;}
+  .t73-v67-save{display:block;margin-top:.35rem;color:#9fe7b5;font-size:.76rem;font-weight:900;min-height:1em;}
+  .t73-v67-strict{border-color:rgba(255,80,80,.55);}
+  .t73-v67-rep{border-color:rgba(255,107,136,.48);}
+  .t73-v67-warn{border-color:rgba(255,191,71,.48);}
+  @media(max-width:720px){.t73-v67-count{width:76px;padding:.42rem .45rem}.t73-v67-penalty-th,.t73-v67-penalty-td{min-width:96px}}
+</style>
+<script>
+(function(){
+  'use strict';
+  if (window.T73_V67_GOSS_PUNISH_TABLE) return;
+  window.T73_V67_GOSS_PUNISH_TABLE = true;
+
+  var EMAIL = 'GOSS_STAFF_PUNISH_V67';
+  var LOG_EMAIL = 'GOSS_ORG_LOG_V19';
+  var PROFILE_EMAIL = 'GOSS_PROFILE';
+  var MAX_STRICT = 3;
+  var MAX_REP = 3;
+  var MAX_WARN = 5;
+  var pending = false;
+  var stateCache = { org:'', at:0, rows:[] };
+  var profileCache = { org:'', at:0, rows:[] };
+
+  function client(){ return window.supa || window.__T73_SUPA || window.t73Supa || window.supabaseClient || null; }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
+  function parse(v, d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
+  function rid(p){ return p + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function now(){ return new Date().toLocaleString('ru-RU'); }
+  function currentUserEmail(){ try { return (window.currentUser && window.currentUser.email) || ''; } catch(e){ return ''; } }
+  function currentOrgId(){
+    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+    if (active && active.dataset && active.dataset.orgId) return active.dataset.orgId;
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-org-id]'));
+    var visible = buttons.find(function(b){ return b.offsetParent !== null && b.classList.contains('active') && b.dataset.orgId; });
+    if (visible) return visible.dataset.orgId;
+    return 'fsb';
+  }
+  function countOptions(max, selected){
+    var html = '';
+    for (var i = 0; i <= max; i++) html += '<option value="' + i + '"' + (Number(selected || 0) === i ? ' selected' : '') + '>' + i + '</option>';
+    return html;
+  }
+  async function loadStates(orgId, force){
+    var c = client();
+    if (!c) return [];
+    if (!force && stateCache.org === orgId && Date.now() - stateCache.at < 2500) return stateCache.rows;
+    try {
+      var r = await c.from('reports').select('*').eq('email', EMAIL).eq('link', orgId).limit(2000);
+      stateCache = { org:orgId, at:Date.now(), rows:r.data || [] };
+      return stateCache.rows;
+    } catch(e){ return []; }
+  }
+  async function loadProfiles(orgId, force){
+    var c = client();
+    if (!c) return [];
+    if (!force && profileCache.org === orgId && Date.now() - profileCache.at < 2500) return profileCache.rows;
+    try {
+      var r = await c.from('reports').select('*').eq('email', PROFILE_EMAIL).eq('link', orgId).limit(1500);
+      profileCache = { org:orgId, at:Date.now(), rows:r.data || [] };
+      return profileCache.rows;
+    } catch(e){ return []; }
+  }
+  function mapStates(rows){
+    var m = new Map();
+    (rows || []).forEach(function(r){
+      var p = parse(r.date, {});
+      m.set(String(r.status || ''), {
+        rowId:r.id,
+        strict:Number(p.strictReprimands || p.strict || 0),
+        rep:Number(p.reprimands || p.rep || 0),
+        warn:Number(p.warnings || p.warn || 0),
+        updated:p.updated || r.date || ''
+      });
+    });
+    return m;
+  }
+  function profileKeyByRowId(profiles){
+    var m = new Map();
+    (profiles || []).forEach(function(r){ m.set(String(r.id), String(r.status || r.id || '')); });
+    return m;
+  }
+  function penaltyCells(userKey, st){
+    st = st || {};
+    return '' +
+      '<td class="t73-v67-penalty-td"><select class="t73-v67-count t73-v67-strict" data-kind="strict" data-user="' + esc(userKey) + '">' + countOptions(MAX_STRICT, st.strict) + '</select><span class="t73-v67-save" data-save="strict"></span></td>' +
+      '<td class="t73-v67-penalty-td"><select class="t73-v67-count t73-v67-rep" data-kind="rep" data-user="' + esc(userKey) + '">' + countOptions(MAX_REP, st.rep) + '</select><span class="t73-v67-save" data-save="rep"></span></td>' +
+      '<td class="t73-v67-penalty-td"><select class="t73-v67-count t73-v67-warn" data-kind="warn" data-user="' + esc(userKey) + '">' + countOptions(MAX_WARN, st.warn) + '</select><span class="t73-v67-save" data-save="warn"></span></td>';
+  }
+  function addNoteNear(el){
+    var host = el.closest('.g20-compact-card,.gov-v4-card,.gov-v3-access-card,.gov-v3-table-wrap,.gov-v4-table-wrap,.g19-wrap') || el.parentElement;
+    if (!host || host.querySelector('.t73-v67-note')) return;
+    host.insertAdjacentHTML('beforebegin', '<div class="t73-v67-note"><b>Наказания состава:</b> в таблице добавлены строгие выговоры, выговоры и предупреждения. Выберите число прямо в ячейке — значение сохраняется сразу, как в Excel.</div>');
+  }
+  async function saveState(orgId, userKey, rowEl, changedKind){
+    var c = client(); if (!c) return alert('Supabase не подключен.');
+    var strict = Number(rowEl.querySelector('.t73-v67-count[data-kind="strict"]')?.value || 0);
+    var rep = Number(rowEl.querySelector('.t73-v67-count[data-kind="rep"]')?.value || 0);
+    var warn = Number(rowEl.querySelector('.t73-v67-count[data-kind="warn"]')?.value || 0);
+    var saveMark = rowEl.querySelector('.t73-v67-save[data-save="' + changedKind + '"]') || rowEl.querySelector('.t73-v67-save');
+    if (saveMark) saveMark.textContent = 'сохр...';
+    var payload = { org:orgId, userKey:userKey, strictReprimands:strict, reprimands:rep, warnings:warn, updated:now(), by:currentUserEmail() };
+    try { await c.from('reports').delete().eq('email', EMAIL).eq('link', orgId).eq('status', userKey); } catch(e){}
+    if (strict || rep || warn) {
+      var res = await c.from('reports').insert([{ id:rid('goss_punish'), email:EMAIL, link:orgId, status:userKey, date:JSON.stringify(payload), xp:(strict * 100 + rep * 10 + warn) }]);
+      if (res.error) { if (saveMark) saveMark.textContent = 'ошибка'; return alert('Не удалось сохранить наказание: ' + res.error.message); }
+    }
+    try {
+      await c.from('reports').insert([{ id:rid('goss_punish_log'), email:LOG_EMAIL, link:orgId, status:'punishment_counts', date:'ГОСС наказания: ' + userKey + ' · строгие ' + strict + ', выговоры ' + rep + ', предупреждения ' + warn + ' · ' + (currentUserEmail() || 'unknown') + ' · ' + now(), xp:0 }]);
+    } catch(e){}
+    stateCache.at = 0;
+    if (saveMark) { saveMark.textContent = '✓ сохранено'; setTimeout(function(){ if (saveMark) saveMark.textContent = ''; }, 1800); }
+  }
+  function bindSelects(root, orgId){
+    root.querySelectorAll('.t73-v67-count').forEach(function(sel){
+      if (sel.dataset.boundV67 === '1') return;
+      sel.dataset.boundV67 = '1';
+      sel.addEventListener('change', function(){
+        var tr = sel.closest('tr');
+        var user = sel.dataset.user || tr?.dataset?.key;
+        if (!tr || !user) return;
+        saveState(orgId, user, tr, sel.dataset.kind || 'strict');
+      });
+    });
+  }
+  async function enhanceG19Table(table, orgId){
+    if (!table || table.dataset.v67 === '1' || table.dataset.v67Loading === '1') return;
+    var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr[data-key]'));
+    if (!rows.length) return;
+    table.dataset.v67Loading = '1';
+    var states = mapStates(await loadStates(orgId));
+    var head = table.querySelector('thead tr');
+    if (head && !head.querySelector('.t73-v67-head-start')) {
+      var ths = '<th class="t73-v67-penalty-th t73-v67-head-start">Строгие</th><th class="t73-v67-penalty-th">Выговоры</th><th class="t73-v67-penalty-th">Предупр.</th>';
+      head.children[0].insertAdjacentHTML('afterend', ths);
+    }
+    rows.forEach(function(tr){
+      if (tr.querySelector('.t73-v67-count')) return;
+      var key = String(tr.dataset.key || '');
+      if (!key) return;
+      tr.children[0].insertAdjacentHTML('afterend', penaltyCells(key, states.get(key)));
+    });
+    addNoteNear(table);
+    bindSelects(table, orgId);
+    table.dataset.v67 = '1';
+    delete table.dataset.v67Loading;
+  }
+  async function enhanceStaffTable(table, orgId){
+    if (!table || table.dataset.v67 === '1' || table.dataset.v67Loading === '1') return;
+    var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+    if (!rows.length) return;
+    table.dataset.v67Loading = '1';
+    var profiles = await loadProfiles(orgId);
+    var byId = profileKeyByRowId(profiles);
+    var states = mapStates(await loadStates(orgId));
+    var head = table.querySelector('thead tr');
+    if (head && !head.querySelector('.t73-v67-head-start')) {
+      var html = '<th class="t73-v67-penalty-th t73-v67-head-start">Строгие</th><th class="t73-v67-penalty-th">Выговоры</th><th class="t73-v67-penalty-th">Предупр.</th>';
+      var last = head.lastElementChild;
+      if (last) last.insertAdjacentHTML('beforebegin', html); else head.insertAdjacentHTML('beforeend', html);
+    }
+    rows.forEach(function(tr){
+      if (tr.querySelector('.t73-v67-count')) return;
+      var del = tr.querySelector('[data-id]');
+      var profileId = del && del.dataset ? del.dataset.id : '';
+      var key = byId.get(String(profileId)) || profileId || (tr.querySelector('td strong')?.textContent || '').trim();
+      if (!key) return;
+      var last = tr.lastElementChild;
+      if (last) last.insertAdjacentHTML('beforebegin', penaltyCells(key, states.get(key))); else tr.insertAdjacentHTML('beforeend', penaltyCells(key, states.get(key)));
+    });
+    addNoteNear(table);
+    bindSelects(table, orgId);
+    table.dataset.v67 = '1';
+    delete table.dataset.v67Loading;
+  }
+  async function enhanceAll(force){
+    var c = client(); if (!c) return;
+    var orgId = currentOrgId();
+    var g19 = document.querySelector('.g19-table');
+    if (g19) await enhanceG19Table(g19, orgId);
+    var tables = Array.prototype.slice.call(document.querySelectorAll('.gov-v4-table,.gov-v3-table,.gov-table'));
+    for (var i = 0; i < tables.length; i++) {
+      var t = tables[i];
+      if (t.classList.contains('g19-table')) continue;
+      var header = (t.querySelector('thead')?.textContent || '').toLowerCase();
+      if (header.includes('nickname') || header.includes('должность')) await enhanceStaffTable(t, orgId);
+    }
+  }
+  function schedule(force){
+    if (pending) return;
+    pending = true;
+    setTimeout(function(){ pending = false; enhanceAll(force); }, 180);
+  }
+  document.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('#g20Table,.gov-action-switch-v4,.gov-action-switch-v3,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch')) setTimeout(function(){ schedule(true); }, 250);
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ schedule(true); }); else schedule(true);
+  [700, 1600, 3200, 6000].forEach(function(ms){ setTimeout(function(){ schedule(true); }, ms); });
+  try { new MutationObserver(function(){ schedule(false); }).observe(document.body, { childList:true, subtree:true }); } catch(e){}
+  window.T73_V67_GOSS_PUNISHMENTS = { refresh:function(){ stateCache.at = 0; profileCache.at = 0; document.querySelectorAll('[data-v67="1"]').forEach(function(t){ delete t.dataset.v67; }); schedule(true); } };
+})();
+</script>
+<!-- === /T73 V67 === -->
 </body>
 </html>
