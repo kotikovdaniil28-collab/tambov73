@@ -16809,5 +16809,92 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V63 === -->
+
+<!-- === T73 V64: возвращаем удобную сетку отчётов по 2 в строке === -->
+<style id="t73-v64-reports-two-per-row-style">
+  #reportsListArea.t73-v63-open {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+    align-items: start !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  #reportsListArea.t73-v63-open > .t73-v63-date-line,
+  #reportsListArea.t73-v63-open > .t73-v63-empty,
+  #reportsListArea.t73-v63-open > .empty-state,
+  #reportsListArea.t73-v63-open > .section-title {
+    grid-column: 1 / -1 !important;
+  }
+
+  #reportsListArea.t73-v63-open > .t73-v63-card {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  #reportsListArea.t73-v63-open .t73-v63-proof-list {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
+  }
+
+  #reportsListArea.t73-v63-open .t73-v63-proof-list img {
+    max-height: 160px !important;
+  }
+
+  #reportsListArea.t73-v63-open .t73-v63-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #reportsListArea.t73-v63-open .t73-v63-actions .btn {
+    min-width: 0 !important;
+    white-space: normal !important;
+  }
+
+  @media (max-width: 860px) {
+    #reportsListArea.t73-v63-open {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+<script id="t73-v64-reports-two-per-row-script">
+(function(){
+  'use strict';
+  if (window.__T73_V64_REPORTS_TWO_PER_ROW__) return;
+  window.__T73_V64_REPORTS_TWO_PER_ROW__ = true;
+
+  function applyTwoPerRow() {
+    var area = document.getElementById('reportsListArea');
+    if (!area) return;
+    if (area.classList.contains('t73-v63-open') || area.dataset.v63Open === '1' || area.style.display === 'grid') {
+      area.classList.add('t73-v63-open');
+      area.style.display = 'grid';
+      area.style.gridTemplateColumns = window.innerWidth <= 860 ? '1fr' : 'repeat(2, minmax(0, 1fr))';
+      area.style.gap = '1rem';
+      area.style.alignItems = 'start';
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#viewReportsBtnV63,#viewReportsBtn')) {
+      setTimeout(applyTwoPerRow, 60);
+      setTimeout(applyTwoPerRow, 300);
+      setTimeout(applyTwoPerRow, 900);
+    }
+  }, true);
+
+  window.addEventListener('resize', applyTwoPerRow);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyTwoPerRow); else applyTwoPerRow();
+  [120, 500, 1200, 2500].forEach(function(ms){ setTimeout(applyTwoPerRow, ms); });
+
+  var obs = new MutationObserver(function(){
+    clearTimeout(window.__T73_V64_TWO_ROW_TIMER__);
+    window.__T73_V64_TWO_ROW_TIMER__ = setTimeout(applyTwoPerRow, 80);
+  });
+  try { obs.observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+})();
+</script>
+<!-- === /T73 V64 === -->
 </body>
 </html>
