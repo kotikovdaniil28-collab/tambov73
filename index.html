@@ -3745,7 +3745,7 @@
             support: { icon: "💬", tone: "Линия поддержки", chips: ["FAQ", "Помощь", "Тон"], tip: "Отвечай понятно, спокойно и по делу — игрок должен быстро понять следующий шаг." },
             quests: { icon: "🎯", tone: "Квестовый центр", chips: ["Задания", "Бонусы", "Актив"], tip: "Закрывай задачи, собирай бонусный XP и отслеживай прогресс смены." },
             guide: { icon: "📘", tone: "Справочник", chips: ["Контакты", "Роли", "Навигация"], tip: "Быстрый доступ к руководству и важной информации, чтобы не искать её во время смены." },
-            leaderboard: { icon: "🏆", tone: "Рейтинг", chips: ["Топ", "XP", "Активность"], tip: "Сравнивай прогресс сотрудников и мотивируйся подниматься выше в таблице." },
+            leaderboard: { icon: "🏆", tone: "Лидерборд", chips: ["Топ", "XP", "Активность"], tip: "Сравнивай прогресс сотрудников и мотивируйся подниматься выше в таблице." },
             about: { icon: "✨", tone: "Команда проекта", chips: ["Авторы", "Идея", "Кредиты"], tip: "Раздел с людьми, которые вложились в создание и развитие тренажёра." },
             profile: { icon: "👤", tone: "Личный кабинет", chips: ["Статы", "Баланс", "Награды"], tip: "Проверяй результаты, баланс, покупки и личные достижения аккаунта." },
             shop: { icon: "🛒", tone: "Магазин модератора", chips: ["XP", "Бонусы", "Рулетки"], tip: "Трать заработанный опыт на ускорения, скидки и игровые бонусы." },
@@ -3763,7 +3763,7 @@
             fsb_admin: { icon: "🏛️", tone: "Штаб ФСБ", chips: ["Состав", "Баллы", "Роли"], tip: "Руководство ФСБ может управлять составом, правами и начислениями." },
             fsb_admin_log: { icon: "🗂️", tone: "Журнал ФСБ", chips: ["Покупки", "Выдачи", "История"], tip: "Отдельный лог магазина и выдач ФСБ, чтобы ничего не потерялось." },
             goss_center_v3: { icon: "🏛️", tone: "ГОСС центр", chips: ["Организации", "Состав", "Права"], tip: "Единый центр для старшего состава государственных организаций." },
-            goss_center_v4: { icon: "🏛️", tone: "ГОСС тренажёр", chips: ["Тренировка", "Отчёты", "Состав"], tip: "Актуальный раздел ГОСС: тренажёры доступны всем, управление — по правам." }
+            goss_center_v4: { icon: "🏛️", tone: "ГОСС организации", chips: ["Организации", "Отчёты", "Состав"], tip: "Выберите организацию: название раздела показывает выбранную организацию, а тренажёр остается отдельной вкладкой." }
         };
 
         function getDynamicModeHeader(mode) {
@@ -3843,7 +3843,7 @@
                 support: ["Тренажёр агента поддержки", 'Помогай <span>игрокам</span> уверенно.', "Отвечай понятно, дружелюбно и по материалам, чтобы игрок быстро решил проблему.", "💬 Режим: поддержка"],
                 quests: ["Квестовый центр сотрудников", 'Забирай <span>миссии</span>.', "Выполняй задания, получай бонусный XP и отслеживай активность смены.", "🎯 Режим: квесты"],
                 guide: ["Справочник руководства", 'Держи <span>контакты</span> под рукой.', "Быстрый раздел с основной информацией, контактами и полезной навигацией.", "📘 Режим: справочник"],
-                leaderboard: ["Рейтинг активности", 'Смотри <span>топ</span> смены.', "Следи за лидерами по XP и сравнивай прогресс сотрудников.", "🏆 Режим: рейтинг"],
+                leaderboard: ["Лидерборд", 'Смотри <span>топ</span> смены.', "Следи за лидерами по XP и сравнивай прогресс сотрудников.", "🏆 Режим: лидерборд"],
                 about: ["Команда проекта", 'Люди за <span>проектом</span>.', "Раздел об авторах, идее и людях, которые помогли собрать тренажёр.", "✨ Режим: о проекте"],
                 profile: ["Личный кабинет", 'Прокачивай <span>профиль</span>.', "Статистика, баланс, награды и покупки аккаунта в одном месте.", "👤 Режим: профиль"],
                 shop: ["Магазин модератора", 'Обменивай <span>XP</span> на бонусы.', "Покупай ускорения, скидки и игровые улучшения за заработанный опыт.", "🛒 Режим: магазин модерации"],
@@ -3861,7 +3861,7 @@
                 fsb_admin: ["Штаб руководства ФСБ", 'Управляй <span>составом ФСБ</span>.', "Выдавай статусы, начисляй баллы и контролируй внутреннюю структуру ФСБ.", "🏛️ Режим: штаб ФСБ"],
                 fsb_admin_log: ["Журнал выдач ФСБ", 'Отслеживай <span>операции ФСБ</span>.', "Смотри историю покупок и выдач магазина ФСБ, чтобы ничего не потерялось.", "🗂️ Режим: логи ФСБ"],
                 goss_center_v3: ["ГОСС центр организаций", 'Координируй <span>госструктуры</span>.', "Выбирай организацию, работай с составом и открывай разделы по правам.", "🏛️ Режим: ГОСС"],
-                goss_center_v4: ["ГОСС тренажёр", 'Тренируй <span>госслужбы</span>.', "Актуальный центр ГОСС: тренировки доступны всем, управление открывается по статусу.", "🏛️ Режим: ГОСС v4"]
+                goss_center_v4: ["ГОСС организации", 'Выбери <span>организацию</span>.', "Актуальный центр ГОСС: тренировки доступны всем, управление открывается по статусу.", "🏛️ Режим: ГОСС v4"]
             };
             const activeHeader = headers[mode] || getDynamicModeHeader(mode);
             if(activeHeader) {
@@ -6579,7 +6579,7 @@
                 if (document.getElementById('subNavOrganizations')?.style.display === 'none') { nav.style.display = 'none'; return; }
                 const hasAccess = hasGossAccessV3(org.id), leader = isGossLeaderV3(org.id);
                 const tabs = [];
-                if (hasAccess) { tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📤 Сдать отчётность' }, { view:'shop', label:'🛒 Магазин' }); }
+                if (hasAccess) { tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📤 Сдача гос отчета' }, { view:'shop', label:'🛒 Магазин' }); }
                 if (leader) { tabs.push({ view:'staff', label:'📋 Таблица состава' }, { view:'reports', label:'📊 Отчёты состава' }, { view:'manage', label:'👑 Панель руководства' }); }
                 nav.style.display = tabs.length ? 'flex' : 'none';
                 nav.innerHTML = tabs.map(t => '<button class="mode-btn gov-action-switch-v3 ' + (selectedViewV3 === t.view ? 'active' : '') + '" data-view="' + t.view + '" type="button">' + t.label + '</button>').join('');
@@ -6613,7 +6613,7 @@
             async function renderSubmitReportV3(){
                 const root = document.getElementById('gossV3Content'), org = orgV3();
                 const { data } = currentUser ? await supa.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link',org.id).eq('status',currentUser.id).order('id',{ascending:false}).limit(8) : { data: [] };
-                root.innerHTML = '<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Сдать отчётность — ' + v3Esc(org.short) + '</h3><div class="gov-v3-form"><label>Тип отчёта<select id="gossV3ReportType" class="support-input"><option value="Ежедневный отчёт">Ежедневный отчёт</option><option value="Недельный отчёт">Недельный отчёт</option><option value="Отчёт по работе">Отчёт по работе</option><option value="Другое">Другое</option></select></label><label>Ссылка на доказательства<input id="gossV3ReportLink" class="support-input" placeholder="Ссылка на форум/скрин/док-ва"></label><label style="grid-column:1/-1;">Комментарий<textarea id="gossV3ReportComment" class="support-input" rows="4" placeholder="Что было сделано"></textarea></label></div><div class="gov-v3-actions" style="margin-top:1rem;"><button id="gossV3SubmitReportBtn" class="btn btn-primary" type="button">📤 Отправить отчёт</button></div></div><div class="gov-v3-access-card"><h3 style="color:#fff; margin:0 0 1rem;">Мои последние отчёты</h3><div style="display:grid; gap:.7rem;">' + ((data && data.length) ? data.map(r => { const p = parseJsonV3(r.date, {}); return '<div class="gov-v3-report-card"><strong>' + v3Esc(p.type || 'Отчёт') + '</strong><span style="color:var(--color-text-muted);">' + v3Esc(p.comment || 'Без комментария') + '</span>' + (p.link ? '<span><a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(p.link) + '">' + v3Esc(p.link) + '</a></span>' : '') + '<span style="color:var(--color-text-faint); font-size:.85rem;">' + v3Esc(p.created || '') + '</span></div>'; }).join('') : '<div class="gov-v3-denied">Отчётов пока нет.</div>') + '</div></div>';
+                root.innerHTML = '<div class="gov-v3-access-card"><h3 style="color:#ff6b88; margin:0 0 1rem;">Сдача гос отчета — ' + v3Esc(org.short) + '</h3><div class="gov-v3-form"><label>Тип отчёта<select id="gossV3ReportType" class="support-input"><option value="Ежедневный отчёт">Ежедневный отчёт</option><option value="Недельный отчёт">Недельный отчёт</option><option value="Отчёт по работе">Отчёт по работе</option><option value="Другое">Другое</option></select></label><label>Ссылка на доказательства<input id="gossV3ReportLink" class="support-input" placeholder="Ссылка на форум/скрин/док-ва"></label><label style="grid-column:1/-1;">Комментарий<textarea id="gossV3ReportComment" class="support-input" rows="4" placeholder="Что было сделано"></textarea></label></div><div class="gov-v3-actions" style="margin-top:1rem;"><button id="gossV3SubmitReportBtn" class="btn btn-primary" type="button">📤 Отправить отчёт</button></div></div><div class="gov-v3-access-card"><h3 style="color:#fff; margin:0 0 1rem;">Мои последние отчёты</h3><div style="display:grid; gap:.7rem;">' + ((data && data.length) ? data.map(r => { const p = parseJsonV3(r.date, {}); return '<div class="gov-v3-report-card"><strong>' + v3Esc(p.type || 'Отчёт') + '</strong><span style="color:var(--color-text-muted);">' + v3Esc(p.comment || 'Без комментария') + '</span>' + (p.link ? '<span><a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(p.link) + '">' + v3Esc(p.link) + '</a></span>' : '') + '<span style="color:var(--color-text-faint); font-size:.85rem;">' + v3Esc(p.created || '') + '</span></div>'; }).join('') : '<div class="gov-v3-denied">Отчётов пока нет.</div>') + '</div></div>';
                 bindPress(document.getElementById('gossV3SubmitReportBtn'), async () => {
                     const payload = { org: org.id, orgName: org.short, type: document.getElementById('gossV3ReportType').value, link: document.getElementById('gossV3ReportLink').value.trim(), comment: document.getElementById('gossV3ReportComment').value.trim(), userId: currentUser.id, nick: currentNickname || currentUser.email, created: nowRuV3() };
                     if (!payload.link && !payload.comment) { alert('Добавьте ссылку или комментарий к отчёту.'); return; }
@@ -9082,7 +9082,7 @@
                 if (orgNav && !document.getElementById('gossOrgActionNavV4')) orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4" style="display:none;"></div>');
                 const wrap = document.getElementById('game');
                 if (wrap && !document.getElementById('mode-' + GOV_V4_MODE)) {
-                    const html = '<section class="panel game-card fade-in" id="mode-' + GOV_V4_MODE + '" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#ff6b88;">ГОСС тренажёр</h2><p id="gossV4Lead">Тренажёры ГОСС доступны всем. Специальные разделы открываются по правам старшего состава или руководства.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>';
+                    const html = '<section class="panel game-card fade-in" id="mode-' + GOV_V4_MODE + '" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#ff6b88;">ГОСС организации</h2><p id="gossV4Lead">Тренажёры ГОСС доступны всем. Специальные разделы открываются по правам старшего состава или руководства.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>';
                     const profile = document.getElementById('mode-profile');
                     if (profile) profile.insertAdjacentHTML('beforebegin', html); else wrap.insertAdjacentHTML('afterbegin', html);
                 }
@@ -9099,7 +9099,7 @@
             function v4AllowedTabs(orgId){
                 const tabs = [{ view:'trainer', label:'🎮 Тренажёр' }];
                 if (v4HasSpecial(orgId)) {
-                    tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📤 Сдать отчётность' }, { view:'shop', label:'🛒 Магазин' });
+                    tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📤 Сдача гос отчета' }, { view:'shop', label:'🛒 Магазин' });
                 }
                 if (v4IsLeader(orgId)) {
                     tabs.push({ view:'staff', label:'📋 Таблица состава' }, { view:'reports', label:'✅ Проверить отчёты' }, { view:'manage', label:'👑 Панель руководства' });
@@ -9183,7 +9183,7 @@
             async function v4RenderSubmit(){
                 const org = v4Org(), root = document.getElementById('gossV4Content');
                 const { data } = currentUser ? await supa.from('reports').select('*').eq('email', GOV_V4_REPORT_EMAIL).eq('link', org.id).eq('status', currentUser.id).order('id',{ascending:false}).limit(8) : { data:[] };
-                root.innerHTML = '<div class="gov-v4-card"><h3 style="color:#ff6b88;margin:0 0 1rem;">Сдать отчётность — ' + v4Esc(org.short) + '</h3><div class="gov-v4-form"><label>Тип отчёта<select id="govV4ReportType" class="support-input"><option>Ежедневный отчёт</option><option>Недельный отчёт</option><option>Отчёт по работе</option><option>Другое</option></select></label><label>Ссылка на доказательства<input id="govV4ReportLink" class="support-input" placeholder="Форум / скрин / видео / таблица"></label><label class="full">Комментарий<textarea id="govV4ReportComment" class="support-input" rows="4" placeholder="Что сделал, сколько заявок/проверок/работы закрыл"></textarea></label></div><div class="gov-v4-actions" style="margin-top:1rem;"><button id="govV4SubmitReportBtn" class="btn btn-primary" type="button">📤 Отправить отчёт</button></div></div><div class="gov-v4-card"><h3 style="color:#fff;margin:0 0 1rem;">Мои последние отчёты</h3><div class="gov-v4-list">' + ((data || []).length ? data.map(r => { const p = v4ParseJson(r.date, {}); return '<div class="gov-v4-mini"><div class="gov-v4-head"><strong>' + v4Esc(p.type || 'Отчёт') + '</strong><span class="gov-v4-pill">' + (p.checkedAt ? 'Проверен' : 'Ожидает проверки') + '</span></div><div class="gov-v4-muted">' + v4Esc(p.comment || 'Без комментария') + '</div>' + (p.link ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v4Esc(p.link) + '">' + v4Esc(p.link) + '</a>' : '') + '<div class="gov-v4-muted">' + v4Esc(p.created || '') + '</div></div>'; }).join('') : '<div class="gov-v4-denied">Отчётов пока нет.</div>') + '</div></div>';
+                root.innerHTML = '<div class="gov-v4-card"><h3 style="color:#ff6b88;margin:0 0 1rem;">Сдача гос отчета — ' + v4Esc(org.short) + '</h3><div class="gov-v4-form"><label>Тип отчёта<select id="govV4ReportType" class="support-input"><option>Ежедневный отчёт</option><option>Недельный отчёт</option><option>Отчёт по работе</option><option>Другое</option></select></label><label>Ссылка на доказательства<input id="govV4ReportLink" class="support-input" placeholder="Форум / скрин / видео / таблица"></label><label class="full">Комментарий<textarea id="govV4ReportComment" class="support-input" rows="4" placeholder="Что сделал, сколько заявок/проверок/работы закрыл"></textarea></label></div><div class="gov-v4-actions" style="margin-top:1rem;"><button id="govV4SubmitReportBtn" class="btn btn-primary" type="button">📤 Отправить отчёт</button></div></div><div class="gov-v4-card"><h3 style="color:#fff;margin:0 0 1rem;">Мои последние отчёты</h3><div class="gov-v4-list">' + ((data || []).length ? data.map(r => { const p = v4ParseJson(r.date, {}); return '<div class="gov-v4-mini"><div class="gov-v4-head"><strong>' + v4Esc(p.type || 'Отчёт') + '</strong><span class="gov-v4-pill">' + (p.checkedAt ? 'Проверен' : 'Ожидает проверки') + '</span></div><div class="gov-v4-muted">' + v4Esc(p.comment || 'Без комментария') + '</div>' + (p.link ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v4Esc(p.link) + '">' + v4Esc(p.link) + '</a>' : '') + '<div class="gov-v4-muted">' + v4Esc(p.created || '') + '</div></div>'; }).join('') : '<div class="gov-v4-denied">Отчётов пока нет.</div>') + '</div></div>';
                 v4Bind(document.getElementById('govV4SubmitReportBtn'), async () => {
                     const payload = { org:org.id, orgName:org.short, type:document.getElementById('govV4ReportType').value, link:document.getElementById('govV4ReportLink').value.trim(), comment:document.getElementById('govV4ReportComment').value.trim(), userId:currentUser.id, nick:currentNickname || currentUser.email, created:v4Now(), checkedAt:'' };
                     if (!payload.link && !payload.comment) { alert('Добавьте ссылку или комментарий к отчёту.'); return; }
@@ -9389,7 +9389,7 @@
             fsb_admin_log: ["Логи ФСБ", 'Контроль <span>выдач ФСБ</span>.', "Проверяйте покупки магазина ФСБ и отмечайте, что уже выдано сотрудникам.", "Режим: логи ФСБ"],
             goss_dashboard: ["ГОСС Центр", 'Выбери <span>организацию</span>.', "Открывай тренажёры, составы и разделы государственных организаций.", "Режим: ГОСС"],
             goss_center_v3: ["ГОСС Центр", 'Разделы <span>госструктур</span>.', "Работа со старшим составом, правами и таблицами организаций.", "Режим: ГОСС"],
-            goss_center_v4: ["ГОСС Тренажёр", 'Тренируй <span>госструктуры</span>.', "Выбирай организацию и проходи ситуации старшего состава без подсказки по длине ответа.", "Режим: ГОСС тренажёр"]
+            goss_center_v4: ["ГОСС организации", 'Выбери <span>организацию</span>.', "Выбирай организацию и проходи ситуации старшего состава без подсказки по длине ответа.", "Режим: ГОСС организации"]
         };
 
         function applyTambovModeHeaderV7(mode) {
@@ -11819,9 +11819,9 @@
           async function saveSingleMark(oid,user,day,patch){const ds=daysForDate(day),wk=weekKeyFromDays(ds),loaded=await tableLoad(oid,wk);const marks=(loaded.data&&loaded.data.marks)||{};marks[user]=marks[user]||{};marks[user][day]=Object.assign({},marks[user][day]||{},patch);return tableSave(oid,wk,marks)}
           async function renderTableHub(sheet='table'){style();activate('g20Table');const o=org(),r=root();if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблица ГОСС доступна только руководству этой организации или руководству всех ГОСС.</div>';return}r.innerHTML=`<div class="g20-compact-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Отдельный раздел таблицы. Лист 1 — недельная таблица, лист 2 — сданные отчёты с файлами.</p></div></div><div class="g20-sheetbar"><button class="mode-btn" id="g20SheetTable" type="button">Лист 1 · Таблица</button><button class="mode-btn" id="g20SheetReports" type="button">Лист 2 · Отчёты</button></div><div id="g20SheetBody"><div class="g19-card">Загрузка...</div></div></div>`;$('g20SheetTable').onclick=()=>renderTableHub('table');$('g20SheetReports').onclick=()=>renderTableHub('reports');$('g20SheetTable')?.classList.toggle('active',sheet==='table');$('g20SheetReports')?.classList.toggle('active',sheet==='reports');if(sheet==='reports')return renderReportsSheet(o);return renderTableSheet(o)}
           async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
-          async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдать отчёт». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
+          async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдача гос отчета». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
           async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
-          async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
+          async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📤 Сдача гос отчета',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи гос отчета не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
           let timer;function tick(){clearTimeout(timer);timer=setTimeout(nav,220)}
           document.addEventListener('click',e=>{if(e.target.closest?.('.gov-org-switch-v4,.gov-action-switch-v4'))setTimeout(tick,180)},true);
           setTimeout(tick,600);setTimeout(tick,1800);setTimeout(tick,3600);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V20={renderTableHub,renderManageHub,nav};
@@ -13700,7 +13700,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     timeattack: 'Тренировка на время',
     complaints: 'Проверка жалоб',
     shop: 'Магазин XP',
-    report: 'Сдать отчёт',
+    report: 'Отчетность',
     inactives: 'Неактивы',
     leadership: 'Управление модерацией',
     admin_log: 'Логи модерации',
@@ -13713,13 +13713,13 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     fsb_shop: 'Магазин ФСБ',
     fsb_admin: 'Управление ФСБ',
     quests: 'Задания',
-    leaderboard: 'Рейтинг',
+    leaderboard: 'Лидерборд',
     reports_table: 'Таблица отчётов',
     guide: 'Контакты РС',
     about: 'О проекте',
     profile: 'Мой профиль',
     goss_center_v3: 'Центр ГОСС',
-    goss_center_v4: 'ГОСС тренажёр',
+    goss_center_v4: 'ГОСС организации',
     goss_global_access: 'Доступы ГОСС'
   };
 
@@ -13735,14 +13735,14 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     'mode-ap_admin': ['Для руководителя АП', 'Сначала статус сотрудника, затем баллы, потом база вопросов и магазин. Так проще проводить ежедневные действия без поиска нужной формы.'],
     'mode-fsb_admin': ['Для руководителя ФСБ', 'Здесь собраны только действия по составу и баллам ФСБ. Проверьте пользователя перед сохранением изменения.'],
     'mode-reports_table': ['Главный экран отчётов', 'Используйте неделю, статусы и ручную корректировку. Этот раздел лучше открывать первым при проверке нормы состава.'],
-    'mode-report': ['Сдача отчёта', 'Заполняйте поля сверху вниз: дата, доказательства, итог. Руководству будет легче проверять отчёт, если ссылка и причина указаны понятно.'],
+    'mode-report': ['Форма отчетности', 'Заполняйте поля сверху вниз: дата, доказательства, итог. Руководству будет легче проверять отчёт, если ссылка и причина указаны понятно.'],
     'mode-inactives': ['Заявки на неактив', 'Укажите точные даты и короткую причину. Руководитель увидит заявку в отдельном блоке проверки неактивов.'],
     'mode-admin_log': ['Журнал модерации', 'Сюда попадают покупки, рулетки и действия по модерации. Используйте журнал, чтобы не потерять ручные выдачи.'],
     'mode-ap_admin_log': ['Журнал АП', 'Отдельная история действий по поддержке: баллы, покупки, рулетка и подтверждения выдач.'],
     'mode-creator': ['Расширенные настройки', 'Раздел с опасными действиями. Перед изменениями проверьте выбранного пользователя, роль и сумму.'],
     'mode-profile': ['Личный кабинет', 'Здесь сотрудник видит свои роли, балансы, покупки и личную статистику.'],
     'mode-guide': ['Контакты руководящего состава', 'Название изменено на “Контакты РС”, чтобы не путать этот раздел с панелями управления.'],
-    'mode-leaderboard': ['Рейтинг активности', 'Быстрый обзор лидеров по направлениям. Подходит для итогов недели и мотивации состава.']
+    'mode-leaderboard': ['Лидерборд', 'Топ сотрудников по направлениям. В модерации показываются пользователи со статусом moderator.']
   };
 
   const cardHelpById = [
@@ -13942,6 +13942,264 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     clearTimeout(timer);
     timer = setTimeout(apply, 180);
   }).observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+
+<!-- v51: правки по интерфейсу: мягкий шрифт, ГОСС по названию организации, одна сдача гос отчета, лидерборд по moderator, отчеты модерации снизу -->
+<style id="t73-v51-final-style">
+  body.t73-v50-organized .main-cat-btn,
+  body.t73-v50-organized .mode-btn,
+  body.t73-v50-organized .btn,
+  body.t73-v50-organized .action-btn,
+  body.t73-v50-organized .support-check-btn,
+  body.t73-v50-organized label,
+  body.t73-v50-organized .mode-id-title,
+  body.t73-v50-organized .t73-section-guide strong,
+  body.t73-v50-organized .t73-card-help strong,
+  body.t73-v50-organized .rule-copy strong,
+  body.t73-v50-organized .stat-value,
+  body.t73-v50-organized b,
+  body.t73-v50-organized strong {
+    font-weight: 500 !important;
+  }
+  body.t73-v50-organized .badge,
+  body.t73-v50-organized .shop-price,
+  body.t73-v50-organized .t73-admin-card::before {
+    font-weight: 600 !important;
+  }
+  body.t73-v50-organized #mode-report,
+  body.t73-v50-organized #reportFormArea,
+  body.t73-v50-organized #adminPanelArea,
+  body.t73-v50-organized #reportsListArea {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  body.t73-v50-organized #reportsListArea.t73-v51-bottom-reports {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    grid-column: 1 / -1 !important;
+    clear: both !important;
+    margin-top: 1.25rem !important;
+    padding-top: 1.25rem !important;
+    border-top: 1px solid rgba(255,255,255,.10) !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-self: stretch !important;
+  }
+  body.t73-v50-organized #reportsListArea .mod-old-report-card,
+  body.t73-v50-organized #reportsListArea .t73-v27-old-report-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  body.t73-v50-organized #reportsListArea .mod-report-actions-v31,
+  body.t73-v50-organized #reportsListArea .t73-v51-report-actions,
+  body.t73-v50-organized #reportsListArea [class*="report-actions"] {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+  }
+  body.t73-v50-organized #reportsListArea .btn {
+    min-height: 44px !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+    padding: .65rem .75rem !important;
+  }
+  #g20Submit.t73-v51-hidden-duplicate,
+  .gov-action-switch-v3.t73-v51-hidden-duplicate,
+  .gov-action-switch-v4.t73-v51-hidden-duplicate {
+    display: none !important;
+  }
+  @media (max-width: 720px) {
+    body.t73-v50-organized #reportsListArea .mod-report-actions-v31,
+    body.t73-v50-organized #reportsListArea .t73-v51-report-actions,
+    body.t73-v50-organized #reportsListArea [class*="report-actions"] {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+<script id="t73-v51-final-script">
+(function(){
+  'use strict';
+  if (window.__T73_V51_FINAL__) return;
+  window.__T73_V51_FINAL__ = true;
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+  function getOrgs(){
+    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS)) return GOSS_ORGS; } catch(e) {}
+    return [];
+  }
+  function currentGossOrg(){
+    const active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+    const id = active?.dataset?.orgId || 'fsb';
+    return getOrgs().find(o => o.id === id) || { id, short:id.toUpperCase(), name:id.toUpperCase(), icon:'🏛️' };
+  }
+  function isVisible(el){ return !!el && getComputedStyle(el).display !== 'none'; }
+
+  function fixGossTitles(){
+    const org = currentGossOrg();
+    const full = (org.icon ? org.icon + ' ' : '') + (org.name || org.short || 'ГОСС');
+    const short = (org.icon ? org.icon + ' ' : '') + (org.short || org.name || 'ГОСС');
+    ['gossV4Title','gossV3Title','gossDashTitle'].forEach(id => { const el = $(id); if (el) el.textContent = full; });
+    ['gossV4Org','gossV3Org'].forEach(id => { const el = $(id); if (el) el.textContent = org.short || org.name || 'ГОСС'; });
+    const gossVisible = isVisible($('mode-goss_center_v4')) || isVisible($('mode-goss_center_v3')) || isVisible($('mode-goss_dashboard'));
+    if (gossVisible) {
+      const title = document.querySelector('#modeIdentity .mode-id-title');
+      const tip = document.querySelector('#modeIdentity .mode-id-tip');
+      const icon = document.querySelector('#modeIdentity .mode-id-icon');
+      if (title) title.textContent = short;
+      if (tip) tip.textContent = 'Выбрана организация: ' + (org.name || org.short || 'ГОСС') + '. Вкладка «Тренажёр» осталась внутри раздела.';
+      if (icon) icon.textContent = org.icon || '🏛️';
+      const rt = $('rightTitle'); if (rt) rt.textContent = short;
+    }
+    document.querySelectorAll('.mode-btn[data-mode="goss_center_v4"]').forEach(btn => {
+      if (/ГОСС\s*тренаж[её]р/i.test(btn.textContent || '')) btn.textContent = '🏛️ ГОСС организации';
+    });
+  }
+
+  function fixGossSubmitButtons(){
+    ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav'].map($).filter(Boolean).forEach(nav => {
+      const submitButtons = Array.from(nav.querySelectorAll('button')).filter(btn => {
+        const txt = String(btn.textContent || '');
+        return btn.dataset?.view === 'submit' || btn.id === 'g20Submit' || /сдат[ьи]|сдача/i.test(txt);
+      });
+      if (!submitButtons.length) return;
+      const primary = submitButtons.find(btn => btn.dataset?.view === 'submit') || submitButtons[0];
+      submitButtons.forEach(btn => {
+        const keep = btn === primary;
+        btn.classList.toggle('t73-v51-hidden-duplicate', !keep);
+        if (keep) {
+          btn.style.display = 'inline-flex';
+          btn.textContent = '📤 Сдача гос отчета';
+          btn.title = 'Сдача гос отчета';
+          btn.setAttribute('aria-label', 'Сдача гос отчета');
+        }
+      });
+    });
+    const reportBtn = document.querySelector('.mode-btn[data-mode="report"],#reportTabBtn');
+    if (reportBtn && /Сдать\s+отч[её]т/i.test(reportBtn.textContent || '')) reportBtn.textContent = 'Отчетность';
+  }
+
+  function fixLeaderboardText(){
+    document.querySelectorAll('.mode-btn[data-mode="leaderboard"]').forEach(btn => {
+      btn.textContent = 'Лидерборд';
+      btn.title = 'Лидерборд';
+    });
+    const panel = $('mode-leaderboard');
+    const title = panel?.querySelector('.section-head h2');
+    if (title && /рейтинг/i.test(title.textContent || '')) title.textContent = 'Таблица лидеров (Топ-10)';
+  }
+
+  async function loadLeaderboardV51(){
+    const list = $('leaderboardList');
+    if (!list || typeof supa === 'undefined') return;
+    list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">⏳ Загрузка лидерборда...</div>';
+    try {
+      const [modRolesRes, apRolesRes, reportsRes, usersRes] = await Promise.all([
+        supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','moderator').limit(5000),
+        supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','ap').limit(5000),
+        supa.from('reports').select('email,xp').gt('xp',0).limit(5000),
+        supa.from('user_stats').select('user_id,nickname,email,shop_spent,ap_spent,sup_correct').limit(5000)
+      ]);
+      const modIds = new Set((modRolesRes.data || []).map(r => r.link).filter(Boolean));
+      const apIds = new Set((apRolesRes.data || []).map(r => r.link).filter(Boolean));
+      const xpByEmail = new Map();
+      (reportsRes.data || []).forEach(r => xpByEmail.set(r.email, (xpByEmail.get(r.email) || 0) + Number(r.xp || 0)));
+      const users = usersRes.data || [];
+      const modArr = users.filter(u => modIds.has(u.user_id)).map(u => ({
+        name: u.nickname || u.email || u.user_id || 'Без ника',
+        score: Math.max(0, (xpByEmail.get(u.email) || 0) - Number(u.shop_spent || 0))
+      })).sort((a,b) => b.score - a.score || String(a.name).localeCompare(String(b.name),'ru'));
+      const apArr = users.filter(u => apIds.has(u.user_id)).map(u => ({
+        name: u.nickname || u.email || u.user_id || 'Без ника',
+        score: Math.max(0, Math.floor(Number(u.sup_correct || 0) / 10) * 15 - Number(u.ap_spent || 0))
+      })).sort((a,b) => b.score - a.score || String(a.name).localeCompare(String(b.name),'ru'));
+      const row = (u,i,suffix,ap) => `<div class="rule-item"><div class="rule-icon" style="font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;"><strong>${esc(u.name)}</strong><span class="badge${ap ? '' : ' xp'}">${u.score} ${suffix}</span></div></div>`;
+      window.lbModHTML = modArr.length ? modArr.slice(0,10).map((u,i)=>row(u,i,'Real XP',false)).join('') : '<div class="message-text">Пользователи со статусом moderator не найдены.</div>';
+      window.lbApHTML = apArr.length ? apArr.slice(0,10).map((u,i)=>row(u,i,'Баллов',true)).join('') : '<div class="message-text">Топ АП пуст.</div>';
+      list.innerHTML = $('lbBtnAp')?.classList.contains('btn-primary') ? window.lbApHTML : window.lbModHTML;
+    } catch(err) {
+      list.innerHTML = '<div class="message-text" style="color:var(--color-error);">Не удалось загрузить лидерборд: ' + esc(err?.message || err) + '</div>';
+    }
+  }
+
+  function bindLeaderboardButtons(){
+    const mod = $('lbBtnMod'), ap = $('lbBtnAp'), list = $('leaderboardList');
+    if (mod && mod.dataset.v51Bound !== '1') {
+      mod.dataset.v51Bound = '1';
+      mod.onclick = () => { if (list) list.innerHTML = window.lbModHTML || '<div class="message-text">Загрузка...</div>'; mod.className='btn btn-primary'; if (ap) ap.className='btn btn-secondary'; };
+    }
+    if (ap && ap.dataset.v51Bound !== '1') {
+      ap.dataset.v51Bound = '1';
+      ap.onclick = () => { if (list) list.innerHTML = window.lbApHTML || '<div class="message-text">Загрузка...</div>'; ap.className='btn btn-primary'; if (mod) mod.className='btn btn-secondary'; };
+    }
+  }
+
+  function fixModReportsBottom(){
+    const area = $('reportsListArea');
+    const admin = $('adminPanelArea');
+    const form = $('reportFormArea');
+    if (!area || !form) return;
+    if (admin && area.previousElementSibling !== admin) admin.insertAdjacentElement('afterend', area);
+    area.classList.add('t73-v51-bottom-reports');
+    area.querySelectorAll('.mod-report-actions-v31,[class*="report-actions"]').forEach(el => el.classList.add('t73-v51-report-actions'));
+  }
+
+  function bindModReportsButton(){
+    document.addEventListener('click', e => {
+      const btn = e.target.closest && e.target.closest('#viewReportsBtn');
+      if (!btn) return;
+      setTimeout(() => {
+        fixModReportsBottom();
+        const area = $('reportsListArea');
+        if (area && area.style.display !== 'none') area.scrollIntoView({ behavior:'smooth', block:'start' });
+      }, 180);
+      setTimeout(fixModReportsBottom, 700);
+    }, true);
+  }
+
+  function boot(){
+    fixGossTitles();
+    fixGossSubmitButtons();
+    fixLeaderboardText();
+    bindLeaderboardButtons();
+    fixModReportsBottom();
+    if (!window.loadLeaderboard || !window.loadLeaderboard.__v51) {
+      loadLeaderboardV51.__v51 = true;
+      window.loadLeaderboard = loadLeaderboardV51;
+    }
+  }
+
+  bindModReportsButton();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  document.addEventListener('click', () => setTimeout(boot, 90), true);
+  setTimeout(boot, 300);
+  setTimeout(boot, 1000);
+  setTimeout(boot, 2500);
+  new MutationObserver(() => { clearTimeout(window.__t73v51Tick); window.__t73v51Tick = setTimeout(boot, 160); }).observe(document.body, { childList:true, subtree:true });
+})();
+</script>
+
+
+<script id="t73-v51-hide-extra-report-buttons">
+(function(){
+  function hideExtraReportButtons(){
+    ['v16ReportBtnMod','v16OpenReportTop'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){ el.style.display='none'; el.setAttribute('aria-hidden','true'); }
+    });
+    const reportBtn=document.querySelector('.mode-btn[data-mode="report"],#reportTabBtn');
+    if(reportBtn && /Сдать\s+отч[её]т|Сдача\s+отч/i.test(reportBtn.textContent||'')){
+      reportBtn.textContent='Отчетность';
+      reportBtn.title='Отчетность';
+    }
+  }
+  hideExtraReportButtons();
+  document.addEventListener('click',()=>setTimeout(hideExtraReportButtons,80),true);
+  setTimeout(hideExtraReportButtons,700);
+  new MutationObserver(()=>{clearTimeout(window.__t73v51b);window.__t73v51b=setTimeout(hideExtraReportButtons,120);}).observe(document.body,{childList:true,subtree:true});
 })();
 </script>
 
