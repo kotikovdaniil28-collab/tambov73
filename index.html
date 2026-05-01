@@ -862,9 +862,9 @@
       <p style="color: var(--color-text-muted); font-size: var(--text-sm); margin: 0; text-align: center;">Войдите или зарегистрируйтесь, чтобы сохранять прогресс.</p>
       
       <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <input type="email" id="authEmail" class="support-input" placeholder="Ваш Email">
-          <input type="text" id="authNickname" class="support-input" placeholder="Игровой Nickname (Для ТОПа)">
-          <input type="password" id="authPassword" class="support-input" placeholder="Пароль">
+          <input type="email" id="authEmail" name="email" class="support-input" placeholder="Ваш Email" autocomplete="email" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false">
+          <input type="text" id="authNickname" name="game_nickname" class="support-input" placeholder="Игровой Nickname (Для ТОПа)" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+          <input type="password" id="authPassword" name="password" class="support-input" placeholder="Пароль" autocomplete="current-password">
       </div>
       
       <div id="authErrorMsg" style="color: var(--color-error); font-size: var(--text-sm); display: none; text-align: center; font-weight: 800;"></div>
@@ -1920,6 +1920,7 @@
 
         // === ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ ===
         const supa = window.supabase.createClient('https://icfihnroblyjjflsfepq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ');
+        window.__T73_SUPA = supa; window.supa = supa;
         
         let currentUser = null, currentNickname = null, isReportsRequired = localStorage.getItem('require_reports') !== 'false';
         let dynamicModLeaders = [], dynamicApLeaders = [], dynamicFsbLeaders = [], activeMods = [], activeAps = [], activeFsb = [], isModerator = false, isAp = false, isFsbUser = false;
@@ -13292,6 +13293,161 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   setTimeout(boot,300); setTimeout(boot,1200); setTimeout(boot,2600);
   let moT; new MutationObserver(()=>{ clearTimeout(moT); moT=setTimeout(()=>{ syncNav(); dedupeGossActions(); prettyGoss(); bindTableButton(); },180); }).observe(document.body||document.documentElement,{childList:true,subtree:true});
   window.T73_V44_MOD_TABLE={open:openTable,load:loadModTableV44,syncNav};
+})();
+</script>
+
+
+<script id="t73-v46-auth-confirm-leadership-fix">
+(function(){
+  'use strict';
+  const SUPA_URL='https://icfihnroblyjjflsfepq.supabase.co';
+  const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+  const $=id=>document.getElementById(id);
+  const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function client(){
+    if(window.__T73_SUPA && window.__T73_SUPA.auth) return window.__T73_SUPA;
+    if(window.supa && window.supa.auth) return window.supa;
+    if(window.supabase && window.supabase.createClient){
+      window.__T73_SUPA = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+      window.supa = window.__T73_SUPA;
+      return window.__T73_SUPA;
+    }
+    return null;
+  }
+  function msg(text,color){
+    const e=$('authErrorMsg'); if(!e) return;
+    e.textContent=text; e.style.color=color||'var(--color-error)'; e.style.display='block';
+  }
+  function cleanEmail(){ return String($('authEmail')?.value||'').trim().toLowerCase(); }
+  function cleanNick(){ return String($('authNickname')?.value||'').trim(); }
+  function redirectUrl(){ return window.location.origin + window.location.pathname; }
+
+  function fixAuthInputs(){
+    const email=$('authEmail'), nick=$('authNickname'), pass=$('authPassword');
+    if(email){
+      email.setAttribute('type','email');
+      email.setAttribute('name','email');
+      email.setAttribute('autocomplete','email');
+      email.setAttribute('inputmode','email');
+      email.setAttribute('autocapitalize','none');
+      email.setAttribute('autocorrect','off');
+      email.setAttribute('spellcheck','false');
+      email.placeholder='Email, а не ник';
+    }
+    if(nick){
+      nick.setAttribute('type','text');
+      nick.setAttribute('name','game_nickname');
+      nick.setAttribute('autocomplete','off');
+      nick.setAttribute('autocapitalize','none');
+      nick.setAttribute('autocorrect','off');
+      nick.setAttribute('spellcheck','false');
+      nick.placeholder='Игровой Nickname';
+    }
+    if(pass){
+      pass.setAttribute('name','password');
+      pass.setAttribute('autocomplete','current-password');
+    }
+    // Если iPhone/Face ID всё-таки вставил игровой ник в поле email — не даём отправить мусор в Auth.
+    email && email.addEventListener('blur',()=>{
+      const v=String(email.value||'').trim();
+      if(v && !emailRe.test(v) && nick && !nick.value && /^[A-Za-zА-Яа-я0-9_\-\.]{3,32}$/.test(v)){
+        nick.value=v;
+        email.value='';
+        msg('iPhone вставил ник в поле почты. Я перенёс его в Nickname — теперь введите Email.','var(--color-warning)');
+      }
+    });
+  }
+
+  function ensureResendButton(){
+    const reg=$('authRegisterSubmit');
+    if(!reg || $('authResendConfirmBtn')) return;
+    const btn=document.createElement('button');
+    btn.id='authResendConfirmBtn';
+    btn.type='button';
+    btn.className='btn btn-secondary';
+    btn.style.width='100%';
+    btn.textContent='Отправить письмо подтверждения ещё раз';
+    reg.insertAdjacentElement('afterend',btn);
+    btn.onclick=async()=>{
+      const c=client(), email=cleanEmail();
+      if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
+      if(!emailRe.test(email)) return msg('Введите настоящую почту, чтобы отправить подтверждение.');
+      msg('Отправляю письмо подтверждения...','var(--color-primary)');
+      const { error } = await c.auth.resend({ type:'signup', email, options:{ emailRedirectTo: redirectUrl() } });
+      if(error) return msg('Не удалось отправить письмо: '+error.message);
+      msg('Письмо отправлено. Проверьте входящие и папку «Спам».','var(--color-success)');
+    };
+  }
+
+  function bindAuthHandlers(){
+    const login=$('authLoginSubmit'), reg=$('authRegisterSubmit');
+    if(login && !login.dataset.v46){
+      login.dataset.v46='1';
+      login.onclick=async()=>{
+        const c=client(), email=cleanEmail(), password=String($('authPassword')?.value||'');
+        if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
+        if(!emailRe.test(email)) return msg('Введите именно Email. Если Face ID вставил ник — удалите его из поля почты.');
+        if(!password) return msg('Введите пароль.');
+        msg('Вхожу...','var(--color-primary)');
+        const { error } = await c.auth.signInWithPassword({ email, password });
+        if(error){
+          const t=String(error.message||'');
+          if(/confirm|verified|not.*confirmed|email/i.test(t)) return msg('Почта ещё не подтверждена. Откройте письмо от Supabase и подтвердите аккаунт.');
+          return msg(t);
+        }
+        window.location.reload();
+      };
+    }
+    if(reg && !reg.dataset.v46){
+      reg.dataset.v46='1';
+      reg.onclick=async()=>{
+        const c=client(), email=cleanEmail(), nickname=cleanNick(), password=String($('authPassword')?.value||'');
+        if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
+        if(!emailRe.test(email)) return msg('Введите настоящую почту. Никнейм должен быть в отдельном поле.');
+        if(nickname.length<3) return msg('Введите игровой Nickname минимум 3 символа.');
+        if(password.length<6) return msg('Пароль должен быть минимум 6 символов.');
+        msg('Создаю аккаунт и отправляю письмо...','var(--color-primary)');
+        const { data, error } = await c.auth.signUp({
+          email,
+          password,
+          options:{ emailRedirectTo: redirectUrl(), data:{ nickname } }
+        });
+        if(error) return msg(error.message);
+        // Если Supabase требует подтверждение, session обычно пустая. Показываем правильную инструкцию.
+        if(!data || !data.session){
+          return msg('Аккаунт создан. Теперь подтвердите почту по ссылке в письме, потом вернитесь на сайт и войдите.','var(--color-success)');
+        }
+        msg('Аккаунт создан. Вход выполнен.','var(--color-success)');
+        setTimeout(()=>window.location.reload(),700);
+      };
+    }
+  }
+
+  function fixLeadershipDuplicates(){
+    // Не трогаем обычную вкладку «Руководство» модерации. Убираем только дубли кнопок «Панель руководства» в ГОСС.
+    const containers=['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav','subNavOrganizations'];
+    containers.forEach(id=>{
+      const root=$(id); if(!root) return;
+      let kept=false;
+      Array.from(root.querySelectorAll('button,.mode-btn')).forEach(btn=>{
+        const txt=String(btn.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+        if(!txt.includes('панель руководства')) return;
+        if(!kept){ kept=true; btn.style.display='inline-flex'; btn.removeAttribute('aria-hidden'); }
+        else { btn.style.display='none'; btn.setAttribute('aria-hidden','true'); }
+      });
+    });
+    // Если одновременно нарисованы две панели руководства в содержимом ГОСС, оставляем самую новую видимую.
+    const panels=Array.from(document.querySelectorAll('#gossV4Content .t73-v26-card,#gossV4Content .t73-v23-card,#gossV4Content .gov-v4-card,#gossV3Content .t73-v26-card,#gossV3Content .t73-v23-card,#gossV3Content .gov-v3-access-card')).filter(el=>/панель руководства/i.test(el.textContent||''));
+    if(panels.length>1){
+      panels.forEach((p,i)=>{ if(i<panels.length-1) p.style.display='none'; });
+    }
+  }
+
+  function boot(){ fixAuthInputs(); ensureResendButton(); bindAuthHandlers(); fixLeadershipDuplicates(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  setTimeout(boot,300); setTimeout(boot,1200); setTimeout(boot,3000);
+  let t; new MutationObserver(()=>{ clearTimeout(t); t=setTimeout(()=>{ fixAuthInputs(); ensureResendButton(); bindAuthHandlers(); fixLeadershipDuplicates(); },180); }).observe(document.documentElement,{childList:true,subtree:true});
+  window.T73_V46_AUTH_FIX={boot,client};
 })();
 </script>
 
