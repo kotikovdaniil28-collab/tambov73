@@ -17862,5 +17862,115 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V68 === -->
 
+
+<!-- === T73 V69: ГОСС — убрать дубль логов в Правительстве === -->
+<style id="t73-v69-gov-logs-dedup-style">
+  .t73-v69-hidden-duplicate-gov-log {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>
+<script id="t73-v69-gov-logs-dedup-script">
+(function(){
+  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function txt(el){ return String((el && el.textContent) || '').replace(/\s+/g,' ').trim(); }
+  function activeOrgId(){
+    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
+    return (btn && btn.dataset && btn.dataset.orgId) || window.currentGossOrgId || '';
+  }
+  function activeOrgName(){
+    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
+    return txt(btn);
+  }
+  function isGovernment(){
+    var id = String(activeOrgId() || '').toLowerCase();
+    var name = activeOrgName().toLowerCase();
+    return id === 'government' || id === 'prav' || id === 'gov' || /правитель/.test(name);
+  }
+  function setLabel(el){
+    if (!el) return;
+    var t = txt(el);
+    if (/логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t))) {
+      var label = '🧾 Логи Правительства';
+      if (txt(el) !== label) el.textContent = label;
+      if (el.title !== 'Открыть единый журнал Правительства') el.title = 'Открыть единый журнал Правительства';
+    }
+  }
+  function getLogButtons(){
+    var selectors = [
+      '#gossOrgActionNavV4 button',
+      '#gossOrgActionNavV3 button',
+      '#gossOrgActionNav button',
+      '#gossV4Content button',
+      '#gossV3Content button',
+      '#gossDashView button',
+      '#mode-goss_center_v4 button',
+      '#mode-goss_center_v3 button',
+      '#mode-goss_dashboard button'
+    ].join(',');
+    return qa(selectors).filter(function(b){
+      var t = txt(b);
+      return /логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t));
+    });
+  }
+  function dedupeGovernmentLogs(){
+    if (!isGovernment()) {
+      qa('.t73-v69-hidden-duplicate-gov-log').forEach(function(el){
+        el.classList.remove('t73-v69-hidden-duplicate-gov-log');
+      });
+      return;
+    }
+
+    var buttons = getLogButtons();
+    buttons.forEach(setLabel);
+
+    // В Правительстве оставляем один вход в логи.
+    // Приоритет: новая кнопка V68/V69 в навигации организации. Старые дубляжи в карточках скрываем.
+    var preferred = buttons.find(function(b){ return b.classList.contains('t73-v68-org-logs') || b.id === 't73V69GovLogsBtn'; });
+    if (!preferred) preferred = buttons.find(function(b){ return /gossOrgActionNav/.test((b.parentElement && b.parentElement.id) || ''); });
+    if (!preferred) preferred = buttons[0] || null;
+
+    buttons.forEach(function(b){
+      if (b === preferred) {
+        b.classList.remove('t73-v69-hidden-duplicate-gov-log');
+        setLabel(b);
+      } else {
+        b.classList.add('t73-v69-hidden-duplicate-gov-log');
+      }
+    });
+
+    // Если старые версии ещё не успели создать кнопку логов в навигации — создаём одну свою.
+    var nav = document.getElementById('gossOrgActionNavV4') || document.getElementById('gossOrgActionNavV3') || document.getElementById('gossOrgActionNav');
+    if (nav && !preferred && !document.getElementById('t73V69GovLogsBtn')) {
+      var btn = document.createElement('button');
+      btn.id = 't73V69GovLogsBtn';
+      btn.type = 'button';
+      btn.className = 'mode-btn t73-v68-org-logs';
+      btn.textContent = '🧾 Логи Правительства';
+      btn.onclick = function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.T73_V68_GOSS_LOGS_INSIDE && typeof window.T73_V68_GOSS_LOGS_INSIDE.orgLogs === 'function') {
+          window.T73_V68_GOSS_LOGS_INSIDE.orgLogs();
+        }
+      };
+      nav.appendChild(btn);
+    }
+  }
+  function boot(){
+    clearTimeout(window.__t73_v69_gov_logs_dedupe_timer);
+    window.__t73_v69_gov_logs_dedupe_timer = setTimeout(dedupeGovernmentLogs, 100);
+  }
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,#gossV4Content,#gossV3Content,#gossDashView')) boot();
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [150,500,1000,1800,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ boot(); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
+  window.T73_V69_GOV_LOGS_DEDUPE = { refresh: dedupeGovernmentLogs };
+})();
+</script>
+<!-- === /T73 V69 === -->
 </body>
 </html>
