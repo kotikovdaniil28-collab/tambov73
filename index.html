@@ -13469,5 +13469,43 @@
   window.T73_V42_MOD_TABLE = { open: openModTable, load: loadModReportsTableV42 };
 })();
 </script>
+<script>
+/* === T73 V43 SUPABASE GLOBAL BRIDGE ===
+   Фикс для таблицы модераторов: основной код создаёт `const supa`, но поздние патчи таблицы
+   читают `window.supa/window.supabaseClient`. Из-за этого таблица могла писать
+   «Supabase не подключился», хотя сайт уже подключён к базе. */
+(function(){
+  const T73_SUPABASE_URL = 'https://icfihnroblyjjflsfepq.supabase.co';
+  const T73_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+
+  function hasClient(c){ return !!(c && typeof c.from === 'function'); }
+  function ensureT73SupabaseBridge(){
+    if (hasClient(window.supa)) { window.supabaseClient = window.supa; return window.supa; }
+    if (hasClient(window.supabaseClient)) { window.supa = window.supabaseClient; return window.supabaseClient; }
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        const client = window.supabase.createClient(T73_SUPABASE_URL, T73_SUPABASE_KEY);
+        window.supa = client;
+        window.supabaseClient = client;
+        window.t73SupaReady = true;
+        return client;
+      } catch(e) {
+        console.warn('T73 v43: Supabase bridge createClient failed', e);
+      }
+    }
+    return null;
+  }
+
+  window.ensureT73SupabaseBridge = ensureT73SupabaseBridge;
+
+  let tries = 0;
+  const timer = setInterval(function(){
+    tries++;
+    if (ensureT73SupabaseBridge() || tries > 30) clearInterval(timer);
+  }, 200);
+  document.addEventListener('DOMContentLoaded', ensureT73SupabaseBridge);
+  window.addEventListener('load', ensureT73SupabaseBridge);
+})();
+</script>
 </body>
 </html>
