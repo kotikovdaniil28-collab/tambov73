@@ -18433,27 +18433,27 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
 
 
-<!-- === T73 V72: 10 music tracks selector === -->
+<!-- === T73 V73: different music selector — relax / lo-fi / phonk / synth === -->
 <style>
-  #musicTrackSelect.t73-v72-music-select{
+  #musicTrackSelect.t73-v73-music-select{
     height: 44px;
-    max-width: 210px;
-    min-width: 165px;
+    max-width: 245px;
+    min-width: 190px;
     padding: 0 .85rem;
     border-radius: 14px;
     border: 1px solid rgba(191,198,255,.22);
-    background: rgba(0,0,0,.45);
+    background: rgba(0,0,0,.48);
     color: var(--color-text, #fff);
     font-weight: 800;
     outline: none;
-    box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    box-shadow: 0 8px 24px rgba(0,0,0,.24);
     cursor: pointer;
   }
-  #musicTrackSelect.t73-v72-music-select:focus{
+  #musicTrackSelect.t73-v73-music-select:focus{
     border-color: rgba(127,232,160,.62);
-    box-shadow: 0 0 0 3px rgba(127,232,160,.14), 0 8px 24px rgba(0,0,0,.22);
+    box-shadow: 0 0 0 3px rgba(127,232,160,.14), 0 8px 24px rgba(0,0,0,.24);
   }
-  #musicTrackSelect.t73-v72-music-select option{
+  #musicTrackSelect.t73-v73-music-select option{
     background:#101023;
     color:#fff;
   }
@@ -18461,7 +18461,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     .topbar > div:last-child > div:not(#authStatus){
       grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     }
-    #musicTrackSelect.t73-v72-music-select{
+    #musicTrackSelect.t73-v73-music-select{
       grid-column: 1 / -1 !important;
       width: 100% !important;
       max-width: 100% !important;
@@ -18477,131 +18477,348 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <script>
 (function(){
   'use strict';
-  if (window.__T73_V72_MUSIC_SELECTOR__) return;
-  window.__T73_V72_MUSIC_SELECTOR__ = true;
+  if (window.__T73_V73_MUSIC_STUDIO__) return;
+  window.__T73_V73_MUSIC_STUDIO__ = true;
 
   var TRACKS = [
-    { name:'🌙 Relax Chill', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-    { name:'🌌 Night Ambient', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-    { name:'🌊 Calm Wave', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-    { name:'✨ Soft Dream', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-    { name:'☕ Lo-Fi Mood', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
-    { name:'🚗 Road Flow', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
-    { name:'⚡ Energy Light', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
-    { name:'🎮 Cyber Focus', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-    { name:'🌧️ Rainy Vibe', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
-    { name:'🪐 Deep Space', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
+    { name:'🌙 Relax Classic — как раньше', mood:'relax', bpm:66, root:57, scale:[0,2,3,5,7,8,10,12], melody:[0,2,4,2,5,4,2,0,3,5,7,5,4,2,0,-1], melodyEvery:4, wave:'sine', noteDur:.88, noteVol:.055, pad:true, padVol:.032, padWave:'sine', beat:'none', delay:.36, feedback:.24, filter:1800 },
+    { name:'🧘 Deep Relax Pad', mood:'ambient', bpm:58, root:55, scale:[0,2,3,5,7,10,12], melody:[0,-1,2,-1,3,-1,5,-1,7,-1,5,-1,3,2,0,-1], melodyEvery:8, wave:'sine', noteDur:1.3, noteVol:.045, pad:true, padVol:.05, padWave:'triangle', beat:'none', delay:.48, feedback:.34, filter:1300 },
+    { name:'🌧️ Rain Calm', mood:'ambient', bpm:62, root:60, scale:[0,2,4,7,9,12], melody:[0,2,-1,4,2,0,-1,7,9,7,4,2,0,-1,-1,-1], melodyEvery:4, wave:'triangle', noteDur:.95, noteVol:.048, pad:true, padVol:.036, rain:true, beat:'none', delay:.42, feedback:.28, filter:1600 },
+    { name:'☕ Lo‑Fi Study Beat', mood:'lofi', bpm:82, root:53, scale:[0,2,3,5,7,8,10,12], melody:[7,5,3,-1,2,3,5,-1,7,10,8,7,5,3,2,0], melodyEvery:4, wave:'triangle', noteDur:.36, noteVol:.05, pad:true, padVol:.026, beat:'lofi', bass:true, delay:.24, feedback:.18, filter:2100 },
+    { name:'🌌 Night Ambient', mood:'space', bpm:70, root:50, scale:[0,2,5,7,10,12], melody:[0,-1,5,-1,7,-1,10,-1,12,10,7,5,2,-1,0,-1], melodyEvery:6, wave:'sine', noteDur:1.0, noteVol:.043, pad:true, padVol:.042, beat:'none', delay:.56, feedback:.38, filter:1200 },
+    { name:'✨ Soft Dream Pluck', mood:'dream', bpm:76, root:59, scale:[0,2,4,7,9,11,12], melody:[0,4,7,11,9,7,4,2,0,2,4,7,12,11,9,7], melodyEvery:3, wave:'triangle', noteDur:.32, noteVol:.047, pad:true, padVol:.024, beat:'soft', delay:.30, feedback:.22, filter:2400 },
+    { name:'🪐 Space Melody', mood:'space', bpm:74, root:48, scale:[0,3,5,7,10,12], melody:[0,3,5,7,10,12,10,7,5,3,0,-1,7,10,12,-1], melodyEvery:4, wave:'sine', noteDur:.72, noteVol:.044, pad:true, padVol:.034, beat:'none', delay:.62, feedback:.42, filter:1100 },
+    { name:'🔥 Phonk Drift', mood:'phonk', bpm:128, root:45, scale:[0,2,3,5,7,8,10,12], melody:[12,10,7,8,7,5,3,2,12,10,8,7,5,3,2,0], melodyEvery:2, wave:'square', noteDur:.14, noteVol:.04, beat:'phonk', bass:true, cowbell:true, delay:.12, feedback:.12, filter:2600 },
+    { name:'😈 Dark Phonk Bass', mood:'phonk', bpm:140, root:42, scale:[0,2,3,5,7,8,10,12], melody:[12,12,10,7,8,7,5,3,12,10,8,7,5,3,2,0], melodyEvery:2, wave:'square', noteDur:.12, noteVol:.042, beat:'darkphonk', bass:true, cowbell:true, delay:.10, feedback:.10, filter:3000 },
+    { name:'🚗 Drift Night', mood:'drift', bpm:122, root:47, scale:[0,2,3,7,8,10,12], melody:[7,8,10,12,10,8,7,3,7,8,12,10,8,7,3,0], melodyEvery:2, wave:'sawtooth', noteDur:.16, noteVol:.032, beat:'drift', bass:true, cowbell:true, delay:.16, feedback:.14, filter:2800 },
+    { name:'🎮 Cyber Bass', mood:'cyber', bpm:110, root:43, scale:[0,2,3,5,7,10,12], melody:[0,7,10,7,12,10,7,5,0,5,7,10,12,10,7,0], melodyEvery:4, wave:'sawtooth', noteDur:.28, noteVol:.034, beat:'cyber', bass:true, pad:true, padVol:.018, delay:.18, feedback:.14, filter:2400 },
+    { name:'🌆 Synthwave Drive', mood:'synthwave', bpm:96, root:48, scale:[0,2,4,7,9,11,12], melody:[0,4,7,9,11,12,11,9,7,4,2,0,7,9,11,12], melodyEvery:4, wave:'sawtooth', noteDur:.34, noteVol:.036, beat:'synth', bass:true, pad:true, padVol:.022, delay:.28, feedback:.20, filter:2200 }
   ];
 
-  var audio = new Audio();
-  audio.loop = true;
-  audio.volume = 0.22;
-  audio.preload = 'none';
+  var STORE_KEY = 't73_music_track_v73';
   var enabled = false;
-  var ready = false;
+  var currentIndex = savedTrack();
+  var ctx = null, master = null, delayNode = null, feedbackNode = null, delayGain = null, noiseBuffer = null;
+  var scheduler = null, nextStepTime = 0, step = 0, noiseBed = null;
 
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
   function clampTrack(v){
     var n = parseInt(v, 10);
     if (!Number.isFinite(n) || n < 0 || n >= TRACKS.length) n = 0;
     return n;
   }
   function savedTrack(){
-    try { return clampTrack(localStorage.getItem('t73_music_track_v72')); } catch(e){ return 0; }
+    try {
+      var v = localStorage.getItem(STORE_KEY);
+      if (v == null) v = localStorage.getItem('t73_music_track_v72');
+      return clampTrack(v);
+    } catch(e){ return 0; }
   }
-  function saveTrack(i){
-    try { localStorage.setItem('t73_music_track_v72', String(clampTrack(i))); } catch(e){}
+  function saveTrack(i){ try { localStorage.setItem(STORE_KEY, String(clampTrack(i))); } catch(e){} }
+  function midiToFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+  function track(){ return TRACKS[currentIndex] || TRACKS[0]; }
+
+  function getCtx(){
+    if (ctx) return ctx;
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    ctx = new AC();
+    master = ctx.createGain();
+    master.gain.value = 0;
+    delayNode = ctx.createDelay(1.2);
+    feedbackNode = ctx.createGain();
+    delayGain = ctx.createGain();
+    delayNode.delayTime.value = .28;
+    feedbackNode.gain.value = .18;
+    delayGain.gain.value = .18;
+    delayNode.connect(feedbackNode);
+    feedbackNode.connect(delayNode);
+    delayNode.connect(delayGain);
+    delayGain.connect(master);
+    master.connect(ctx.destination);
+
+    var len = ctx.sampleRate * 2;
+    noiseBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = noiseBuffer.getChannelData(0);
+    for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    return ctx;
   }
+
   function setBtn(btn, state){
     if (!btn) return;
     btn.textContent = state || (enabled ? '🎵' : '🔇');
-    btn.title = enabled ? 'Музыка включена' : 'Музыка выключена';
+    btn.title = enabled ? 'Музыка включена: ' + track().name : 'Музыка выключена';
     btn.setAttribute('aria-label', btn.title);
   }
-  function setTrack(index, autoplay){
-    index = clampTrack(index);
-    saveTrack(index);
-    var select = document.getElementById('musicTrackSelect');
-    if (select) select.value = String(index);
-    var btn = document.getElementById('musicToggleBtn');
-    var shouldPlay = !!autoplay && enabled;
-    audio.pause();
-    audio.src = TRACKS[index].url;
-    audio.currentTime = 0;
-    audio.load();
-    if (shouldPlay) {
-      setBtn(btn, '⏳');
-      audio.play().then(function(){ setBtn(btn, '🎵'); }).catch(function(){ enabled = false; setBtn(btn, '🔇'); });
-    } else {
-      setBtn(btn);
+
+  function setupFx(t){
+    if (!getCtx()) return;
+    delayNode.delayTime.setTargetAtTime(t.delay || .22, ctx.currentTime, .02);
+    feedbackNode.gain.setTargetAtTime(clamp(t.feedback || .16, 0, .55), ctx.currentTime, .02);
+    delayGain.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' ? .10 : .18, ctx.currentTime, .02);
+  }
+
+  function createFilter(freq, q){
+    var f = ctx.createBiquadFilter();
+    f.type = 'lowpass';
+    f.frequency.value = freq || 2200;
+    f.Q.value = q || .7;
+    return f;
+  }
+
+  function playTone(freq, when, dur, opts){
+    if (!ctx || !master || !freq) return;
+    opts = opts || {};
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    var filter = createFilter(opts.filter || track().filter || 2200, opts.q || .8);
+    osc.type = opts.wave || track().wave || 'sine';
+    osc.frequency.setValueAtTime(freq, when);
+    if (opts.detune) osc.detune.setValueAtTime(opts.detune, when);
+    var v = opts.vol || .04;
+    var a = opts.attack == null ? .018 : opts.attack;
+    var r = opts.release == null ? .045 : opts.release;
+    gain.gain.setValueAtTime(.0001, when);
+    gain.gain.exponentialRampToValueAtTime(Math.max(v, .0002), when + Math.max(a, .004));
+    gain.gain.exponentialRampToValueAtTime(.0001, when + Math.max(dur, .035));
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(master);
+    if (opts.delay !== false) gain.connect(delayNode);
+    osc.start(when);
+    osc.stop(when + dur + r + .03);
+  }
+
+  function playChord(rootMidi, degrees, when, dur, vol, wave){
+    var sc = track().scale;
+    degrees.forEach(function(d, idx){
+      var semi = sc[((d % sc.length) + sc.length) % sc.length] + 12 * Math.floor(d / sc.length);
+      playTone(midiToFreq(rootMidi + semi), when + idx * .015, dur, { wave: wave || track().padWave || 'triangle', vol: vol || .026, attack:.18, release:.38, filter: track().filter || 1500, delay:true, detune:(idx - 1) * 4 });
+    });
+  }
+
+  function playNoise(when, dur, opts){
+    if (!ctx || !noiseBuffer) return;
+    opts = opts || {};
+    var src = ctx.createBufferSource();
+    var gain = ctx.createGain();
+    var filter = ctx.createBiquadFilter();
+    src.buffer = noiseBuffer;
+    filter.type = opts.type || 'highpass';
+    filter.frequency.value = opts.freq || 5000;
+    filter.Q.value = opts.q || .6;
+    gain.gain.setValueAtTime(.0001, when);
+    gain.gain.exponentialRampToValueAtTime(opts.vol || .025, when + .006);
+    gain.gain.exponentialRampToValueAtTime(.0001, when + dur);
+    src.connect(filter); filter.connect(gain); gain.connect(master);
+    src.start(when); src.stop(when + dur + .02);
+  }
+
+  function kick(when, strong){
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(strong ? 135 : 110, when);
+    osc.frequency.exponentialRampToValueAtTime(strong ? 38 : 48, when + (strong ? .24 : .18));
+    gain.gain.setValueAtTime(.0001, when);
+    gain.gain.exponentialRampToValueAtTime(strong ? .19 : .105, when + .006);
+    gain.gain.exponentialRampToValueAtTime(.0001, when + (strong ? .28 : .20));
+    osc.connect(gain); gain.connect(master);
+    osc.start(when); osc.stop(when + .34);
+  }
+  function snare(when, soft){ playNoise(when, soft ? .09 : .13, { vol: soft ? .032 : .062, freq: soft ? 1600 : 1100, type:'bandpass', q:.7 }); }
+  function hat(when, soft){ playNoise(when, soft ? .035 : .045, { vol: soft ? .014 : .025, freq: soft ? 6500 : 8000, type:'highpass' }); }
+  function cowbell(when, semi){
+    var base = midiToFreq(track().root + (semi || 12) + 24);
+    playTone(base, when, .075, { wave:'square', vol:.034, attack:.004, release:.02, filter:3600, delay:true });
+    playTone(base * 1.51, when, .065, { wave:'square', vol:.018, attack:.004, release:.02, filter:3600, delay:true });
+  }
+  function bassNote(semi, when, dur){
+    var f = midiToFreq(track().root + semi - 12);
+    playTone(f, when, dur || .20, { wave: track().mood === 'phonk' || track().mood === 'drift' ? 'sawtooth' : 'triangle', vol: track().mood === 'phonk' ? .07 : .045, attack:.006, release:.04, filter: track().mood === 'phonk' ? 520 : 680, delay:false });
+  }
+
+  function startNoiseBed(){
+    stopNoiseBed();
+    var t = track();
+    if (!t.rain) return;
+    var source = ctx.createBufferSource();
+    var gain = ctx.createGain();
+    var filter = ctx.createBiquadFilter();
+    source.buffer = noiseBuffer;
+    source.loop = true;
+    filter.type = 'lowpass';
+    filter.frequency.value = 2600;
+    gain.gain.value = .018;
+    source.connect(filter); filter.connect(gain); gain.connect(master);
+    source.start();
+    noiseBed = source;
+  }
+  function stopNoiseBed(){
+    if (!noiseBed) return;
+    try { noiseBed.stop(); } catch(e){}
+    noiseBed = null;
+  }
+
+  function scheduleStep(s, when){
+    var t = track();
+    var st = s % 16;
+    var stepLen = 60 / t.bpm / 4;
+
+    if (t.pad && st === 0) {
+      var chords = [[0,2,4],[3,5,7],[4,6,8],[2,4,6]];
+      playChord(t.root, chords[Math.floor(s / 16) % chords.length], when, stepLen * 15, t.padVol || .024, t.padWave || 'triangle');
+    }
+
+    if (s % (t.melodyEvery || 4) === 0) {
+      var mi = Math.floor(s / (t.melodyEvery || 4)) % t.melody.length;
+      var deg = t.melody[mi];
+      if (deg >= 0) {
+        var semi = t.scale[((deg % t.scale.length) + t.scale.length) % t.scale.length] + 12 * Math.floor(deg / t.scale.length);
+        playTone(midiToFreq(t.root + semi + 12), when, t.noteDur || stepLen * 2.5, { wave:t.wave, vol:t.noteVol || .04, filter:t.filter || 2200, delay:true, attack:t.mood === 'ambient' || t.mood === 'relax' ? .04 : .008 });
+      }
+    }
+
+    if (t.bass && st % 4 === 0) {
+      var bassSeq = t.mood === 'phonk' || t.mood === 'drift' ? [0,0,3,0,7,5,3,0] : [0,0,5,3];
+      bassNote(t.scale[bassSeq[(Math.floor(s / 4)) % bassSeq.length] % t.scale.length] || 0, when, stepLen * 2.2);
+    }
+
+    if (t.beat === 'lofi') {
+      if (st === 0 || st === 10) kick(when, false);
+      if (st === 4 || st === 12) snare(when, true);
+      if (st % 2 === 0) hat(when, true);
+    } else if (t.beat === 'soft') {
+      if (st === 0) kick(when, false);
+      if (st === 8) snare(when, true);
+      if (st === 2 || st === 6 || st === 10 || st === 14) hat(when, true);
+    } else if (t.beat === 'phonk' || t.beat === 'darkphonk' || t.beat === 'drift') {
+      if ([0,3,6,10,12,14].indexOf(st) !== -1) kick(when, true);
+      if (st === 4 || st === 12) snare(when, false);
+      if (st % 2 === 0 || t.beat === 'darkphonk') hat(when, false);
+      if (t.cowbell && st % 2 === 0) {
+        var cb = [12,10,7,8,7,5,3,2,12,10,8,7,5,3,2,0];
+        cowbell(when, cb[(s / 2) % cb.length | 0]);
+      }
+    } else if (t.beat === 'cyber' || t.beat === 'synth') {
+      if (st === 0 || st === 8) kick(when, false);
+      if (st === 4 || st === 12) snare(when, false);
+      if (st % 2 === 0) hat(when, t.beat === 'synth');
     }
   }
+
+  function schedulerTick(){
+    if (!ctx || !enabled) return;
+    var t = track();
+    var stepLen = 60 / t.bpm / 4;
+    while (nextStepTime < ctx.currentTime + .35) {
+      scheduleStep(step, nextStepTime);
+      nextStepTime += stepLen;
+      step++;
+    }
+  }
+
+  function startEngine(){
+    if (!getCtx()) return Promise.reject(new Error('AudioContext is not supported'));
+    var t = track();
+    setupFx(t);
+    if (ctx.state === 'suspended') {
+      return ctx.resume().then(startEngine);
+    }
+    clearInterval(scheduler);
+    step = 0;
+    nextStepTime = ctx.currentTime + .05;
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setTargetAtTime(t.mood === 'phonk' || t.mood === 'drift' ? .72 : .62, ctx.currentTime, .06);
+    startNoiseBed();
+    scheduler = setInterval(schedulerTick, 70);
+    schedulerTick();
+    return Promise.resolve();
+  }
+
+  function stopEngine(){
+    if (!ctx || !master) return;
+    clearInterval(scheduler);
+    scheduler = null;
+    stopNoiseBed();
+    master.gain.cancelScheduledValues(ctx.currentTime);
+    master.gain.setTargetAtTime(0.0001, ctx.currentTime, .05);
+  }
+
   function playCurrent(){
     var btn = document.getElementById('musicToggleBtn');
-    if (!audio.src) setTrack(savedTrack(), false);
     enabled = true;
     setBtn(btn, '⏳');
-    audio.play().then(function(){ setBtn(btn, '🎵'); }).catch(function(){ enabled = false; setBtn(btn, '🔇'); });
+    startEngine().then(function(){ setBtn(btn, '🎵'); }).catch(function(){ enabled = false; setBtn(btn, '🔇'); });
   }
   function pauseCurrent(){
     enabled = false;
-    audio.pause();
+    stopEngine();
     setBtn(document.getElementById('musicToggleBtn'), '🔇');
+  }
+  function setTrack(index, autoplay){
+    currentIndex = clampTrack(index);
+    saveTrack(currentIndex);
+    var select = document.getElementById('musicTrackSelect');
+    if (select) select.value = String(currentIndex);
+    if (ctx) setupFx(track());
+    if (enabled && autoplay) startEngine();
+    setBtn(document.getElementById('musicToggleBtn'));
   }
 
   function boot(){
-    var oldBtn = document.getElementById('musicToggleBtn');
-    if (!oldBtn) return;
+    var btn = document.getElementById('musicToggleBtn');
+    if (!btn) return;
 
-    // Удаляем старый обработчик фоновой музыки из базового кода: кнопка заменяется клоном.
-    if (oldBtn.dataset.t73v72MusicReady !== '1') {
-      var freshBtn = oldBtn.cloneNode(true);
-      freshBtn.dataset.t73v72MusicReady = '1';
-      oldBtn.replaceWith(freshBtn);
-      oldBtn = freshBtn;
+    if (btn.dataset.t73v73MusicReady !== '1') {
+      var fresh = btn.cloneNode(true);
+      fresh.dataset.t73v73MusicReady = '1';
+      btn.replaceWith(fresh);
+      btn = fresh;
     }
 
-    var wrap = oldBtn.parentElement;
+    var oldV72 = document.getElementById('musicTrackSelect');
+    if (oldV72 && oldV72.className.indexOf('t73-v73-music-select') === -1) oldV72.remove();
+
+    var wrap = btn.parentElement;
     if (wrap && !document.getElementById('musicTrackSelect')) {
       var select = document.createElement('select');
       select.id = 'musicTrackSelect';
-      select.className = 't73-v72-music-select';
+      select.className = 't73-v73-music-select';
       select.title = 'Выбор фоновой музыки';
       select.setAttribute('aria-label', 'Выбор фоновой музыки');
       select.innerHTML = TRACKS.map(function(t, i){
         return '<option value="' + i + '">' + (i + 1) + '. ' + t.name + '</option>';
       }).join('');
-      select.value = String(savedTrack());
-      wrap.insertBefore(select, oldBtn);
-      select.addEventListener('change', function(){
-        setTrack(this.value, enabled);
-      });
+      select.value = String(currentIndex);
+      wrap.insertBefore(select, btn);
+      select.addEventListener('change', function(){ setTrack(this.value, true); });
     }
 
-    if (!ready) {
-      ready = true;
-      setTrack(savedTrack(), false);
-      oldBtn.addEventListener('click', function(e){
+    if (btn.dataset.t73v73ClickReady !== '1') {
+      btn.dataset.t73v73ClickReady = '1';
+      btn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
         if (enabled) pauseCurrent(); else playCurrent();
       });
     }
+    setTrack(currentIndex, false);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   [250, 700, 1500, 3000].forEach(function(ms){ setTimeout(boot, ms); });
 
-  window.T73_V72_MUSIC_SELECTOR = {
+  window.T73_V73_MUSIC_STUDIO = {
     tracks: TRACKS,
-    audio: audio,
     play: playCurrent,
     pause: pauseCurrent,
-    setTrack: function(i){ setTrack(i, enabled); },
-    getTrack: function(){ return savedTrack(); }
+    setTrack: function(i){ setTrack(i, true); },
+    getTrack: function(){ return currentIndex; }
   };
 })();
 </script>
-<!-- === /T73 V72 === -->
+<!-- === /T73 V73 === -->
 
 </body>
 </html>
