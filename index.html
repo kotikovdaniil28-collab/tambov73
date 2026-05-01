@@ -14956,7 +14956,995 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V56 === -->
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"39e87a2afe7c46788f2fe28e3346cf27","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<!-- === T73 V57: фикс прямой загрузки скриншотов в отчетности модерации === -->
+<style id="t73-v57-direct-screenshot-style">
+  #submitReportBtn,
+  #submitReportBtnV16 {
+    display: none !important;
+  }
+
+  #submitReportBtnV57 {
+    display: inline-flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 1rem !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #52c77b, #8fe0a8) !important;
+    color: #07110b !important;
+    font-weight: 900 !important;
+  }
+
+  #t73-v57-upload-note {
+    padding: .8rem .9rem;
+    border: 1px solid rgba(82,199,123,.45);
+    border-radius: 12px;
+    background: rgba(82,199,123,.10);
+    color: #d8ffe4;
+    font-size: .88rem;
+    line-height: 1.35;
+    margin-bottom: .75rem;
+  }
+
+  #reportFileInput {
+    width: 100% !important;
+    min-height: 44px !important;
+    cursor: pointer !important;
+  }
+
+  #reportFilePreview.t73-v57-preview {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: .7rem;
+    margin-top: .85rem;
+    width: 100%;
+  }
+
+  .t73-v57-file {
+    position: relative;
+    min-height: 120px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(0,0,0,.42);
+    border: 1px solid rgba(255,255,255,.16);
+  }
+
+  .t73-v57-file img {
+    width: 100%;
+    height: 96px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .t73-v57-file-name {
+    padding: .35rem .45rem;
+    color: #fff;
+    font-size: .72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .t73-v57-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,59,96,.9);
+    color: #fff;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+</style>
+<script id="t73-v57-direct-screenshot-script">
+(function(){
+  'use strict';
+  if (window.__T73_V57_DIRECT_SCREENSHOT__) return;
+  window.__T73_V57_DIRECT_SCREENSHOT__ = true;
+
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  let filesV57 = [];
+  let busyV57 = false;
+
+  function isImageFile(file) {
+    return !!file && (/^image\//i.test(file.type || '') || /\.(png|jpe?g|webp)$/i.test(file.name || ''));
+  }
+
+  function ensureUiV57() {
+    const input = $('reportFileInput');
+    if (!input) return;
+
+    input.setAttribute('multiple', 'multiple');
+    input.setAttribute('accept', 'image/*,.png,.jpg,.jpeg,.webp');
+
+    if (!$('t73-v57-upload-note')) {
+      input.insertAdjacentHTML('beforebegin', '<div id="t73-v57-upload-note"><b>📎 Прямая загрузка исправлена:</b> выберите скриншот с устройства. Он сожмётся и сохранится прямо в отчёте, без Imgur/Yapx и без обязательного Storage-бакета.</div>');
+    }
+
+    if (!$('reportFilePreview')) {
+      input.insertAdjacentHTML('afterend', '<div id="reportFilePreview" class="t73-v57-preview"></div>');
+    } else {
+      $('reportFilePreview').classList.add('t73-v57-preview');
+    }
+
+    const oldBtn = $('submitReportBtn');
+    const oldV16 = $('submitReportBtnV16');
+    if (oldBtn) oldBtn.style.setProperty('display', 'none', 'important');
+    if (oldV16) oldV16.style.setProperty('display', 'none', 'important');
+
+    if (!$('submitReportBtnV57')) {
+      const place = oldV16 || oldBtn || input;
+      place.insertAdjacentHTML('afterend', '<button class="support-check-btn" type="button" id="submitReportBtnV57">📤 Отправить отчёт со скриншотом</button>');
+    }
+
+    const btn = $('submitReportBtnV57');
+    if (btn) btn.onclick = sendReportV57;
+    renderPreviewV57();
+  }
+
+  function renderPreviewV57() {
+    const box = $('reportFilePreview');
+    if (!box) return;
+    box.classList.add('t73-v57-preview');
+    if (!filesV57.length) {
+      box.innerHTML = '<div style="color:var(--color-text-muted);font-size:.86rem;grid-column:1/-1;">Скриншоты пока не выбраны.</div>';
+      return;
+    }
+    box.innerHTML = filesV57.map((file, index) => {
+      const url = URL.createObjectURL(file);
+      return `<div class="t73-v57-file">
+        <button class="t73-v57-remove" type="button" data-v57-remove="${index}">×</button>
+        <img src="${url}" alt="Скриншот ${index + 1}" onload="try{URL.revokeObjectURL(this.src)}catch(e){}">
+        <div class="t73-v57-file-name">${esc(file.name || ('screen_' + (index + 1)))}</div>
+      </div>`;
+    }).join('');
+    box.querySelectorAll('[data-v57-remove]').forEach(btn => {
+      btn.onclick = () => {
+        filesV57.splice(Number(btn.dataset.v57Remove), 1);
+        renderPreviewV57();
+      };
+    });
+  }
+
+  function handleFileChangeV57(event) {
+    const input = event.target && event.target.closest ? event.target.closest('#reportFileInput') : null;
+    if (!input) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    const incoming = Array.from(input.files || []).filter(isImageFile);
+    const limit = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 8 : 12;
+    filesV57 = filesV57.concat(incoming).slice(0, limit);
+    input.value = '';
+    renderPreviewV57();
+
+    const res = $('reportResultText');
+    if (res && incoming.length) {
+      res.style.color = 'var(--color-text-muted)';
+      res.textContent = 'Выбрано скриншотов: ' + filesV57.length;
+    }
+  }
+
+  function readAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(reader.error || new Error('Не удалось прочитать файл'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function loadImage(dataUrl) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Файл не удалось открыть как изображение'));
+      img.src = dataUrl;
+    });
+  }
+
+  async function compressToBase64V57(file) {
+    const original = await readAsDataURL(file);
+    const img = await loadImage(original);
+
+    let maxSide = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 900 : 1100;
+    let width = img.naturalWidth || img.width;
+    let height = img.naturalHeight || img.height;
+    const ratio = Math.min(1, maxSide / Math.max(width, height));
+    width = Math.max(1, Math.round(width * ratio));
+    height = Math.max(1, Math.round(height * ratio));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+
+    let quality = 0.66;
+    let out = canvas.toDataURL('image/jpeg', quality);
+
+    while (out.length > 420000 && quality > 0.38) {
+      quality -= 0.08;
+      out = canvas.toDataURL('image/jpeg', quality);
+    }
+
+    while (out.length > 520000 && maxSide > 640) {
+      maxSide -= 160;
+      const r2 = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+      canvas.width = Math.max(1, Math.round((img.naturalWidth || img.width) * r2));
+      canvas.height = Math.max(1, Math.round((img.naturalHeight || img.height) * r2));
+      const ctx2 = canvas.getContext('2d', { alpha: false });
+      ctx2.fillStyle = '#111';
+      ctx2.fillRect(0, 0, canvas.width, canvas.height);
+      ctx2.drawImage(img, 0, 0, canvas.width, canvas.height);
+      out = canvas.toDataURL('image/jpeg', 0.42);
+    }
+
+    return {
+      url: out,
+      name: file.name || 'screenshot.jpg',
+      kind: 'direct-base64',
+      originalSize: file.size || 0,
+      compressedSize: out.length
+    };
+  }
+
+  async function canSubmitV57() {
+    if (!window.currentUser && typeof currentUser === 'undefined') return false;
+    const user = window.currentUser || currentUser;
+    if (!user) return false;
+
+    try {
+      if (typeof creatorEmail !== 'undefined' && user.email === creatorEmail) return true;
+      if (typeof adminEmails !== 'undefined' && Array.isArray(adminEmails) && adminEmails.includes(user.email)) return true;
+      if (typeof dynamicModLeaders !== 'undefined' && Array.isArray(dynamicModLeaders) && dynamicModLeaders.includes(user.id)) return true;
+      if (typeof isModerator !== 'undefined' && isModerator) return true;
+      if (window.supa) {
+        const { data } = await supa.from('reports').select('id').eq('email', 'USER_ROLE').eq('link', user.id).eq('status', 'moderator').limit(1);
+        return !!(data && data.length);
+      }
+    } catch (e) {
+      return true;
+    }
+    return true;
+  }
+
+  async function sendReportV57(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+    ensureUiV57();
+    if (busyV57) return;
+
+    const user = window.currentUser || (typeof currentUser !== 'undefined' ? currentUser : null);
+    const res = $('reportResultText');
+    const btn = $('submitReportBtnV57');
+    const nick = ($('reportNickInput')?.value || (typeof currentNickname !== 'undefined' ? currentNickname : '') || user?.email || '').trim();
+    const work = ($('reportWorkInput')?.value || '').trim();
+    const day = ($('reportDateInput')?.value || new Date().toISOString().slice(0, 10)).trim();
+    const link = ($('reportLinkInput')?.value || '').trim();
+    const quality = ($('reportQualityInput')?.value || 'На проверке').trim();
+
+    if (!user) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Сначала войдите в аккаунт.'; }
+      return;
+    }
+    if (!(await canSubmitV57())) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Сдавать отчёт могут только модераторы.'; }
+      return;
+    }
+    if (!nick || !work || !day) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Заполните ник, работу и дату.'; }
+      return;
+    }
+    if (!link && !filesV57.length) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Добавьте ссылку или выберите скриншот напрямую.'; }
+      return;
+    }
+
+    busyV57 = true;
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Обрабатываю скриншоты...'; }
+    if (res) { res.style.color = 'var(--color-text-muted)'; res.textContent = 'Сжимаю изображения перед отправкой...'; }
+
+    try {
+      const proofs = [];
+      if (link) proofs.push({ url: link, name: 'Ссылка', kind: 'link' });
+
+      for (let i = 0; i < filesV57.length; i++) {
+        if (res) res.textContent = `Сжимаю скриншот ${i + 1} из ${filesV57.length}...`;
+        proofs.push(await compressToBase64V57(filesV57[i]));
+      }
+
+      const payload = {
+        version: 'v57-direct-screenshot',
+        nick,
+        nickname: nick,
+        work,
+        comment: work,
+        day,
+        date: day,
+        quality,
+        proofs,
+        userId: user.id,
+        email: user.email,
+        createdAt: new Date().toISOString()
+      };
+
+      if (res) res.textContent = 'Отправляю отчёт...';
+      const { error } = await supa.from('reports').insert([{
+        id: 'rep57_' + Date.now() + '_' + Math.random().toString(16).slice(2),
+        email: user.email,
+        link: link || 'T73V57:embedded-image',
+        date: JSON.stringify(payload),
+        status: 'На проверке',
+        xp: 0
+      }]);
+
+      if (error) throw error;
+
+      filesV57 = [];
+      renderPreviewV57();
+      ['reportNickInput','reportWorkInput','reportDateInput','reportLinkInput'].forEach(id => { const el = $(id); if (el) el.value = ''; });
+      const input = $('reportFileInput'); if (input) input.value = '';
+      if ($('reportQualityInput')) $('reportQualityInput').value = 'Норма';
+
+      if (res) { res.style.color = 'var(--color-success)'; res.textContent = '✅ Отчёт отправлен. Скриншоты прикреплены напрямую.'; }
+      try { if (typeof playSound === 'function') playSound('win'); } catch (e) {}
+    } catch (err) {
+      if (res) {
+        res.style.color = 'var(--color-error)';
+        res.textContent = 'Ошибка отправки: ' + (err?.message || err) + '. Попробуйте выбрать 1 скриншот или отправить ссылку.';
+      }
+    } finally {
+      busyV57 = false;
+      if (btn) { btn.disabled = false; btn.textContent = '📤 Отправить отчёт со скриншотом'; }
+    }
+  }
+
+  document.addEventListener('change', handleFileChangeV57, true);
+
+  document.addEventListener('click', function(event) {
+    const submit = event.target.closest?.('#submitReportBtnV57,#submitReportBtn,#submitReportBtnV16');
+    if (!submit) return;
+    const inReport = submit.closest?.('#mode-report,#reportFormArea');
+    if (!inReport) return;
+    sendReportV57(event);
+  }, true);
+
+  function bootV57() {
+    ensureUiV57();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV57);
+  else bootV57();
+
+  [100, 300, 700, 1400, 2600, 5200].forEach(ms => setTimeout(bootV57, ms));
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V57_UI_TIMER__);
+    window.__T73_V57_UI_TIMER__ = setTimeout(bootV57, 80);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  window.T73_V57_DIRECT_SCREENSHOT = { boot: bootV57, send: sendReportV57 };
+})();
+</script>
+<!-- === /T73 V57 === -->
+
+
+<!-- === T73 V58 MOD TRAINER DISCORD RULES + ANSWERS + DIALOGS === -->
+<script>
+/* === T73 V58: тренажёр модераторов — Discord правила, правильный ответ, объяснение и диалоги === */
+(function installT73V58ModTrainer() {
+  'use strict';
+
+  const TYPE_LABELS_V58 = {
+    good: '✅ Без нарушения',
+    warn: '⚠️ Устное / Пред / Мут',
+    ban: '🔨 Бан / Перма / Глобал'
+  };
+
+  const TYPE_CLASS_V58 = { good: 'ok', warn: 'warn', ban: 'ban' };
+
+  const RULES_V58 = [
+    ['2.1', 'Неадекватное поведение, завуалированные/саркастичные сообщения для оскорбления или провокации.', 'Устное предупреждение / Предупреждение / Мут 90 минут / Бан 7-15 дней'],
+    ['2.2', 'Трансфер Discord валюты между серверами проекта.', 'Перманентная блокировка / Обнуление'],
+    ['2.3', 'Реклама любого направления, кроме официальных ресурсов проекта.', 'Мут 90 минут / Бан 7-15 дней / Перманентная / Глобальная блокировка'],
+    ['2.4', 'Возрастной, интимный, насильственный или шок-контент.', 'Мут 90 минут / Бан 7-15 дней / Перманентная блокировка'],
+    ['2.5', 'Распространение персональной информации пользователя без согласия.', 'Бан 7-15 дней / Перманентная блокировка'],
+    ['2.6', 'Обман пользователя или введение в заблуждение/замешательство.', 'Мут 90 минут / Бан 7-15 дней / Перманентная блокировка'],
+    ['2.7', 'Споры на тему политики и религии.', 'Устное предупреждение / Мут 90 минут / Бан 7-15 дней'],
+    ['2.8', 'Обсуждение продажи, передачи или обмена чего-либо за реальные деньги.', 'Бан 7-15 дней / Перманентная / Глобальная блокировка'],
+    ['2.9', 'Использование уязвимостей правил, недоработок, багов систем или плагинов для преимущества.', 'Бан 7-15 дней / Перманентная / Глобальная блокировка / Обнуление'],
+    ['2.10', 'Вымогательство и попрошайничество в Discord серверах проекта.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['2.11', 'Деструктивные действия против проекта: неконструктивная критика, призывы покинуть проект и т.п.', 'Бан 7-15 дней / Перманентная / Глобальная блокировка'],
+    ['2.12', 'Обход выданных или находящихся на рассмотрении наказаний.', 'Перманентная блокировка'],
+    ['2.13', 'Прямые или косвенные упоминания/оскорбления родных пользователя.', 'Мут 90 минут / Бан 7-15 дней'],
+    ['2.14', 'Распространение сторонних файлов в любом формате.', 'Бан 7-15 дней / Перманентная / Глобальная блокировка'],
+    ['2.15', 'Пропаганда наркотиков, терроризма и других незаконных вещей.', 'Перманентная / Глобальная блокировка'],
+    ['2.16', 'Расизм, сексизм, нацизм, запрещённые движения и дискриминация по признакам.', 'Устное предупреждение / Предупреждение / Мут 90 минут / Бан 7-15 дней'],
+    ['2.17', 'Помеха работе модерации или администрации проекта.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['2.18', 'Провокация или побуждение пользователей к нарушению правил проекта.', 'Мут 90 минут / Бан 7-15 дней'],
+    ['2.19', 'Прямые или косвенные угрозы в адрес пользователей.', 'Мут 90 минут / Бан 7-15 дней'],
+    ['2.20', 'Многократное нарушение правил Discord сервера.', 'Бан 7-15 дней / Перманентная блокировка'],
+    ['2.21', 'Приватные комнаты с названием, нарушающим правила Discord серверов и проекта.', 'Бан создания приватных комнат 3-7 дней'],
+    ['3.1', 'Флуд, спам и сообщения не по теме в каналах с назначением.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['3.2', 'Упоминание пользователей без сопровождающего сообщения.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['3.3', 'Чрезмерный CapsLock.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['3.4', 'Злоупотребление знаками препинания и символами.', 'Устное предупреждение / Предупреждение / Мут 90 минут'],
+    ['3.5', 'Многократное упоминание пользователя.', 'Мут 90 минут'],
+    ['4.1', 'Целенаправленное создание помехи общению в голосовом канале.', 'Устное предупреждение / Мут 90 минут'],
+    ['4.2', 'Сторонние программы для воспроизведения звуков через микрофон.', 'Устное предупреждение / Мут 90 минут'],
+    ['4.3', 'Неправильно настроенный микрофон с чрезмерным усилением, фоном или шипением.', 'Устное предупреждение / Мут 90 минут'],
+    ['4.4', 'Программы для изменения голоса.', 'Устное предупреждение / Мут 90 минут'],
+    ['5.1', 'Копирование чужих профилей.', 'Устное предупреждение / Предупреждение / Бан 7-15 дней / Перманентная блокировка'],
+    ['5.2', 'Оскорбительные или провокационные никнеймы/оформление профиля.', 'Устное предупреждение / Бан 7-15 дней'],
+    ['5.3', 'Теги и префиксы должностей в нике без отношения к ним.', 'Устное предупреждение / Предупреждение / Бан 7-15 дней']
+  ];
+
+  const RULE_MAP_V58 = Object.fromEntries(RULES_V58.map(r => [r[0], { id: r[0], text: r[1], punishment: r[2] }]));
+
+  const DISCORD_CASES_V58 = [
+    { type: 'warn', rule: '2.1', text: 'Ну да, великий умник опять всех научил играть. Может, тебе уже молчать пора?', explanation: 'Сообщение выглядит как завуалированное оскорбление и провокация конфликта. Для тренажёра выбираем ветку устное/пред/мут.' },
+    { type: 'ban', rule: '2.2', text: 'Перекину Discord валюту с другого сервера проекта на этот, курс 1 к 1.', explanation: 'Это прямой трансфер Discord валюты между серверами проекта. По правилу наказание относится к перманентной блокировке/обнулению.' },
+    { type: 'ban', rule: '2.3', text: 'Залетайте на другой проект, там дают бонусы за регистрацию. Ссылка в профиле.', explanation: 'Реклама стороннего игрового проекта. В правилах указано, что такие случаи могут наказываться вплоть до глобальной блокировки.' },
+    { type: 'warn', rule: '2.3', text: 'Кому нужен мой телеграм-канал с розыгрышами? Подписывайтесь.', explanation: 'Это реклама стороннего направления, не официальный ресурс проекта. В лёгкой ветке тренажёра выбирается предупреждение/мут.' },
+    { type: 'ban', rule: '2.4', text: 'Сейчас кину 18+ картинку и шоковый ролик, не удаляйте.', explanation: 'Возрастной/шок-контент запрещён. В зависимости от содержания наказание может дойти до бана или перманента.' },
+    { type: 'ban', rule: '2.5', text: 'Вот его номер телефона и страница, можете писать ему все.', explanation: 'Публикация персональной информации без согласия — серьёзное нарушение, выбирается бан/перма.' },
+    { type: 'ban', rule: '2.6', text: 'Я админ, скинь мне код от аккаунта для проверки, иначе тебя забанят.', explanation: 'Пользователь вводит другого в заблуждение и пытается обмануть. Это правило 2.6, возможен бан или перманентная блокировка.' },
+    { type: 'warn', rule: '2.7', text: 'Давайте устроим спор про политику, сейчас всем объясню кто прав.', explanation: 'Любые споры на тему политики и религии запрещены. Для обычного начала спора подходит устное предупреждение/мут.' },
+    { type: 'ban', rule: '2.8', text: 'Продам аккаунт/имущество за реальные деньги, оплата переводом.', explanation: 'Прямое обсуждение продажи за реальные средства. Это не ветка мута, а бан/перма/глобал.' },
+    { type: 'ban', rule: '2.9', text: 'Нашёл баг, через него можно получать преимущество. Пользуйтесь пока не закрыли.', explanation: 'Использование или распространение бага для преимущества запрещено. Правильная ветка — бан/перма/глобал/обнуление.' },
+    { type: 'warn', rule: '2.10', text: 'Подарите валюту, ну пожалуйста, я буду писать пока кто-нибудь не даст.', explanation: 'Попрошайничество в Discord запрещено. В тренажёре это ветка устное/пред/мут.' },
+    { type: 'ban', rule: '2.11', text: 'Проект плохой, все уходите отсюда на другой сервер.', explanation: 'Призыв покинуть проект и деструктивное поведение против проекта. Это серьёзная ветка с баном.' },
+    { type: 'ban', rule: '2.12', text: 'Меня замутили, поэтому я зашёл со второго аккаунта и продолжу писать.', explanation: 'Обход наказания запрещён и ведёт к перманентной блокировке.' },
+    { type: 'warn', rule: '2.13', text: 'Передай привет своим родным, они бы тобой гордились наоборот.', explanation: 'Даже косвенные упоминания родных в оскорбительном контексте запрещены. В зависимости от тяжести — мут или бан.' },
+    { type: 'ban', rule: '2.14', text: 'Скачайте мой файл, он вам поможет, кину архив прямо сюда.', explanation: 'Распространение сторонних файлов в любом формате запрещено. Правильная ветка — бан/перма/глобал.' },
+    { type: 'ban', rule: '2.15', text: 'Буду продвигать запрещённые вещества и незаконные организации, это нормально.', explanation: 'Пропаганда запрещённых и незаконных вещей — перманентная/глобальная блокировка.' },
+    { type: 'warn', rule: '2.16', text: 'Игрок пишет дискриминационное сообщение про группу пользователей.', explanation: 'Дискриминация запрещена. В зависимости от тяжести возможны пред/мут или бан; в этой ситуации тренажёр ждёт ветку устное/пред/мут.' },
+    { type: 'warn', rule: '2.17', text: 'Не слушайте модератора, продолжайте писать, пусть он сам разбирается.', explanation: 'Это помеха работе модерации и администрации. Базовая реакция — устное предупреждение/пред/мут.' },
+    { type: 'warn', rule: '2.18', text: 'Давайте все сейчас заспамим канал, посмотрим как быстро нас остановят.', explanation: 'Сообщение побуждает других нарушать правила. В тренажёре выбирается ветка мут/бан; для этой ситуации — пред/мут.' },
+    { type: 'warn', rule: '2.19', text: 'Я тебе устрою проблемы в игре, лучше молчи.', explanation: 'Косвенная угроза пользователю. Обычно выбирается мут/бан; здесь тренажёр ждёт ветку устное/пред/мут.' },
+    { type: 'ban', rule: '2.20', text: 'Пользователь за 7 дней получил шесть блокировок чата и снова нарушил.', explanation: 'Многократные нарушения за короткий срок попадают под 2.20. Это уже бан/перманентная ветка.' },
+    { type: 'ban', rule: '2.21', text: 'Приватная комната названа оскорбительно и нарушает правила проекта.', explanation: 'Запрещены приватные комнаты с нарушающими названиями. Отдельная санкция — бан создания приватных комнат 3-7 дней; в общей шкале тренажёра это ближе к бан-ветке.' },
+    { type: 'warn', rule: '3.1', text: 'В канале заявок игрок несколько раз пишет не по теме: «кто продаст машину?»', explanation: 'Канал имеет назначение, а сообщение не по теме. Это правило 3.1: устное/пред/мут.' },
+    { type: 'warn', rule: '3.2', text: '@Player', explanation: 'Просто упоминать пользователя без сопровождающего сообщения запрещено. Это 3.2.' },
+    { type: 'warn', rule: '3.3', text: 'ПОЧЕМУ МЕНЯ НИКТО НЕ СЛЫШИТ Я ТУТ ПИШУ ВАМ ВСЕМ', explanation: 'Чрезмерный CapsLock нарушает 3.3. Правильная ветка — устное/пред/мут.' },
+    { type: 'warn', rule: '3.4', text: 'Как дела??????????????????????????????', explanation: 'Злоупотребление знаками препинания подпадает под 3.4.' },
+    { type: 'warn', rule: '3.5', text: '@Player @Player @Player @Player ответь срочно', explanation: 'Многократное упоминание пользователя запрещено и наказывается мутом 90 минут.' },
+    { type: 'warn', rule: '4.1', text: '[Голосовой канал] Пользователь специально мешает общению и перебивает всех громкими звуками.', explanation: 'Целенаправленная помеха общению в голосовом канале — 4.1, устное предупреждение/мут.' },
+    { type: 'warn', rule: '4.2', text: '[Голосовой канал] Пользователь включает звуки через микрофон сторонней программой.', explanation: 'Сторонние программы для воспроизведения звуков через микрофон запрещены правилом 4.2.' },
+    { type: 'warn', rule: '4.3', text: '[Голосовой канал] У пользователя сильный фон и шипение, он игнорирует просьбу настроить микрофон.', explanation: 'Неправильно настроенный микрофон с фоном/шипением — правило 4.3.' },
+    { type: 'warn', rule: '4.4', text: '[Голосовой канал] Игрок использует программу для изменения голоса.', explanation: 'Изменение голоса программами запрещено правилом 4.4.' },
+    { type: 'warn', rule: '5.1', text: 'Игрок полностью скопировал ник, аватар и оформление другого пользователя.', explanation: 'Копирование чужих профилей запрещено. Возможна эскалация до бана, но базовая ветка тренажёра — устное/пред.' },
+    { type: 'warn', rule: '5.2', text: 'Никнейм пользователя оформлен провокационно и оскорбительно.', explanation: 'Оскорбительный или провокационный ник/профиль подпадает под 5.2.' },
+    { type: 'warn', rule: '5.3', text: 'Пользователь поставил в ник [Admin] Nick_Name, хотя не относится к администрации.', explanation: 'Нельзя использовать теги и префиксы должностей без отношения к ним. Это правило 5.3.' },
+    { type: 'good', rule: 'none', text: 'Подскажите, где посмотреть актуальные правила Discord сервера?', explanation: 'Вопрос по правилам без рекламы, спама, оскорблений или запрещённого контента. Нарушения нет.' },
+    { type: 'good', rule: 'none', text: 'Извините за капс выше, случайно включил. Больше не буду.', explanation: 'Само по себе извинение без продолжения нарушения не требует наказания.' },
+    { type: 'good', rule: 'none', text: 'Можно ли обсудить правила подачи заявки в гос. организацию?', explanation: 'Нормальный вопрос по игровому процессу, нарушения Discord правил нет.' },
+    {
+      type: 'warn', rule: '3.1', mode: 'dialog', title: 'Диалог: сообщения не по теме',
+      dialog: [
+        ['Игрок_1', 'Это канал для отчётов, сюда надо писать только отчётность.'],
+        ['Игрок_2', 'Куплю машину, пишите цены.'],
+        ['Игрок_1', 'Ты не туда написал.'],
+        ['Игрок_2', 'Да какая разница, тут людей больше.']
+      ],
+      explanation: 'Канал имеет назначение, но игрок намеренно пишет не по теме. Это 3.1, ветка устное/пред/мут.'
+    },
+    {
+      type: 'ban', rule: '2.8', mode: 'dialog', title: 'Диалог: реальные деньги',
+      dialog: [
+        ['Покупатель', 'Можно купить имущество за игровую валюту?'],
+        ['Продавец', 'Нет, только за реальные деньги. Оплата переводом.'],
+        ['Покупатель', 'Это точно разрешено?'],
+        ['Продавец', 'Да никто не узнает.']
+      ],
+      explanation: 'В диалоге прямо обсуждается продажа/обмен за реальные средства. Это правило 2.8, правильная ветка — бан/перма/глобал.'
+    },
+    {
+      type: 'warn', rule: '2.7', mode: 'dialog', title: 'Диалог: политика/религия',
+      dialog: [
+        ['Участник_A', 'Не начинайте спор, это игровой чат.'],
+        ['Участник_B', 'Нет, сейчас поговорим о политике, я докажу всем свою позицию.'],
+        ['Участник_A', 'Это запрещено правилами.'],
+        ['Участник_B', 'Мне всё равно.']
+      ],
+      explanation: 'Пользователь начинает спор на запрещённую тему. Для такого начала подходит устное предупреждение/мут.'
+    },
+    {
+      type: 'warn', rule: '2.17', mode: 'dialog', title: 'Диалог: помеха модерации',
+      dialog: [
+        ['Модератор', 'Прекратите флуд, пожалуйста.'],
+        ['Игрок', 'Не слушайте его, пишите дальше, пусть попробует всех замутить.'],
+        ['Модератор', 'Это помеха работе модерации.'],
+        ['Игрок', 'Ну и что?']
+      ],
+      explanation: 'Игрок мешает модератору выполнять работу и подталкивает других игнорировать требование. Это 2.17.'
+    },
+    {
+      type: 'good', rule: 'none', mode: 'dialog', title: 'Диалог: обычный вопрос',
+      dialog: [
+        ['Новичок', 'Где можно прочитать правила Discord?'],
+        ['Игрок', 'В канале с правилами, обычно он закреплён сверху.'],
+        ['Новичок', 'Спасибо, пойду посмотрю.']
+      ],
+      explanation: 'Обычный спокойный диалог без нарушений. Нужно выбрать «Без нарушения».'
+    }
+  ];
+
+  let queueV58 = [];
+  let forceDialogNextV58 = false;
+  let lastInterceptV58 = 0;
+
+  function $(id) { return document.getElementById(id); }
+  function escV58(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[ch]));
+  }
+  function ruleInfoV58(id) {
+    if (!id || id === 'none') return { id: 'Без правила', text: 'Нарушения нет.', punishment: 'Наказание не требуется' };
+    return RULE_MAP_V58[id] || { id, text: 'Правило не найдено в локальной базе.', punishment: 'Проверьте актуальный регламент' };
+  }
+  function typeLabelV58(type) { return TYPE_LABELS_V58[type] || String(type || 'неизвестно'); }
+  function scenarioTitleV58(item) {
+    if (item?.title) return item.title;
+    if (item?.mode === 'dialog' || Array.isArray(item?.dialog)) return 'Диалоговая ситуация';
+    return 'Одиночное сообщение';
+  }
+  function fallbackExplanationV58(item) {
+    if (!item) return 'Ситуация не найдена.';
+    if (item.explanation) return item.explanation;
+    if (item.rule) {
+      const r = ruleInfoV58(item.rule);
+      return 'Ситуация относится к правилу ' + r.id + ': ' + r.text;
+    }
+    if (item.type === 'good') return 'В сообщении нет явного нарушения правил Discord сервера.';
+    if (item.type === 'warn') return 'Нарушение относится к лёгкой/средней ветке: устное предупреждение, предупреждение или мут.';
+    if (item.type === 'ban') return 'Нарушение относится к тяжёлой ветке: бан, перманентная или глобальная блокировка.';
+    return 'Выбирайте вердикт по ближайшему правилу и тяжести нарушения.';
+  }
+  function normalizeV58(item) {
+    const out = Object.assign({}, item || {});
+    out.type = out.type || 'good';
+    out.rule = out.rule || (out.type === 'good' ? 'none' : '2.1');
+    out.explanation = fallbackExplanationV58(out);
+    return out;
+  }
+  function shuffledIndexesV58(arr) {
+    const out = arr.map((_, i) => i);
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+  function combinedCasesV58() {
+    let base = [];
+    try { if (Array.isArray(baseModMessages)) base = base.concat(baseModMessages); } catch (e) {}
+    try { if (Array.isArray(customModMessages)) base = base.concat(customModMessages); } catch (e) {}
+    return DISCORD_CASES_V58.concat(base.map(item => normalizeV58(item)));
+  }
+  function currentUserNameV58() {
+    try { if (typeof randomFunnyNick === 'function') return randomFunnyNick(); } catch (e) {}
+    return 'Игрок_' + Math.floor(1000 + Math.random() * 9000);
+  }
+  function initialsV58(name) {
+    try { if (typeof initials === 'function') return initials(name); } catch (e) {}
+    return String(name || 'T7').split(/[#_\s]+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'T7';
+  }
+
+  function ensureStyleV58() {
+    if ($('t73v58Style')) return;
+    const style = document.createElement('style');
+    style.id = 't73v58Style';
+    style.textContent = `
+      .t73-v58-tools{margin:1rem 0;padding:1rem;border-radius:18px;border:1px solid rgba(108,140,255,.25);background:rgba(13,16,32,.55);display:grid;gap:.8rem}
+      .t73-v58-tool-row{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center}
+      .t73-v58-mini-btn{border:1px solid rgba(191,198,255,.22);background:rgba(255,255,255,.05);color:#fff;border-radius:999px;padding:.65rem .9rem;font-weight:800;cursor:pointer}
+      .t73-v58-mini-btn:hover{transform:translateY(-1px);border-color:rgba(108,140,255,.6)}
+      .t73-v58-answer{margin-top:1rem;padding:1rem;border-radius:16px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.38);display:grid;gap:.65rem;color:var(--color-text-muted)}
+      .t73-v58-answer.ok{border-color:rgba(82,199,123,.55);background:rgba(10,35,20,.42)}
+      .t73-v58-answer.warn{border-color:rgba(255,191,71,.6);background:rgba(42,31,7,.38)}
+      .t73-v58-answer.ban{border-color:rgba(255,107,136,.6);background:rgba(42,7,16,.38)}
+      .t73-v58-answer-title{font-weight:900;color:#fff;font-size:1.02rem}
+      .t73-v58-pill{display:inline-flex;align-items:center;gap:.35rem;border-radius:999px;padding:.22rem .55rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);font-size:.86rem;color:#fff;margin:.12rem .2rem .12rem 0}
+      .t73-v58-rule{padding:.7rem;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+      .t73-v58-dialog{display:grid;gap:.55rem}
+      .t73-v58-dialog-line{padding:.75rem .9rem;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
+      .t73-v58-dialog-line:nth-child(even){background:rgba(108,140,255,.10);margin-left:1rem}
+      .t73-v58-dialog-name{color:#ffbf47;font-weight:900;margin-right:.35rem}
+      .t73-v58-case-title{font-size:.86rem;color:var(--color-text-muted);margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.08em}
+      .t73-v58-rules-box{display:none;max-height:360px;overflow:auto;padding:.8rem;border-radius:14px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.1)}
+      .t73-v58-rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.55rem}
+      .t73-v58-rule-card{padding:.7rem;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);font-size:.9rem}
+      .t73-v58-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureUiV58() {
+    ensureStyleV58();
+    const mode = $('mode-moderation');
+    if (!mode) return;
+
+    const head = mode.querySelector('.section-head');
+    if (head && !$('t73v58TrainerTools')) {
+      const tools = document.createElement('div');
+      tools.id = 't73v58TrainerTools';
+      tools.className = 't73-v58-tools';
+      tools.innerHTML = `
+        <div class="t73-v58-tool-row">
+          <button class="t73-v58-mini-btn" id="t73v58DialogBtn" type="button">🎭 Диалоговая ситуация</button>
+          <button class="t73-v58-mini-btn" id="t73v58RandomBtn" type="button">🎲 Случайная ситуация</button>
+          <button class="t73-v58-mini-btn" id="t73v58RulesBtn" type="button">📚 Памятка правил Discord</button>
+        </div>
+        <div class="t73-v58-muted">После каждого ответа ниже будет показан правильный вариант, пункт правил, наказание и короткое объяснение.</div>
+        <div class="t73-v58-rules-box" id="t73v58RulesBox">
+          <div class="t73-v58-rules-grid">${RULES_V58.map(r => `<div class="t73-v58-rule-card"><b>${escV58(r[0])}</b><div>${escV58(r[1])}</div><div class="t73-v58-muted">${escV58(r[2])}</div></div>`).join('')}</div>
+        </div>`;
+      head.insertAdjacentElement('afterend', tools);
+      $('t73v58DialogBtn')?.addEventListener('click', () => {
+        forceDialogNextV58 = true;
+        try { if (typeof state !== 'undefined') state.started = true; } catch (e) {}
+        randomMessageV58();
+      });
+      $('t73v58RandomBtn')?.addEventListener('click', () => {
+        try { if (typeof state !== 'undefined') state.started = true; } catch (e) {}
+        randomMessageV58();
+      });
+      $('t73v58RulesBtn')?.addEventListener('click', () => {
+        const box = $('t73v58RulesBox');
+        if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
+      });
+    }
+
+    const card = mode.querySelector('.feed .message-card');
+    if (card && !$('modTrainerAnswerBox')) {
+      const answer = document.createElement('div');
+      answer.id = 'modTrainerAnswerBox';
+      answer.className = 't73-v58-answer';
+      answer.innerHTML = '<div class="t73-v58-answer-title">Разбор появится после ответа</div><div class="t73-v58-muted">Выберите один из трёх вердиктов — здесь будет правильный ответ и объяснение.</div>';
+      card.insertAdjacentElement('afterend', answer);
+    }
+  }
+
+  function renderScenarioV58(item) {
+    ensureUiV58();
+    const user = item.user || currentUserNameV58();
+    const authorName = $('authorName');
+    const authorMeta = $('authorMeta');
+    const message = $('messageText');
+    const avatar = $('avatarBox');
+    const hint = $('hintText');
+    if (authorName) authorName.textContent = user;
+    if (authorMeta) authorMeta.textContent = item.mode === 'dialog' || Array.isArray(item.dialog) ? 'Диалоговая ситуация' : 'Ожидает проверки';
+    if (avatar) avatar.textContent = initialsV58(user);
+    if (hint) hint.textContent = 'Оценка: без нарушения, устное/пред/мут, бан/перма/глобал. После ответа появится пункт правил и объяснение.';
+
+    if (!message) return;
+    if (Array.isArray(item.dialog)) {
+      message.innerHTML = `<div class="t73-v58-case-title">${escV58(scenarioTitleV58(item))}</div><div class="t73-v58-dialog">${item.dialog.map(line => {
+        const name = Array.isArray(line) ? line[0] : line.name;
+        const text = Array.isArray(line) ? line[1] : line.text;
+        return `<div class="t73-v58-dialog-line"><span class="t73-v58-dialog-name">${escV58(name)}:</span>${escV58(text)}</div>`;
+      }).join('')}</div>`;
+    } else {
+      message.textContent = item.text || 'Сообщение отсутствует';
+    }
+  }
+
+  async function hiddenCheckV58() {
+    try {
+      if (typeof currentUser === 'undefined' || !currentUser || !Array.isArray(hiddenChecks)) return null;
+      const hcIndex = hiddenChecks.findIndex(hc => hc.userId === currentUser.id);
+      if (hcIndex === -1) return null;
+      const check = hiddenChecks[hcIndex];
+      if (typeof supa !== 'undefined' && supa) await supa.from('reports').delete().eq('id', check.id);
+      hiddenChecks.splice(hcIndex, 1);
+      return normalizeV58({
+        type: check.type || 'good',
+        text: check.text || 'Скрытая проверка',
+        user: 'Тайный_Покупатель',
+        rule: check.rule || (check.type === 'ban' ? '2.6' : check.type === 'warn' ? '2.1' : 'none'),
+        explanation: 'Это скрытая проверка от руководства. Оценивайте по содержанию сообщения; если тип задан руководителем, тренажёр сверяет ответ с ним.'
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function randomMessageV58() {
+    ensureUiV58();
+    const hc = await hiddenCheckV58();
+    if (hc) {
+      try { state.current = hc; } catch (e) {}
+      renderScenarioV58(hc);
+      return;
+    }
+
+    const cases = combinedCasesV58();
+    if (!cases.length) return;
+
+    let idx;
+    if (forceDialogNextV58) {
+      forceDialogNextV58 = false;
+      const dialogCases = cases.map((c, i) => [c, i]).filter(pair => Array.isArray(pair[0].dialog));
+      idx = dialogCases.length ? dialogCases[Math.floor(Math.random() * dialogCases.length)][1] : Math.floor(Math.random() * cases.length);
+    } else {
+      if (!queueV58.length || queueV58.some(i => i >= cases.length)) queueV58 = shuffledIndexesV58(cases);
+      idx = queueV58.pop();
+    }
+
+    const item = normalizeV58(cases[idx]);
+    item.user = item.user || currentUserNameV58();
+    try { state.current = item; } catch (e) {}
+    renderScenarioV58(item);
+  }
+
+  function showAnswerV58(chosen, item, ok) {
+    ensureUiV58();
+    const box = $('modTrainerAnswerBox');
+    if (!box || !item) return;
+    const rule = ruleInfoV58(item.rule);
+    const cls = ok ? 'ok' : (TYPE_CLASS_V58[item.type] || 'warn');
+    box.className = 't73-v58-answer ' + cls;
+    box.innerHTML = `
+      <div class="t73-v58-answer-title">${ok ? '✅ Верно' : '❌ Неверно'} — разбор предыдущей ситуации</div>
+      <div>
+        <span class="t73-v58-pill">Ваш ответ: ${escV58(typeLabelV58(chosen))}</span>
+        <span class="t73-v58-pill">Правильно: ${escV58(typeLabelV58(item.type))}</span>
+        <span class="t73-v58-pill">Пункт: ${escV58(rule.id)}</span>
+      </div>
+      <div class="t73-v58-rule"><b>${escV58(rule.id)}:</b> ${escV58(rule.text)}<br><span class="t73-v58-muted">Наказание по правилам: ${escV58(rule.punishment)}</span></div>
+      <div>${escV58(fallbackExplanationV58(item))}</div>`;
+  }
+
+  async function judgeV58(action) {
+    try {
+      if (typeof state === 'undefined') return;
+      if (!state.started) { alert('Сначала нажмите «Начать смену».'); return; }
+      if (typeof isSpamming === 'function' && isSpamming()) return;
+      if (!state.current) await randomMessageV58();
+      const current = normalizeV58(state.current);
+      const ok = current && action === current.type;
+      state.resolved++;
+      if (ok) {
+        state.correct++;
+        try { if (typeof playSound === 'function') playSound('ok'); } catch (e) {}
+        try { if (typeof pushLog === 'function') pushLog('✅ Верно: ' + typeLabelV58(action) + ' · ' + ruleInfoV58(current.rule).id + ' · ' + (current.user || 'игрок')); } catch (e) {}
+      } else {
+        state.mistakes++;
+        try { if (typeof playSound === 'function') playSound('fail'); } catch (e) {}
+        try { if (typeof pushLog === 'function') pushLog('❌ Ошибка: выбрано ' + typeLabelV58(action) + ', нужно ' + typeLabelV58(current.type) + ' · ' + ruleInfoV58(current.rule).id); } catch (e) {}
+      }
+      showAnswerV58(action, current, ok);
+      try { if (typeof saveProgress === 'function') await saveProgress(); } catch (e) {}
+      await randomMessageV58();
+      try { if (typeof updateModStats === 'function') updateModStats(); } catch (e) {}
+    } catch (err) {
+      console.error('T73 V58 judge error', err);
+    }
+  }
+
+  function interceptActionV58(event) {
+    const btn = event.target && event.target.closest ? event.target.closest('[data-action]') : null;
+    if (!btn) return;
+    if (!btn.closest('#mode-moderation')) return;
+    const now = Date.now();
+    if (now - lastInterceptV58 < 220) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      return;
+    }
+    lastInterceptV58 = now;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    judgeV58(btn.dataset.action);
+  }
+
+  function bootV58() {
+    ensureUiV58();
+    try { randomMessage = randomMessageV58; } catch (e) {}
+    try { judge = judgeV58; } catch (e) {}
+  }
+
+  document.addEventListener('pointerup', interceptActionV58, true);
+  document.addEventListener('click', interceptActionV58, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV58);
+  else bootV58();
+
+  [150, 400, 900, 1800, 3500].forEach(ms => setTimeout(bootV58, ms));
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V58_TIMER__);
+    window.__T73_V58_TIMER__ = setTimeout(bootV58, 80);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  window.T73_V58_MOD_TRAINER = {
+    boot: bootV58,
+    next: randomMessageV58,
+    dialog: function() { forceDialogNextV58 = true; return randomMessageV58(); },
+    cases: DISCORD_CASES_V58,
+    rules: RULES_V58
+  };
+})();
+/* === /T73 V58 === */
+
+</script>
+<!-- === /T73 V58 === -->
+
+
+<!-- === T73 V59: фикс прыгающей кнопки проверки отчетности === -->
+<style id="t73-v59-report-check-bottom-style">
+  #reportFormArea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #reportsListArea {
+    order: 998 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+    float: none !important;
+    margin-top: 1.25rem !important;
+  }
+
+  #adminPanelArea {
+    order: 999 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+    float: none !important;
+    margin-top: 1.25rem !important;
+    padding-top: 1.25rem !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  #viewReportsBtn {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+</style>
+<script id="t73-v59-report-check-bottom-script">
+(function(){
+  'use strict';
+  if (window.__T73_V59_REPORT_CHECK_BOTTOM__) return;
+  window.__T73_V59_REPORT_CHECK_BOTTOM__ = true;
+
+  const $ = id => document.getElementById(id);
+  let timer = null;
+
+  function forceBottomCheckButton(){
+    const form = $('reportFormArea');
+    const admin = $('adminPanelArea');
+    const list = $('reportsListArea');
+    const btn = $('viewReportsBtn');
+    if (!form || !admin || !btn) return;
+
+    // Постоянный порядок:
+    // 1) форма сдачи отчёта, 2) список отчётов, 3) кнопка проверки/обновления в самом низу.
+    if (list && list.parentElement !== form) form.appendChild(list);
+    if (admin.parentElement !== form) form.appendChild(admin);
+    if (list && admin.parentElement === form && list.parentElement === form && admin.previousElementSibling !== list) {
+      form.insertBefore(list, admin);
+    }
+    if (admin.parentElement === form && admin.nextElementSibling) {
+      form.appendChild(admin);
+    }
+
+    // display не включаем насильно, чтобы раздел не открывался обычным пользователям.
+    form.style.setProperty('flex-direction', 'column', 'important');
+    form.style.setProperty('align-items', 'stretch', 'important');
+    form.style.setProperty('width', '100%', 'important');
+    form.style.setProperty('max-width', '100%', 'important');
+    form.style.setProperty('box-sizing', 'border-box', 'important');
+
+    admin.style.setProperty('order', '999', 'important');
+    admin.style.setProperty('width', '100%', 'important');
+    admin.style.setProperty('max-width', '100%', 'important');
+    admin.style.setProperty('max-height', 'none', 'important');
+    admin.style.setProperty('overflow', 'visible', 'important');
+    admin.style.setProperty('box-sizing', 'border-box', 'important');
+    admin.style.setProperty('clear', 'both', 'important');
+    admin.style.setProperty('float', 'none', 'important');
+
+    if (list) {
+      list.style.setProperty('order', '998', 'important');
+      list.style.setProperty('width', '100%', 'important');
+      list.style.setProperty('max-width', '100%', 'important');
+      list.style.setProperty('max-height', 'none', 'important');
+      list.style.setProperty('overflow', 'visible', 'important');
+      list.style.setProperty('box-sizing', 'border-box', 'important');
+      list.style.setProperty('clear', 'both', 'important');
+      list.style.setProperty('float', 'none', 'important');
+    }
+
+    const isOpen = list && list.dataset && list.dataset.v55Open === '1';
+    btn.textContent = isOpen ? 'Обновить / скрыть отчетность' : 'Проверить отчетность';
+    btn.style.setProperty('width', '100%', 'important');
+    btn.style.setProperty('max-width', '100%', 'important');
+    btn.style.setProperty('display', 'flex', 'important');
+    btn.style.setProperty('align-items', 'center', 'important');
+    btn.style.setProperty('justify-content', 'center', 'important');
+    btn.style.setProperty('white-space', 'normal', 'important');
+    btn.style.setProperty('margin-left', '0', 'important');
+    btn.style.setProperty('margin-right', '0', 'important');
+  }
+
+  function scheduleFix(){
+    clearTimeout(timer);
+    forceBottomCheckButton();
+    timer = setTimeout(forceBottomCheckButton, 80);
+    [180, 420, 900, 1600].forEach(ms => setTimeout(forceBottomCheckButton, ms));
+  }
+
+  // Старые обработчики могут стопать click, поэтому слушаем события ещё до него.
+  ['pointerdown','mousedown','touchstart','keydown'].forEach(type => {
+    document.addEventListener(type, function(event){
+      if (event.target && event.target.closest && event.target.closest('#viewReportsBtn,#reportTabBtn,[data-mode="report"]')) {
+        scheduleFix();
+      }
+    }, true);
+  });
+
+  document.addEventListener('click', function(event){
+    if (event.target && event.target.closest && event.target.closest('#viewReportsBtn,#reportTabBtn,[data-mode="report"]')) {
+      scheduleFix();
+    }
+  }, true);
+
+  const observer = new MutationObserver(function(){
+    clearTimeout(window.__T73_V59_REPORT_CHECK_TIMER__);
+    window.__T73_V59_REPORT_CHECK_TIMER__ = setTimeout(forceBottomCheckButton, 40);
+  });
+
+  function boot(){
+    forceBottomCheckButton();
+    try { observer.observe(document.documentElement, { childList: true, subtree: true }); } catch(e) {}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  [50, 150, 350, 800, 1500, 3000, 6000].forEach(ms => setTimeout(forceBottomCheckButton, ms));
+
+  window.T73_V59_REPORT_CHECK_BOTTOM = {
+    fix: forceBottomCheckButton,
+    schedule: scheduleFix
+  };
+})();
+</script>
+<!-- === /T73 V59 === -->
+
 </body>
 </html>
