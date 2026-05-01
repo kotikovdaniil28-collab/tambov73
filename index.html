@@ -17640,5 +17640,227 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V67 === -->
+
+<!-- === T73 V68: логи ГОСС только внутри выбранной организации, не в общем списке === -->
+<style id="t73-v68-goss-logs-inside-style">
+  #subNavOrganizations #gossOrgLogsTabBtnV15,
+  #subNavOrganizations #gossShopLogsTabBtn,
+  #subNavOrganizations #fsbAdminLogTabBtn,
+  #subNavOrganizations [data-mode="goss_org_logs"],
+  #subNavOrganizations [data-mode="goss_shop_logs"],
+  #subNavOrganizations [data-mode="fsb_admin_log"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    overflow: hidden !important;
+  }
+  .t73-v68-log-card {
+    padding: 1rem;
+    border-radius: 18px;
+    border: 1px solid rgba(255,107,136,.28);
+    background: linear-gradient(145deg, rgba(13,16,32,.94), rgba(5,7,14,.98));
+    box-shadow: 0 14px 34px rgba(0,0,0,.35);
+    display: grid;
+    gap: .75rem;
+  }
+  .t73-v68-log-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: .8rem;
+    flex-wrap: wrap;
+  }
+  .t73-v68-log-list { display: grid; gap: .7rem; }
+  .t73-v68-log-row {
+    padding: .9rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,.13);
+    background: rgba(0,0,0,.30);
+    display: grid;
+    gap: .35rem;
+    overflow-wrap: anywhere;
+  }
+  .t73-v68-muted { color: var(--color-text-muted); font-size: .9rem; line-height: 1.45; }
+  .t73-v68-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: .28rem .62rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.07);
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 900;
+  }
+  .t73-v68-denied {
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,191,71,.35);
+    background: rgba(255,191,71,.08);
+    color: #fff;
+  }
+</style>
+<script id="t73-v68-goss-logs-inside-script">
+(function(){
+  var LOG_EMAILS = ['GOSS_ORG_LOG_V19','GOSS_USER_REPORT','GOSS_REPORT_TABLE_V19','GOSS_SHOP_BUY_V19','GOSS_SHOP_ITEMS_V19','GOSS_POINTS_V19','GOSS_REPORT_MEMBER_V19','GOSS_PROFILE'];
+  var SHOP_EMAILS = ['GOSS_SHOP_BUY_V19','GOSS_SHOP_ITEMS_V19','GOSS_ORG_LOG_V19'];
+  var FALLBACK_ORGS = [
+    {id:'prav', short:'Правительство', icon:'🏛️'}, {id:'fsb', short:'ФСБ', icon:'🛡️'},
+    {id:'gibdd', short:'ГИБДД', icon:'🚓'}, {id:'umvd', short:'УМВД', icon:'👮'},
+    {id:'army', short:'Армия', icon:'🎖️'}, {id:'hospital', short:'Больница', icon:'🏥'},
+    {id:'smi', short:'СМИ', icon:'🎙️'}, {id:'fsin', short:'ФСИН', icon:'⛓️'}
+  ];
+  function $(id){ return document.getElementById(id); }
+  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+  function parse(v, d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
+  function orgs(){ try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){} return FALLBACK_ORGS; }
+  function activeOrgId(){
+    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
+    return (btn && btn.dataset && btn.dataset.orgId) || window.currentGossOrgId || 'fsb';
+  }
+  function currentOrg(){
+    var id = activeOrgId();
+    var found = orgs().find(function(o){ return String(o.id) === String(id); });
+    if (found) return found;
+    var btn = document.querySelector('[data-org-id="' + String(id).replace(/"/g,'\\"') + '"]');
+    return { id:id, short:(btn ? btn.textContent.trim() : id.toUpperCase()), icon:'🏛️' };
+  }
+  function root(){
+    var panel4 = $('mode-goss_center_v4'), panel3 = $('mode-goss_center_v3'), dash = $('mode-goss_dashboard');
+    if (panel4 && panel4.style.display !== 'none' && $('gossV4Content')) return $('gossV4Content');
+    if (panel3 && panel3.style.display !== 'none' && $('gossV3Content')) return $('gossV3Content');
+    if (dash && dash.style.display !== 'none' && $('gossDashView')) return $('gossDashView');
+    return $('gossV4Content') || $('gossV3Content') || $('gossDashView');
+  }
+  function navs(){ return qa('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav'); }
+  function client(){ return window.supa || (typeof supa !== 'undefined' ? supa : null); }
+  function isCreator(){
+    try { return !!(currentUser && (currentUser.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)))); } catch(e){ return false; }
+  }
+  async function isLeader(orgId){
+    var c = client();
+    try {
+      if (!currentUser) return false;
+      if (isCreator()) return true;
+      var res = await c.from('reports').select('id,link,status').eq('email','ADMIN_ROLE').eq('link',currentUser.id).limit(1000);
+      var rows = res.data || [];
+      return rows.some(function(r){ return r.status === 'goss_admin_all' || r.status === ('goss_lead_' + orgId); });
+    } catch(e){ return false; }
+  }
+  function hideGlobalLogTabs(){
+    qa('#subNavOrganizations #gossOrgLogsTabBtnV15,#subNavOrganizations #gossShopLogsTabBtn,#subNavOrganizations #fsbAdminLogTabBtn,#subNavOrganizations [data-mode="goss_org_logs"],#subNavOrganizations [data-mode="goss_shop_logs"],#subNavOrganizations [data-mode="fsb_admin_log"]').forEach(function(el){
+      el.classList.add('t73-v68-hidden-global-log');
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('pointer-events','none','important');
+    });
+  }
+  function rowDate(r){ return r.created_at || r.inserted_at || r.updated_at || r.id || r.date || ''; }
+  function rowTitle(r){
+    var p = parse(r.date, {});
+    return r.item_name || p.title || p.type || p.text || r.email || r.status || 'Запись';
+  }
+  function rowBody(r){
+    var p = parse(r.date, null);
+    if (r.item_name) return 'Покупка/выдача: ' + r.item_name + (r.cost ? ' · стоимость: ' + r.cost : '');
+    if (p && typeof p === 'object') return p.comment || p.text || p.work || p.desc || JSON.stringify(p).slice(0, 700);
+    return String(r.date || '').slice(0, 700);
+  }
+  function renderRows(rows, empty){
+    if (!rows.length) return '<div class="t73-v68-denied">' + esc(empty) + '</div>';
+    return '<div class="t73-v68-log-list">' + rows.map(function(r){
+      var at = rowDate(r);
+      var when = '';
+      try { when = at ? new Date(at).toLocaleString('ru-RU') : ''; } catch(e){ when = String(at || ''); }
+      return '<div class="t73-v68-log-row">'
+        + '<div class="t73-v68-log-head"><strong>' + esc(rowTitle(r)) + '</strong><span class="t73-v68-pill">' + esc(r.email || r.type || r.source || r.status || 'лог') + '</span></div>'
+        + '<div class="t73-v68-muted">' + esc(r.status || '') + (when ? ' · ' + esc(when) : '') + '</div>'
+        + '<div>' + esc(rowBody(r)) + '</div>'
+        + (r.nickname || r.nick ? '<div class="t73-v68-muted">Пользователь: ' + esc(r.nickname || r.nick) + '</div>' : '')
+        + '</div>';
+    }).join('') + '</div>';
+  }
+  async function renderOrgLogs(){
+    hideGlobalLogTabs();
+    var c = client(), r = root(), o = currentOrg();
+    if (!r || !c) return;
+    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи организации видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
+    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#ff6b88;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка журнала этой организации...</div></div>';
+    var rows = [];
+    try {
+      var res = await c.from('reports').select('*').in('email', LOG_EMAILS).eq('link', o.id).order('id', { ascending:false }).limit(220);
+      rows = rows.concat(res.data || []);
+    } catch(e){}
+    try {
+      var roles = await c.from('reports').select('*').eq('email','ADMIN_ROLE').order('id', { ascending:false }).limit(500);
+      rows = rows.concat((roles.data || []).filter(function(x){ return ['goss_admin_all','goss_senior_all','goss_lead_' + o.id,'goss_senior_' + o.id].includes(x.status); }));
+    } catch(e){}
+    rows.sort(function(a,b){ return String(rowDate(b)).localeCompare(String(rowDate(a))); });
+    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Здесь только журнал выбранной организации, а не общий список ГОСС.</p></div><button id="t73V68RefreshOrgLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи этой организации пока пустые.');
+    var b = $('t73V68RefreshOrgLogs'); if (b) b.onclick = renderOrgLogs;
+  }
+  async function renderShopLogs(){
+    hideGlobalLogTabs();
+    var c = client(), r = root(), o = currentOrg();
+    if (!r || !c) return;
+    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи магазина видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
+    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#ff6b88;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка покупок и действий магазина...</div></div>';
+    var rows = [];
+    try {
+      var res = await c.from('reports').select('*').in('email', SHOP_EMAILS).eq('link', o.id).order('id', { ascending:false }).limit(220);
+      rows = rows.concat((res.data || []).filter(function(x){
+        var text = String(x.status || '') + ' ' + String(x.date || '') + ' ' + String(x.email || '');
+        return /shop|buy|магазин|покуп|товар|рулет/i.test(text);
+      }));
+    } catch(e){}
+    if (o.id === 'fsb') {
+      try {
+        var a = await c.from('admin_logs').select('*').eq('type','fsb_shop').order('created_at', { ascending:false }).limit(160);
+        rows = rows.concat((a.data || []).map(function(x){ x.source = 'admin_logs'; return x; }));
+      } catch(e){}
+    }
+    rows.sort(function(a,b){ return String(rowDate(b)).localeCompare(String(rowDate(a))); });
+    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#ff6b88;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Показываются покупки и действия магазина только выбранной организации.</p></div><button id="t73V68RefreshShopLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи магазина этой организации пока пустые.');
+    var b = $('t73V68RefreshShopLogs'); if (b) b.onclick = renderShopLogs;
+  }
+  function ensureInsideButtons(){
+    hideGlobalLogTabs();
+    navs().forEach(function(nav){
+      if (!nav) return;
+      var org = currentOrg();
+      var orgBtn = nav.querySelector('.t73-v68-org-logs');
+      if (!orgBtn) {
+        nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-org-logs" type="button">🧾 Логи организации</button>');
+        orgBtn = nav.querySelector('.t73-v68-org-logs');
+      }
+      var shopBtn = nav.querySelector('.t73-v68-shop-logs');
+      if (!shopBtn) {
+        nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-shop-logs" type="button">🛒 Логи магазина</button>');
+        shopBtn = nav.querySelector('.t73-v68-shop-logs');
+      }
+      if (orgBtn) { orgBtn.textContent = '🧾 Логи ' + (org.short || 'организации'); orgBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderOrgLogs(); }; }
+      if (shopBtn) { shopBtn.textContent = '🛒 Логи магазина ' + (org.short || ''); shopBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderShopLogs(); }; }
+    });
+  }
+  function boot(){ hideGlobalLogTabs(); ensureInsideButtons(); }
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch')) setTimeout(boot, 90);
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [200,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__t73_v68_logs); window.__t73_v68_logs = setTimeout(boot, 120); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
+  window.T73_V68_GOSS_LOGS_INSIDE = { refresh:boot, orgLogs:renderOrgLogs, shopLogs:renderShopLogs };
+})();
+</script>
+<!-- === /T73 V68 === -->
+
 </body>
 </html>
