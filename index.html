@@ -15946,5 +15946,220 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V59 === -->
 
+
+<!-- === T73 V60: фикс кликабельности нижних вердиктов в тренажёре модерации === -->
+<style id="t73-v60-mod-trainer-verdict-style">
+  #mode-moderation .feed,
+  #mode-moderation .controls {
+    position: relative !important;
+    z-index: 30 !important;
+    overflow: visible !important;
+    pointer-events: auto !important;
+  }
+
+  #mode-moderation .controls {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+    margin-top: 1rem !important;
+    isolation: isolate !important;
+  }
+
+  #mode-moderation .controls .action-btn,
+  #mode-moderation button[data-action] {
+    position: relative !important;
+    z-index: 40 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  #mode-moderation .controls .action-btn * {
+    pointer-events: none !important;
+  }
+
+  #modTrainerAnswerBox {
+    position: relative !important;
+    z-index: 10 !important;
+    overflow: visible !important;
+  }
+
+  @media (max-width: 720px), (pointer: coarse) {
+    #mode-moderation .controls {
+      grid-template-columns: 1fr !important;
+      gap: .75rem !important;
+    }
+
+    #mode-moderation .controls .action-btn,
+    #mode-moderation button[data-action] {
+      min-height: 54px !important;
+      width: 100% !important;
+    }
+  }
+</style>
+<script id="t73-v60-mod-trainer-verdict-script">
+/* === T73 V60: тренажёр модерации — нижние вердикты всегда нажимаются === */
+(function installT73V60ModTrainerVerdictFix(){
+  'use strict';
+
+  let lastHandledAt = 0;
+  let lastAction = '';
+
+  function $(id){ return document.getElementById(id); }
+
+  function trainerRoot(){ return $('mode-moderation'); }
+
+  function isTrainerVisible(){
+    const root = trainerRoot();
+    if (!root) return false;
+    const style = window.getComputedStyle(root);
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  }
+
+  function getVerdictButton(event){
+    const target = event && event.target;
+    if (!target || !target.closest) return null;
+    const btn = target.closest('#mode-moderation button[data-action]');
+    if (!btn) return null;
+    const action = btn.getAttribute('data-action');
+    if (!/^(good|warn|ban)$/.test(action || '')) return null;
+    return btn;
+  }
+
+  function unlockVerdictButtons(){
+    const root = trainerRoot();
+    if (!root) return;
+    const controls = root.querySelector('.controls');
+    if (controls) {
+      controls.style.setProperty('position', 'relative', 'important');
+      controls.style.setProperty('z-index', '40', 'important');
+      controls.style.setProperty('pointer-events', 'auto', 'important');
+      controls.style.setProperty('overflow', 'visible', 'important');
+    }
+    root.querySelectorAll('button[data-action]').forEach(function(btn){
+      btn.disabled = false;
+      btn.removeAttribute('disabled');
+      btn.style.setProperty('pointer-events', 'auto', 'important');
+      btn.style.setProperty('cursor', 'pointer', 'important');
+      btn.style.setProperty('position', 'relative', 'important');
+      btn.style.setProperty('z-index', '50', 'important');
+      btn.setAttribute('type', 'button');
+    });
+  }
+
+  function callTrainerJudge(action){
+    try {
+      if (typeof window.judge === 'function') {
+        window.judge(action);
+        return true;
+      }
+    } catch (err) {
+      console.warn('T73 V60: window.judge failed', err);
+    }
+
+    try {
+      if (typeof judge === 'function') {
+        judge(action);
+        return true;
+      }
+    } catch (err) {
+      console.warn('T73 V60: judge failed', err);
+    }
+
+    return false;
+  }
+
+  function handleVerdict(event){
+    const btn = getVerdictButton(event);
+    if (!btn || !isTrainerVisible()) return;
+
+    const action = btn.getAttribute('data-action');
+    const now = Date.now();
+
+    // pointer/touch/click могут приходить парой. Оставляем одно действие, чтобы не засчитывало два ответа.
+    if (lastAction === action && now - lastHandledAt < 450) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+      return;
+    }
+
+    lastAction = action;
+    lastHandledAt = now;
+
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+
+    unlockVerdictButtons();
+    const ok = callTrainerJudge(action);
+    if (!ok) {
+      console.warn('T73 V60: не найден обработчик judge для тренажёра модерации. Action:', action);
+    }
+
+    setTimeout(unlockVerdictButtons, 30);
+    setTimeout(unlockVerdictButtons, 180);
+  }
+
+  function handleKeyboard(event){
+    if ((event.key !== 'Enter' && event.key !== ' ') || !document.activeElement) return;
+    const btn = document.activeElement.closest && document.activeElement.closest('#mode-moderation button[data-action]');
+    if (!btn || !isTrainerVisible()) return;
+    const action = btn.getAttribute('data-action');
+    if (!/^(good|warn|ban)$/.test(action || '')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    unlockVerdictButtons();
+    callTrainerJudge(action);
+    setTimeout(unlockVerdictButtons, 30);
+    setTimeout(unlockVerdictButtons, 180);
+  }
+
+  function bootV60(){
+    unlockVerdictButtons();
+    const root = trainerRoot();
+    if (!root) return;
+
+    // Убираем старые inline-обработчики: V60 сам вызывает judge один раз.
+    root.querySelectorAll('button[data-action]').forEach(function(btn){
+      btn.onclick = null;
+    });
+  }
+
+  // Важно: window-capture срабатывает раньше старого V58 document-capture,
+  // который мог перехватывать событие и не давать нижним кнопкам нормально прожиматься.
+  window.addEventListener('pointerdown', handleVerdict, true);
+  window.addEventListener('touchstart', handleVerdict, true);
+  window.addEventListener('mousedown', handleVerdict, true);
+  window.addEventListener('click', handleVerdict, true);
+  window.addEventListener('keydown', handleKeyboard, true);
+
+  const observer = new MutationObserver(function(){
+    clearTimeout(window.__T73_V60_MOD_VERDICT_TIMER__);
+    window.__T73_V60_MOD_VERDICT_TIMER__ = setTimeout(bootV60, 40);
+  });
+
+  function start(){
+    bootV60();
+    try { observer.observe(document.documentElement, { childList: true, subtree: true }); } catch(e) {}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+
+  [80, 250, 600, 1200, 2500, 5000].forEach(function(ms){ setTimeout(bootV60, ms); });
+
+  window.T73_V60_MOD_TRAINER_VERDICT_FIX = {
+    fix: bootV60,
+    unlock: unlockVerdictButtons
+  };
+})();
+/* === /T73 V60 === */
+</script>
+<!-- === /T73 V60 === -->
 </body>
 </html>
