@@ -16453,5 +16453,361 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V62 === -->
 
 
+
+<!-- === T73 V63: отчёт со скрином сразу появляется в нижнем списке проверки === -->
+<style id="t73-v63-report-sync-style">
+  #viewReportsBtnV63 {
+    display: inline-flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 1rem !important;
+  }
+  #reportsListArea.t73-v63-open {
+    display: grid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    grid-column: 1 / -1 !important;
+    gap: 1rem !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  .t73-v63-card {
+    display: grid;
+    gap: .7rem;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(191,198,255,.20);
+    background: linear-gradient(145deg, rgba(13,16,32,.94), rgba(5,7,14,.96));
+    box-shadow: 0 10px 24px rgba(0,0,0,.28);
+    overflow: hidden;
+  }
+  .t73-v63-head {
+    display: flex;
+    justify-content: space-between;
+    gap: .7rem;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .t73-v63-name { color: #fff; font-weight: 900; overflow-wrap: anywhere; }
+  .t73-v63-muted { color: var(--color-text-muted); font-size: .88rem; overflow-wrap: anywhere; }
+  .t73-v63-work { color: var(--color-text-muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .t73-v63-proof-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .55rem; }
+  .t73-v63-proof-list img {
+    width: 100%;
+    max-height: 190px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(0,0,0,.28);
+  }
+  .t73-v63-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .45rem; }
+  .t73-v63-actions .btn { min-width: 0; padding: .52rem .45rem !important; font-size: .8rem !important; }
+  .t73-v63-date-line { display:flex; align-items:center; gap:.75rem; color:var(--color-text-muted); font-weight:900; }
+  .t73-v63-date-line:before,.t73-v63-date-line:after { content:""; height:1px; flex:1; background:linear-gradient(90deg,transparent,rgba(191,198,255,.32),transparent); }
+  .t73-v63-date-line span { border:1px solid rgba(191,198,255,.22); border-radius:999px; padding:.35rem .8rem; background:rgba(13,16,32,.72); white-space:nowrap; }
+  .t73-v63-empty { padding:1rem; border-radius:14px; border:1px solid rgba(191,198,255,.2); color:var(--color-text-muted); background:rgba(13,16,32,.65); }
+  @media (max-width: 720px) { .t73-v63-actions { grid-template-columns: 1fr 1fr; } }
+</style>
+<script id="t73-v63-report-sync-script">
+(function(){
+  'use strict';
+  if (window.__T73_V63_REPORT_SYNC__) return;
+  window.__T73_V63_REPORT_SYNC__ = true;
+
+  const SERVICE = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','SHOP_FSB','ROULETTE_MOD','ROULETTE_AP','ROULETTE_FSB',
+    'CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP',
+    'AP_POINTS','FSB_POINTS','FSB_SPEND','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_PROFILE','GOSS_REPORT_TABLE',
+    'GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19',
+    'GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24',
+    'GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG',
+    'REPORT_TABLE_MARK','REPORT_TABLE_MARK_V15','REPORT_TABLE_MEMBER_V15'
+  ]);
+  const $ = id => document.getElementById(id);
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const norm = value => String(value ?? '').trim().toLowerCase();
+  const parse = (value, fallback = {}) => { try { return typeof value === 'string' ? JSON.parse(value) : (value || fallback); } catch(e) { return fallback; } };
+
+  function client() {
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    return null;
+  }
+
+  async function currentUser() {
+    const c = client();
+    if (!c || !c.auth) return window.currentUser || null;
+    try {
+      const r = await c.auth.getUser();
+      if (r && r.data && r.data.user) { window.currentUser = r.data.user; return r.data.user; }
+    } catch(e) {}
+    try {
+      const r = await c.auth.getSession();
+      const u = r && r.data && r.data.session && r.data.session.user;
+      if (u) { window.currentUser = u; return u; }
+    } catch(e) {}
+    return window.currentUser || null;
+  }
+
+  function payload(row) { return parse(row && row.date, {}); }
+  function reportDay(row) {
+    const p = payload(row);
+    const raw = p.day || p.date || p.createdAt || p.created || row?.date || row?.id || '';
+    const s = String(raw);
+    const iso = s.match(/(20\d{2})[-.](\d{2})[-.](\d{2})/);
+    if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+    const ru = s.match(/(\d{2})\.(\d{2})\.(20\d{2})/);
+    if (ru) return `${ru[3]}-${ru[2]}-${ru[1]}`;
+    return new Date().toISOString().slice(0, 10);
+  }
+  function ruDate(day) {
+    const m = String(day || '').match(/(20\d{2})-(\d{2})-(\d{2})/);
+    return m ? `${m[3]}.${m[2]}.${m[1]}` : (day || 'Без даты');
+  }
+  function isService(row) {
+    const email = String(row?.email || '');
+    return SERVICE.has(email) || email.startsWith('SHOP_') || email.startsWith('ROULETTE_') || email.startsWith('CUSTOM_') || email.startsWith('GOSS_') || email.startsWith('REPORT_TABLE_');
+  }
+  function isPending(status) {
+    const s = String(status || '').trim();
+    return !s || s === 'На проверке' || /ожидает|провер/i.test(s);
+  }
+  function statusColor(status, xp) {
+    if (Number(xp || 0) > 0) return 'var(--color-success)';
+    if (/отказ|не засчитано/i.test(String(status || ''))) return 'var(--color-error)';
+    return 'var(--color-warning)';
+  }
+  function extractNickText(text) {
+    const s = String(text || '');
+    const m = s.match(/(?:Ник|NickName|Nickname|Nick|Пользователь)\s*:?\s*([^\n|;]+)/i);
+    return m ? m[1].trim() : '';
+  }
+  function looksLikeModReport(row) {
+    if (!row || isService(row)) return false;
+    const p = payload(row);
+    const status = String(row.status || '');
+    const allowed = ['На проверке','Ожидает','Норма','Перенорма','Герой дня','Не засчитано','Отказ'];
+    if (allowed.some(x => status.includes(x))) return true;
+    if (p && (p.version || p.proofs || p.work || p.comment || p.nick || p.nickname || p.userId || p.email)) return true;
+    return /Ник:|Nick|Дата:|Работа:/i.test(String(row.date || ''));
+  }
+  function proofUrls(row) {
+    const p = payload(row);
+    const out = [];
+    const push = value => {
+      if (!value) return;
+      if (Array.isArray(value)) { value.forEach(push); return; }
+      if (typeof value === 'object') { push(value.url || value.href || value.link || value.publicUrl || value.src); return; }
+      const s = String(value).trim();
+      if (!s) return;
+      if (s.startsWith('T73V16:')) { try { push(JSON.parse(s.slice(7))); } catch(e) {} return; }
+      if (s.startsWith('T73_PROOFS:')) { try { push(JSON.parse(s.slice(11))); } catch(e) {} return; }
+      if (s.startsWith('[')) { try { push(JSON.parse(s)); } catch(e) { out.push(s); } return; }
+      if (!/^T73V\d+:embedded-image$/i.test(s)) s.split('\n').map(x => x.trim()).filter(Boolean).forEach(x => out.push(x));
+    };
+    push(p.proofs); push(p.files); push(p.link || p.file); push(row?.link);
+    return Array.from(new Set(out));
+  }
+  function proofsHtml(row) {
+    const urls = proofUrls(row);
+    if (!urls.length) return '<div class="t73-v63-muted">Доказательства не найдены</div>';
+    return '<div class="t73-v63-proof-list">' + urls.slice(0, 12).map((url, i) => {
+      const safe = esc(url);
+      if (String(url).startsWith('data:image')) return `<img src="${safe}" alt="Скриншот ${i + 1}" onclick="try{document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src=this.src;}catch(e){}">`;
+      if (/\.(png|jpe?g|webp|gif)(\?|$)/i.test(String(url))) return `<a href="${safe}" target="_blank" rel="noreferrer"><img src="${safe}" alt="Скриншот ${i + 1}"></a>`;
+      return `<a class="btn btn-secondary" href="${safe}" target="_blank" rel="noreferrer" style="width:max-content;max-width:100%;padding:.55rem .8rem;font-size:.84rem;">📎 Доказательство ${i + 1}</a>`;
+    }).join('') + '</div>';
+  }
+  function groupRows(rows) {
+    const map = new Map();
+    rows.forEach(row => {
+      const day = reportDay(row);
+      if (!map.has(day)) map.set(day, []);
+      map.get(day).push(row);
+    });
+    return Array.from(map.entries()).sort((a,b) => b[0].localeCompare(a[0]));
+  }
+  function card(row) {
+    const p = payload(row);
+    const nick = p.nick || p.nickname || p.name || extractNickText(row.date) || row.email || 'Модератор';
+    const work = p.work || p.comment || String(row.date || 'Без описания');
+    const status = String(row.status || p.quality || 'На проверке');
+    const day = reportDay(row);
+    const pending = isPending(status);
+    return `<article class="t73-v63-card" data-v63-report-id="${esc(row.id)}">
+      <div class="t73-v63-head"><div><div class="t73-v63-name">${esc(nick)}</div><div class="t73-v63-muted">${esc(row.email || p.email || '')}</div></div><div class="t73-v63-muted">${esc(ruDate(day))}</div></div>
+      <div class="t73-v63-work">${esc(work)}</div>
+      ${proofsHtml(row)}
+      <div style="font-weight:900;color:${statusColor(status, row.xp)};">${esc(status)} · ${Number(row.xp || 0)} XP</div>
+      ${pending ? `<div class="t73-v63-actions">
+        <button class="btn btn-secondary" data-v63-process="1" data-id="${esc(row.id)}" data-status="Норма" data-xp="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
+        <button class="btn btn-secondary" data-v63-process="1" data-id="${esc(row.id)}" data-status="Перенорма" data-xp="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
+        <button class="btn btn-secondary" data-v63-process="1" data-id="${esc(row.id)}" data-status="Герой дня" data-xp="60" style="border-color:#ffbf47;color:#ffbf47;">Герой дня</button>
+        <button class="btn btn-secondary" data-v63-process="1" data-id="${esc(row.id)}" data-status="Не засчитано" data-xp="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
+      </div>` : ''}
+    </article>`;
+  }
+
+  async function moderatorIndex(c) {
+    const out = { ids: new Set(), emails: new Set(), nicks: new Set() };
+    try {
+      const roles = await c.from('reports').select('link,status,email').eq('email','USER_ROLE').eq('status','moderator');
+      (roles.data || []).forEach(r => { if (r.link) out.ids.add(norm(r.link)); });
+      const ids = Array.from(out.ids).filter(Boolean);
+      if (ids.length) {
+        const users = await c.from('user_stats').select('user_id,nickname,email').in('user_id', ids);
+        (users.data || []).forEach(u => {
+          if (u.user_id) out.ids.add(norm(u.user_id));
+          if (u.email) out.emails.add(norm(u.email));
+          if (u.nickname) out.nicks.add(norm(u.nickname));
+        });
+      }
+    } catch(e) {}
+    const u = await currentUser();
+    if (u) { if (u.id) out.ids.add(norm(u.id)); if (u.email) out.emails.add(norm(u.email)); }
+    return out;
+  }
+  function belongs(row, dir) {
+    const p = payload(row);
+    const ids = [p.userId, p.user_id, p.uid, row?.user_id, row?.status].map(norm).filter(Boolean);
+    const emails = [row?.email, p.email, p.userEmail].map(norm).filter(Boolean);
+    const nicks = [p.nick, p.nickname, p.name, extractNickText(row?.date), row?.email].map(norm).filter(Boolean);
+    if (ids.some(x => dir.ids.has(x))) return true;
+    if (emails.some(x => dir.emails.has(x))) return true;
+    if (nicks.some(x => dir.nicks.has(x))) return true;
+    // Важно для теста: если отчёт создан новым прямым загрузчиком, не отсекаем его из-за отсутствующей строки user_stats.
+    if (/v5[7-9]|v6[0-9]|direct|screenshot/i.test(String(p.version || '') + ' ' + String(row?.link || ''))) return true;
+    return false;
+  }
+
+  async function renderReportsV63(forceOpen) {
+    const c = client();
+    const area = $('reportsListArea');
+    if (!area) return;
+    if (!c) { area.innerHTML = '<div class="t73-v63-empty">Supabase ещё не загрузился. Обновите страницу и попробуйте ещё раз.</div>'; return; }
+    if (forceOpen) area.dataset.v63Open = '1';
+    area.classList.add('t73-v63-open');
+    area.style.display = 'grid';
+    area.innerHTML = '<div class="t73-v63-empty">Загружаю общий список отчётов...</div>';
+    try {
+      const dir = await moderatorIndex(c);
+      const res = await c.from('reports').select('*').order('id', { ascending:false }).limit(800);
+      if (res.error) throw res.error;
+      const rows = (res.data || []).filter(looksLikeModReport).filter(row => belongs(row, dir)).slice(0, 160);
+      if (!rows.length) { area.innerHTML = '<div class="t73-v63-empty">Отчётов пока нет. Если вы только что отправили отчёт, нажмите кнопку ещё раз через пару секунд.</div>'; return; }
+      area.innerHTML = groupRows(rows).map(([day, list]) => `<div class="t73-v63-date-line"><span>${esc(ruDate(day))}</span></div>${list.map(card).join('')}`).join('');
+    } catch(err) {
+      area.innerHTML = `<div class="t73-v63-empty" style="color:var(--color-error);">Ошибка загрузки списка: ${esc(err && err.message ? err.message : err)}</div>`;
+    }
+  }
+
+  async function toggleReportsV63() {
+    const area = $('reportsListArea');
+    if (!area) return;
+    if (area.dataset.v63Open === '1' && area.style.display !== 'none') {
+      area.dataset.v63Open = '0';
+      area.style.display = 'none';
+      area.classList.remove('t73-v63-open');
+      return;
+    }
+    area.dataset.v63Open = '1';
+    await renderReportsV63(true);
+  }
+
+  async function processV63(btn) {
+    const c = client();
+    if (!c || !btn) return;
+    btn.disabled = true;
+    try {
+      const { error } = await c.from('reports').update({ status: btn.dataset.status, xp: Number(btn.dataset.xp || 0) }).eq('id', btn.dataset.id);
+      if (error) throw error;
+      await renderReportsV63(true);
+      try { if (typeof window.loadReportsTable === 'function') setTimeout(() => window.loadReportsTable(), 200); } catch(e) {}
+    } catch(err) {
+      alert('Ошибка проверки отчёта: ' + (err && err.message ? err.message : err));
+      btn.disabled = false;
+    }
+  }
+
+  function ensureButtonV63() {
+    const form = $('reportFormArea');
+    let list = $('reportsListArea');
+    if (form && !list) {
+      form.insertAdjacentHTML('beforeend', '<div id="reportsListArea" style="display:none;"></div>');
+      list = $('reportsListArea');
+    }
+
+    let btn = $('viewReportsBtnV63');
+    const old = $('viewReportsBtn');
+    if (!btn && old) {
+      btn = old.cloneNode(true);
+      btn.id = 'viewReportsBtnV63';
+      btn.removeAttribute('onclick');
+      old.replaceWith(btn);
+    }
+    if (!btn && form) {
+      form.insertAdjacentHTML('beforeend', '<button class="support-check-btn" type="button" id="viewReportsBtnV63">Проверить отчетность</button>');
+      btn = $('viewReportsBtnV63');
+    }
+    if (btn) {
+      btn.textContent = 'Проверить отчетность';
+      btn.type = 'button';
+      btn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); toggleReportsV63(); return false; };
+      if (form && list && btn.parentElement !== form) form.appendChild(btn);
+      if (form && list && list.nextElementSibling !== btn) form.insertBefore(list, btn);
+    }
+  }
+
+  function refreshAfterSubmitV63() {
+    const area = $('reportsListArea');
+    if (area) {
+      area.dataset.v63Open = '1';
+      renderReportsV63(true);
+    }
+    try { if (typeof window.loadReportsTable === 'function') setTimeout(() => window.loadReportsTable(), 450); } catch(e) {}
+    try { if (window.T73_V44_MOD_TABLE && typeof window.T73_V44_MOD_TABLE.load === 'function') setTimeout(() => window.T73_V44_MOD_TABLE.load(), 650); } catch(e) {}
+  }
+
+  function watchSubmitResultV63() {
+    const res = $('reportResultText');
+    if (!res || res.dataset.v63Watch === '1') return;
+    res.dataset.v63Watch = '1';
+    let doneForText = '';
+    const check = () => {
+      const text = String(res.textContent || '');
+      if (text === doneForText) return;
+      if (/отч[её]т\s+отправлен/i.test(text) || /✅/.test(text)) {
+        doneForText = text;
+        setTimeout(refreshAfterSubmitV63, 500);
+        setTimeout(refreshAfterSubmitV63, 1500);
+      }
+    };
+    new MutationObserver(check).observe(res, { childList:true, characterData:true, subtree:true });
+    check();
+  }
+
+  document.addEventListener('click', function(event){
+    const process = event.target && event.target.closest && event.target.closest('[data-v63-process]');
+    if (process) { event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation(); processV63(process); return; }
+    const btn = event.target && event.target.closest && event.target.closest('#viewReportsBtnV63');
+    if (btn) { event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation(); toggleReportsV63(); return; }
+  }, true);
+
+  function boot() { ensureButtonV63(); watchSubmitResultV63(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [80, 250, 700, 1400, 2600, 5200].forEach(ms => setTimeout(boot, ms));
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V63_BOOT_TIMER__);
+    window.__T73_V63_BOOT_TIMER__ = setTimeout(boot, 100);
+  }).observe(document.documentElement, { childList:true, subtree:true });
+
+  window.T73_V63_REPORT_SYNC = { boot, render: renderReportsV63, refresh: refreshAfterSubmitV63 };
+})();
+</script>
+<!-- === /T73 V63 === -->
 </body>
 </html>
