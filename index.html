@@ -19109,9 +19109,12 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     var p = $('mode-goss_center_v4'), r = root();
     if (!p || getComputedStyle(p).display === 'none' || !r) return false;
     var active = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active');
-    if (active && active.dataset && active.dataset.view && active.dataset.view !== 'trainer') return false;
-    if (r.querySelector('#t73V76Trainer')) return true;
-    return /тренаж[её]р/i.test(r.textContent || '') && !/Панель руководства|Таблица старшего|Проверка отч[её]тов|Сдать отч[её]тность|Мои данные|Магазин/i.test(r.textContent || '');
+    // V79: не считаем тренажёр активным только потому, что он уже лежит в контейнере.
+    // Иначе после смены фракции/режима v76 оставлял один тренажёр и ломал вкладки ГОСС.
+    if (active && active.dataset && active.dataset.view) return active.dataset.view === 'trainer';
+    var nav = $('gossOrgActionNavV4');
+    if (nav && nav.querySelector('.gov-action-switch-v4')) return false;
+    return /тренаж[её]р/i.test(r.textContent || '') && !/Панель руководства|Таблица старшего|Проверка отч[её]тов|Сдать (гос )?отч[её]т|Мои данные|Магазин/i.test(r.textContent || '');
   }
   function shuffle(arr){ return arr.map(function(x){ return {v:x, r:Math.random()}; }).sort(function(a,b){ return a.r-b.r; }).map(function(x){ return x.v; }); }
   function makeRound(orgId){ var list = BANK[orgId] || BANK.fsb || []; var qn = list[Math.floor(Math.random() * list.length)]; round = { orgId:orgId, q:qn, options:shuffle(qn.options.slice()), answered:false }; return round; }
@@ -19747,6 +19750,167 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V78 === -->
+
+
+<!-- === T73 V79: восстановление переключения режимов ГОСС после v76/v78 === -->
+<style id="t73-v79-goss-modes-style">
+  #gossOrgActionNavV4.t73-v79-ready{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;}
+  #gossOrgActionNavV4 .t73-v79-mode{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;align-items:center;justify-content:center;white-space:nowrap;}
+  #gossOrgActionNavV4 .t73-v79-mode.active{background:linear-gradient(135deg,#ff6b88,#6c8cff)!important;color:#fff!important;}
+</style>
+<script id="t73-v79-goss-modes-restored">
+(function(){
+  'use strict';
+  if (window.__T73_V79_GOSS_MODES_RESTORED__) return;
+  window.__T73_V79_GOSS_MODES_RESTORED__ = true;
+
+  var ACCESS_EMAIL = 'ADMIN_ROLE';
+  var roleCache = { at:0, rows:[] };
+  var lastView = 'trainer';
+
+  function $(id){ return document.getElementById(id); }
+  function supa(){ return window.supa || window.t73Supa || window.supabaseClient || window.__T73_SUPA || null; }
+  function user(){ return window.currentUser || null; }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch];}); }
+  function visible(el){ try { return !!el && getComputedStyle(el).display !== 'none' && getComputedStyle(el).visibility !== 'hidden'; } catch(e){ return !!el; } }
+  function isGossVisible(){ var p = $('mode-goss_center_v4'); return visible(p); }
+  function orgs(){ return (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) ? window.GOSS_ORGS : [
+    {id:'prav',short:'Правительство',icon:'🏛️'}, {id:'fsb',short:'ФСБ',icon:'🛡️'}, {id:'gibdd',short:'ГИБДД',icon:'🚓'}, {id:'umvd',short:'УМВД',icon:'👮'}, {id:'army',short:'Армия',icon:'🎖️'}, {id:'hospital',short:'Больница',icon:'🏥'}, {id:'smi',short:'СМИ',icon:'🎙️'}, {id:'fsin',short:'ФСИН',icon:'⛓️'}
+  ]; }
+  function currentOrg(){
+    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+    var id = active && active.dataset ? (active.dataset.orgId || active.dataset.org || active.dataset.id) : '';
+    if (!id && window.govV4SelectedOrg) id = window.govV4SelectedOrg;
+    if (!id) {
+      var txt = [ $('gossV4Org') && $('gossV4Org').textContent, $('gossV4Title') && $('gossV4Title').textContent ].join(' ').toLowerCase();
+      orgs().some(function(o){ if (txt.indexOf(String(o.short||'').toLowerCase()) !== -1 || txt.indexOf(String(o.name||'').toLowerCase()) !== -1) { id = o.id; return true; } return false; });
+    }
+    return orgs().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgs()[0];
+  }
+  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
+  function isCreator(){ var u=user(); return !!(u && ((window.creatorEmail && u.email === window.creatorEmail) || (Array.isArray(window.adminEmails) && window.adminEmails.indexOf(u.email) !== -1))); }
+  async function roles(force){
+    if (!force && roleCache.rows.length && Date.now() - roleCache.at < 12000) return roleCache.rows.slice();
+    var c=supa(); if(!c) return roleCache.rows.slice();
+    try { var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email', ACCESS_EMAIL).limit(6000); roleCache={at:Date.now(), rows:r.data||[]}; } catch(e){}
+    return roleCache.rows.slice();
+  }
+  async function hasSenior(orgId){ var u=user(); if(!u) return false; if(isCreator()) return true; var rs=await roles(false); return rs.some(function(r){ return r.link===u.id && ['goss_senior_all','goss_admin_all','goss_lead_'+orgId,'goss_senior_'+orgId].indexOf(r.status)!==-1; }); }
+  async function hasLeader(orgId){ var u=user(); if(!u) return false; if(isCreator()) return true; var rs=await roles(false); return rs.some(function(r){ return r.link===u.id && ['goss_admin_all','goss_lead_'+orgId].indexOf(r.status)!==-1; }); }
+
+  function makeBtn(view,label,active){
+    return '<button class="mode-btn gov-action-switch-v4 t73-v79-mode '+(active?'active':'')+'" data-view="'+esc(view)+'" type="button">'+label+'</button>';
+  }
+  async function ensureNav(){
+    if(!isGossVisible()) return;
+    var org = currentOrg();
+    var nav = $('gossOrgActionNavV4');
+    var orgNav = $('subNavOrganizations');
+    if (!nav && orgNav) { orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4"></div>'); nav = $('gossOrgActionNavV4'); }
+    if (!nav) return;
+    var senior = await hasSenior(org.id), leader = await hasLeader(org.id);
+    var active = nav.querySelector('.gov-action-switch-v4.active[data-view]');
+    var view = (active && active.dataset.view) || lastView || 'trainer';
+    if (view === 'reports') view = 'review';
+    if (!senior && view !== 'trainer') view = 'trainer';
+    if (!leader && ['table','review','manage','staff'].indexOf(view)!==-1) view = senior ? 'submit' : 'trainer';
+    lastView = view;
+    var html = '';
+    html += makeBtn('trainer','🎮 Тренажёр',view==='trainer');
+    if (senior) {
+      html += makeBtn('profile','📝 Мои данные',view==='profile');
+      html += makeBtn('submit','📤 Сдать гос отчёт',view==='submit');
+      html += makeBtn('shop','🛒 Магазин',view==='shop');
+    }
+    if (leader) {
+      html += makeBtn('table','📊 Таблица отчётов',view==='table'||view==='staff');
+      html += makeBtn('review','✅ Проверить отчёты',view==='review'||view==='reports');
+      html += makeBtn('manage','👑 Панель руководства',view==='manage');
+    }
+    nav.classList.add('t73-v79-ready');
+    var visibleCount = Array.prototype.filter.call(nav.querySelectorAll('button'), visible).length;
+    var hasSubmit = /сдать\s+гос\s+отч[её]т/i.test(nav.textContent || '');
+    if (nav.dataset.t73v79Built !== '1' || visibleCount <= 1 || (senior && !hasSubmit)) {
+      nav.innerHTML = html;
+      nav.dataset.t73v79Built = '1';
+    } else {
+      normalizeLabels(nav);
+    }
+    bindNav(nav);
+  }
+  function normalizeLabels(scope){
+    (scope || document).querySelectorAll('button,.mode-btn,h2,h3,strong,span').forEach(function(el){
+      var t = String(el.textContent || '');
+      if (/сдать\s*(отч[её]тность|гос\s*отч[её]т)|^\s*отч[её]тность\s*$/i.test(t)) el.textContent = '📤 Сдать гос отчёт';
+      if (/провер/i.test(t) && /отч/i.test(t) && !/проверить отч[её]ты/i.test(t)) el.textContent = '✅ Проверить отчёты';
+    });
+  }
+  function setActive(view){
+    lastView = view;
+    var nav = $('gossOrgActionNavV4');
+    if(nav) nav.querySelectorAll('button[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view || (view==='review' && b.dataset.view==='reports')); });
+  }
+  function nativeSwitch(view){
+    var org = currentOrg();
+    var btn = document.querySelector('.gov-org-switch-v4.active') || document.createElement('button');
+    btn.dataset.mode = 'goss_center_v4';
+    btn.dataset.orgId = org.id;
+    btn.dataset.view = view;
+    try { window.govV4SelectedOrg = org.id; window.govV4SelectedView = view; } catch(e){}
+    if (typeof window.switchMode === 'function') { window.switchMode('goss_center_v4', btn); return true; }
+    return false;
+  }
+  function afterRender(view){
+    setTimeout(function(){ normalizeLabels(root()); ensureNav(); }, 90);
+    setTimeout(function(){
+      var r = root();
+      if (!r) return;
+      if (view !== 'trainer' && r.querySelector('#t73V76Trainer')) route(view, true);
+      normalizeLabels(r); ensureNav();
+    }, 360);
+  }
+  function route(view, secondPass){
+    view = view === 'reports' ? 'review' : view;
+    setActive(view);
+    if (view === 'review') { if (window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.review === 'function') window.T73_V78_GOSS_REPORTS.review(); else nativeSwitch('reports'); afterRender(view); return; }
+    if (view === 'table' || view === 'staff') { if (window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.table === 'function') window.T73_V78_GOSS_REPORTS.table(); else nativeSwitch('staff'); afterRender('table'); return; }
+    nativeSwitch(view);
+    afterRender(view);
+    if (!secondPass && view !== 'trainer') setTimeout(function(){ var r=root(); if(r && r.querySelector('#t73V76Trainer')) route(view, true); }, 780);
+  }
+  function bindNav(nav){
+    nav.querySelectorAll('.t73-v79-mode,.gov-action-switch-v4').forEach(function(btn){
+      if (btn.dataset.t73v79Click === '1') return;
+      btn.dataset.t73v79Click = '1';
+      btn.addEventListener('click', function(e){
+        var view = btn.dataset.view || 'trainer';
+        if (['table','review'].indexOf(view) !== -1 || btn.classList.contains('t73-v79-mode')) {
+          e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+          route(view);
+        } else {
+          lastView = view;
+          setTimeout(function(){ afterRender(view); }, 140);
+        }
+      }, true);
+    });
+  }
+  function boot(){ ensureNav(); normalizeLabels(document); }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode="goss_center_v4"],#subNavOrganizations')) {
+      lastView = 'trainer';
+      [100,320,760].forEach(function(ms){ setTimeout(boot, ms); });
+    }
+    if (t.closest('#gossOrgActionNavV4,#gossV4Content')) [160,420,900].forEach(function(ms){ setTimeout(boot, ms); });
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [250,800,1600,3200,6000].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__t73_v79_mut); window.__t73_v79_mut = setTimeout(boot, 220); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
+  window.T73_V79_GOSS_MODES = { nav:ensureNav, route:route, normalize:normalizeLabels };
+})();
+</script>
+<!-- === /T73 V79 === -->
 
 </body>
 </html>
