@@ -11384,7 +11384,12 @@
                 const load=$15('t73V15LoadOrgLogs'); if(load) load.onclick=loadOrgLogs15;
                 injectOrgLogShortcut15();
             }
-            function injectOrgLogShortcut15(){ return; }
+            function injectOrgLogShortcut15(){
+                const c=$15('gossV4Content')||$15('gossV3Content'); if(!c || $15('t73V15OpenThisOrgLogs')) return;
+                const orgId=selectedOrgId15();
+                c.insertAdjacentHTML('afterbegin',`<div class="gov-v4-card t73-v15-card" style="margin-bottom:1rem;"><div class="gov-v4-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи ${esc15(org15(orgId).short)}</h3><p class="gov-v4-sub">Откройте отдельный журнал именно этой организации.</p></div><button id="t73V15OpenThisOrgLogs" class="btn btn-secondary" type="button">Открыть логи</button></div></div>`);
+                const b=$15('t73V15OpenThisOrgLogs'); if(b) b.onclick=()=>{currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs', $15('gossOrgLogsTabBtnV15')||b);};
+            }
             async function loadOrgLogs15(){
                 const sel=$15('t73V15OrgLogsSelect'); const orgId=sel?.value||currentOrgLogs15||'fsb'; currentOrgLogs15=orgId; const org=org15(orgId);
                 const info=$15('t73V15OrgLogsInfo'), list=$15('t73V15OrgLogsList'); if(!list) return;
@@ -11582,7 +11587,7 @@
             .g19-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.32);-webkit-overflow-scrolling:touch}.g19-table{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0}.g19-table th,.g19-table td{padding:.7rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:top}.g19-table th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,rgba(255,107,136,.30),rgba(108,140,255,.16))}.g19-table th:first-child,.g19-table td:first-child{position:sticky;left:0;z-index:3;text-align:left;background:rgba(13,16,32,.98);min-width:190px}.g19-cell{display:grid;gap:.4rem;min-width:150px}.g19-input,.g19-select,.g19-area{width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.55rem;font-weight:800}.g19-area{min-height:44px;resize:vertical}.g19-pill{display:inline-flex;gap:.25rem;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.75rem;font-weight:900;margin:.1rem}.g19-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.g19-form .full{grid-column:1/-1}.g19-drop{border:2px dashed rgba(255,107,136,.48);border-radius:18px;padding:1rem;background:rgba(255,107,136,.08)}.g19-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.g19-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.g19-proof img{width:100%;height:84px;object-fit:cover;border-radius:10px}.g19-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#ff4b69;color:#fff;font-weight:900}.g19-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}.g19-item{padding:1rem;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.30);display:grid;gap:.5rem}@media(max-width:760px){.g19-form{grid-template-columns:1fr}.g19-actions .btn{width:100%}.g19-table{min-width:980px}.g19-preview{grid-template-columns:repeat(2,1fr)}#gossOrgActionNavV4 .mode-btn{flex:1 1 100%}}
           </style>`)}
           function hideBad(){['reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportBtnMod','v16OpenBar','v16OpenTableTop','v16OpenReportTop','v16ReportTableBtnGen'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});document.querySelectorAll('#subNavModeration [data-mode="reports_table"]').forEach(e=>e.style.display='none')}
-          async function nav(){ return; }
+          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🧾 Логи организации',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
           async function profiles(oid){const m=new Map();try{const d=(await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||k,post:p.post||'—'})})}catch(e){}try{const d=(await supa.from('reports').select('*').eq('email',E.member).eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||p.name||k,post:p.post||'—'})})}catch(e){}return[...m.values()].sort((a,b)=>a.nick.localeCompare(b.nick,'ru'))}
           async function tableLoad(oid,wk){try{const d=(await supa.from('reports').select('*').eq('email',E.table).eq('link',oid).eq('status',wk).order('id',{ascending:false}).limit(1)).data||[];return d[0]?{id:d[0].id,data:parse(d[0].date,{})}:{id:null,data:{}}}catch(e){return{id:null,data:{}}}}
           async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
@@ -11637,7 +11642,7 @@
           async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
           async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдать отчёт». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
           async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
-          async function nav(){ return; }
+          async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
           let timer;function tick(){clearTimeout(timer);timer=setTimeout(nav,220)}
           document.addEventListener('click',e=>{if(e.target.closest?.('.gov-org-switch-v4,.gov-action-switch-v4'))setTimeout(tick,180)},true);
           setTimeout(tick,600);setTimeout(tick,1800);setTimeout(tick,3600);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V20={renderTableHub,renderManageHub,nav};
@@ -18948,201 +18953,473 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function removeConfirmUi(){document.querySelectorAll('#authModal *').forEach(function(el){var t=String(el.textContent||'').toLowerCase();if((t.indexOf('подтверд')!==-1&&t.indexOf('почт')!==-1)||t.indexOf('email not confirmed')!==-1||t.indexOf('confirm your email')!==-1){if(el.id!=='authErrorMsg'&&el.tagName!=='INPUT')el.remove()}})}
   function authMsg(text,color){var e=$('authErrorMsg');if(e){e.textContent=text;e.style.display='block';e.style.color=color||'var(--color-error)'}}
   function patchAuthNoConfirm(){removeConfirmUi();var reg=$('authRegisterSubmit');if(!reg||reg.dataset.t73v75NoConfirm==='1')return;var fresh=reg.cloneNode(true);fresh.dataset.t73v75NoConfirm='1';reg.replaceWith(fresh);fresh.onclick=async function(e){e.preventDefault();e.stopPropagation();var c=supa(),email=String($('authEmail')?.value||'').trim().toLowerCase(),nick=String($('authNickname')?.value||'').trim(),pass=String($('authPassword')?.value||'');if(!c||!c.auth)return authMsg('Supabase ещё не загрузился. Обновите страницу.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return authMsg('Введите Email.');if(nick.length<3)return authMsg('Введите Nickname минимум 3 символа.');if(pass.length<6)return authMsg('Пароль должен быть минимум 6 символов.');authMsg('Создаю аккаунт и пробую войти без подтверждения почты...','var(--color-primary)');var sign=await c.auth.signUp({email:email,password:pass,options:{data:{nickname:nick}}});if(sign.error)return authMsg(sign.error.message);try{await c.from('user_stats').upsert([{user_id:sign.data?.user?.id||email,email:email,nickname:nick}],{onConflict:'user_id'})}catch(err){}var login=await c.auth.signInWithPassword({email:email,password:pass});if(!login.error){authMsg('Аккаунт создан. Входим...','var(--color-success)');setTimeout(function(){location.reload()},500);return}if(/email.*confirm|confirm.*email|not confirmed|подтверд/i.test(login.error.message||''))authMsg('Аккаунт создан. На сайте подтверждение почты убрано. Если вход всё равно блокируется, выключите Confirm email в Supabase: Authentication → Providers → Email.','var(--color-warning)');else authMsg('Аккаунт создан, но вход не выполнен: '+login.error.message)};if(!$('t73V75AuthNote')&&fresh.parentElement)fresh.insertAdjacentHTML('afterend','<div id="t73V75AuthNote" class="t73-v75-auth-note">Подтверждение почты на стороне сайта отключено: после регистрации сайт сразу пробует войти.</div>')}
-  document.addEventListener('click',function(e){var btn=e.target&&e.target.closest&&e.target.closest('button,a,.mode-btn');if(!btn)return;var inGoss=!!btn.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,#gossV4Content,#gossV3Content,#gossDashView,[id^="mode-goss"]');var txt=String(btn.textContent||'').toLowerCase().replace(/ё/g,'е');var reportIntent=(btn.dataset&&btn.dataset.view==='reports')||/провер.*отчет|отчеты состава/.test(txt)||btn.id==='govV4CheckReportsBtn'||btn.id==='v27GossViewReportsBtn';if(false&&inGoss&&reportIntent){e.preventDefault();e.stopImmediatePropagation();showGossReports();return false}setTimeout(function(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()},120)},true)
+  document.addEventListener('click',function(e){var btn=e.target&&e.target.closest&&e.target.closest('button,a,.mode-btn');if(!btn)return;var inGoss=!!btn.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,#gossV4Content,#gossV3Content,#gossDashView,[id^="mode-goss"]');var txt=String(btn.textContent||'').toLowerCase().replace(/ё/g,'е');var reportIntent=(btn.dataset&&btn.dataset.view==='reports')||/провер.*отчет|отчеты состава/.test(txt)||btn.id==='govV4CheckReportsBtn'||btn.id==='v27GossViewReportsBtn';if(inGoss&&reportIntent){e.preventDefault();e.stopImmediatePropagation();showGossReports();return false}setTimeout(function(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()},120)},true)
   function boot(){injectPointsCard();enhanceShopBuilders();patchAuthNoConfirm()} if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();[250,700,1500,3000,5500].forEach(function(ms){setTimeout(boot,ms)});try{new MutationObserver(function(){clearTimeout(window.__t73v75mo);window.__t73v75mo=setTimeout(boot,180)}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}
   window.T73_V75_FINAL={showReports:showGossReports,processReport:processReport,injectPoints:injectPointsCard,enhanceShop:enhanceShopBuilders,patchAuth:patchAuthNoConfirm};
 })();
 </script>
 <!-- === /T73 V75 === -->
 
-
-<!-- === T73 V81: SAFE GOSS/СС PATCH ONLY — moderation from v75 untouched === -->
-<style id="t73-v81-goss-ss-style">
-  #gossOrgActionNavV4{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;padding-bottom:.35rem;}
-  #gossOrgActionNavV4 .mode-btn{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;white-space:nowrap;}
-  #gossOrgActionNavV4 #g20Submit,#gossOrgActionNavV4 #g20Table,#gossOrgActionNavV4 #g20Shop,#gossOrgActionNavV4 #g20Manage,#gossOrgActionNavV4 #g19Logs,#gossOrgActionNavV4 #g19Global,#gossOrgActionNavV4 #gossOrgLogsTabBtnV15{display:none!important;}
-  .t73-v81-card{border:1px solid rgba(127,232,160,.24);background:linear-gradient(145deg,rgba(9,18,16,.92),rgba(7,9,18,.98));box-shadow:0 14px 34px rgba(0,0,0,.38);border-radius:20px;padding:1.05rem;margin-bottom:1rem;}
-  .t73-v81-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
-  .t73-v81-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45;}
-  .t73-v81-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;}
-  .t73-v81-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;}
-  .t73-v81-form .full{grid-column:1/-1;}
-  .t73-v81-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.88rem;}
-  .t73-v81-actions{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.8rem;}
-  .t73-v81-pill{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.28rem .65rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;font-size:.78rem;font-weight:900;}
-  .t73-v81-report{display:grid;gap:.72rem;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);padding:1rem;}
-  .t73-v81-statusbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.55rem;}
-  .t73-v81-statusbar .btn{width:100%;justify-content:center;}
-  .t73-v81-daygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:.65rem;}
-  .t73-v81-day{border-radius:16px;border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.28);padding:.75rem;display:grid;gap:.45rem;}
-  .t73-v81-day strong{color:#fff;}
-  .t73-v81-empty{padding:1rem;border-radius:16px;border:1px solid rgba(255,191,71,.35);background:rgba(255,191,71,.08);color:#fff;}
-  .t73-v81-ok{color:var(--color-success)!important;}
-  @media(max-width:760px){.t73-v81-form{grid-template-columns:1fr}.t73-v81-statusbar{grid-template-columns:1fr 1fr}.t73-v81-actions .btn{width:100%;}.t73-v81-card{padding:.9rem;}}
+<!-- === T73 V82: ONLY ГОСС/СС fixes === -->
+<style id="t73-v82-goss-fixes-style">
+#gossV4Content .v82-card{padding:1rem;border-radius:18px;border:1px solid rgba(127,232,160,.24);background:rgba(8,12,24,.94);margin-bottom:.85rem}
+#gossV4Content .v82-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.8rem;flex-wrap:wrap}
+#gossV4Content .v82-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.45}
+#gossV4Content .v82-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem}
+#gossV4Content .v82-mini{padding:.85rem;border-radius:16px;border:1px solid rgba(191,198,255,.16);background:rgba(0,0,0,.30);display:grid;gap:.5rem}
+#gossV4Content .v82-pill{display:inline-flex;padding:.3rem .6rem;border-radius:999px;border:1px solid rgba(127,232,160,.34);background:rgba(127,232,160,.12);color:#dfffea;font-weight:1000;font-size:.78rem}
+#gossV4Content .v82-pill.warn{border-color:rgba(255,191,71,.42);background:rgba(255,191,71,.12);color:#ffe8a8}
+#gossV4Content .v82-pill.bad{border-color:rgba(255,75,105,.42);background:rgba(255,75,105,.12);color:#ffc8d2}
+#gossV4Content .v82-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,191,71,.36);background:rgba(255,191,71,.08);color:#fff}
+#gossV4Content .v82-scroll{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.10)}
+#gossV4Content .v82-table{width:100%;min-width:780px;border-collapse:separate;border-spacing:0}
+#gossV4Content .v82-table th,#gossV4Content .v82-table td{padding:.68rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}
+#gossV4Content .v82-table th{color:#fff;background:rgba(127,232,160,.10);font-size:.78rem;text-transform:uppercase}
+#gossV4Content .v82-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}
+#gossV4Content .v82-form .full{grid-column:1/-1}
+#gossV4Content .v82-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.86rem}
+#gossV4Content .v82-input,#gossV4Content .v82-select{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.62rem;font-weight:800}
+#gossV4Content .v82-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
+@media(max-width:760px){#gossV4Content .v82-form{grid-template-columns:1fr}#gossV4Content .v82-actions .btn{width:100%}}
 </style>
-<script id="t73-v81-goss-ss-only">
+<script id="t73-v82-goss-fixes-script">
 (function(){
-  'use strict';
-  if (window.__T73_V81_GOSS_SS_ONLY__) return;
-  window.__T73_V81_GOSS_SS_ONLY__ = true;
+  "use strict";
+  if(window.__T73_V82_GOSS_FIXES__) return;
+  window.__T73_V82_GOSS_FIXES__ = true;
 
-  var E = { report:'GOSS_USER_REPORT', table:'GOSS_REPORT_TABLE_V19', member:'GOSS_REPORT_MEMBER_V19', profile:'GOSS_PROFILE', access:'ADMIN_ROLE', log:'GOSS_ORG_LOG_V19', points:'GOSS_POINTS_V19' };
-  var weekOffset = 0, usersCache = {at:0, rows:[]}, rolesCache = {at:0, rows:[]};
+  var E = { access:"ADMIN_ROLE", profile:"GOSS_PROFILE", report:"GOSS_USER_REPORT", table:"GOSS_REPORT_TABLE_V82", check:"GOSS_REPORT_CHECK", log:"GOSS_ORG_LOG_V19" };
+  var cache = { roles:null, users:null, profiles:{}, at:0 };
+  var weekOffset = 0;
+
   function $(id){ return document.getElementById(id); }
-  function qa(sel,root){ return Array.prototype.slice.call((root||document).querySelectorAll(sel)); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
-  function parse(v,d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
-  function rid(p){ return p + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
-  function now(){ return new Date().toLocaleString('ru-RU'); }
-  function client(){ try { return (typeof supa !== 'undefined' && supa && supa.from) ? supa : null; } catch(e){ return null; } }
-  function user(){ try { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || null); } catch(e){ return window.currentUser || null; } }
-  function isCreator(){ var u=user(); try { return !!(u && (u.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1))); } catch(e){ return false; } }
-  function orgs(){ try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){} return [{id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},{id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},{id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚓'},{id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},{id:'army',short:'Армия',name:'Армия',icon:'🎖️'},{id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},{id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},{id:'fsin',short:'ФСИН',name:'ФСИН',icon:'⛓️'}]; }
-  function findOrg(id){ return orgs().filter(function(o){ return o.id === id; })[0] || orgs()[0]; }
-  function selectedOrg(){
-    var b = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
-    var id = b && b.dataset ? (b.dataset.orgId || b.dataset.org || b.dataset.id) : '';
-    if (!id) {
-      var txt = (($('gossV4Title')||{}).textContent || '') + ' ' + (($('gossV4Org')||{}).textContent || '');
-      orgs().some(function(o){ if (txt.indexOf(o.short) !== -1 || txt.indexOf(o.name) !== -1) { id = o.id; return true; } return false; });
+  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(v){ return String(v == null ? "" : v).replace(/[&<>"']/g, function(ch){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]; }); }
+  function parse(v){ try { return v ? JSON.parse(v) : {}; } catch(e){ return {}; } }
+  function now(){ return new Date().toLocaleString("ru-RU"); }
+  function rid(p){ return p + "_" + Date.now() + "_" + Math.random().toString(36).slice(2); }
+  function db(){ return window.supa || window.t73Supa || window.supabaseClient || window.__T73_SUPA || null; }
+  function root(){ return $("gossV4Content"); }
+  function orgs(){
+    if(typeof GOSS_ORGS !== "undefined" && Array.isArray(GOSS_ORGS)) return GOSS_ORGS;
+    return [{id:"government",short:"Правительство",name:"Правительство",icon:"🏛️"},{id:"fsb",short:"ФСБ",name:"ФСБ",icon:"🛡️"},{id:"gibdd",short:"ГИБДД",name:"ГИБДД",icon:"🚔"},{id:"umvd",short:"УМВД",name:"УМВД",icon:"👮"},{id:"army",short:"Армия",name:"Армия",icon:"🎖️"},{id:"hospital",short:"Больница",name:"Больница",icon:"🏥"},{id:"smi",short:"СМИ",name:"СМИ",icon:"🎙️"},{id:"fsin",short:"ФСИН",name:"ФСИН",icon:"🔒"}];
+  }
+  function findOrg(id){ var a = orgs(); return a.filter(function(o){ return o.id === id; })[0] || a[0]; }
+  function currentOrg(){
+    var b = document.querySelector("#subNavOrganizations .gov-org-switch-v4.active,.gov-org-switch-v4.active");
+    var id = b && b.dataset ? b.dataset.orgId : "";
+    if(!id){
+      var txt = ((($("gossV4Org") || {}).textContent || "") + " " + (($("gossV4Title") || {}).textContent || "")).toLowerCase();
+      orgs().some(function(o){
+        if(txt.indexOf(String(o.short || "").toLowerCase()) !== -1 || txt.indexOf(String(o.name || "").toLowerCase()) !== -1){ id = o.id; return true; }
+        return false;
+      });
     }
-    return findOrg(id || 'fsb');
+    return findOrg(id || "fsb");
   }
-  function root(){ return $('gossV4Content'); }
-  function gossVisible(){ var p = $('mode-goss_center_v4'); if (!p) return false; try { return getComputedStyle(p).display !== 'none'; } catch(e){ return true; } }
-
+  function creator(){
+    try { return !!(window.currentUser && typeof creatorEmail !== "undefined" && currentUser.email === creatorEmail); } catch(e){ return false; }
+  }
+  function roleOk(status, orgId){
+    status = String(status || "");
+    return status === "goss_senior_" + orgId || status === "goss_senior_all";
+  }
+  function roleLabel(status, org){
+    status = String(status || "");
+    if(status === "goss_senior_" + org.id) return "СС " + org.short;
+    if(status === "goss_lead_" + org.id) return "Руководство " + org.short;
+    if(status === "goss_senior_all") return "СС всех ГОСС";
+    if(status === "goss_admin_all") return "Руководство всех ГОСС";
+    return status.replace("goss_senior_", "СС ").replace("goss_lead_", "Руководство ");
+  }
   async function roles(force){
-    var c = client(); if (!c) return [];
-    if (!force && Date.now() - rolesCache.at < 4500) return rolesCache.rows.slice();
-    try { var r = await c.from('reports').select('*').eq('email', E.access).limit(9000); rolesCache = {at:Date.now(), rows:r.data || []}; } catch(e){ rolesCache = {at:Date.now(), rows:[]}; }
-    return rolesCache.rows.slice();
+    var c = db(); if(!c) return [];
+    if(!force && cache.roles && Date.now() - cache.at < 12000) return cache.roles;
+    try {
+      var r = await c.from("reports").select("*").eq("email", E.access).limit(5000);
+      cache.roles = r.data || [];
+    } catch(e){ cache.roles = []; }
+    cache.at = Date.now();
+    return cache.roles;
   }
-  async function canLead(orgId){ var u=user(); if (!u) return false; if (isCreator()) return true; return (await roles(false)).some(function(r){ return r.link === u.id && (r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId); }); }
-  async function canSenior(orgId){ var u=user(); if (!u) return false; if (await canLead(orgId)) return true; return (await roles(false)).some(function(r){ return r.link === u.id && (r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId); }); }
-  async function canAll(){ var u=user(); if (!u) return false; if (isCreator()) return true; return (await roles(false)).some(function(r){ return r.link === u.id && r.status === 'goss_admin_all'; }); }
-
-  async function collectUsers(force){
-    var c = client(); if (!c) return [];
-    if (!force && Date.now() - usersCache.at < 6500) return usersCache.rows.slice();
+  async function users(force){
+    var c = db(); if(!c) return [];
+    if(!force && cache.users && Date.now() - cache.at < 12000) return cache.users;
     var map = {};
-    function add(id,nick,email){ id = String(id || '').trim(); if (!id) return; map[id] = Object.assign(map[id] || {id:id,nick:'',email:''}, { nick:nick || (map[id]||{}).nick || '', email:email || (map[id]||{}).email || '' }); }
-    try { (creatorUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
-    try { (adminUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
-    try { var u=user(); if (u) add(u.id, (window.currentNickname || (u.user_metadata && (u.user_metadata.nickname || u.user_metadata.name)) || u.email), u.email); } catch(e){}
-    try { var s = await c.from('user_stats').select('user_id,nickname,email').limit(9000); (s.data || []).forEach(function(u){ add(u.user_id, u.nickname, u.email); }); } catch(e){}
-    try { var a = await roles(true); a.forEach(function(r){ add(r.link, r.link, ''); }); } catch(e){}
-    try { var p = await c.from('reports').select('status,date,email,link').in('email',[E.profile,E.member,E.report]).limit(9000); (p.data || []).forEach(function(r){ var d=parse(r.date,{}); add(r.status || d.userId || r.link, d.nick || d.nickname || r.status, d.email || ''); }); } catch(e){}
-    var out = Object.keys(map).map(function(k){ return map[k]; }).filter(function(u){ return u.id; }).sort(function(a,b){ return String(a.nick||a.email||a.id).localeCompare(String(b.nick||b.email||b.id),'ru'); });
-    usersCache = {at:Date.now(), rows:out}; return out.slice();
+    function add(id, nick, email){
+      id = String(id || "").trim();
+      email = String(email || "").trim();
+      nick = String(nick || email || id || "").trim();
+      var key = id || email || nick;
+      if(!key) return;
+      var old = map[key] || {};
+      map[key] = { id:id || old.id || key, nick:nick || old.nick || key, email:email || old.email || "" };
+    }
+    try { (window.adminUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
+    try { (window.creatorUsersList || []).forEach(function(u){ add(u.user_id || u.id, u.nickname || u.nick, u.email); }); } catch(e){}
+    try {
+      var us = await c.from("user_stats").select("user_id,nickname,email").limit(5000);
+      (us.data || []).forEach(function(u){ add(u.user_id, u.nickname, u.email); });
+    } catch(e){}
+    try { (await roles()).forEach(function(r){ add(r.link, r.link, ""); }); } catch(e){}
+    try { if(window.currentUser) add(currentUser.id, window.currentNickname || currentUser.email, currentUser.email); } catch(e){}
+    cache.users = Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), "ru"); });
+    cache.at = Date.now();
+    return cache.users;
+  }
+  async function profiles(orgId, force){
+    var c = db(); if(!c) return {};
+    if(!force && cache.profiles[orgId]) return cache.profiles[orgId];
+    var out = {};
+    try {
+      var r = await c.from("reports").select("*").eq("email", E.profile).eq("link", orgId).order("id", {ascending:false}).limit(1000);
+      (r.data || []).forEach(function(row){
+        if(!out[row.status]) out[row.status] = Object.assign({rowId:row.id,userId:row.status}, parse(row.date));
+      });
+    } catch(e){}
+    cache.profiles[orgId] = out;
+    return out;
+  }
+  async function canLead(orgId){
+    if(!window.currentUser) return false;
+    if(creator()) return true;
+    return (await roles()).some(function(r){ return r.link === currentUser.id && (r.status === "goss_admin_all" || r.status === "goss_lead_" + orgId); });
+  }
+  async function canAll(){
+    if(!window.currentUser) return false;
+    if(creator()) return true;
+    return (await roles()).some(function(r){ return r.link === currentUser.id && r.status === "goss_admin_all"; });
+  }
+  async function seniorRows(orgId){
+    var org = findOrg(orgId);
+    var rs = await roles();
+    var us = await users();
+    var ps = await profiles(orgId);
+    var by = {};
+    var map = {};
+    us.forEach(function(u){ by[u.id] = u; if(u.email) by[u.email] = u; });
+    rs.filter(function(r){ return roleOk(r.status, orgId); }).forEach(function(r){
+      var u = by[r.link] || {id:r.link,nick:r.link,email:""};
+      var p = ps[r.link] || {};
+      var key = r.link || u.id || u.email;
+      var old = map[key] || {};
+      map[key] = Object.assign({}, old, {
+        key:key,
+        id:u.id || key,
+        email:u.email || old.email || "",
+        nick:p.nick || u.nick || old.nick || key,
+        post:p.post || old.post || roleLabel(r.status, org),
+        forum:p.forum || old.forum || "",
+        vk:p.vk || old.vk || "",
+        discord:p.discord || old.discord || "",
+        appointed:p.appointed || old.appointed || "",
+        timezone:p.timezone || old.timezone || "",
+        status:r.status,
+        statusLabel:roleLabel(r.status, org),
+        accessDate:r.date || old.accessDate || ""
+      });
+    });
+    return Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick).localeCompare(String(b.nick), "ru"); });
   }
 
-  function weekDays(){ var d=new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7) + weekOffset*7); return Array.from({length:7}, function(_,i){ var x=new Date(d); x.setDate(d.getDate()+i); return x.toISOString().slice(0,10); }); }
-  function weekKeyFromDays(ds){ return ds[0] + '_' + ds[6]; }
-  function dayRu(iso){ var d=new Date(iso+'T12:00:00'); return d.toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit'}); }
-  function dateFromPayload(p){ return String(p.day || p.createdIso || p.created || new Date().toISOString()).slice(0,10); }
-  async function tableLoad(orgId,wk){ var c=client(); if(!c) return {id:null,data:{marks:{}}}; try { var r=await c.from('reports').select('*').eq('email',E.table).eq('link',orgId).eq('status',wk).order('id',{ascending:false}).limit(1); var row=(r.data||[])[0]; return row ? {id:row.id,data:parse(row.date,{marks:{}})} : {id:null,data:{marks:{}}}; } catch(e){ return {id:null,data:{marks:{}}}; } }
-  async function tableSave(orgId,wk,marks){ var c=client(); if(!c) return {error:{message:'Supabase не загружен'}}; var old=await tableLoad(orgId,wk); var payload={org:orgId,week:wk,marks:marks,by:(user()&&user().email)||'',at:now(),version:'v81'}; if(old.id) return await c.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id); return await c.from('reports').insert([{id:rid('g81tab'),email:E.table,link:orgId,status:wk,date:JSON.stringify(payload),xp:0}]); }
-  async function saveSingleMark(orgId,userId,day,patch){ var ds=weekDaysFor(day), wk=weekKeyFromDays(ds), old=await tableLoad(orgId,wk), marks=(old.data && old.data.marks) || {}; marks[userId]=marks[userId]||{}; marks[userId][day]=Object.assign({}, marks[userId][day] || {}, patch); return await tableSave(orgId,wk,marks); }
-  function weekDaysFor(day){ var d=new Date(String(day)+'T12:00:00'); if(isNaN(d)) return weekDays(); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return Array.from({length:7}, function(_,i){ var x=new Date(d); x.setDate(d.getDate()+i); return x.toISOString().slice(0,10); }); }
-  function statusClass(s){ s=String(s||''); if(s==='Норма'||s==='Перенорма') return 't73-v81-ok'; if(s==='Отказ') return 'badge ban'; if(s==='Натяг') return 'badge warn'; return 't73-v81-muted'; }
-
-  async function profiles(orgId){
-    var c=client(), map={}; if(!c) return [];
-    function add(key,nick,post){ key=String(key||'').trim(); if(!key) return; map[key]=Object.assign(map[key]||{key:key,nick:key,post:''},{nick:nick||map[key]?.nick||key,post:post||map[key]?.post||''}); }
-    try { var pr=await c.from('reports').select('*').eq('email',E.profile).eq('link',orgId).order('id',{ascending:true}).limit(1000); (pr.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status,d.nick||r.status,d.post||'СС'); }); } catch(e){}
-    try { var mem=await c.from('reports').select('*').eq('email',E.member).eq('link',orgId).order('id',{ascending:true}).limit(1000); (mem.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status,d.nick||r.status,d.post||''); }); } catch(e){}
-    try { var reps=await c.from('reports').select('*').eq('email',E.report).eq('link',orgId).order('id',{ascending:false}).limit(500); (reps.data||[]).forEach(function(r){ var d=parse(r.date,{}); add(r.status||d.userId,d.nick||r.status,''); }); } catch(e){}
-    try { var us=await collectUsers(false); (await roles(false)).filter(function(r){ return r.status==='goss_senior_all'||r.status==='goss_admin_all'||r.status==='goss_senior_'+orgId||r.status==='goss_lead_'+orgId; }).forEach(function(r){ var u=us.filter(function(x){return x.id===r.link;})[0]||{}; add(r.link,u.nick||u.email||r.link, r.status.indexOf('lead')!==-1||r.status==='goss_admin_all'?'Руководство':'СС'); }); } catch(e){}
-    return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return String(a.nick).localeCompare(String(b.nick),'ru');});
+  function weekStart(){
+    var d = new Date();
+    d.setHours(0,0,0,0);
+    var day = d.getDay() || 7;
+    d.setDate(d.getDate() - day + 1 + weekOffset * 7);
+    return d;
+  }
+  function iso(d){ return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0,10); }
+  function weekDays(){
+    var s = weekStart();
+    var a = [];
+    for(var i=0;i<7;i++){ var d = new Date(s); d.setDate(s.getDate()+i); a.push(iso(d)); }
+    return a;
+  }
+  function ruDay(x){
+    var p = String(x).split("-");
+    return p.length === 3 ? p[2] + "." + p[1] : x;
+  }
+  function reportDay(row, p){
+    if(p.day && /^\d{4}-\d{2}-\d{2}/.test(String(p.day))) return String(p.day).slice(0,10);
+    if(p.createdIso && /^\d{4}-\d{2}-\d{2}/.test(String(p.createdIso))) return String(p.createdIso).slice(0,10);
+    var m = String(p.created || "").match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    if(m) return m[3] + "-" + m[2] + "-" + m[1];
+    var t = String(row && row.id || "").match(/_(\d{13})_/);
+    if(t){ var d = new Date(Number(t[1])); if(!isNaN(d.getTime())) return iso(d); }
+    return iso(new Date());
+  }
+  async function loadMarks(orgId, week){
+    var c = db(); if(!c) return {id:null,rows:{}};
+    try {
+      var r = await c.from("reports").select("*").eq("email", E.table).eq("link", orgId).eq("status", week).order("id", {ascending:false}).limit(1);
+      var row = (r.data || [])[0];
+      var p = parse(row && row.date);
+      return {id:row && row.id, rows:p.rows || {}};
+    } catch(e){ return {id:null,rows:{}}; }
+  }
+  async function saveMark(orgId, userId, day, status, note, reportId){
+    var c = db(); if(!c || !userId || !day) return;
+    var week = weekDays()[0];
+    var loaded = await loadMarks(orgId, week);
+    var rows = loaded.rows || {};
+    rows[userId] = rows[userId] || {};
+    rows[userId][day] = Object.assign({}, rows[userId][day] || {}, {status:status,note:note || "",reportId:reportId || (rows[userId][day] || {}).reportId || "",updatedAt:now(),updatedBy:(window.currentUser && currentUser.email) || ""});
+    var payload = {org:orgId,week:week,rows:rows,updatedAt:now(),updatedBy:(window.currentUser && currentUser.email) || ""};
+    if(loaded.id) await c.from("reports").update({date:JSON.stringify(payload),xp:Object.keys(rows).length}).eq("id", loaded.id);
+    else await c.from("reports").insert([{id:rid("g82table"),email:E.table,link:orgId,status:week,date:JSON.stringify(payload),xp:Object.keys(rows).length}]);
   }
 
-  async function renderReview(){
-    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
-    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Проверка отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML='<div class="t73-v81-card">Загружаю отчёты...</div>';
-    var rows=[]; try { var q=await c.from('reports').select('*').eq('email',E.report).eq('link',org.id).order('id',{ascending:false}).limit(160); rows=q.data||[]; } catch(e){}
-    var cards = rows.map(function(row){ var p=parse(row.date,{}), day=dateFromPayload(p), uid=row.status||p.userId||'', nick=p.nick||uid||'Пользователь', checked=p.reviewStatus||p.checkedStatus||p.checkedAt; var proofs=[]; if(p.link) proofs.push({url:p.link,name:'Ссылка'}); if(Array.isArray(p.proofs)) proofs=proofs.concat(p.proofs); return '<div class="t73-v81-report" data-report-id="'+esc(row.id)+'" data-user="'+esc(uid)+'" data-day="'+esc(day)+'"><div class="t73-v81-head"><div><strong style="color:#fff;font-size:1.05rem;">'+esc(nick)+'</strong><div class="t73-v81-muted">'+esc(p.type||'Гос отчёт')+' · '+esc(dayRu(day))+' · '+esc(p.created||'')+'</div></div><span class="t73-v81-pill">'+esc(checked ? ('Статус: '+(p.reviewStatus||p.checkedStatus||'Проверен')) : 'На проверке')+'</span></div><div>'+esc(p.comment||'Комментарий не указан')+'</div><div class="t73-v81-actions">'+(proofs.length?proofs.map(function(a,i){return '<a class="btn btn-secondary" target="_blank" rel="noreferrer" href="'+esc(a.url||a)+'">📎 '+esc(a.name||('Файл '+(i+1)))+'</a>';}).join(''):'<span class="t73-v81-muted">Доказательства не прикреплены</span>')+'</div><textarea class="support-input t73-v81-note" rows="2" placeholder="Комментарий руководства"></textarea><div class="t73-v81-statusbar"><button class="btn btn-secondary t73-v81-decision" data-status="Норма" type="button">Норма</button><button class="btn btn-secondary t73-v81-decision" data-status="Перенорма" type="button">Перенорма</button><button class="btn btn-secondary t73-v81-decision" data-status="Натяг" type="button">Натяг</button><button class="btn btn-secondary t73-v81-decision" data-status="Отказ" type="button">Отказ</button></div></div>'; }).join('');
-    r.innerHTML = '<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">✅ Проверка гос отчётов — '+esc(org.short)+'</h3><div class="t73-v81-muted">Без трёх старых кнопок. Выбираешь один из 4 статусов — он сразу попадает в таблицу отчётов.</div></div><button class="btn btn-secondary" id="t73V81ReviewReload" type="button">🔄 Обновить</button></div></div>' + (cards || '<div class="t73-v81-empty">Сданных гос отчётов пока нет.</div>');
-    var reload=$('t73V81ReviewReload'); if(reload) reload.onclick=renderReview;
-    qa('.t73-v81-decision', r).forEach(function(btn){ btn.onclick = async function(){ await decide(btn); }; });
-  }
-  async function decide(btn){
-    var c=client(), card=btn.closest('.t73-v81-report'), org=selectedOrg(); if(!c||!card) return;
-    var id=card.dataset.reportId, uid=card.dataset.user, day=card.dataset.day, status=btn.dataset.status, note=(card.querySelector('.t73-v81-note')||{}).value||'';
-    btn.disabled=true; btn.textContent='Сохраняю...';
-    var old=null; try { var q=await c.from('reports').select('*').eq('id',id).limit(1); old=(q.data||[])[0]; } catch(e){}
-    var p=parse(old && old.date,{}); p.reviewStatus=status; p.checkedStatus=status; p.checkedAt=now(); p.checkedBy=(user()&&user().email)||'Руководство'; p.leaderNote=note;
-    var upd=await c.from('reports').update({date:JSON.stringify(p),xp:status==='Перенорма'?2:(status==='Норма'?1:0)}).eq('id',id);
-    if(upd.error){ alert('Ошибка сохранения отчёта: '+upd.error.message); btn.disabled=false; btn.textContent=status; return; }
-    await saveSingleMark(org.id, uid, day, {report:status, day:status==='Отказ'?'Отказ':'Сдано', note:note, reportId:id, by:(user()&&user().email)||'', at:now()});
-    await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'report_'+status,date:'Проверен гос отчёт: '+status+' · '+uid+' · '+day+' · '+now(),xp:0}]);
-    card.querySelector('.t73-v81-pill').textContent='Статус: '+status; btn.textContent='Готово'; setTimeout(renderReview,350);
+  async function renderStaff(){
+    var r = root();
+    var org = currentOrg();
+    if(!r) return;
+    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Таблица старшего состава доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML = '<div class="v82-card">Загрузка таблицы старшего состава...</div>';
+    var rows = await seniorRows(org.id);
+    var body = rows.map(function(u){
+      var contacts = [];
+      if(u.forum) contacts.push('<a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(u.forum)+'">Форум</a>');
+      if(u.vk) contacts.push("VK: " + esc(u.vk));
+      if(u.discord) contacts.push("Discord: " + esc(u.discord));
+      return '<tr><td><b>'+esc(u.nick || u.id)+'</b><div class="v82-muted">'+esc(u.email || u.id || "")+'</div></td><td><span class="v82-pill">'+esc(u.statusLabel)+'</span></td><td>'+esc(u.post || "Анкета не заполнена")+'</td><td>'+contacts.join("<br>")+'</td><td>'+esc(u.appointed || u.accessDate || "—")+'<div class="v82-muted">'+esc(u.timezone || "")+'</div></td></tr>';
+    }).join("");
+    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">📋 Таблица старшего состава — '+esc(org.short)+'</h3><div class="v82-muted">Показываются только пользователи, у которых реально выдан статус СС/руководства этой ГОСС организации.</div></div><button id="v82RefreshStaff" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="v82-scroll"><table class="v82-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Должность</th><th>Контакты</th><th>Поставлен</th></tr></thead><tbody>'+body+'</tbody></table></div>' : '<div class="v82-empty">В этой организации пока нет пользователей со статусом СС.</div>');
+    $("v82RefreshStaff").onclick = function(){ cache.profiles = {}; cache.roles = null; renderStaff(); };
   }
 
   async function renderTable(){
-    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
-    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Таблица отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    r.innerHTML='<div class="t73-v81-card">Загружаю таблицу...</div>';
-    var ds=weekDays(), wk=weekKeyFromDays(ds), saved=await tableLoad(org.id,wk), marks=(saved.data&&saved.data.marks)||{}, staff=await profiles(org.id);
-    var html = '<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">📊 Таблица гос отчётов — '+esc(org.short)+'</h3><div class="t73-v81-muted">Карточки как в модерации: сотрудник → 7 дней недели. Статусы из проверки появляются сразу.</div></div><div class="t73-v81-actions" style="margin-top:0"><button class="btn btn-secondary" id="t73V81Prev" type="button">⬅️ Прошлая</button><button class="btn btn-secondary" id="t73V81This" type="button">Текущая</button><button class="btn btn-secondary" id="t73V81Next" type="button">Следующая ➡️</button></div></div><div class="t73-v81-muted" style="margin-top:.55rem">Неделя: <b>'+esc(dayRu(ds[0]))+'</b> — <b>'+esc(dayRu(ds[6]))+'</b></div></div>';
-    html += staff.length ? staff.map(function(u){ return '<div class="t73-v81-card" data-user="'+esc(u.key)+'"><div class="t73-v81-head"><div><strong style="color:#fff;font-size:1.06rem;">'+esc(u.nick)+'</strong><div class="t73-v81-muted">'+esc(u.post||'Сотрудник')+'</div></div><span class="t73-v81-pill">'+esc(org.short)+'</span></div><div class="t73-v81-daygrid" style="margin-top:.8rem">'+ds.map(function(d){ var m=(marks[u.key]&&marks[u.key][d])||{}; var st=m.report||'Нет отчёта'; return '<div class="t73-v81-day" data-day="'+esc(d)+'"><strong>'+esc(dayRu(d))+'</strong><span class="'+esc(statusClass(st))+'">'+esc(st)+'</span><select class="support-input t73-v81-table-status"><option '+(st==='Нет отчёта'?'selected':'')+'>Нет отчёта</option><option '+(st==='Норма'?'selected':'')+'>Норма</option><option '+(st==='Перенорма'?'selected':'')+'>Перенорма</option><option '+(st==='Натяг'?'selected':'')+'>Натяг</option><option '+(st==='Отказ'?'selected':'')+'>Отказ</option></select><textarea class="support-input t73-v81-table-note" rows="2" placeholder="Комментарий">'+esc(m.note||'')+'</textarea></div>'; }).join('')+'</div></div>'; }).join('') : '<div class="t73-v81-empty">Сотрудников/отчётов пока нет. Они появятся после заполнения данных СС или сдачи первого гос отчёта.</div>';
-    r.innerHTML=html;
-    $('t73V81Prev').onclick=function(){weekOffset--;renderTable();}; $('t73V81This').onclick=function(){weekOffset=0;renderTable();}; $('t73V81Next').onclick=function(){weekOffset++;renderTable();};
-    qa('.t73-v81-table-status,.t73-v81-table-note', r).forEach(function(el){ el.onchange = async function(){ var card=el.closest('[data-user]'), day=el.closest('[data-day]'); if(!card||!day)return; var status=day.querySelector('.t73-v81-table-status').value, note=day.querySelector('.t73-v81-table-note').value; await saveSingleMark(org.id, card.dataset.user, day.dataset.day, {report:status, day:status==='Отказ'?'Отказ':(status==='Нет отчёта'?'Нет отчёта':'Сдано'), note:note, by:(user()&&user().email)||'', at:now()}); renderTable(); }; });
+    var r = root();
+    var org = currentOrg();
+    var ds = weekDays();
+    if(!r) return;
+    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Таблица отчётов доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML = '<div class="v82-card">Загрузка таблицы отчётов...</div>';
+    var staff = await seniorRows(org.id);
+    var ids = {};
+    staff.forEach(function(u){ ids[u.id] = true; ids[u.key] = true; });
+    var marks = await loadMarks(org.id, ds[0]);
+    var reports = [];
+    try {
+      var q = await db().from("reports").select("*").eq("email", E.report).eq("link", org.id).order("id", {ascending:false}).limit(300);
+      reports = q.data || [];
+    } catch(e){}
+    var by = {};
+    reports.forEach(function(row){
+      var p = parse(row.date);
+      var uid = p.userId || row.status || "";
+      var d = reportDay(row, p);
+      if(ids[uid] && ds.indexOf(d) !== -1) by[uid + "|" + d] = {row:row,p:p};
+    });
+    var head = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">📊 Таблица отчётов ГОСС — '+esc(org.short)+'</h3><div class="v82-muted">В таблицу попадают только пользователи со статусом старшего состава. Итог появляется сразу после проверки отчёта.</div><div class="v82-muted">Неделя: '+esc(ruDay(ds[0]))+' — '+esc(ruDay(ds[6]))+'</div></div><div class="v82-actions" style="margin:0"><button id="v82Prev" class="btn btn-secondary" type="button">⬅️</button><button id="v82Now" class="btn btn-secondary" type="button">Текущая</button><button id="v82Next" class="btn btn-secondary" type="button">➡️</button></div></div></div>';
+    if(!staff.length){ r.innerHTML = head + '<div class="v82-empty">Нет пользователей со статусом СС. Таблица отчётов будет пустой, пока в «Панели руководства» не выдадут статус старшего состава.</div>'; return; }
+    var table = '<div class="v82-scroll"><table class="v82-table"><thead><tr><th>СС</th>'+ds.map(function(d){return '<th>'+esc(ruDay(d))+'</th>';}).join("")+'</tr></thead><tbody>';
+    staff.forEach(function(u){
+      table += '<tr><td><b>'+esc(u.nick || u.id)+'</b><div class="v82-muted">'+esc(u.statusLabel)+'</div></td>';
+      ds.forEach(function(d){
+        var rep = by[(u.id || u.key)+"|"+d] || by[(u.key || u.id)+"|"+d];
+        var saved = ((marks.rows || {})[u.id] || (marks.rows || {})[u.key] || {})[d] || {};
+        var p = (rep && rep.p) || {};
+        var status = saved.status || p.result || (rep ? (p.checkedAt ? "Проверен" : "На проверке") : "Нет отчёта");
+        var cls = status === "Отказ" ? "bad" : ((status === "Нет отчёта" || status === "На проверке") ? "warn" : "");
+        var opts = ["Нет отчёта","На проверке","Норма","Перенорма","Натяг","Отказ"].map(function(x){ return '<option'+(status===x ? ' selected' : '')+'>'+esc(x)+'</option>'; }).join("");
+        table += '<td data-user="'+esc(u.id || u.key)+'" data-day="'+esc(d)+'"><span class="v82-pill '+cls+'">'+esc(status)+'</span><br><select class="v82-select v82-mark">'+opts+'</select>'+(rep && p.link ? '<br><a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(p.link)+'">отчёт</a>' : '')+'</td>';
+      });
+      table += '</tr>';
+    });
+    table += '</tbody></table></div>';
+    r.innerHTML = head + table;
+    $("v82Prev").onclick = function(){ weekOffset--; renderTable(); };
+    $("v82Now").onclick = function(){ weekOffset = 0; renderTable(); };
+    $("v82Next").onclick = function(){ weekOffset++; renderTable(); };
+    qa(".v82-mark", r).forEach(function(sel){
+      sel.onchange = async function(){
+        var cell = sel.closest("td");
+        await saveMark(org.id, cell.dataset.user, cell.dataset.day, sel.value, "Изменено вручную", "");
+        renderTable();
+      };
+    });
+  }
+
+  async function processReport(row, status, xp){
+    var c = db();
+    var org = currentOrg();
+    if(!c || !row) return;
+    var p = parse(row.date);
+    var uid = p.userId || row.status || "";
+    var d = reportDay(row, p);
+    p.result = status;
+    p.checkedAt = now();
+    p.checkedBy = window.currentNickname || (window.currentUser && currentUser.email) || "Руководство";
+    p.xp = xp;
+    var upd = await c.from("reports").update({date:JSON.stringify(p),xp:xp,status:uid}).eq("id", row.id);
+    if(upd.error){ alert("Не удалось проверить отчёт: " + upd.error.message); return; }
+    try { await c.from("reports").insert([{id:rid("g82check"),email:E.check,link:org.id,status:uid,date:JSON.stringify({org:org.id,userId:uid,reportId:row.id,result:status,xp:xp,checkedAt:p.checkedAt,checkedBy:p.checkedBy}),xp:xp}]); } catch(e){}
+    await saveMark(org.id, uid, d, status, p.comment || "", row.id);
+    await renderReview();
+  }
+  async function renderReview(){
+    var r = root();
+    var org = currentOrg();
+    if(!r) return;
+    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Проверку отчётов видит только руководство '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML = '<div class="v82-card">Загрузка отчётов...</div>';
+    var staff = await seniorRows(org.id);
+    var ids = {};
+    staff.forEach(function(u){ ids[u.id] = true; ids[u.key] = true; });
+    var rows = [];
+    try {
+      var q = await db().from("reports").select("*").eq("email", E.report).eq("link", org.id).order("id", {ascending:false}).limit(180);
+      rows = (q.data || []).filter(function(row){ var p = parse(row.date); return !!ids[p.userId || row.status || ""]; });
+    } catch(e){}
+    var html = rows.map(function(row, i){
+      var p = parse(row.date);
+      var done = !!p.checkedAt || ["Норма","Перенорма","Натяг","Отказ"].indexOf(p.result) !== -1;
+      var label = p.result || (done ? "Проверен" : "На проверке");
+      var cls = label === "Отказ" ? "bad" : (label === "На проверке" ? "warn" : "");
+      var actions = done ? '<div class="v82-muted">Проверил: '+esc(p.checkedBy || "—")+' · '+esc(p.checkedAt || "")+'</div>' : '<div class="v82-actions"><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Норма" data-xp="15" type="button" style="border-color:#52c77b;color:#52c77b;">Норма</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Перенорма" data-xp="30" type="button" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Натяг" data-xp="7" type="button" style="border-color:#00e5ff;color:#00e5ff;">Натяг</button><button class="btn btn-secondary v82-review" data-i="'+i+'" data-status="Отказ" data-xp="0" type="button" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button></div>';
+      return '<div class="v82-mini"><div class="v82-head"><div><b style="color:#fff">'+esc(p.nick || row.status || "Пользователь")+'</b><div class="v82-muted">'+esc(p.type || "ГОСС отчёт")+' · '+esc(p.created || "")+'</div></div><span class="v82-pill '+cls+'">'+esc(label)+'</span></div><div class="v82-muted">'+esc(p.comment || "Без комментария")+'</div>'+(p.link ? '<a class="v82-pill" target="_blank" rel="noreferrer" href="'+esc(p.link)+'">📎 Открыть ссылку</a>' : '')+actions+'</div>';
+    }).join("");
+    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">✅ Проверить гос отчёты — '+esc(org.short)+'</h3><div class="v82-muted">Как в модерации: Норма, Перенорма, Натяг, Отказ. После выбора итог сразу записывается в таблицу отчётов.</div></div><button id="v82RefReview" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="v82-grid">'+html+'</div>' : '<div class="v82-empty">Отчётов от пользователей со статусом СС пока нет.</div>');
+    $("v82RefReview").onclick = renderReview;
+    qa(".v82-review", r).forEach(function(b){ b.onclick = function(){ processReport(rows[Number(b.dataset.i)], b.dataset.status, Number(b.dataset.xp || 0)); }; });
   }
 
   async function renderManage(){
-    if(!gossVisible()) return; var r=root(), c=client(), org=selectedOrg(); if(!r||!c) return;
-    if(!(await canLead(org.id))){ r.innerHTML='<div class="t73-v81-empty">Панель руководства доступна только руководству '+esc(org.short)+'.</div>'; return; }
-    var all=await canAll(), users=await collectUsers(true), rs=await roles(true), options=users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nick||u.email||u.id)+' — '+esc(u.email||u.id)+'</option>';}).join('');
-    var senior = rs.filter(function(x){ return all ? /^goss_(senior|lead|admin)/.test(String(x.status||'')) : (x.status==='goss_senior_'+org.id || x.status==='goss_lead_'+org.id); });
-    r.innerHTML='<div class="t73-v81-card"><div class="t73-v81-head"><div><h3 style="margin:0;color:#dfffea;">👑 Панель руководства — '+esc(org.short)+'</h3><div class="t73-v81-muted">Отдельный блок выдачи статуса старшего состава. Если список не загрузился — вставь UID вручную.</div></div><button class="btn btn-secondary" id="t73V81ManageReload" type="button">🔄 Обновить</button></div><div class="t73-v81-form" style="margin-top:1rem"><label class="full">Поиск пользователя<input id="t73V81UserSearch" class="support-input" placeholder="Ник / email / UID"></label><label class="full">Пользователь<select id="t73V81SeniorUser" class="support-input">'+(options||'<option value="">Нет пользователей</option>')+'</select></label><label class="full">Ручной UID/email<input id="t73V81ManualUser" class="support-input" placeholder="если пользователя нет в списке"></label><label>Доступ<select id="t73V81SeniorScope" class="support-input"><option value="one">СС '+esc(org.short)+'</option>'+(all?'<option value="all">СС всех ГОСС</option>':'')+'</select></label><label>Комментарий<input id="t73V81SeniorNote" class="support-input" placeholder="Причина выдачи/снятия"></label></div><div class="t73-v81-actions"><button class="btn btn-secondary" id="t73V81GrantSenior" type="button" style="border-color:var(--color-success);color:var(--color-success)">➕ Выдать статус СС</button><button class="btn btn-secondary" id="t73V81RemoveSenior" type="button" style="border-color:var(--color-error);color:var(--color-error)">➖ Снять статус СС</button></div><div id="t73V81ManageMsg" class="t73-v81-muted" style="margin-top:.7rem"></div></div><div class="t73-v81-card"><h3 style="margin:0 0 .8rem;color:#fff;">Текущие доступы</h3><div class="t73-v81-grid">'+(senior.length?senior.map(function(x){ var u=users.filter(function(z){return z.id===x.link;})[0]||{}; return '<div class="t73-v81-report"><strong style="color:#fff">'+esc(u.nick||u.email||x.link)+'</strong><span class="t73-v81-pill">'+esc(roleText(x.status,org))+'</span><div class="t73-v81-muted">'+esc(x.date||'')+'</div></div>'; }).join(''):'<div class="t73-v81-empty">Пока нет выданных доступов.</div>')+'</div></div>';
-    $('t73V81ManageReload').onclick=renderManage;
-    var search=$('t73V81UserSearch'), sel=$('t73V81SeniorUser'); if(search&&sel){ search.oninput=function(){ var q=String(search.value||'').toLowerCase(); qa('option',sel).forEach(function(o){ o.hidden = q && String(o.textContent||'').toLowerCase().indexOf(q)===-1 && String(o.value||'').toLowerCase().indexOf(q)===-1; }); }; }
-    $('t73V81GrantSenior').onclick=function(){ changeSenior(true); }; $('t73V81RemoveSenior').onclick=function(){ changeSenior(false); };
+    var r = root();
+    var org = currentOrg();
+    if(!r) return;
+    if(!(await canLead(org.id))){ r.innerHTML = '<div class="v82-empty">Панель руководства доступна только руководству '+esc(org.short)+'.</div>'; return; }
+    r.innerHTML = '<div class="v82-card">Загрузка панели руководства...</div>';
+    var all = await canAll();
+    var us = await users(true);
+    var rs = (await roles(true)).filter(function(x){ return roleOk(x.status, org.id); });
+    var userOpts = us.map(function(u){ return '<option value="'+esc(u.id)+'">'+esc(u.nick || u.email || u.id)+(u.email ? ' · '+esc(u.email) : '')+'</option>'; }).join("");
+    var current = rs.map(function(x){
+      var u = us.filter(function(y){ return y.id === x.link || y.email === x.link; })[0] || {nick:x.link,email:""};
+      return '<div class="v82-mini"><b>'+esc(u.nick || x.link)+'</b><span class="v82-pill">'+esc(roleLabel(x.status, org))+'</span><div class="v82-muted">'+esc(u.email || x.link || "")+' · '+esc(x.date || "")+'</div></div>';
+    }).join("");
+    r.innerHTML = '<div class="v82-card"><div class="v82-head"><div><h3 style="margin:0;color:#dfffea;">👑 Панель руководства — '+esc(org.short)+'</h3><div class="v82-muted">Здесь выдаётся именно статус старшего состава ГОСС. Модерация не затрагивается.</div></div><button id="v82ReloadManage" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div class="v82-form" style="margin-top:.9rem"><label class="full">Поиск пользователя<input id="v82SearchUser" class="v82-input" placeholder="Ник / email / UID"></label><label class="full">Пользователь<select id="v82SeniorUser" class="v82-select">'+(userOpts || '<option value="">Нет пользователей</option>')+'</select></label><label>Статус<select id="v82SeniorRole" class="v82-select"><option value="goss_senior_'+esc(org.id)+'">СС '+esc(org.short)+'</option>'+(all ? '<option value="goss_senior_all">СС всех ГОСС</option>' : '')+'</select></label><label>UID / email вручную<input id="v82ManualUser" class="v82-input" placeholder="если пользователя нет в списке"></label><label class="full">Комментарий<input id="v82RoleNote" class="v82-input" placeholder="причина выдачи / снятия"></label></div><div class="v82-actions"><button id="v82GrantSenior" class="btn btn-primary" type="button">➕ Выдать СС</button><button id="v82RemoveSenior" class="btn btn-secondary" type="button" style="border-color:var(--color-error);color:var(--color-error);">➖ Снять СС</button></div><div id="v82ManageMsg" class="v82-muted" style="margin-top:.6rem"></div></div><div class="v82-card"><h3 style="margin:0 0 .8rem;color:#fff;">Текущие статусы СС</h3>'+(current ? '<div class="v82-grid">'+current+'</div>' : '<div class="v82-empty">Статусы СС пока никому не выданы.</div>')+'</div>';
+    $("v82ReloadManage").onclick = function(){ cache.roles = null; cache.users = null; renderManage(); };
+    $("v82SearchUser").oninput = function(){
+      var q = String(this.value || "").toLowerCase();
+      qa("option", $("v82SeniorUser")).forEach(function(o){ o.hidden = q && String(o.textContent + " " + o.value).toLowerCase().indexOf(q) === -1; });
+    };
+    async function change(grant){
+      var c = db();
+      var uid = String($("v82ManualUser").value || "").trim() || String($("v82SeniorUser").value || "").trim();
+      var st = $("v82SeniorRole").value;
+      var note = String($("v82RoleNote").value || "").trim();
+      if(!uid){ alert("Выберите пользователя или вставьте UID/email."); return; }
+      if(st === "goss_senior_all" && !(await canAll())){ alert("СС всех ГОСС может выдавать только руководство всех ГОСС."); return; }
+      $("v82ManageMsg").textContent = "Сохраняю...";
+      if(grant){
+        await c.from("reports").delete().eq("email", E.access).eq("link", uid).eq("status", st);
+        var ins = await c.from("reports").insert([{id:rid("g82senior"),email:E.access,link:uid,status:st,date:now()+(note ? " · "+note : ""),xp:0}]);
+        if(ins.error){ alert("Ошибка выдачи: " + ins.error.message); return; }
+        try { await c.from("reports").insert([{id:rid("g82log"),email:E.log,link:org.id,status:"grant_senior",date:"Выдан "+st+" пользователю "+uid+" · "+now(),xp:0}]); } catch(e){}
+      } else {
+        var del = await c.from("reports").delete().eq("email", E.access).eq("link", uid).eq("status", st);
+        if(del.error){ alert("Ошибка снятия: " + del.error.message); return; }
+        try { await c.from("reports").insert([{id:rid("g82log"),email:E.log,link:org.id,status:"remove_senior",date:"Снят "+st+" у "+uid+" · "+now(),xp:0}]); } catch(e){}
+      }
+      cache.roles = null;
+      $("v82ManageMsg").textContent = grant ? "Статус СС выдан." : "Статус СС снят.";
+      setTimeout(renderManage, 300);
+    }
+    $("v82GrantSenior").onclick = function(){ change(true); };
+    $("v82RemoveSenior").onclick = function(){ change(false); };
   }
-  function roleText(st,org){ if(st==='goss_admin_all')return'Руководство всех ГОСС'; if(st==='goss_senior_all')return'СС всех ГОСС'; if(String(st).indexOf('goss_lead_')===0)return'Руководство '+findOrg(st.replace('goss_lead_','')).short; if(String(st).indexOf('goss_senior_')===0)return'СС '+findOrg(st.replace('goss_senior_','')).short; return st; }
-  async function changeSenior(grant){ var c=client(), org=selectedOrg(), all=await canAll(); if(!c)return; var uid=String(($('t73V81ManualUser')||{}).value||'').trim() || String(($('t73V81SeniorUser')||{}).value||'').trim(); var scope=($('t73V81SeniorScope')||{}).value||'one', note=($('t73V81SeniorNote')||{}).value||'', msg=$('t73V81ManageMsg'); if(!uid)return alert('Выберите пользователя или вставьте UID/email.'); if(scope==='all'&&!all)return alert('СС всех ГОСС может выдавать только руководство всех ГОСС.'); var status=scope==='all'?'goss_senior_all':'goss_senior_'+org.id; if(msg)msg.textContent='Сохраняю...'; if(grant){ await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',status); var ins=await c.from('reports').insert([{id:rid('g81senior'),email:E.access,link:uid,status:status,date:now()+(note?' · '+note:''),xp:0}]); if(ins.error){ if(msg)msg.textContent='Ошибка: '+ins.error.message; return alert(ins.error.message); } await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'grant_senior',date:'Выдан СС: '+uid+' · '+roleText(status,org)+' · '+now(),xp:0}]); } else { var del=await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',status); if(del.error){ if(msg)msg.textContent='Ошибка: '+del.error.message; return alert(del.error.message); } await c.from('reports').insert([{id:rid('g81log'),email:E.log,link:org.id,status:'remove_senior',date:'Снят СС: '+uid+' · '+roleText(status,org)+' · '+now(),xp:0}]); } if(msg){msg.textContent=grant?'Статус СС выдан.':'Статус СС снят.';msg.classList.add('t73-v81-ok');} rolesCache.at=0; usersCache.at=0; setTimeout(renderManage,450); }
 
-  function fixLabels(){
-    if(!gossVisible()) return;
-    var nav=$('gossOrgActionNavV4'); if(nav){
-      qa('#g20Submit,#g20Table,#g20Shop,#g20Manage,#g19Logs,#g19Global,#gossOrgLogsTabBtnV15',nav).forEach(function(b){ b.style.display='none'; });
-      qa('button',nav).forEach(function(b){ var v=b.dataset.view||'', t=String(b.textContent||'').replace(/\s+/g,' ').trim(); if(v==='submit'||/отч[её]тност/i.test(t)) b.innerHTML='📤 Сдать гос отчёт'; if(v==='staff') b.innerHTML='📊 Таблица отчётов'; if(v==='reports') b.innerHTML='✅ Проверить отчёты'; if(v==='manage') b.innerHTML='👑 Панель руководства'; });
-    }
-    var r=root(); if(r){
-      qa('#t73V15OpenThisOrgLogs,.t73-v15-card',r).forEach(function(x){ x.remove(); });
-      qa('h3,button,p,span,div',r).forEach(function(el){ if(el.childElementCount) return; var txt=el.textContent||''; if(/Сдать\s+отч[её]тность/i.test(txt)) el.textContent=txt.replace(/Сдать\s+отч[её]тность/ig,'Сдать гос отчёт'); if(/^Отч[её]тность$/i.test(txt.trim())) el.textContent='Гос отчёт'; });
-    }
-  }
-  function patchTrainerBank(){
-    if(window.__T73_V81_TRAINER_BANK_DONE__) return; window.__T73_V81_TRAINER_BANK_DONE__=true;
+  function patchTrainer(){
+    if(window.__T73_V82_TRAINER_PATCH__) return;
+    window.__T73_V82_TRAINER_PATCH__ = true;
     try {
-      if (typeof GOV_TRAINERS_V4 === 'undefined') return;
+      if(typeof GOV_TRAINERS_V4 === "undefined") return;
       var data = {
-        government:['Проверка без основания|Перенести проверку|Начать сразу|Скрыть проверку','Конфликт в составе|Собрать факты|Выбрать старшего|Закрыть тему','Приказ без даты|Вернуть на правку|Подписать сразу|Удалить приказ'],
-        fsb:['Заявка неполная|Вернуть на правку|Принять сразу|Удалить молча','Слив информации|Собрать факты|Обвинить публично|Игнорировать','Слабое собеседование|Отказать с причиной|Принять по заявке|Не фиксировать'],
-        gibdd:['Спор по штрафу|Проверить факты|Отменить сразу|Наказать жалобу','Пост оставлен|Выяснить причину|Не реагировать|Уволить сразу','ДТП без ясности|Собрать схему|Выбрать случайно|Уехать'],
-        umvd:['Заявление без скринов|Принять и проверить|Отказать сразу|Наказать заявителя','Спорное задержание|Проверить основания|Верить сотруднику|Отпустить всех','Патруль без дела|Дать задачу|Не трогать|Максимум сразу'],
-        army:['КПП просит пропуск|Отказать по порядку|Пропустить сразу|Грубить игроку','Склад без отчёта|Проверить записи|Раздать имущество|Скрыть факт','Срыв строя|Восстановить строй|Отменить строй|Кричать без меры'],
-        hospital:['Пациент жалуется|Проверить помощь|Закрыть жалобу|Обвинить пациента','Нет выезда|Назначить медика|Закрыть вызов|Не проверять','Ошибка в карте|Исправить данные|Оставить как есть|Уволить сразу'],
-        smi:['Эфир без темы|Скорректировать эфир|Не вмешиваться|Разрешить всё','Объявление с ошибкой|Вернуть правку|Пустить сразу|Уволить сразу','Провокация гостя|Держать нейтралитет|Ответить тем же|Сорвать эфир'],
-        fsin:['Срыв режима|Зафиксировать факт|Ответить агрессией|Игнорировать','Допуск без заявки|Проверить основание|Пропустить сразу|Грубо выгнать','Обход не проведён|Назначить обход|Скрыть факт|Отменить обход']
+        government:["Жалоба без фактов","Попросить факты","Закрыть сразу","Наказать автора"],
+        fsb:["Неполная заявка","Вернуть правку","Принять сразу","Удалить молча"],
+        gibdd:["Спорный штраф","Проверить запись","Отменить всем","Выдать больше"],
+        umvd:["Жалоба на арест","Проверить основу","Верить своим","Стереть жалобу"],
+        army:["КПП без допуска","Следовать уставу","Пустить всех","Спорить грубо"],
+        hospital:["Жалоба пациента","Проверить помощь","Закрыть молча","Винить пациента"],
+        smi:["Эфир без темы","Согласовать тему","Пустить хаос","Сорвать эфир"],
+        fsin:["Нарушен режим","Зафиксировать","Ответить силой","Не заметить"]
       };
-      Object.keys(data).forEach(function(orgId){ var pack=GOV_TRAINERS_V4[orgId]; if(!pack||!Array.isArray(pack.scenarios)) return; data[orgId].forEach(function(row,i){ var a=row.split('|'); pack.scenarios.push({from:'Ситуация СС',text:a[0]+'. Какое решение принять?',options:[{text:a[1],good:true,reply:'Верно: решение по фактам и регламенту.'},{text:a[2],good:false,reply:'Неверно: так можно нарушить порядок.'},{text:a[3],good:false,reply:'Неверно: СС должен фиксировать действия.'}]}); }); });
+      Object.keys(data).forEach(function(id){
+        var pack = GOV_TRAINERS_V4[id];
+        if(!pack || !Array.isArray(pack.scenarios)) return;
+        var x = data[id];
+        pack.scenarios.push({from:"Ситуация СС",text:x[0]+". Что делать?",options:[{text:x[1],good:true,reply:"Верно: решение по фактам и регламенту."},{text:x[2],good:false,reply:"Неверно: решение без проверки ломает порядок."},{text:x[3],good:false,reply:"Неверно: СС должен фиксировать ситуацию."}]});
+      });
     } catch(e){}
   }
-  function activeView(){ var b=document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active,#gossOrgActionNavV4 [data-view].active'); return b && b.dataset ? b.dataset.view : ''; }
-  function afterRoute(view){ fixLabels(); if(view==='reports') renderReview(); else if(view==='staff') renderTable(); else if(view==='manage') renderManage(); }
-  document.addEventListener('click', function(e){ var b=e.target && e.target.closest && e.target.closest('#gossOrgActionNavV4 [data-view]'); if(b){ var view=b.dataset.view||''; setTimeout(function(){ afterRoute(view); },180); setTimeout(function(){ afterRoute(view); },520); } var org=e.target && e.target.closest && e.target.closest('.gov-org-switch-v4,[data-mode="goss_center_v4"]'); if(org){ setTimeout(fixLabels,180); setTimeout(fixLabels,650); } }, false);
-  function boot(){ patchTrainerBank(); fixLabels(); var v=activeView(); if(v==='reports') renderReview(); if(v==='staff') renderTable(); if(v==='manage') renderManage(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
-  [250,800,1600,3200,5200].forEach(function(ms){ setTimeout(boot,ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73v81mo); window.__t73v81mo=setTimeout(boot,220); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
-  window.T73_V81_GOSS_SS = { review:renderReview, table:renderTable, manage:renderManage, labels:fixLabels };
+  function relabel(){
+    var r = root(); if(!r) return;
+    qa("h1,h2,h3,p,span,button,div,label", r).forEach(function(el){
+      if(el.childElementCount) return;
+      var t = el.textContent || "";
+      if(/Сдать\s+отч[её]тность/i.test(t)) el.textContent = t.replace(/Сдать\s+отч[её]тность/ig, "Сдать гос отчёт");
+      else if(/^Отч[её]тность$/i.test(t.trim())) el.textContent = "Гос отчёт";
+    });
+  }
+  function nav(){
+    var n = $("gossOrgActionNavV4");
+    if(!n) return;
+    qa("#g19Submit,#g19Table,#g19Shop,#g19Logs,#g19Global,#g20Submit,#g20Table,#g20Shop,#g20Manage,#gossOrgLogsTabBtnV15,#t73V15OpenThisOrgLogs", n).forEach(function(b){ b.style.display = "none"; });
+    qa(".gov-action-switch-v4,[data-view]", n).forEach(function(b){
+      var v = (b.dataset || {}).view || "";
+      if(v === "trainer") b.innerHTML = "🎮 Тренажёр";
+      if(v === "profile") b.innerHTML = "📝 Мои данные";
+      if(v === "submit") b.innerHTML = "📤 Сдать гос отчёт";
+      if(v === "shop") b.innerHTML = "🛒 Магазин";
+      if(v === "staff") b.innerHTML = "📋 Таблица старшего состава";
+      if(v === "reports") b.innerHTML = "✅ Проверить отчёты";
+      if(v === "manage") b.innerHTML = "👑 Панель руководства";
+    });
+    var leader = !!n.querySelector('[data-view="staff"],[data-view="reports"],[data-view="manage"]');
+    var t = $("v82ReportTableBtn");
+    if(leader && !t){
+      var after = n.querySelector('[data-view="staff"]') || n.querySelector('[data-view="reports"]') || n.lastElementChild;
+      var html = '<button class="mode-btn" id="v82ReportTableBtn" type="button">📊 Таблица отчётов</button>';
+      if(after) after.insertAdjacentHTML("afterend", html); else n.insertAdjacentHTML("beforeend", html);
+      t = $("v82ReportTableBtn");
+    }
+    if(t) t.onclick = function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      qa("#gossOrgActionNavV4 .mode-btn").forEach(function(x){ x.classList.remove("active"); });
+      t.classList.add("active");
+      renderTable();
+    };
+  }
+  function boot(){ patchTrainer(); nav(); relabel(); }
+
+  document.addEventListener("click", function(e){
+    var b = e.target && e.target.closest && e.target.closest("#gossOrgActionNavV4 [data-view]");
+    if(b){
+      var v = b.dataset.view || "";
+      if(v === "staff") setTimeout(renderStaff, 100);
+      if(v === "reports") setTimeout(renderReview, 100);
+      if(v === "manage") setTimeout(renderManage, 100);
+      if(v === "submit") setTimeout(relabel, 160);
+      setTimeout(nav, 180);
+      setTimeout(nav, 600);
+    }
+    if(e.target && e.target.closest && e.target.closest(".gov-org-switch-v4,[data-mode='goss_center_v4']")){
+      setTimeout(boot, 180);
+      setTimeout(boot, 700);
+    }
+  }, true);
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
+  [250,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  try {
+    new MutationObserver(function(){ clearTimeout(window.__t73v82mo); window.__t73v82mo = setTimeout(boot, 150); }).observe(document.documentElement, {childList:true,subtree:true});
+  } catch(e){}
+  window.T73_V82_GOSS_ONLY = {staff:renderStaff,reportTable:renderTable,review:renderReview,manage:renderManage,nav:nav};
 })();
 </script>
-<!-- === /T73 V81 === -->
+<!-- === /T73 V82 === -->
 
 </body>
 </html>
