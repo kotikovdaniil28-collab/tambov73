@@ -18431,5 +18431,177 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V71 === -->
 
+
+
+<!-- === T73 V72: 10 music tracks selector === -->
+<style>
+  #musicTrackSelect.t73-v72-music-select{
+    height: 44px;
+    max-width: 210px;
+    min-width: 165px;
+    padding: 0 .85rem;
+    border-radius: 14px;
+    border: 1px solid rgba(191,198,255,.22);
+    background: rgba(0,0,0,.45);
+    color: var(--color-text, #fff);
+    font-weight: 800;
+    outline: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.22);
+    cursor: pointer;
+  }
+  #musicTrackSelect.t73-v72-music-select:focus{
+    border-color: rgba(127,232,160,.62);
+    box-shadow: 0 0 0 3px rgba(127,232,160,.14), 0 8px 24px rgba(0,0,0,.22);
+  }
+  #musicTrackSelect.t73-v72-music-select option{
+    background:#101023;
+    color:#fff;
+  }
+  @media (max-width: 860px), (pointer: coarse){
+    .topbar > div:last-child > div:not(#authStatus){
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+    #musicTrackSelect.t73-v72-music-select{
+      grid-column: 1 / -1 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      height: 36px !important;
+      font-size: .78rem !important;
+      border-radius: 12px !important;
+      text-align: center !important;
+      text-align-last: center !important;
+    }
+  }
+</style>
+<script>
+(function(){
+  'use strict';
+  if (window.__T73_V72_MUSIC_SELECTOR__) return;
+  window.__T73_V72_MUSIC_SELECTOR__ = true;
+
+  var TRACKS = [
+    { name:'🌙 Relax Chill', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+    { name:'🌌 Night Ambient', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+    { name:'🌊 Calm Wave', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+    { name:'✨ Soft Dream', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+    { name:'☕ Lo-Fi Mood', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+    { name:'🚗 Road Flow', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+    { name:'⚡ Energy Light', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+    { name:'🎮 Cyber Focus', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+    { name:'🌧️ Rainy Vibe', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
+    { name:'🪐 Deep Space', url:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
+  ];
+
+  var audio = new Audio();
+  audio.loop = true;
+  audio.volume = 0.22;
+  audio.preload = 'none';
+  var enabled = false;
+  var ready = false;
+
+  function clampTrack(v){
+    var n = parseInt(v, 10);
+    if (!Number.isFinite(n) || n < 0 || n >= TRACKS.length) n = 0;
+    return n;
+  }
+  function savedTrack(){
+    try { return clampTrack(localStorage.getItem('t73_music_track_v72')); } catch(e){ return 0; }
+  }
+  function saveTrack(i){
+    try { localStorage.setItem('t73_music_track_v72', String(clampTrack(i))); } catch(e){}
+  }
+  function setBtn(btn, state){
+    if (!btn) return;
+    btn.textContent = state || (enabled ? '🎵' : '🔇');
+    btn.title = enabled ? 'Музыка включена' : 'Музыка выключена';
+    btn.setAttribute('aria-label', btn.title);
+  }
+  function setTrack(index, autoplay){
+    index = clampTrack(index);
+    saveTrack(index);
+    var select = document.getElementById('musicTrackSelect');
+    if (select) select.value = String(index);
+    var btn = document.getElementById('musicToggleBtn');
+    var shouldPlay = !!autoplay && enabled;
+    audio.pause();
+    audio.src = TRACKS[index].url;
+    audio.currentTime = 0;
+    audio.load();
+    if (shouldPlay) {
+      setBtn(btn, '⏳');
+      audio.play().then(function(){ setBtn(btn, '🎵'); }).catch(function(){ enabled = false; setBtn(btn, '🔇'); });
+    } else {
+      setBtn(btn);
+    }
+  }
+  function playCurrent(){
+    var btn = document.getElementById('musicToggleBtn');
+    if (!audio.src) setTrack(savedTrack(), false);
+    enabled = true;
+    setBtn(btn, '⏳');
+    audio.play().then(function(){ setBtn(btn, '🎵'); }).catch(function(){ enabled = false; setBtn(btn, '🔇'); });
+  }
+  function pauseCurrent(){
+    enabled = false;
+    audio.pause();
+    setBtn(document.getElementById('musicToggleBtn'), '🔇');
+  }
+
+  function boot(){
+    var oldBtn = document.getElementById('musicToggleBtn');
+    if (!oldBtn) return;
+
+    // Удаляем старый обработчик фоновой музыки из базового кода: кнопка заменяется клоном.
+    if (oldBtn.dataset.t73v72MusicReady !== '1') {
+      var freshBtn = oldBtn.cloneNode(true);
+      freshBtn.dataset.t73v72MusicReady = '1';
+      oldBtn.replaceWith(freshBtn);
+      oldBtn = freshBtn;
+    }
+
+    var wrap = oldBtn.parentElement;
+    if (wrap && !document.getElementById('musicTrackSelect')) {
+      var select = document.createElement('select');
+      select.id = 'musicTrackSelect';
+      select.className = 't73-v72-music-select';
+      select.title = 'Выбор фоновой музыки';
+      select.setAttribute('aria-label', 'Выбор фоновой музыки');
+      select.innerHTML = TRACKS.map(function(t, i){
+        return '<option value="' + i + '">' + (i + 1) + '. ' + t.name + '</option>';
+      }).join('');
+      select.value = String(savedTrack());
+      wrap.insertBefore(select, oldBtn);
+      select.addEventListener('change', function(){
+        setTrack(this.value, enabled);
+      });
+    }
+
+    if (!ready) {
+      ready = true;
+      setTrack(savedTrack(), false);
+      oldBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if (enabled) pauseCurrent(); else playCurrent();
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [250, 700, 1500, 3000].forEach(function(ms){ setTimeout(boot, ms); });
+
+  window.T73_V72_MUSIC_SELECTOR = {
+    tracks: TRACKS,
+    audio: audio,
+    play: playCurrent,
+    pause: pauseCurrent,
+    setTrack: function(i){ setTrack(i, enabled); },
+    getTrack: function(){ return savedTrack(); }
+  };
+})();
+</script>
+<!-- === /T73 V72 === -->
+
 </body>
 </html>
