@@ -19912,5 +19912,256 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V79 === -->
 
+<!-- === T73 V80: session persistence + clean ГОСС routing + logs not at top === -->
+<style id="t73-v80-goss-routing-style">
+  #gossOrgActionNavV4.t73-v80-ready{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;overflow-x:auto;padding-bottom:.35rem;}
+  #gossOrgActionNavV4 .t73-v80-mode{display:inline-flex!important;visibility:visible!important;pointer-events:auto!important;align-items:center;justify-content:center;white-space:nowrap;}
+  #gossOrgActionNavV4 .t73-v80-mode.active{background:linear-gradient(135deg,#6c8cff,#52c77b)!important;color:#fff!important;border-color:rgba(255,255,255,.25)!important;}
+  #gossOrgActionNavV4 #g19Logs,
+  #gossOrgActionNavV4 .t73-v68-org-logs,
+  #gossOrgActionNavV4 #gossOrgLogsTabBtnV15{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+</style>
+<script id="t73-v80-session-goss-routing">
+(function(){
+  'use strict';
+  if (window.__T73_V80_SESSION_GOSS_ROUTING__) return;
+  window.__T73_V80_SESSION_GOSS_ROUTING__ = true;
+
+  var AUTH_STORE = 't73_v80_supabase_session_backup';
+  var ACCESS_EMAIL = 'ADMIN_ROLE';
+  var roleCache = { at:0, rows:[] };
+  var lastView = 'trainer';
+  var bootTimer = 0;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); }
+  function norm(v){ return String(v == null ? '' : v).trim(); }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && supa.auth && supa.from) return supa; } catch(e){}
+    try { if (window.supa && window.supa.auth && window.supa.from) return window.supa; } catch(e){}
+    try { if (window.__T73_SUPA && window.__T73_SUPA.auth && window.__T73_SUPA.from) return window.__T73_SUPA; } catch(e){}
+    try { if (window.t73Supa && window.t73Supa.auth && window.t73Supa.from) return window.t73Supa; } catch(e){}
+    try { if (window.supabaseClient && window.supabaseClient.auth && window.supabaseClient.from) return window.supabaseClient; } catch(e){}
+    return null;
+  }
+  function getLexUser(){ try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){} return window.currentUser || null; }
+  function setLexUser(u){
+    if (!u) return;
+    try { currentUser = u; } catch(e){}
+    window.currentUser = u;
+    var nick = (u.user_metadata && (u.user_metadata.nickname || u.user_metadata.name)) || u.email || '';
+    try { if (typeof currentNickname !== 'undefined' && !currentNickname) currentNickname = nick; } catch(e){}
+    if (!window.currentNickname) window.currentNickname = nick;
+    var nameEl = $('userEmailDisplay'); if (nameEl) nameEl.textContent = (window.currentNickname || nick || u.email);
+    var login = $('loginBtnUI'), logout = $('logoutBtnUI'), modal = $('authModal');
+    if (login) login.style.display = 'none';
+    if (logout) logout.style.display = 'flex';
+    if (modal) modal.style.display = 'none';
+  }
+  function saveSession(session){
+    if (!session || !session.access_token || !session.refresh_token) return;
+    try { localStorage.setItem(AUTH_STORE, JSON.stringify({ access_token:session.access_token, refresh_token:session.refresh_token, savedAt:Date.now() })); } catch(e){}
+  }
+  async function restoreSession(){
+    var c = client(); if (!c || !c.auth) return null;
+    try {
+      var gs = await c.auth.getSession();
+      var session = gs && gs.data && gs.data.session;
+      if (session && session.user) { saveSession(session); setLexUser(session.user); return session.user; }
+    } catch(e){}
+    try {
+      var raw = localStorage.getItem(AUTH_STORE); if (!raw) return null;
+      var s = JSON.parse(raw || '{}');
+      if (!s.access_token || !s.refresh_token) return null;
+      var ss = await c.auth.setSession({ access_token:s.access_token, refresh_token:s.refresh_token });
+      var session2 = ss && ss.data && ss.data.session;
+      if (session2 && session2.user) { saveSession(session2); setLexUser(session2.user); return session2.user; }
+    } catch(e){}
+    return null;
+  }
+  function patchAuthPersistence(){
+    var c = client(); if (!c || !c.auth || c.__t73v80AuthPatched) return;
+    c.__t73v80AuthPatched = true;
+    var oldSignIn = c.auth.signInWithPassword ? c.auth.signInWithPassword.bind(c.auth) : null;
+    if (oldSignIn) c.auth.signInWithPassword = async function(args){
+      var res = await oldSignIn(args);
+      if (res && res.data && res.data.session) { saveSession(res.data.session); setLexUser(res.data.session.user); }
+      return res;
+    };
+    var oldSignOut = c.auth.signOut ? c.auth.signOut.bind(c.auth) : null;
+    if (oldSignOut) c.auth.signOut = async function(){
+      try { localStorage.removeItem(AUTH_STORE); } catch(e){}
+      return oldSignOut.apply(null, arguments);
+    };
+    try { c.auth.onAuthStateChange(function(event, session){ if (session) { saveSession(session); if (session.user) setLexUser(session.user); } if (event === 'SIGNED_OUT') localStorage.removeItem(AUTH_STORE); }); } catch(e){}
+    var login = $('authLoginSubmit');
+    if (login && login.dataset.t73v80 !== '1') {
+      login.dataset.t73v80 = '1';
+      login.onclick = async function(){
+        var email = norm(($('authEmail') || {}).value || '').toLowerCase();
+        var password = String(($('authPassword') || {}).value || '');
+        var msg = $('authErrorMsg');
+        function out(t, color){ if (msg) { msg.textContent = t; msg.style.color = color || 'var(--color-error)'; msg.style.display = 'block'; } }
+        if (!email || !password) return out('Введите Email и пароль.');
+        out('Вхожу...', 'var(--color-primary)');
+        var r = await c.auth.signInWithPassword({ email:email, password:password });
+        if (r.error) return out(r.error.message);
+        if (r.data && r.data.session) { saveSession(r.data.session); setLexUser(r.data.session.user); }
+        try { await restoreSession(); } catch(e){}
+        window.location.reload();
+      };
+    }
+  }
+
+  function orgList(){
+    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){}
+    try { if (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) return window.GOSS_ORGS; } catch(e){}
+    return [
+      {id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},
+      {id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},
+      {id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚓'},
+      {id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},
+      {id:'army',short:'Армия',name:'Армия',icon:'🎖️'},
+      {id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},
+      {id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},
+      {id:'fsin',short:'ФСИН',name:'ФСИН',icon:'⛓️'}
+    ];
+  }
+  function currentOrg(){
+    var id = '';
+    var active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
+    if (active && active.dataset) id = active.dataset.orgId || active.dataset.org || active.dataset.id || '';
+    if (!id) { try { id = window.govV4SelectedOrg || ''; } catch(e){} }
+    if (!id) {
+      var txt = [ $('gossV4Org') && $('gossV4Org').textContent, $('gossV4Title') && $('gossV4Title').textContent ].join(' ').toLowerCase();
+      orgList().some(function(o){ var s=String(o.short||'').toLowerCase(), n=String(o.name||'').toLowerCase(); if ((s && txt.indexOf(s)!==-1) || (n && txt.indexOf(n)!==-1)) { id=o.id; return true; } return false; });
+    }
+    return orgList().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgList()[0];
+  }
+  function gossVisible(){ var p = $('mode-goss_center_v4'); try { return !!p && getComputedStyle(p).display !== 'none'; } catch(e){ return !!p; } }
+  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || null; }
+  function isCreator(u){
+    u = u || getLexUser(); if (!u) return false;
+    try { if (typeof creatorEmail !== 'undefined' && u.email === creatorEmail) return true; } catch(e){}
+    try { if (Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1) return true; } catch(e){}
+    return false;
+  }
+  async function roles(force){
+    if (!force && roleCache.rows.length && Date.now() - roleCache.at < 12000) return roleCache.rows.slice();
+    var c = client(); if (!c) return roleCache.rows.slice();
+    try { var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email', ACCESS_EMAIL).limit(8000); roleCache = { at:Date.now(), rows:r.data || [] }; } catch(e){}
+    return roleCache.rows.slice();
+  }
+  async function access(orgId){
+    var u = getLexUser() || await restoreSession();
+    if (!u) return { senior:false, leader:false };
+    if (isCreator(u)) return { senior:true, leader:true };
+    var rs = await roles(false);
+    var seniorStatuses = ['goss_senior_all','goss_admin_all','goss_lead_'+orgId,'goss_senior_'+orgId];
+    var leaderStatuses = ['goss_admin_all','goss_lead_'+orgId];
+    return {
+      senior: rs.some(function(r){ return r.link === u.id && seniorStatuses.indexOf(r.status) !== -1; }),
+      leader: rs.some(function(r){ return r.link === u.id && leaderStatuses.indexOf(r.status) !== -1; })
+    };
+  }
+  function btn(view,label,active){ return '<button class="mode-btn gov-action-switch-v4 t73-v80-mode '+(active?'active':'')+'" data-view="'+esc(view)+'" type="button">'+label+'</button>'; }
+  function setActive(view){
+    lastView = view;
+    var nav = $('gossOrgActionNavV4'); if (!nav) return;
+    nav.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view || (view==='table' && b.dataset.view==='staff') || (view==='review' && b.dataset.view==='reports')); });
+  }
+  function stripTopLogs(){
+    ['t73V15OpenThisOrgLogs','g19Logs','gossOrgLogsTabBtnV15'].forEach(function(id){
+      var el = $(id); if (!el) return;
+      var inNav = el.closest && el.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.sub-nav');
+      if (inNav) { el.style.display = 'none'; return; }
+      var card = el.closest && el.closest('.gov-v4-card,.gov-v3-access-card,.t73-v15-card,.t73-v68-log-card,.g19-card,.t73-v23-card,.t73-v24-card');
+      if (card) card.remove();
+    });
+    document.querySelectorAll('#gossOrgActionNavV4 .t73-v68-org-logs,#gossOrgActionNavV3 .t73-v68-org-logs,#gossOrgActionNav .t73-v68-org-logs').forEach(function(el){ el.style.display='none'; });
+  }
+  async function buildNav(){
+    if (!gossVisible()) { stripTopLogs(); return; }
+    await restoreSession();
+    patchAuthPersistence();
+    var org = currentOrg();
+    var nav = $('gossOrgActionNavV4');
+    var orgNav = $('subNavOrganizations');
+    if (!nav && orgNav) { orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4"></div>'); nav = $('gossOrgActionNavV4'); }
+    if (!nav) return;
+    var ac = await access(org.id);
+    var view = lastView || (nav.querySelector('.active[data-view]') && nav.querySelector('.active[data-view]').dataset.view) || 'trainer';
+    if (!ac.senior && view !== 'trainer') view = 'trainer';
+    if (!ac.leader && ['table','review','reports','staff','manage'].indexOf(view) !== -1) view = ac.senior ? 'submit' : 'trainer';
+    var html = btn('trainer','🎮 Тренажёр',view==='trainer');
+    if (ac.senior) {
+      html += btn('profile','📝 Мои данные',view==='profile');
+      html += btn('submit','📤 Сдать гос отчёт',view==='submit');
+      html += btn('shop','🛒 Магазин',view==='shop');
+    }
+    if (ac.leader) {
+      html += btn('table','📊 Таблица отчётов',view==='table'||view==='staff');
+      html += btn('review','✅ Проверить отчёты',view==='review'||view==='reports');
+      html += btn('manage','👑 Панель руководства',view==='manage');
+    }
+    if (nav.dataset.t73v80Html !== html) {
+      nav.innerHTML = html;
+      nav.dataset.t73v80Html = html;
+      nav.dataset.t73v79Built = '1';
+    }
+    nav.classList.add('t73-v80-ready');
+    stripTopLogs();
+  }
+  function nativeSwitch(view){
+    var org = currentOrg();
+    var fake = document.querySelector('.gov-org-switch-v4.active') || document.createElement('button');
+    fake.dataset.mode = 'goss_center_v4';
+    fake.dataset.orgId = org.id;
+    fake.dataset.view = view;
+    try { window.govV4SelectedOrg = org.id; window.govV4SelectedView = view; } catch(e){}
+    if (typeof switchMode === 'function') { switchMode('goss_center_v4', fake); return true; }
+    if (typeof window.switchMode === 'function') { window.switchMode('goss_center_v4', fake); return true; }
+    return false;
+  }
+  function route(view){
+    view = view || 'trainer';
+    if (view === 'reports') view = 'review';
+    if (view === 'staff') view = 'table';
+    setActive(view);
+    if (view === 'review' && window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.review === 'function') {
+      window.T73_V78_GOSS_REPORTS.review(); setTimeout(function(){ setActive('review'); stripTopLogs(); buildNav(); }, 180); return;
+    }
+    if (view === 'table' && window.T73_V78_GOSS_REPORTS && typeof window.T73_V78_GOSS_REPORTS.table === 'function') {
+      window.T73_V78_GOSS_REPORTS.table(); setTimeout(function(){ setActive('table'); stripTopLogs(); buildNav(); }, 180); return;
+    }
+    var nativeView = view;
+    nativeSwitch(nativeView);
+    setTimeout(function(){ setActive(view); stripTopLogs(); buildNav(); }, 160);
+    setTimeout(function(){ setActive(view); stripTopLogs(); }, 520);
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var b = t.closest('#gossOrgActionNavV4 [data-view],#gossOrgActionNavV3 [data-view],#gossOrgActionNav [data-view]');
+    if (b) {
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      route(b.dataset.view || 'trainer');
+      return false;
+    }
+    if (t.closest('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode="goss_center_v4"],#subNavOrganizations')) {
+      lastView = 'trainer';
+      schedule(120); schedule(420); schedule(900);
+    }
+  }, true);
+  function schedule(ms){ clearTimeout(bootTimer); bootTimer = setTimeout(function(){ buildNav(); stripTopLogs(); }, ms || 160); }
+  function boot(){ patchAuthPersistence(); restoreSession().then(function(){ buildNav(); stripTopLogs(); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [250,800,1600,3200,5500].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ schedule(260); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
+  window.T73_V80_SESSION_GOSS_ROUTING = { refresh:boot, route:route, restoreSession:restoreSession, stripLogs:stripTopLogs };
+})();
+</script>
+<!-- === /T73 V80 === -->
+
 </body>
 </html>
