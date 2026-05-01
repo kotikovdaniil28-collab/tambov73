@@ -11348,36 +11348,18 @@
                 return currentOrgLogs15 || 'fsb';
             }
             function ensureOrgLogsDom15(){
-                injectStyle15(); addMode15('goss_org_logs');
-                const nav=$15('subNavOrganizations');
-                if(nav){
-                    if(!$15('gossOrgLogsTabBtnV15')) nav.insertAdjacentHTML('beforeend','<button class="mode-btn" data-mode="goss_org_logs" type="button" id="gossOrgLogsTabBtnV15">🧾 Логи организации</button>');
-                    const b=$15('gossOrgLogsTabBtnV15'); if(b){ b.style.display='inline-flex'; b.onclick=ev=>{ev.preventDefault(); currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs',b);}; }
-                }
-                const wrap=$15('game')||q15('.game-wrap');
-                if(wrap && !$15('mode-goss_org_logs')) wrap.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-goss_org_logs" style="display:none;"></section>');
-                const sec=$15('mode-goss_org_logs'); if(!sec) return;
-                if(sec.dataset.v15Built !== '1'){
-                    sec.dataset.v15Built = '1';
-                    sec.innerHTML=`<div class="section-head"><h2 style="color:#ff6b88;">🧾 Логи организации</h2><p>Отдельный журнал по выбранной ГОСС организации: отчёты, проверки, магазин, изменения и выдачи.</p></div>
-                    <div class="t73-v15-toolbar"><select id="t73V15OrgLogsSelect" class="support-input">${allOrgs15().map(o=>`<option value="${esc15(o.id)}">${esc15(o.icon+' '+o.short)}</option>`).join('')}</select><button id="t73V15LoadOrgLogs" class="btn btn-primary" type="button">🔄 Обновить логи</button></div>
-                    <div id="t73V15OrgLogsInfo" class="t73-v15-small">Выберите организацию.</div><div id="t73V15OrgLogsList" class="t73-v15-log-grid"></div>`;
-                }
-                const sel=$15('t73V15OrgLogsSelect'); if(sel){ sel.value=currentOrgLogs15||selectedOrgId15(); sel.onchange=()=>{currentOrgLogs15=sel.value; loadOrgLogs15();}; }
-                const load=$15('t73V15LoadOrgLogs'); if(load) load.onclick=loadOrgLogs15;
-                injectOrgLogShortcut15();
+                // V84: общий режим логов организации V15 отключён. В каждой ГОСС-организации оставлен один вход — «Логи магазина».
+                return;
             }
             function injectOrgLogShortcut15(){
-                const c=$15('gossV4Content')||$15('gossV3Content'); if(!c || $15('t73V15OpenThisOrgLogs')) return;
-                const orgId=selectedOrgId15();
-                c.insertAdjacentHTML('afterbegin',`<div class="gov-v4-card t73-v15-card" style="margin-bottom:1rem;"><div class="gov-v4-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи ${esc15(org15(orgId).short)}</h3><p class="gov-v4-sub">Откройте отдельный журнал именно этой организации.</p></div><button id="t73V15OpenThisOrgLogs" class="btn btn-secondary" type="button">Открыть логи</button></div></div>`);
-                const b=$15('t73V15OpenThisOrgLogs'); if(b) b.onclick=()=>{currentOrgLogs15=selectedOrgId15(); switchMode('goss_org_logs', $15('gossOrgLogsTabBtnV15')||b);};
+                // V84: не добавляем карточку «Открыть логи» поверх контента, чтобы не плодить несколько логов.
+                return;
             }
             async function loadOrgLogs15(){
                 const sel=$15('t73V15OrgLogsSelect'); const orgId=sel?.value||currentOrgLogs15||'fsb'; currentOrgLogs15=orgId; const org=org15(orgId);
                 const info=$15('t73V15OrgLogsInfo'), list=$15('t73V15OrgLogsList'); if(!list) return;
                 if(info) info.textContent='Загружаю логи '+org.short+'...';
-                if(!canOrg15(orgId)){ list.innerHTML='<div class="message-card">Логи этой организации видит только её руководство или руководство всех ГОСС.</div>'; return; }
+                if(!canOrg15(orgId)){ list.innerHTML='<div class="message-card">Логи магазина этой организации видит только её руководство или руководство всех ГОСС.</div>'; return; }
                 const rows=[];
                 try{ const r=await supa.from('reports').select('*').eq('link',orgId).order('id',{ascending:false}).limit(180); (r.data||[]).forEach(x=>rows.push({source:'reports',...x})); }catch(e){}
                 if(orgId==='fsb'){
@@ -11385,7 +11367,7 @@
                 }
                 rows.sort((a,b)=>String(b.created_at||b.id||b.date).localeCompare(String(a.created_at||a.id||a.date)));
                 if(info) info.innerHTML=`Организация: <b>${esc15(org.icon+' '+org.short)}</b> · записей: <b>${rows.length}</b>`;
-                if(!rows.length){ list.innerHTML='<div class="message-card">Логи этой организации пока пустые.</div>'; return; }
+                if(!rows.length){ list.innerHTML='<div class="message-card">Логи магазина этой организации пока пустые.</div>'; return; }
                 list.innerHTML=rows.map(r=>{
                     const p=parse15(r.date,{}); const at=p.at||r.created_at||r.date||''; const title=r.item||p.text||r.email||r.status||'Запись';
                     const body = typeof r.date === 'string' && r.date.trim().startsWith('{') ? (p.text||JSON.stringify(p.extra||p).slice(0,500)) : (r.date||'');
@@ -11570,7 +11552,7 @@
             .g19-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.32);-webkit-overflow-scrolling:touch}.g19-table{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0}.g19-table th,.g19-table td{padding:.7rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:top}.g19-table th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,rgba(255,107,136,.30),rgba(108,140,255,.16))}.g19-table th:first-child,.g19-table td:first-child{position:sticky;left:0;z-index:3;text-align:left;background:rgba(13,16,32,.98);min-width:190px}.g19-cell{display:grid;gap:.4rem;min-width:150px}.g19-input,.g19-select,.g19-area{width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.55rem;font-weight:800}.g19-area{min-height:44px;resize:vertical}.g19-pill{display:inline-flex;gap:.25rem;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.75rem;font-weight:900;margin:.1rem}.g19-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.g19-form .full{grid-column:1/-1}.g19-drop{border:2px dashed rgba(255,107,136,.48);border-radius:18px;padding:1rem;background:rgba(255,107,136,.08)}.g19-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.g19-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.g19-proof img{width:100%;height:84px;object-fit:cover;border-radius:10px}.g19-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#ff4b69;color:#fff;font-weight:900}.g19-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}.g19-item{padding:1rem;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.30);display:grid;gap:.5rem}@media(max-width:760px){.g19-form{grid-template-columns:1fr}.g19-actions .btn{width:100%}.g19-table{min-width:980px}.g19-preview{grid-template-columns:repeat(2,1fr)}#gossOrgActionNavV4 .mode-btn{flex:1 1 100%}}
           </style>`)}
           function hideBad(){['reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportBtnMod','v16OpenBar','v16OpenTableTop','v16OpenReportTop','v16ReportTableBtnGen'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});document.querySelectorAll('#subNavModeration [data-mode="reports_table"]').forEach(e=>e.style.display='none')}
-          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🧾 Логи организации',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
+          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🛒 Логи магазина',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
           async function profiles(oid){const m=new Map();try{const d=(await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||k,post:p.post||'—'})})}catch(e){}try{const d=(await supa.from('reports').select('*').eq('email',E.member).eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||p.name||k,post:p.post||'—'})})}catch(e){}return[...m.values()].sort((a,b)=>a.nick.localeCompare(b.nick,'ru'))}
           async function tableLoad(oid,wk){try{const d=(await supa.from('reports').select('*').eq('email',E.table).eq('link',oid).eq('status',wk).order('id',{ascending:false}).limit(1)).data||[];return d[0]?{id:d[0].id,data:parse(d[0].date,{})}:{id:null,data:{}}}catch(e){return{id:null,data:{}}}}
           async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
@@ -11581,7 +11563,7 @@
           async function balance(oid,uid){try{const d=(await supa.from('reports').select('*').in('email',[E.points,E.buy]).limit(4000)).data||[];let s=0;d.forEach(r=>{if(r.email===E.points&&r.link===uid&&(r.status===oid||r.status==='all'))s+=Number(r.xp||0);if(r.email===E.buy&&r.status===uid&&r.link===oid)s-=Math.abs(Number(r.xp||0))});return s}catch(e){return 0}}
           async function renderShop(){const o=org(),r=root();active('g19Shop');if(!r)return;if(!(await orgAccess(o.id))){r.innerHTML='<div class="g19-denied">Магазин ГОСС доступен только сотрудникам организации.</div>';return}const lead=await orgLead(o.id),bal=await balance(o.id,currentUser.id),d=(await supa.from('reports').select('*').eq('email',E.shop).eq('link',o.id).limit(200)).data||[],items=d.map(x=>Object.assign({id:x.id,price:Number(x.xp||0)},parse(x.date,{})));r.innerHTML=`<div class="g19-card"><h3 style="color:#ff6b88;margin:0">🛒 Магазин ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Баланс: <b>${bal}</b></p></div><div class="g19-shop">${items.map(it=>`<div class="g19-item"><div style="font-size:1.5rem">${esc(it.icon||'🎁')}</div><b>${esc(it.title||'Товар')}</b><div class="g19-muted">${esc(it.desc||'')}</div><span class="g19-pill">${it.price} баллов</span><button class="btn btn-primary buy" data-id="${esc(it.id)}" data-price="${it.price}" data-title="${esc(it.title||'Товар')}">Купить</button>${lead?`<button class="btn btn-secondary del" data-id="${esc(it.id)}">Удалить</button>`:''}</div>`).join('')||'<div class="g19-denied">Товары ещё не добавлены.</div>'}</div>`+(lead?`<div class="g19-card"><h3 style="margin:0 0 1rem;color:#fff">🛠 Конструктор магазина ${esc(o.short)}</h3><div class="g19-form"><label>Иконка<input id="g19Icon" class="g19-input" placeholder="🎁"></label><label>Цена<input id="g19Price" class="g19-input" type="number" value="10"></label><label class="full">Название<input id="g19Title" class="g19-input"></label><label class="full">Описание<textarea id="g19Desc" class="g19-area"></textarea></label></div><button id="g19AddItem" class="btn btn-primary" style="margin-top:1rem">➕ Добавить товар</button></div>`:'');r.querySelectorAll('.buy').forEach(b=>b.onclick=async()=>{const price=+b.dataset.price;if(await balance(o.id,currentUser.id)<price)return alert('Недостаточно баллов');await supa.from('reports').insert([{id:rid('gbuy'),email:E.buy,link:o.id,status:currentUser.id,date:JSON.stringify({title:b.dataset.title,user:currentUser.email,at:now()}),xp:price}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'shop_buy',date:'Покупка '+b.dataset.title+' · '+(currentNickname||currentUser.email)+' · '+now(),xp:price}]);alert('Покупка отправлена в логи.');renderShop()});r.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{if(confirm('Удалить товар?')){await supa.from('reports').delete().eq('id',b.dataset.id);renderShop()}});if($('g19AddItem'))$('g19AddItem').onclick=async()=>{const title=String($('g19Title').value||'').trim();if(!title)return alert('Введите название');await supa.from('reports').insert([{id:rid('gshop'),email:E.shop,link:o.id,status:'active',date:JSON.stringify({title,desc:$('g19Desc').value||'',icon:$('g19Icon').value||'🎁',by:currentUser.email,at:now()}),xp:Number($('g19Price').value||0)}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'shop_add',date:'Добавлен товар '+title+' · '+now(),xp:Number($('g19Price').value||0)}]);renderShop()}}
           async function renderGlobal(){const o=org(),r=root();active('g19Global');if(!r)return;if(!(await globalLead())){r.innerHTML='<div class="g19-denied">Доступно только руководству всех ГОСС.</div>';return}const us=await users(),rs=(await roles()).filter(x=>String(x.status||'').startsWith('goss_')),orgOpts=((typeof GOSS_ORGS!=='undefined'?GOSS_ORGS:[])||[]).map(x=>`<option value="${esc(x.id)}">${esc(x.short)}</option>`).join('');r.innerHTML=`<div class="g19-card"><h3 style="color:#ff6b88;margin:0 0 .7rem">👑 Руководство всех ГОСС</h3><p class="g19-muted">Отдельная таблица для пользователей с доступом ко всем ГОСС. Им не нужно регаться в каждой организации.</p><div class="g19-form"><label class="full">Пользователь<select id="g19User" class="g19-select">${us.map(u=>`<option value="${esc(u.id)}">${esc(u.nick||u.email||u.id)}</option>`).join('')}</select></label><label>Доступ<select id="g19Role" class="g19-select"><option value="goss_admin_all">Руководство всех ГОСС</option><option value="goss_senior_all">СС всех ГОСС</option><option value="lead_one">Руководство выбранной организации</option><option value="senior_one">СС выбранной организации</option></select></label><label>Организация<select id="g19RoleOrg" class="g19-select">${orgOpts}</select></label><label>Баллы<input id="g19Points" class="g19-input" type="number" value="10"></label><label>Баланс<select id="g19PointOrg" class="g19-select"><option value="all">Все ГОСС</option>${orgOpts}</select></label></div><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-primary" id="g19Grant">➕ Выдать доступ</button><button class="btn btn-secondary" id="g19Remove">➖ Забрать доступ</button><button class="btn btn-secondary" id="g19Give">💠 Выдать/списать баллы</button></div></div><div class="g19-card"><h3 style="margin:0 0 1rem;color:#fff">Текущие ГОСС-доступы</h3><div class="g19-grid">${rs.map(x=>`<div class="g19-mini"><b>${esc((us.find(u=>u.id===x.link)||{}).nick||x.link)}</b><div class="g19-muted">${esc(x.status)} · ${esc(x.date||'')}</div></div>`).join('')||'<div class="g19-denied">Доступов пока нет.</div>'}</div></div>`;function status(){const v=$('g19Role').value,oid=$('g19RoleOrg').value;if(v==='lead_one')return'goss_lead_'+oid;if(v==='senior_one')return'goss_senior_'+oid;return v}$('g19Grant').onclick=async()=>{const u=$('g19User').value,st=status();await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);await supa.from('reports').insert([{id:rid('gaccess'),email:'ADMIN_ROLE',link:u,status:st,date:now(),xp:0}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'grant_access',date:'Выдан '+st+' пользователю '+u+' · '+now(),xp:0}]);alert('Доступ выдан');renderGlobal()};$('g19Remove').onclick=async()=>{const u=$('g19User').value,st=status();await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'remove_access',date:'Снят '+st+' у '+u+' · '+now(),xp:0}]);alert('Доступ снят');renderGlobal()};$('g19Give').onclick=async()=>{const u=$('g19User').value,amount=Number($('g19Points').value||0),po=$('g19PointOrg').value;if(!amount)return;await supa.from('reports').insert([{id:rid('gpts'),email:E.points,link:u,status:po,date:'Баллы ГОСС '+amount+' · '+(currentUser?.email||'')+' · '+now(),xp:amount}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:po,status:'points',date:'Баллы '+amount+' пользователю '+u+' · '+now(),xp:amount}]);alert('Баллы изменены')}}
-          async function renderLogs(){const o=org(),r=root();active('g19Logs');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Логи видит только руководство организации.</div>';return}let rows=[];try{rows=(await supa.from('reports').select('*').in('email',[E.report,E.table,E.member,E.points,E.log,E.shop,E.buy]).order('id',{ascending:false}).limit(500)).data||[];rows=rows.filter(x=>x.link===o.id||x.status===o.id||x.status==='all')}catch(e){}try{const rr=(await supa.from('reports').select('*').eq('email','ADMIN_ROLE').order('id',{ascending:false}).limit(500)).data||[];rows=rows.concat(rr.filter(x=>['goss_admin_all','goss_senior_all','goss_lead_'+o.id,'goss_senior_'+o.id].includes(x.status)))}catch(e){}r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">🧾 Логи организации — ${esc(o.short)}</h3><p class="g19-muted">Отдельные логи этой организации: отчёты, таблица, магазин, доступы, баллы.</p></div><button id="g19RefLogs" class="btn btn-secondary">🔄 Обновить</button></div></div><div class="g19-grid">${rows.slice(0,180).map(x=>`<div class="g19-mini"><div class="g19-head"><b>${esc(x.email)} · ${esc(x.status||'')}</b><span class="g19-pill">${Number(x.xp||0)} б.</span></div><div class="g19-muted">link: ${esc(x.link||'')}</div><div style="overflow-wrap:anywhere">${esc(typeof x.date==='string'?x.date.slice(0,600):JSON.stringify(x.date||{}).slice(0,600))}</div></div>`).join('')||'<div class="g19-denied">Логов пока нет.</div>'}</div>`;$('g19RefLogs').onclick=renderLogs}
+          async function renderLogs(){const o=org(),r=root();active('g19Logs');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Логи магазина видит только руководство организации.</div>';return}let rows=[];try{rows=(await supa.from('reports').select('*').in('email',[E.report,E.table,E.member,E.points,E.log,E.shop,E.buy]).order('id',{ascending:false}).limit(500)).data||[];rows=rows.filter(x=>x.link===o.id||x.status===o.id||x.status==='all')}catch(e){}try{const rr=(await supa.from('reports').select('*').eq('email','ADMIN_ROLE').order('id',{ascending:false}).limit(500)).data||[];rows=rows.concat(rr.filter(x=>['goss_admin_all','goss_senior_all','goss_lead_'+o.id,'goss_senior_'+o.id].includes(x.status)))}catch(e){}r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">🛒 Логи магазина — ${esc(o.short)}</h3><p class="g19-muted">Отдельные логи этой организации: отчёты, таблица, магазин, доступы, баллы.</p></div><button id="g19RefLogs" class="btn btn-secondary">🔄 Обновить</button></div></div><div class="g19-grid">${rows.slice(0,180).map(x=>`<div class="g19-mini"><div class="g19-head"><b>${esc(x.email)} · ${esc(x.status||'')}</b><span class="g19-pill">${Number(x.xp||0)} б.</span></div><div class="g19-muted">link: ${esc(x.link||'')}</div><div style="overflow-wrap:anywhere">${esc(typeof x.date==='string'?x.date.slice(0,600):JSON.stringify(x.date||{}).slice(0,600))}</div></div>`).join('')||'<div class="g19-denied">Логов пока нет.</div>'}</div>`;$('g19RefLogs').onclick=renderLogs}
           document.addEventListener('click',e=>{if(e.target.closest?.('.gov-action-switch-v4[data-view="shop"]'))setTimeout(renderShop,80)},true);
           let t;function tick(){clearTimeout(t);t=setTimeout(nav,120)}
           setTimeout(tick,500);setTimeout(tick,1800);setTimeout(tick,3500);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V19={renderTable,renderSubmit,renderGlobal,renderLogs,renderShop};
@@ -11624,7 +11606,7 @@
           async function renderTableHub(sheet='table'){style();activate('g20Table');const o=org(),r=root();if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблица ГОСС доступна только руководству этой организации или руководству всех ГОСС.</div>';return}r.innerHTML=`<div class="g20-compact-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Отдельный раздел таблицы. Лист 1 — недельная таблица, лист 2 — сданные отчёты с файлами.</p></div></div><div class="g20-sheetbar"><button class="mode-btn" id="g20SheetTable" type="button">Лист 1 · Таблица</button><button class="mode-btn" id="g20SheetReports" type="button">Лист 2 · Отчёты</button></div><div id="g20SheetBody"><div class="g19-card">Загрузка...</div></div></div>`;$('g20SheetTable').onclick=()=>renderTableHub('table');$('g20SheetReports').onclick=()=>renderTableHub('reports');$('g20SheetTable')?.classList.toggle('active',sheet==='table');$('g20SheetReports')?.classList.toggle('active',sheet==='reports');if(sheet==='reports')return renderReportsSheet(o);return renderTableSheet(o)}
           async function renderTableSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю таблицу...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];body.innerHTML=`<div class="g19-card"><div class="g19-head"><div><b style="color:#fff">Неделя ${ru(ds[0])} — ${ru(ds[6])}</b><div class="g19-muted">В этой таблице лидер меняет оба блока: отчётность и отметку дня.</div></div><div class="g19-actions"><button class="btn btn-secondary" id="g20Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g20This">Текущая</button><button class="btn btn-secondary" id="g20Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g20Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g20Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g20Add">➕ Добавить строку</button><button class="btn btn-primary" id="g20Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавьте сотрудника вручную или попросите его заполнить данные.</div>');$('g20Prev').onclick=()=>{weekOffset--;renderTableHub('table')};$('g20This').onclick=()=>{weekOffset=0;renderTableHub('table')};$('g20Next').onclick=()=>{weekOffset++;renderTableHub('table')};$('g20Add').onclick=async()=>{const nick=String($('g20Nick').value||'').trim();if(!nick)return alert('Введите ник');const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('g20mem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g20Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTableHub('table')};$('g20Save').onclick=async()=>{const out={};body.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const q=await tableSave(o.id,wk,out);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица сохранена')}}
           async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(120)).data||[]}catch(e){}body.innerHTML=`<div class="g20-help">Это второй лист таблицы: сюда попадают отчёты, которые сотрудники ${esc(o.short)} сдали через кнопку «Сдать отчёт». Отсюда лидер может перенести статус в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map((row,i)=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||'').slice(0,10)||new Date().toISOString().slice(0,10),proofs=Array.isArray(p.proofs)?p.proofs:[];return`<div class="g20-report-card" data-i="${i}"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||'Отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||'Без комментария')}</div><div class="g20-proofs">${proofs.length?proofs.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div><label class="g19-muted">Отчётность<select class="g19-select g20repStatus"><option>На проверке</option><option>Норма</option><option>Перенорма</option><option>Натяг</option><option>Отказ</option></select></label><label class="g19-muted">Отметка дня<select class="g19-select g20dayStatus"><option>Проверить</option><option>Сдано</option><option>Неактив</option><option>Нет отчета</option><option>Освобождён</option><option>Отказ</option></select></label><textarea class="g19-area g20note" placeholder="Комментарий для таблицы"></textarea><button class="btn btn-primary g20toTable" data-user="${esc(p.userId||row.status||'')}" data-day="${esc(day)}">Записать в таблицу</button></div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20toTable').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('.g20-report-card'),user=btn.dataset.user,day=btn.dataset.day;if(!user||!day)return alert('Не удалось определить пользователя или дату отчета');btn.disabled=true;await saveSingleMark(o.id,user,day,{report:card.querySelector('.g20repStatus').value,day:card.querySelector('.g20dayStatus').value,note:card.querySelector('.g20note').value||'',by:currentUser?.email||'',at:now()});await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_to_table',date:'Отчет записан в таблицу: '+user+' · '+day+' · '+now(),xp:0}]);btn.disabled=false;alert('Записано в таблицу')})}
-          async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
+          async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#ff6b88;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Управление доступом и составом собрано здесь. Логи магазина вынесены отдельной кнопкой.</p><div class="g19-actions" style="margin-top:1rem">${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
           async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать ГОСС отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица отчётности',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','👑 Панель руководства',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
           let timer;function tick(){clearTimeout(timer);timer=setTimeout(nav,220)}
           document.addEventListener('click',e=>{if(e.target.closest?.('.gov-org-switch-v4,.gov-action-switch-v4'))setTimeout(tick,180)},true);
@@ -11758,9 +11740,8 @@
             const r = root();
             if (!r) return;
             if (!(await hasAnyLead(o.id))) { r.innerHTML = '<div class="t73-v23-denied">Управление доступно лидерам, следящим и руководству всех ГОСС.</div>'; return; }
-            r.innerHTML = `<div class="t73-v23-card"><h3 style="color:#ff6b88;margin:0;">🧭 Управление — ${esc(o.short)}</h3><div class="t73-v23-muted">Основные функции собраны в одном месте, чтобы не перегружать панель организации.</div><div class="t73-v23-actions"><button class="btn btn-primary" id="v23OpenLeadership" type="button">👑 Панель руководства</button><button class="btn btn-secondary" id="v23OpenLogs" type="button">🧾 Логи организации</button></div></div>`;
+            r.innerHTML = `<div class="t73-v23-card"><h3 style="color:#ff6b88;margin:0;">🧭 Управление — ${esc(o.short)}</h3><div class="t73-v23-muted">Основные функции собраны в одном месте, чтобы не перегружать панель организации.</div><div class="t73-v23-actions"><button class="btn btn-primary" id="v23OpenLeadership" type="button">👑 Панель руководства</button></div></div>`;
             $('v23OpenLeadership').onclick = renderOrgLeadershipPanel;
-            $('v23OpenLogs').onclick = () => { if (window.T73_GOSS_V15 && typeof window.T73_GOSS_V15.loadOrgLogs === 'function') window.T73_GOSS_V15.loadOrgLogs(); else if (typeof renderAdminLogs === 'function') renderAdminLogs('goss'); else alert('Модуль логов не найден.'); };
           }
           function patchManageButton(){
             ensureStyle();
@@ -11812,10 +11793,9 @@
             style(); activeManage();
             const o = org(), r = root(); if(!r) return;
             if(!(await hasOrgManage(o.id))){ r.innerHTML = '<div class="t73-v24-denied">Управление доступно лидеру, СС/следящему организации или руководству всех ГОСС.</div>'; return; }
-            r.innerHTML = `<div class="t73-v24-card"><h3>🧭 Панель управления — ${esc(o.short)}</h3><div class="t73-v24-muted">Все важные функции организации собраны тут: лидерка/СС, магазин и логи. Магазин больше не нужно искать отдельной кнопкой.</div><div class="t73-v24-grid"><button class="btn btn-primary" id="v24OpenRights" type="button">👑 Лидерка и права СС</button><button class="btn btn-primary" id="v24OpenShop" type="button">🛒 Конструктор магазина</button><button class="btn btn-secondary" id="v24OpenLogs" type="button">🧾 Логи организации</button></div></div>`;
+            r.innerHTML = `<div class="t73-v24-card"><h3>🧭 Панель управления — ${esc(o.short)}</h3><div class="t73-v24-muted">Все важные функции организации собраны тут: лидерка/СС, магазин и логи. Магазин больше не нужно искать отдельной кнопкой.</div><div class="t73-v24-grid"><button class="btn btn-primary" id="v24OpenRights" type="button">👑 Лидерка и права СС</button><button class="btn btn-primary" id="v24OpenShop" type="button">🛒 Конструктор магазина</button></div></div>`;
             $('v24OpenRights').onclick = renderRights;
             $('v24OpenShop').onclick = renderShopConstructor;
-            $('v24OpenLogs').onclick = () => { if(window.T73_GOSS_V19?.renderLogs) window.T73_GOSS_V19.renderLogs(); else if(window.T73_GOSS_V15?.loadOrgLogs) window.T73_GOSS_V15.loadOrgLogs(); else alert('Модуль логов не найден.'); };
           }
           async function renderRights(){
             style(); activeManage();
@@ -17775,8 +17755,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     hideGlobalLogTabs();
     var c = client(), r = root(), o = currentOrg();
     if (!r || !c) return;
-    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи организации видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
-    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#ff6b88;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка журнала этой организации...</div></div>';
+    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи магазина видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
+    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#ff6b88;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка журнала этой организации...</div></div>';
     var rows = [];
     try {
       var res = await c.from('reports').select('*').in('email', LOG_EMAILS).eq('link', o.id).order('id', { ascending:false }).limit(220);
@@ -17787,7 +17767,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       rows = rows.concat((roles.data || []).filter(function(x){ return ['goss_admin_all','goss_senior_all','goss_lead_' + o.id,'goss_senior_' + o.id].includes(x.status); }));
     } catch(e){}
     rows.sort(function(a,b){ return String(rowDate(b)).localeCompare(String(rowDate(a))); });
-    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#ff6b88;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Здесь только журнал выбранной организации, а не общий список ГОСС.</p></div><button id="t73V68RefreshOrgLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи этой организации пока пустые.');
+    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#ff6b88;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Здесь только журнал выбранной организации, а не общий список ГОСС.</p></div><button id="t73V68RefreshOrgLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи магазина этой организации пока пустые.');
     var b = $('t73V68RefreshOrgLogs'); if (b) b.onclick = renderOrgLogs;
   }
   async function renderShopLogs(){
@@ -17819,18 +17799,14 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     navs().forEach(function(nav){
       if (!nav) return;
       var org = currentOrg();
-      var orgBtn = nav.querySelector('.t73-v68-org-logs');
-      if (!orgBtn) {
-        nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-org-logs" type="button">🧾 Логи организации</button>');
-        orgBtn = nav.querySelector('.t73-v68-org-logs');
-      }
+      // В ГОСС оставляем один журнал на организацию — только логи магазина.
+      nav.querySelectorAll('.t73-v68-org-logs,[data-mode="goss_org_logs"]').forEach(function(el){ el.remove(); });
       var shopBtn = nav.querySelector('.t73-v68-shop-logs');
       if (!shopBtn) {
         nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-shop-logs" type="button">🛒 Логи магазина</button>');
         shopBtn = nav.querySelector('.t73-v68-shop-logs');
       }
-      if (orgBtn) { orgBtn.textContent = '🧾 Логи ' + (org.short || 'организации'); orgBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderOrgLogs(); }; }
-      if (shopBtn) { shopBtn.textContent = '🛒 Логи магазина ' + (org.short || ''); shopBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderShopLogs(); }; }
+      if (shopBtn) { shopBtn.textContent = '🛒 Логи магазина'; shopBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderShopLogs(); }; }
     });
   }
   function boot(){ hideGlobalLogTabs(); ensureInsideButtons(); }
@@ -17846,115 +17822,6 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V68 === -->
 
 
-<!-- === T73 V69: ГОСС — убрать дубль логов в Правительстве === -->
-<style id="t73-v69-gov-logs-dedup-style">
-  .t73-v69-hidden-duplicate-gov-log {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-</style>
-<script id="t73-v69-gov-logs-dedup-script">
-(function(){
-  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function txt(el){ return String((el && el.textContent) || '').replace(/\s+/g,' ').trim(); }
-  function activeOrgId(){
-    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
-    return (btn && btn.dataset && btn.dataset.orgId) || window.currentGossOrgId || '';
-  }
-  function activeOrgName(){
-    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
-    return txt(btn);
-  }
-  function isGovernment(){
-    var id = String(activeOrgId() || '').toLowerCase();
-    var name = activeOrgName().toLowerCase();
-    return id === 'government' || id === 'prav' || id === 'gov' || /правитель/.test(name);
-  }
-  function setLabel(el){
-    if (!el) return;
-    var t = txt(el);
-    if (/логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t))) {
-      var label = '🧾 Логи Правительства';
-      if (txt(el) !== label) el.textContent = label;
-      if (el.title !== 'Открыть единый журнал Правительства') el.title = 'Открыть единый журнал Правительства';
-    }
-  }
-  function getLogButtons(){
-    var selectors = [
-      '#gossOrgActionNavV4 button',
-      '#gossOrgActionNavV3 button',
-      '#gossOrgActionNav button',
-      '#gossV4Content button',
-      '#gossV3Content button',
-      '#gossDashView button',
-      '#mode-goss_center_v4 button',
-      '#mode-goss_center_v3 button',
-      '#mode-goss_dashboard button'
-    ].join(',');
-    return qa(selectors).filter(function(b){
-      var t = txt(b);
-      return /логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t));
-    });
-  }
-  function dedupeGovernmentLogs(){
-    if (!isGovernment()) {
-      qa('.t73-v69-hidden-duplicate-gov-log').forEach(function(el){
-        el.classList.remove('t73-v69-hidden-duplicate-gov-log');
-      });
-      return;
-    }
-
-    var buttons = getLogButtons();
-    buttons.forEach(setLabel);
-
-    // В Правительстве оставляем один вход в логи.
-    // Приоритет: новая кнопка V68/V69 в навигации организации. Старые дубляжи в карточках скрываем.
-    var preferred = buttons.find(function(b){ return b.classList.contains('t73-v68-org-logs') || b.id === 't73V69GovLogsBtn'; });
-    if (!preferred) preferred = buttons.find(function(b){ return /gossOrgActionNav/.test((b.parentElement && b.parentElement.id) || ''); });
-    if (!preferred) preferred = buttons[0] || null;
-
-    buttons.forEach(function(b){
-      if (b === preferred) {
-        b.classList.remove('t73-v69-hidden-duplicate-gov-log');
-        setLabel(b);
-      } else {
-        b.classList.add('t73-v69-hidden-duplicate-gov-log');
-      }
-    });
-
-    // Если старые версии ещё не успели создать кнопку логов в навигации — создаём одну свою.
-    var nav = document.getElementById('gossOrgActionNavV4') || document.getElementById('gossOrgActionNavV3') || document.getElementById('gossOrgActionNav');
-    if (nav && !preferred && !document.getElementById('t73V69GovLogsBtn')) {
-      var btn = document.createElement('button');
-      btn.id = 't73V69GovLogsBtn';
-      btn.type = 'button';
-      btn.className = 'mode-btn t73-v68-org-logs';
-      btn.textContent = '🧾 Логи Правительства';
-      btn.onclick = function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        if (window.T73_V68_GOSS_LOGS_INSIDE && typeof window.T73_V68_GOSS_LOGS_INSIDE.orgLogs === 'function') {
-          window.T73_V68_GOSS_LOGS_INSIDE.orgLogs();
-        }
-      };
-      nav.appendChild(btn);
-    }
-  }
-  function boot(){
-    clearTimeout(window.__t73_v69_gov_logs_dedupe_timer);
-    window.__t73_v69_gov_logs_dedupe_timer = setTimeout(dedupeGovernmentLogs, 100);
-  }
-  document.addEventListener('click', function(e){
-    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,#gossV4Content,#gossV3Content,#gossDashView')) boot();
-  }, true);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [150,500,1000,1800,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ boot(); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V69_GOV_LOGS_DEDUPE = { refresh: dedupeGovernmentLogs };
-})();
-</script>
-<!-- === /T73 V69 === -->
 <!-- === T73 V70: leadership user list fallback for all-access users === -->
 <style>
   .t73-v70-userlist-note{margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;border:1px solid rgba(127,232,160,.28);background:rgba(82,199,123,.08);color:var(--color-text-muted);font-size:.88rem;line-height:1.4}
@@ -19023,8 +18890,9 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
   function callLogs(){
     activate('g20Logs');
-    if (window.T73_GOSS_V19?.renderLogs) return window.T73_GOSS_V19.renderLogs();
-    const r = root(); if (r) r.innerHTML = '<div class="t73-v82-note">Модуль логов организации не найден.</div>';
+    if (window.T73_V68_GOSS_LOGS_INSIDE?.shopLogs) return window.T73_V68_GOSS_LOGS_INSIDE.shopLogs();
+    if (window.T73_GOSS_V19?.renderShopLogs) return window.T73_GOSS_V19.renderShopLogs();
+    const r = root(); if (r) r.innerHTML = '<div class="t73-v82-note">Модуль логов магазина не найден.</div>';
   }
   function callManage(){
     activate('g20Manage');
@@ -19071,11 +18939,11 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
     let logs = $('g20Logs');
     if (!logs && lead) {
-      nav.insertAdjacentHTML('beforeend', '<button class="mode-btn" id="g20Logs" type="button">🧾 Логи</button>');
+      nav.insertAdjacentHTML('beforeend', '<button class="mode-btn" id="g20Logs" type="button">🛒 Логи магазина</button>');
       logs = $('g20Logs');
     }
     if (logs) {
-      logs.textContent = '🧾 Логи';
+      logs.textContent = '🛒 Логи магазина';
       logs.style.display = lead ? 'inline-flex' : 'none';
       logs.onclick = e => { e.preventDefault(); e.stopPropagation(); callLogs(); return false; };
     }
@@ -19170,6 +19038,72 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V83 === -->
+
+<script>
+/* === T73 V84: ГОСС — только логи магазина в каждой организации === */
+(() => {
+  if (window.__T73_V84_GOSS_SHOP_LOGS_ONLY__) return;
+  window.__T73_V84_GOSS_SHOP_LOGS_ONLY__ = true;
+  const $ = id => document.getElementById(id);
+  const txt = el => String(el?.textContent || '').replace(/\s+/g,' ').trim();
+  const low = el => txt(el).toLowerCase().replace(/ё/g,'е');
+
+  function openShopLogs(e){
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (window.T73_V68_GOSS_LOGS_INSIDE?.shopLogs) window.T73_V68_GOSS_LOGS_INSIDE.shopLogs();
+    else if (window.T73_V82_GOSS_STABLE?.callLogs) window.T73_V82_GOSS_STABLE.callLogs();
+    return false;
+  }
+
+  function normalize(){
+    const navs = ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav'].map($).filter(Boolean);
+    navs.forEach(nav => {
+      const allLogButtons = Array.from(nav.querySelectorAll('button,.mode-btn,.gov-action-switch-v4,.gov-action-switch-v3,.gov-action-switch')).filter(btn => {
+        const t = low(btn);
+        return t.includes('логи') || btn.dataset?.mode === 'goss_org_logs' || btn.dataset?.mode === 'goss_shop_logs';
+      });
+
+      let shop = $('g20Logs');
+      if (!shop || !nav.contains(shop)) shop = allLogButtons.find(btn => btn.classList.contains('t73-v68-shop-logs')) || null;
+      if (!shop) {
+        shop = document.createElement('button');
+        nav.appendChild(shop);
+      }
+
+      allLogButtons.forEach(btn => { if (btn !== shop) btn.remove(); });
+
+      shop.id = 'g20Logs';
+      shop.type = 'button';
+      shop.className = 'mode-btn t73-v68-shop-logs';
+      shop.removeAttribute('data-mode');
+      shop.textContent = '🛒 Логи магазина';
+      shop.style.display = 'inline-flex';
+      shop.onclick = openShopLogs;
+    });
+
+    document.querySelectorAll('#gossV4Content button,#gossV3Content button,#gossDashView button,#mode-goss_center_v4 button,#mode-goss_center_v3 button,#mode-goss_dashboard button').forEach(btn => {
+      const t = low(btn);
+      const isRefresh = btn.id === 't73V68RefreshShopLogs' || /обновить/i.test(txt(btn));
+      if (!isRefresh && t.includes('логи')) btn.remove();
+    });
+
+    document.querySelectorAll('h1,h2,h3,p,span,strong,button').forEach(el => {
+      if (!el.textContent) return;
+      if (el.textContent.includes('Логи организации')) el.textContent = el.textContent.replaceAll('Логи организации', 'Логи магазина');
+      if (el.textContent.includes('Логи Правительства')) el.textContent = el.textContent.replaceAll('Логи Правительства', 'Логи магазина');
+      if (el.id === 'g20Logs' || el.classList?.contains('t73-v68-shop-logs')) el.textContent = '🛒 Логи магазина';
+    });
+  }
+
+  function boot(){ clearTimeout(window.__T73_V84_TIMER__); window.__T73_V84_TIMER__ = setTimeout(normalize, 80); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  document.addEventListener('click', boot, true);
+  [200,700,1500,3000,6000].forEach(ms => setTimeout(boot, ms));
+  try { new MutationObserver(boot).observe(document.body, {childList:true, subtree:true}); } catch(e) {}
+  window.T73_V84_SHOP_LOGS_ONLY = { refresh: normalize, openShopLogs };
+})();
+</script>
+<!-- === /T73 V84 === -->
 
 </body>
 </html>
