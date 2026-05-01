@@ -18959,5 +18959,198 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V75 === -->
+
+<!-- === T73 V76: фикс списков пользователей ГОСС + честный тренажёр с расширенными вопросами === -->
+<style id="t73-v76-goss-fix-style">
+  .t73-v76-note{margin:.55rem 0 0;padding:.65rem .8rem;border-radius:14px;border:1px solid rgba(127,232,160,.30);background:rgba(127,232,160,.08);color:var(--color-text-muted);font-size:.88rem;line-height:1.45}
+  .t73-v76-trainer{display:grid;gap:1rem}.t73-v76-card{padding:1.1rem;border-radius:20px;border:1px solid rgba(255,107,136,.30);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(7,9,18,.98));box-shadow:0 14px 36px rgba(0,0,0,.36)}
+  .t73-v76-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}.t73-v76-muted{color:var(--color-text-muted);font-size:.93rem;line-height:1.5}.t73-v76-pill{display:inline-flex;align-items:center;border-radius:999px;padding:.36rem .72rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font-weight:900;font-size:.82rem}
+  .t73-v76-question{font-size:1.05rem;line-height:1.55;color:#fff;margin:.35rem 0 0}.t73-v76-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:.9rem;align-items:stretch}.t73-v76-option{width:100%;min-height:136px;padding:1rem;border-radius:18px;border:1px solid rgba(191,198,255,.22);background:rgba(13,16,32,.84);color:#fff;text-align:left;font-weight:850;line-height:1.35;display:flex;flex-direction:column;gap:.65rem;justify-content:center;cursor:pointer}.t73-v76-option:hover{border-color:#ff6b88;background:rgba(255,107,136,.12)}.t73-v76-option.good{border-color:rgba(127,232,160,.75);background:rgba(127,232,160,.14)}.t73-v76-option.bad{border-color:rgba(255,107,136,.78);background:rgba(255,107,136,.16)}.t73-v76-option:disabled{cursor:not-allowed;opacity:.88}.t73-v76-tag{display:inline-flex;width:max-content;border-radius:999px;padding:.22rem .58rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:var(--color-text-muted);font-size:.75rem;letter-spacing:.07em;text-transform:uppercase}.t73-v76-feedback{margin-top:.85rem;padding:.85rem 1rem;border-radius:16px;border:1px solid rgba(127,232,160,.28);background:rgba(127,232,160,.08);color:#fff;line-height:1.45}@media(max-width:760px){.t73-v76-options{grid-template-columns:1fr}.t73-v76-option{min-height:116px}}
+</style>
+<script id="t73-v76-goss-fix-script">
+(function(){
+  'use strict';
+  if (window.__T73_V76_GOSS_USERS_TRAINER__) return;
+  window.__T73_V76_GOSS_USERS_TRAINER__ = true;
+
+  var USER_SELECT_IDS = ['gossLeadUserSelect','gossV3SeniorUser','govV4SeniorUser','v22User','v23LeadUser','v24User','v26SeniorUser','v26bUser','g19User','t73V75PointsUser','leadershipUserSelect','hiddenCheckUser','leadAddModSelect','apAdminUserSelect','leadAddApSelect','fsbAdminUserSelect','leadAddFsbSelect','creatorUserSelect','creatorAdminSelect'];
+  var ORG_META = {
+    government:{short:'Правительство', name:'Правительство', icon:'🏛️', topic:'обращение гражданина', case1:'проверку структуры', case2:'постановление', case3:'заседание', case4:'конфликт отделов'},
+    fsb:{short:'ФСБ', name:'ФСБ', icon:'🛡️', topic:'оперативную проверку', case1:'допуск к информации', case2:'собеседование кандидата', case3:'утечку данных', case4:'служебную рацию'},
+    gibdd:{short:'ГИБДД', name:'ГИБДД', icon:'🚔', topic:'жалобу на инспектора', case1:'оформление ДТП', case2:'штраф без основания', case3:'пост ДПС', case4:'опасную погоню'},
+    umvd:{short:'УМВД', name:'УМВД', icon:'👮', topic:'вызов гражданина', case1:'задержание', case2:'патруль', case3:'обыск', case4:'жалобу на сотрудника'},
+    army:{short:'Армия', name:'Армия', icon:'🎖️', topic:'наряд на посту', case1:'КПП', case2:'учения', case3:'рапорт', case4:'проверку склада'},
+    hospital:{short:'Больница', name:'Больница', icon:'🏥', topic:'обращение пациента', case1:'очередь в больнице', case2:'медкарту', case3:'выезд на вызов', case4:'склад лекарств'},
+    smi:{short:'СМИ', name:'СМИ', icon:'🎙️', topic:'эфир', case1:'объявление', case2:'интервью', case3:'новость без источника', case4:'редакционный отчёт'},
+    fsin:{short:'ФСИН', name:'ФСИН', icon:'🔒', topic:'режимный инцидент', case1:'обход камер', case2:'допуск посетителя', case3:'документ заключённого', case4:'служебную связь'}
+  };
+  ORG_META.mvd = ORG_META.umvd;
+
+  function q(from, text, good, bad1, bad2, reply){
+    return { from:from, text:text, options:[
+      { text:good, good:true, reply:reply },
+      { text:bad1, good:false, reply:'Неверно: такой вариант нарушает порядок или не даёт проверки фактов.' },
+      { text:bad2, good:false, reply:'Неверно: старший состав должен действовать по процедуре и фиксировать итог.' }
+    ]};
+  }
+  function buildBank(){
+    var bank = {};
+    Object.keys(ORG_META).forEach(function(id){
+      var m = ORG_META[id];
+      bank[id] = [
+        q('Проверка', 'Поступило ' + m.topic + ', но доказательства неполные. Как действует старший состав ' + m.short + '?', 'Запросить материалы, сверить факты и оформить итог', 'Выбрать виновного сразу и закрыть обращение', 'Игнорировать ситуацию до повторной жалобы', 'Верно: решение принимается по фактам, а не по догадкам.'),
+        q('Процедура', 'Сотрудник нарушил порядок в ситуации: ' + m.case1 + '. Какой первый шаг руководителя?', 'Остановить ошибку, разобрать порядок и зафиксировать', 'Поддержать сотрудника только из-за должности', 'Скрыть нарушение, если никто не заметил', 'Верно: сначала контроль процедуры и фиксация.'),
+        q('Кандидат', 'Кандидат проходит ' + m.case2 + ', но не понимает базовые обязанности. Какой вердикт корректен?', 'Отказать или отправить учить слабые темы', 'Принять ради количества сотрудников', 'Пропустить проверку и поставить в состав', 'Верно: неподготовленного кандидата нельзя ставить без подготовки.'),
+        q('Документы', 'В документе по теме «' + m.case3 + '» нет даты, основания и ответственного. Что делать?', 'Вернуть на правку и указать обязательные пункты', 'Принять документ, если текст выглядит длинным', 'Удалить документ без объяснения автору', 'Верно: документ должен быть проверяемым и понятным.'),
+        q('Дисциплина', 'Во время работы появился спор по теме «' + m.case4 + '» и он мешает составу. Как реагировать?', 'Развести стороны, сверить правила и закрепить итог', 'Поддержать знакомого без разбора деталей', 'Оставить конфликт до следующей смены', 'Верно: конфликт решается регламентом и фиксируется.'),
+        q('Отчёт', 'Отчёт по работе ' + m.short + ' объёмный, но не содержит доказательств. Что выберет проверяющий?', 'Вернуть отчёт и попросить подтверждения работы', 'Одобрить отчёт только за большой текст', 'Отказать навсегда без права исправить', 'Верно: объём текста не заменяет доказательства.'),
+        q('Рация', 'В служебной связи ' + m.short + ' начался флуд во время важной координации. Что делает СС?', 'Пресечь флуд, вернуть формат и отметить повтор', 'Поддержать разговор для поднятия настроения', 'Отключить связь всем без альтернативы', 'Верно: служебная связь должна помогать управлению.'),
+        q('Жалоба', 'Игрок пишет эмоционально, но вопрос относится к компетенции ' + m.short + '. Какой ответ правильный?', 'Спокойно принять вопрос и перейти к фактам', 'Закрыть диалог только из-за эмоций', 'Ответить тем же тоном и закончить спор', 'Верно: тон должен быть спокойным, а факты — проверенными.')
+      ];
+    });
+    return bank;
+  }
+  var BANK = buildBank(), userCache = { at:0, rows:[] }, round = null;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]; }); }
+  function norm(v){ return String(v == null ? '' : v).trim(); }
+  function parse(v){ try { return v ? JSON.parse(v) : {}; } catch(e){ return {}; } }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e){}
+    try { if (window.supa && typeof window.supa.from === 'function') return window.supa; } catch(e){}
+    try { if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa; } catch(e){}
+    try { if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient; } catch(e){}
+    try { if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA; } catch(e){}
+    return null;
+  }
+  async function authUser(){
+    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){}
+    if (window.currentUser) return window.currentUser;
+    var c = client();
+    try { if (c && c.auth && typeof c.auth.getUser === 'function') { var r = await c.auth.getUser(); return r && r.data ? r.data.user : null; } } catch(e){}
+    return null;
+  }
+  function addUser(map, id, nick, email){
+    id = norm(id);
+    if (!id || id === 'undefined' || id === 'null' || id === 'Нет пользователей') return;
+    var old = map[id] || { id:id, user_id:id, nick:'', nickname:'', email:'' };
+    var label = norm(nick || old.nick || old.nickname || email || id);
+    old.nick = label; old.nickname = label; old.email = norm(old.email || email || '');
+    map[id] = old;
+  }
+  async function collectUsers(force){
+    if (!force && userCache.rows.length && Date.now() - userCache.at < 45000) return userCache.rows.slice();
+    var map = {}, c = client();
+    try { if (window.T73_V71_GOSS_USERLIST_FINAL && typeof window.T73_V71_GOSS_USERLIST_FINAL.collect === 'function') { var d = await window.T73_V71_GOSS_USERLIST_FINAL.collect(); (d.users || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } } catch(e){}
+    try { (window.adminUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
+    try { (window.creatorUsersList || []).forEach(function(u){ addUser(map, u.id || u.user_id, u.nick || u.nickname || u.email, u.email); }); } catch(e){}
+    if (c) {
+      try { var us = await c.from('user_stats').select('user_id,nickname,email').limit(2000); (us.data || []).forEach(function(u){ addUser(map, u.user_id, u.nickname || u.email || u.user_id, u.email); }); } catch(e){}
+      try { var reps = await c.from('reports').select('email,link,status,date').limit(4000); (reps.data || []).forEach(function(r){
+        var p = parse(r.date), email = String(r.email || '');
+        if (email === 'ADMIN_ROLE') addUser(map, r.link, r.link, '');
+        if (email === 'GOSS_PROFILE' || email.indexOf('GOSS_PROFILE') === 0 || email === 'GOSS_USER_REPORT' || email.indexOf('REPORT_TABLE_MEMBER') === 0) addUser(map, p.userId || p.user_id || p.id || r.status || r.link, p.nick || p.nickname || p.name || r.status || r.link, p.email || '');
+        if (p && (p.userId || p.user_id || p.id || p.nick || p.nickname || p.email)) addUser(map, p.userId || p.user_id || p.id || r.status || r.link, p.nick || p.nickname || p.name || p.email || r.status || r.link, p.email || '');
+      }); } catch(e){}
+    }
+    var u = await authUser();
+    if (u) addUser(map, u.id, window.currentNickname || u.email || u.id, u.email || '');
+    var rows = Object.keys(map).map(function(k){ return map[k]; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), 'ru'); });
+    try { window.adminUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
+    try { window.creatorUsersList = rows.map(function(u){ return { id:u.id, user_id:u.id, nick:u.nick, nickname:u.nickname, email:u.email }; }); } catch(e){}
+    try { if (typeof adminUsersList !== 'undefined') adminUsersList = window.adminUsersList.slice(); } catch(e){}
+    try { if (typeof creatorUsersList !== 'undefined') creatorUsersList = window.creatorUsersList.slice(); } catch(e){}
+    userCache = { at:Date.now(), rows:rows };
+    return rows.slice();
+  }
+  function optionHtml(u){ var label = u.nick || u.nickname || u.email || u.id; if (u.email && label.indexOf(u.email) === -1) label += ' · ' + u.email; return '<option value="' + esc(u.id) + '">' + esc(label) + '</option>'; }
+  function emptySelect(sel){ var t = norm(sel && sel.textContent).toLowerCase(); return !sel || !sel.options || !sel.options.length || t.indexOf('нет пользователей') !== -1 || t.indexOf('загрузка') !== -1 || t.indexOf('не удалось загрузить') !== -1; }
+  function note(sel){ if (!sel || !sel.parentElement || sel.parentElement.querySelector('.t73-v76-note')) return; var d = document.createElement('div'); d.className = 't73-v76-note'; d.textContent = 'Список пользователей загружен фикс-патчем V76: руководитель ГОСС теперь видит людей для выдачи/снятия СС.'; sel.parentElement.appendChild(d); }
+  async function fillSelects(force){
+    var targets = USER_SELECT_IDS.map(function(id){ return $(id); }).filter(Boolean);
+    if (!targets.length && !force) return;
+    var users = await collectUsers(!!force);
+    targets.forEach(function(sel){
+      if (!sel) return;
+      if (users.length) {
+        if (force || emptySelect(sel) || sel.id === 'govV4SeniorUser' || sel.id === 'gossV3SeniorUser' || sel.id === 'v23LeadUser' || sel.id === 'v24User') {
+          var old = sel.value; sel.innerHTML = users.map(optionHtml).join('');
+          if (old && users.some(function(u){ return u.id === old; })) sel.value = old;
+          sel.dataset.t73v76Filled = '1'; note(sel);
+        }
+      } else if (emptySelect(sel)) {
+        sel.innerHTML = '<option value="">Не удалось загрузить список — проверьте доступ к user_stats/reports</option>';
+      }
+    });
+  }
+  var oldLoad = null;
+  try { if (typeof loadUsersForAdmin === 'function') oldLoad = loadUsersForAdmin; } catch(e){}
+  async function patchedLoadUsersForAdmin(){ try { if (oldLoad) await oldLoad.apply(this, arguments); } catch(e){} await fillSelects(true); return window.adminUsersList || []; }
+  try { loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
+  try { window.loadUsersForAdmin = patchedLoadUsersForAdmin; } catch(e){}
+
+  function orgList(){
+    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS)) return GOSS_ORGS; } catch(e){}
+    return Object.keys(ORG_META).filter(function(id){ return id !== 'mvd'; }).map(function(id){ return { id:id, short:ORG_META[id].short, name:ORG_META[id].name, icon:ORG_META[id].icon }; });
+  }
+  function currentOrg(){
+    var id = null, active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active');
+    if (active && active.dataset) id = active.dataset.orgId;
+    if (!id) {
+      var txt = (($('gossV4Title') && $('gossV4Title').textContent) || '') + ' ' + (($('gossV4Org') && $('gossV4Org').textContent) || '');
+      orgList().some(function(o){ if (txt.toLowerCase().indexOf(String(o.short).toLowerCase()) !== -1 || txt.toLowerCase().indexOf(String(o.name).toLowerCase()) !== -1) { id = o.id; return true; } return false; });
+    }
+    return orgList().filter(function(o){ return o.id === (id || 'fsb'); })[0] || orgList()[0];
+  }
+  function root(){ var p = $('mode-goss_center_v4'); if (p && getComputedStyle(p).display !== 'none') return $('gossV4Content'); return $('gossV4Content'); }
+  function trainerActive(){
+    var p = $('mode-goss_center_v4'), r = root();
+    if (!p || getComputedStyle(p).display === 'none' || !r) return false;
+    var active = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active');
+    if (active && active.dataset && active.dataset.view && active.dataset.view !== 'trainer') return false;
+    if (r.querySelector('#t73V76Trainer')) return true;
+    return /тренаж[её]р/i.test(r.textContent || '') && !/Панель руководства|Таблица старшего|Проверка отч[её]тов|Сдать отч[её]тность|Мои данные|Магазин/i.test(r.textContent || '');
+  }
+  function shuffle(arr){ return arr.map(function(x){ return {v:x, r:Math.random()}; }).sort(function(a,b){ return a.r-b.r; }).map(function(x){ return x.v; }); }
+  function makeRound(orgId){ var list = BANK[orgId] || BANK.fsb || []; var qn = list[Math.floor(Math.random() * list.length)]; round = { orgId:orgId, q:qn, options:shuffle(qn.options.slice()), answered:false }; return round; }
+  function getRound(orgId){ if (!round || round.orgId !== orgId || !round.q) return makeRound(orgId); return round; }
+  function renderTrainer(force){
+    if (!trainerActive() && !force) return;
+    var r = root(); if (!r) return;
+    if (r.querySelector('#t73V76Trainer') && !force) return;
+    var org = currentOrg(), qn = getRound(org.id), count = (BANK[org.id] || BANK.fsb || []).length;
+    var html = '';
+    html += '<div id="t73V76Trainer" class="t73-v76-trainer">';
+    html += '<div class="t73-v76-card"><div class="t73-v76-head"><div><h3 style="margin:0;color:#ff6b88;">🎮 ГОСС тренажёр — ' + esc(org.short) + '</h3><div class="t73-v76-muted">Добавлен расширенный банк вопросов. Варианты специально укорочены и перемешиваются, поэтому выбирать самый длинный текст больше не помогает.</div></div><span class="t73-v76-pill">' + esc(count) + ' вопросов</span></div></div>';
+    html += '<div class="t73-v76-card"><span class="t73-v76-pill">' + esc(qn.from) + '</span><div class="t73-v76-question">' + esc(qn.text) + '</div><div class="t73-v76-options">';
+    html += qn.options.map(function(o,i){ return '<button class="t73-v76-option" data-i="' + i + '" type="button"><span class="t73-v76-tag">Вариант ' + String.fromCharCode(65+i) + '</span><span>' + esc(o.text) + '</span></button>'; }).join('');
+    html += '</div><div id="t73V76Feedback"></div></div><div class="gov-v4-actions"><button id="t73V76Next" class="btn btn-secondary" type="button">Следующая ситуация</button></div></div>';
+    r.innerHTML = html;
+    r.querySelectorAll('.t73-v76-option').forEach(function(btn){ btn.onclick = function(){
+      if (round.answered) return; round.answered = true;
+      var o = round.options[Number(btn.dataset.i)];
+      r.querySelectorAll('.t73-v76-option').forEach(function(b,idx){ b.disabled = true; if (round.options[idx].good) b.classList.add('good'); });
+      btn.classList.add(o.good ? 'good' : 'bad');
+      var f = $('t73V76Feedback'); if (f) f.innerHTML = '<div class="t73-v76-feedback">' + (o.good ? '✅ ' : '❌ ') + esc(o.reply) + '</div>';
+      try { if (typeof playSound === 'function') playSound(o.good ? 'ok' : 'fail'); } catch(e){}
+    }; });
+    var next = $('t73V76Next'); if (next) next.onclick = function(){ makeRound(currentOrg().id); renderTrainer(true); };
+  }
+  function boot(){ fillSelects(false); renderTrainer(false); }
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    setTimeout(function(){ fillSelects(false); renderTrainer(false); }, 120);
+    if (t && t.closest && t.closest('.gov-org-switch-v4,.gov-action-switch-v4,[data-mode="goss_center_v4"]')) setTimeout(function(){ fillSelects(true); renderTrainer(false); }, 420);
+  }, true);
+  document.addEventListener('focusin', function(e){ if (e.target && e.target.tagName === 'SELECT' && USER_SELECT_IDS.indexOf(e.target.id) !== -1) fillSelects(true); }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [250,700,1500,3000,5500,8500].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__t73_v76_timer); window.__t73_v76_timer = setTimeout(boot, 180); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
+  window.T73_V76_GOSS_FIX = { collectUsers:function(){ return collectUsers(true); }, fillUsers:function(){ return fillSelects(true); }, renderTrainer:function(){ return renderTrainer(true); }, questions:BANK };
+})();
+</script>
+<!-- === /T73 V76 === -->
+
 </body>
 </html>
