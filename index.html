@@ -18961,10 +18961,10 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V75 === -->
 
 <script>
-/* === T73 V83 GOSS ONLY: stable modes, reports with screenshots, SS tables, logs in every mode === */
+/* === T73 V84 GOSS ONLY: single stable router, no stacked modes === */
 (function(){
-  if(window.__T73_V83_GOSS_ONLY__) return;
-  window.__T73_V83_GOSS_ONLY__ = true;
+  if(window.__T73_V84_GOSS_ONLY__) return;
+  window.__T73_V84_GOSS_ONLY__ = true;
 
   var E = {
     access:'ADMIN_ROLE', profile:'GOSS_PROFILE', report:'GOSS_USER_REPORT',
@@ -18980,7 +18980,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     {id:'smi', short:'СМИ', name:'СМИ', icon:'🎙️'},
     {id:'fsin', short:'ФСИН', name:'ФСИН', icon:'🔒'}
   ];
-  var state = { view:'trainer', org:'fsb', week:0, reviewMode:false, proofs:[], busy:false };
+  var state = { view:(function(){try{return localStorage.getItem('t73_v84_view')||'trainer'}catch(e){return 'trainer'}})(), org:(function(){try{return localStorage.getItem('t73_v84_org')||'fsb'}catch(e){return 'fsb'}})(), week:0, reviewMode:false, proofs:[], busy:false };
   var cache = { roles:null, users:null, profiles:null, reports:null, logs:null, stamp:0 };
 
   function $(id){ return document.getElementById(id); }
@@ -18988,7 +18988,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function parse(v,fb){ try{ if(!v) return fb || {}; return typeof v === 'string' ? JSON.parse(v) : v; }catch(e){ return fb || {}; } }
   function now(){ return new Date().toLocaleString('ru-RU'); }
-  function rid(p){ return (p || 'v83') + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function rid(p){ return (p || 'v84') + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
   function client(){ try { return window.supa || window.__T73_SUPA || (typeof supa !== 'undefined' ? supa : null); } catch(e){ return window.supa || window.__T73_SUPA || null; } }
   async function user(){
     try { if(window.currentUser && window.currentUser.id) return window.currentUser; } catch(e){}
@@ -19004,29 +19004,56 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if(b && b.dataset && b.dataset.orgId) state.org = b.dataset.orgId;
     return org(state.org);
   }
-  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
-  function navRoot(){ return $('gossOrgActionNavV4') || $('gossOrgActionNavV3') || $('gossOrgActionNav'); }
+  function ensurePanel(){
+    var game = $('game');
+    var panel = $('mode-goss_center_v4') || $('mode-goss_dashboard');
+    if(!panel && game){
+      game.insertAdjacentHTML('afterbegin','<section class="panel game-card fade-in" id="mode-goss_center_v4" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#ff6b88;">ГОСС</h2><p id="gossV4Lead">Стабильные режимы ГОСС без наложения старых панелей.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>');
+      panel = $('mode-goss_center_v4');
+    }
+    if(panel && !$('gossV4Content')) panel.insertAdjacentHTML('beforeend','<div id="gossV4Content" class="gov-v4-shell"></div>');
+    return panel;
+  }
+  function root(){ ensurePanel(); return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
+  function navRoot(){
+    var orgNav = $('subNavOrganizations');
+    var nav = $('gossOrgActionNavV4');
+    if(!nav && orgNav){
+      orgNav.insertAdjacentHTML('afterend','<div class="sub-nav t73-v84-actions" id="gossOrgActionNavV4" style="display:none;"></div>');
+      nav = $('gossOrgActionNavV4');
+    }
+    return nav || $('gossOrgActionNavV3') || $('gossOrgActionNav');
+  }
+  function orgsVisible(){
+    var nav = $('subNavOrganizations');
+    if(!nav) return false;
+    var activeCat = document.querySelector('.main-cat-btn.active[data-cat="organizations"]');
+    try { return !!activeCat || getComputedStyle(nav).display !== 'none'; } catch(e){ return !!activeCat || nav.style.display !== 'none'; }
+  }
   function gossVisible(){
-    var p = $('mode-goss_center_v4') || $('mode-goss_dashboard') || $('mode-fsb');
+    var p = ensurePanel();
     if(!p) return false;
-    try { if(getComputedStyle(p).display === 'none') return false; } catch(e){ if(p.style.display === 'none') return false; }
-    return !!root();
+    try { if(getComputedStyle(p).display !== 'none') return true; } catch(e){ if(p.style.display !== 'none') return true; }
+    return orgsVisible();
   }
   function dayKey(d){ var z=function(n){return String(n).padStart(2,'0')}; return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate()); }
   function ruDay(k){ var a = String(k).split('-'); var d = new Date(Number(a[0]), Number(a[1])-1, Number(a[2])); return d.toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit'}); }
   function weekDays(offset){ var d = new Date(); d.setHours(0,0,0,0); var day = d.getDay(); var diff = day === 0 ? -6 : 1 - day; d.setDate(d.getDate() + diff + (offset||0)*7); var out=[]; for(var i=0;i<7;i++){ var x = new Date(d); x.setDate(d.getDate()+i); out.push(dayKey(x)); } return out; }
 
   function ensureStyle(){
-    if($('t73-v83-goss-style')) return;
-    var st = document.createElement('style'); st.id = 't73-v83-goss-style';
+    if($('t73-v84-goss-style')) return;
+    var st = document.createElement('style'); st.id = 't73-v84-goss-style';
     st.textContent = `
-      #gossOrgActionNavV4{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;margin-top:.6rem!important}
-      #gossOrgActionNavV4 > *:not([data-v83-tab]){display:none!important;visibility:hidden!important;pointer-events:none!important}
-      #gossOrgActionNavV4 [data-v83-tab]{display:inline-flex!important;align-items:center;justify-content:center;gap:.35rem}
+      body.t73-v84-goss-active #subNavOrganizations{display:flex!important;gap:.55rem!important;flex-wrap:wrap!important;align-items:center!important}
+      body.t73-v84-goss-active #subNavOrganizations .gov-org-switch-v4{display:inline-flex!important;align-items:center;justify-content:center;gap:.35rem}
+      body.t73-v84-goss-active #gossOrgActionNavV4{display:flex!important;gap:.55rem;flex-wrap:wrap;align-items:center;margin-top:.6rem!important}
+      #gossOrgActionNavV4{gap:.55rem;flex-wrap:wrap;align-items:center;margin-top:.6rem!important}
+      #gossOrgActionNavV4 > *:not([data-v84-tab]){display:none!important;visibility:hidden!important;pointer-events:none!important}
+      #gossOrgActionNavV4 [data-v84-tab]{display:inline-flex!important;align-items:center;justify-content:center;gap:.35rem}
       #gossV4Content #v25GossSubmitReportBar,#gossV4Content .t73-v25-view-goss,#gossV4Content .g20-sheetbar,#gossV4Content #v26LeadershipPanelBtn,#gossV4Content #v23OpenLogs,#gossV4Content #v24OpenLogs,#gossV4Content .t73-v26-card,#gossV4Content .t73-v23-card,#gossV4Content .t73-v24-card{display:none!important;visibility:hidden!important;pointer-events:none!important}
-      .v83-card{padding:1rem;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(5,7,14,.98));box-shadow:0 14px 34px rgba(0,0,0,.22);margin-bottom:1rem}
-      .v83-head{display:flex;gap:1rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.v83-head h3{margin:0;color:#ff9aad}.v83-sub,.v83-muted{color:var(--color-text-muted);font-size:.92rem}.v83-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem}.v83-mini{padding:.9rem;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);display:grid;gap:.55rem}.v83-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.v83-form .full{grid-column:1/-1}.v83-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.88rem}.v83-input,.v83-select,.v83-area{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.65rem;font-weight:800}.v83-area{min-height:96px;resize:vertical}.v83-actions{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center}.v83-pill{display:inline-flex;align-items:center;gap:.25rem;width:max-content;max-width:100%;padding:.28rem .62rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.78rem;font-weight:1000;text-decoration:none}.v83-pill.warn{border-color:rgba(255,191,71,.42);background:rgba(255,191,71,.12);color:#ffe8a8}.v83-pill.bad{border-color:rgba(255,75,105,.45);background:rgba(255,75,105,.12);color:#ffc8d2}.v83-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,191,71,.36);background:rgba(255,191,71,.08);color:#fff}.v83-scroll{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.10);-webkit-overflow-scrolling:touch}.v83-table{width:100%;min-width:880px;border-collapse:separate;border-spacing:0}.v83-table th,.v83-table td{padding:.72rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.04);text-align:left;vertical-align:top}.v83-table th{background:linear-gradient(180deg,rgba(255,107,136,.25),rgba(108,140,255,.14));color:#fff;text-transform:uppercase;font-size:.78rem}.v83-drop{border:2px dashed rgba(255,107,136,.46);border-radius:16px;padding:1rem;background:rgba(255,107,136,.08)}.v83-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.v83-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.v83-proof img{width:100%;height:86px;object-fit:cover;border-radius:10px;cursor:zoom-in}.v83-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;border:0;background:#ff4b69;color:#fff;font-weight:900}.v83-options{display:grid;gap:.55rem;margin-top:.85rem}.v83-option{text-align:left;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;padding:.85rem;font-weight:900}.v83-option.good{border-color:rgba(82,199,123,.7);background:rgba(82,199,123,.16)}.v83-option.bad{border-color:rgba(255,75,105,.7);background:rgba(255,75,105,.14)}.v83-logs{margin-top:1rem;border-color:rgba(108,140,255,.22);background:rgba(108,140,255,.07)}
-      @media(max-width:760px){.v83-form{grid-template-columns:1fr}.v83-actions .btn{width:100%}#gossOrgActionNavV4 [data-v83-tab]{flex:1 1 calc(50% - .35rem);min-height:46px}.v83-table{min-width:760px}}
+      .v84-card{padding:1rem;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(5,7,14,.98));box-shadow:0 14px 34px rgba(0,0,0,.22);margin-bottom:1rem}
+      .v84-head{display:flex;gap:1rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.v84-head h3{margin:0;color:#ff9aad}.v84-sub,.v84-muted{color:var(--color-text-muted);font-size:.92rem}.v84-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.85rem}.v84-mini{padding:.9rem;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.28);display:grid;gap:.55rem}.v84-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.v84-form .full{grid-column:1/-1}.v84-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-weight:900;font-size:.88rem}.v84-input,.v84-select,.v84-area{width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.65rem;font-weight:800}.v84-area{min-height:96px;resize:vertical}.v84-actions{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center}.v84-pill{display:inline-flex;align-items:center;gap:.25rem;width:max-content;max-width:100%;padding:.28rem .62rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.78rem;font-weight:1000;text-decoration:none}.v84-pill.warn{border-color:rgba(255,191,71,.42);background:rgba(255,191,71,.12);color:#ffe8a8}.v84-pill.bad{border-color:rgba(255,75,105,.45);background:rgba(255,75,105,.12);color:#ffc8d2}.v84-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,191,71,.36);background:rgba(255,191,71,.08);color:#fff}.v84-scroll{overflow:auto;border-radius:16px;border:1px solid rgba(255,255,255,.10);-webkit-overflow-scrolling:touch}.v84-table{width:100%;min-width:880px;border-collapse:separate;border-spacing:0}.v84-table th,.v84-table td{padding:.72rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.04);text-align:left;vertical-align:top}.v84-table th{background:linear-gradient(180deg,rgba(255,107,136,.25),rgba(108,140,255,.14));color:#fff;text-transform:uppercase;font-size:.78rem}.v84-drop{border:2px dashed rgba(255,107,136,.46);border-radius:16px;padding:1rem;background:rgba(255,107,136,.08)}.v84-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.v84-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.v84-proof img{width:100%;height:86px;object-fit:cover;border-radius:10px;cursor:zoom-in}.v84-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;border:0;background:#ff4b69;color:#fff;font-weight:900}.v84-options{display:grid;gap:.55rem;margin-top:.85rem}.v84-option{text-align:left;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;padding:.85rem;font-weight:900}.v84-option.good{border-color:rgba(82,199,123,.7);background:rgba(82,199,123,.16)}.v84-option.bad{border-color:rgba(255,75,105,.7);background:rgba(255,75,105,.14)}.v84-logs{margin-top:1rem;border-color:rgba(108,140,255,.22);background:rgba(108,140,255,.07)}.v84-modebar{display:flex;gap:.55rem;flex-wrap:wrap;align-items:center;margin:0 0 1rem;padding:.65rem;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.22)}.v84-modebar .mode-btn{display:inline-flex!important}.v84-modebar .mode-btn.active{background:linear-gradient(135deg,#ff6b88,#6c8cff)!important;color:#fff!important}.v84-title-card{border-color:rgba(255,107,136,.32)}
+      @media(max-width:760px){.v84-form{grid-template-columns:1fr}.v84-actions .btn{width:100%}#gossOrgActionNavV4 [data-v84-tab]{flex:1 1 calc(50% - .35rem);min-height:46px}.v84-table{min-width:760px}}
     `;
     document.head.appendChild(st);
   }
@@ -19076,13 +19103,34 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     return ids.map(function(id){ return Object.assign({id:id,nick:id}, by[id] || {}); }).sort(function(a,b){ return String(a.nick||a.id).localeCompare(String(b.nick||b.id),'ru'); });
   }
 
-  async function appendLogs(html){ return html + await logsHtml(activeOrg().id); }
+  function allTabs(){
+    return [
+      ['trainer','🎮 Тренажёр'],
+      ['profile','📝 Мои данные'],
+      ['submit','📤 Сдать гос отчёт'],
+      ['shop','🛒 Магазин'],
+      ['staff','📋 Таблица старшего состава'],
+      ['reportTable','📊 Таблица отчётов'],
+      ['manage','👑 Панель руководства']
+    ];
+  }
+  function modeBarHtml(){
+    return '<div class="v84-modebar" id="v84ModeBar">'+allTabs().map(function(t){
+      return '<button class="mode-btn '+(state.view===t[0]?'active':'')+'" data-v84-view="'+t[0]+'" type="button">'+t[1]+'</button>';
+    }).join('')+'</div>';
+  }
+  function bindModeBars(){
+    qa('[data-v84-view]').forEach(function(b){
+      b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); state.view=b.dataset.v84View || 'trainer'; state.reviewMode=false; try{localStorage.setItem('t73_v84_view', state.view);}catch(x){} renderCurrent(); };
+    });
+  }
+  async function appendLogs(html){ return modeBarHtml() + html + await logsHtml(activeOrg().id); }
   async function logsHtml(orgId){
-    var c = client(); if(!c) return '<div class="v83-card v83-logs"><b>Логи организации</b><div class="v83-muted">Supabase ещё не подключен.</div></div>';
+    var c = client(); if(!c) return '<div class="v84-card v84-logs"><b>Логи организации</b><div class="v84-muted">Supabase ещё не подключен.</div></div>';
     var rows = [];
     try { var r = await c.from('reports').select('*').in('email',[E.log,'GOSS_ORG_LOG','GOSS_ORG_LOG_V24',E.check]).eq('link', orgId).order('id',{ascending:false}).limit(12); rows = r.data || []; } catch(e){}
-    var body = rows.length ? rows.map(function(x){ return '<div class="v83-mini"><b>'+esc(x.status || 'лог')+'</b><div class="v83-muted">'+esc(x.date || '')+'</div></div>'; }).join('') : '<div class="v83-empty">Логов этой организации пока нет.</div>';
-    return '<div class="v83-card v83-logs"><div class="v83-head"><div><h3 style="margin:0;color:#bfc6ff">🧾 Логи организации</h3><div class="v83-muted">Логи находятся внизу каждого режима, чтобы не мешать работе.</div></div></div><div class="v83-grid">'+body+'</div></div>';
+    var body = rows.length ? rows.map(function(x){ return '<div class="v84-mini"><b>'+esc(x.status || 'лог')+'</b><div class="v84-muted">'+esc(x.date || '')+'</div></div>'; }).join('') : '<div class="v84-empty">Логов этой организации пока нет.</div>';
+    return '<div class="v84-card v84-logs"><div class="v84-head"><div><h3 style="margin:0;color:#bfc6ff">🧾 Логи организации</h3><div class="v84-muted">Логи находятся внизу каждого режима, чтобы не мешать работе.</div></div></div><div class="v84-grid">'+body+'</div></div>';
   }
   function evidenceHtml(p){
     var arr = [];
@@ -19090,11 +19138,11 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if(p.link) arr.push(p.link);
     arr = arr.filter(Boolean);
     if(!arr.length) return '';
-    return '<div class="v83-preview">'+arr.map(function(x,i){
+    return '<div class="v84-preview">'+arr.map(function(x,i){
       var s = esc(x);
-      if(String(x).indexOf('data:image') === 0) return '<div class="v83-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
-      if(/\.(png|jpg|jpeg|gif|webp)(\?|#|$)/i.test(String(x))) return '<div class="v83-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
-      return '<a class="v83-pill" target="_blank" rel="noreferrer" href="'+s+'">📎 Доказательство '+(i+1)+'</a>';
+      if(String(x).indexOf('data:image') === 0) return '<div class="v84-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
+      if(/\.(png|jpg|jpeg|gif|webp)(\?|#|$)/i.test(String(x))) return '<div class="v84-proof"><img src="'+s+'" alt="скрин '+(i+1)+'" onclick="window.open(this.src, \'_blank\')"></div>';
+      return '<a class="v84-pill" target="_blank" rel="noreferrer" href="'+s+'">📎 Доказательство '+(i+1)+'</a>';
     }).join('')+'</div>';
   }
 
@@ -19139,17 +19187,17 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
   async function renderTrainer(){
     var o = activeOrg(), r = root(); if(!r) return; state.round = state.round || {}; state.round[o.id] = state.round[o.id] || getRound(o.id); var round = state.round[o.id];
-    var html = '<div class="v83-card"><div class="v83-head"><div><h3>🎮 Тренажёр СС — '+esc(o.short)+'</h3><div class="v83-sub">Варианты специально сделаны похожими по длине, чтобы нельзя было проходить по самому длинному ответу.</div></div><span class="v83-pill">'+esc(await accessText(o.id))+'</span></div></div><div class="v83-card"><div class="v83-muted"># '+esc(o.short)+' / тренажёр</div><h3 style="color:#fff;margin:.5rem 0">'+esc(round.from)+'</h3><p>'+esc(round.text)+'</p><div class="v83-options">'+round.opts.map(function(x,i){return '<button class="v83-option" data-i="'+i+'" type="button"><span class="v83-muted">Вариант '+String.fromCharCode(65+i)+'</span><br>'+esc(x.t)+'</button>';}).join('')+'</div><div id="v83TrainerFb" style="margin-top:.75rem"></div></div><div class="v83-actions"><button id="v83NextQ" class="btn btn-secondary" type="button">Следующая ситуация</button></div>';
+    var html = '<div class="v84-card"><div class="v84-head"><div><h3>🎮 Тренажёр СС — '+esc(o.short)+'</h3><div class="v84-sub">Варианты специально сделаны похожими по длине, чтобы нельзя было проходить по самому длинному ответу.</div></div><span class="v84-pill">'+esc(await accessText(o.id))+'</span></div></div><div class="v84-card"><div class="v84-muted"># '+esc(o.short)+' / тренажёр</div><h3 style="color:#fff;margin:.5rem 0">'+esc(round.from)+'</h3><p>'+esc(round.text)+'</p><div class="v84-options">'+round.opts.map(function(x,i){return '<button class="v84-option" data-i="'+i+'" type="button"><span class="v84-muted">Вариант '+String.fromCharCode(65+i)+'</span><br>'+esc(x.t)+'</button>';}).join('')+'</div><div id="v84TrainerFb" style="margin-top:.75rem"></div></div><div class="v84-actions"><button id="v84NextQ" class="btn btn-secondary" type="button">Следующая ситуация</button></div>';
     r.innerHTML = await appendLogs(html);
-    qa('.v83-option', r).forEach(function(b){ b.onclick = function(){ if(round.answered) return; round.answered = true; var opt=round.opts[Number(b.dataset.i)]; qa('.v83-option', r).forEach(function(x,ix){x.disabled=true; if(round.opts[ix].good) x.classList.add('good');}); b.classList.add(opt.good?'good':'bad'); var f=$('v83TrainerFb'); if(f) f.innerHTML='<div class="v83-pill '+(opt.good?'':'bad')+'">'+(opt.good?'✅ ':'❌ ')+esc(opt.reply)+'</div>'; }; });
-    var n=$('v83NextQ'); if(n) n.onclick=function(){ state.round[o.id]=getRound(o.id); renderTrainer(); };
+    qa('.v84-option', r).forEach(function(b){ b.onclick = function(){ if(round.answered) return; round.answered = true; var opt=round.opts[Number(b.dataset.i)]; qa('.v84-option', r).forEach(function(x,ix){x.disabled=true; if(round.opts[ix].good) x.classList.add('good');}); b.classList.add(opt.good?'good':'bad'); var f=$('v84TrainerFb'); if(f) f.innerHTML='<div class="v84-pill '+(opt.good?'':'bad')+'">'+(opt.good?'✅ ':'❌ ')+esc(opt.reply)+'</div>'; }; });
+    var n=$('v84NextQ'); if(n) n.onclick=function(){ state.round[o.id]=getRound(o.id); renderTrainer(); };
   }
   async function renderProfile(){
-    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v83-empty">Войдите в аккаунт.</div>'; return; }
+    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v84-empty">Войдите в аккаунт.</div>'; return; }
     var rows = (await rowsByEmail(E.profile, o.id)).filter(function(x){return x.status===u.id;}); var p = rows[0] ? parse(rows[0].date,{}) : {};
-    var html = '<div class="v83-card"><h3>📝 Мои данные СС — '+esc(o.short)+'</h3><div class="v83-form"><label>Ник<input id="v83Nick" class="v83-input" value="'+esc(p.nick||nickOf(u))+'"></label><label>Должность<input id="v83Post" class="v83-input" value="'+esc(p.post||'')+'"></label><label>Возраст<input id="v83Age" class="v83-input" value="'+esc(p.age||'')+'"></label><label>Дата постановления<input id="v83Appointed" class="v83-input" value="'+esc(p.appointed||'')+'"></label><label>Форум<input id="v83Forum" class="v83-input" value="'+esc(p.forum||'')+'"></label><label>VK<input id="v83Vk" class="v83-input" value="'+esc(p.vk||'')+'"></label><label>Discord<input id="v83Discord" class="v83-input" value="'+esc(p.discord||'')+'"></label><label>Часовой пояс<input id="v83Tz" class="v83-input" value="'+esc(p.timezone||'')+'"></label></div><div class="v83-actions" style="margin-top:1rem"><button id="v83SaveProfile" class="btn btn-primary" type="button">Сохранить</button><span id="v83ProfileMsg" class="v83-muted"></span></div></div>';
+    var html = '<div class="v84-card"><h3>📝 Мои данные СС — '+esc(o.short)+'</h3><div class="v84-form"><label>Ник<input id="v84Nick" class="v84-input" value="'+esc(p.nick||nickOf(u))+'"></label><label>Должность<input id="v84Post" class="v84-input" value="'+esc(p.post||'')+'"></label><label>Возраст<input id="v84Age" class="v84-input" value="'+esc(p.age||'')+'"></label><label>Дата постановления<input id="v84Appointed" class="v84-input" value="'+esc(p.appointed||'')+'"></label><label>Форум<input id="v84Forum" class="v84-input" value="'+esc(p.forum||'')+'"></label><label>VK<input id="v84Vk" class="v84-input" value="'+esc(p.vk||'')+'"></label><label>Discord<input id="v84Discord" class="v84-input" value="'+esc(p.discord||'')+'"></label><label>Часовой пояс<input id="v84Tz" class="v84-input" value="'+esc(p.timezone||'')+'"></label></div><div class="v84-actions" style="margin-top:1rem"><button id="v84SaveProfile" class="btn btn-primary" type="button">Сохранить</button><span id="v84ProfileMsg" class="v84-muted"></span></div></div>';
     r.innerHTML = await appendLogs(html);
-    $('v83SaveProfile').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.short,nick:$('v83Nick').value.trim(),post:$('v83Post').value.trim(),age:$('v83Age').value.trim(),appointed:$('v83Appointed').value.trim(),forum:$('v83Forum').value.trim(),vk:$('v83Vk').value.trim(),discord:$('v83Discord').value.trim(),timezone:$('v83Tz').value.trim(),email:u.email||''}; if(rows[0]) await c.from('reports').delete().eq('id', rows[0].id); var res=await c.from('reports').insert([{id:rid('goss_profile'),email:E.profile,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error) return alert('Ошибка: '+res.error.message); cache.profiles=null; $('v83ProfileMsg').textContent='Сохранено.'; };
+    $('v84SaveProfile').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.short,nick:$('v84Nick').value.trim(),post:$('v84Post').value.trim(),age:$('v84Age').value.trim(),appointed:$('v84Appointed').value.trim(),forum:$('v84Forum').value.trim(),vk:$('v84Vk').value.trim(),discord:$('v84Discord').value.trim(),timezone:$('v84Tz').value.trim(),email:u.email||''}; if(rows[0]) await c.from('reports').delete().eq('id', rows[0].id); var res=await c.from('reports').insert([{id:rid('goss_profile'),email:E.profile,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error) return alert('Ошибка: '+res.error.message); cache.profiles=null; $('v84ProfileMsg').textContent='Сохранено.'; };
   }
   async function fileToData(file){
     return new Promise(function(resolve){
@@ -19174,30 +19222,30 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     renderProofPreview();
   }
   function renderProofPreview(){
-    var box=$('v83ProofPreview'); if(!box) return;
-    box.innerHTML = state.proofs.map(function(src,i){return '<div class="v83-proof"><img src="'+esc(src)+'"><button data-i="'+i+'" type="button">×</button></div>';}).join('');
+    var box=$('v84ProofPreview'); if(!box) return;
+    box.innerHTML = state.proofs.map(function(src,i){return '<div class="v84-proof"><img src="'+esc(src)+'"><button data-i="'+i+'" type="button">×</button></div>';}).join('');
     qa('button', box).forEach(function(b){ b.onclick=function(){ state.proofs.splice(Number(b.dataset.i),1); renderProofPreview(); }; });
   }
   async function renderSubmit(){
-    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v83-empty">Войдите в аккаунт.</div>'; return; }
+    var o=activeOrg(), r=root(), u=await user(); if(!r) return; if(!u){ r.innerHTML='<div class="v84-empty">Войдите в аккаунт.</div>'; return; }
     state.proofs = [];
     var mine=(await rowsByEmail(E.report,o.id)).filter(function(x){return x.status===u.id;}).slice(-8).reverse();
-    var list = mine.length ? mine.map(function(x){var p=parse(x.date,{}), st=p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает'); return '<div class="v83-mini"><div class="v83-head"><b>'+esc(p.type||'ГОСС отчёт')+'</b><span class="v83-pill '+(st==='Отказ'?'bad':(st==='Ожидает'?'warn':''))+'">'+esc(st)+'</span></div><div class="v83-muted">'+esc(p.created||'')+'</div><div>'+esc(p.comment||'')+'</div>'+evidenceHtml(p)+'</div>';}).join('') : '<div class="v83-empty">Вы ещё не сдавали гос отчёты в этой организации.</div>';
-    var html='<div class="v83-card"><h3>📤 Сдать гос отчёт — '+esc(o.short)+'</h3><div class="v83-form"><label>Тип отчёта<select id="v83ReportType" class="v83-select"><option>Ежедневный отчёт</option><option>Недельный отчёт</option><option>Отчёт по работе</option><option>Другое</option></select></label><label>Ссылка на доказательства<input id="v83ReportLink" class="v83-input" placeholder="форум / видео / облако"></label><label class="full">Комментарий<textarea id="v83ReportComment" class="v83-area" placeholder="Что сделал, сколько заявок/проверок/работы закрыл"></textarea></label><label class="full">Скриншоты напрямую<input id="v83ReportFiles" class="v83-input" type="file" accept="image/*" multiple></label></div><div id="v83Drop" class="v83-drop" tabindex="0">Перетащи скриншоты сюда или вставь Ctrl+V. Они сожмутся и прикрепятся к отчёту.</div><div id="v83ProofPreview" class="v83-preview"></div><div class="v83-actions" style="margin-top:1rem"><button id="v83SendReport" class="btn btn-primary" type="button">📤 Отправить гос отчёт</button><span id="v83SubmitMsg" class="v83-muted"></span></div></div><div class="v83-card"><h3 style="color:#fff;margin-top:0">Мои последние гос отчёты</h3><div class="v83-grid">'+list+'</div></div>';
+    var list = mine.length ? mine.map(function(x){var p=parse(x.date,{}), st=p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает'); return '<div class="v84-mini"><div class="v84-head"><b>'+esc(p.type||'ГОСС отчёт')+'</b><span class="v84-pill '+(st==='Отказ'?'bad':(st==='Ожидает'?'warn':''))+'">'+esc(st)+'</span></div><div class="v84-muted">'+esc(p.created||'')+'</div><div>'+esc(p.comment||'')+'</div>'+evidenceHtml(p)+'</div>';}).join('') : '<div class="v84-empty">Вы ещё не сдавали гос отчёты в этой организации.</div>';
+    var html='<div class="v84-card"><h3>📤 Сдать гос отчёт — '+esc(o.short)+'</h3><div class="v84-form"><label>Тип отчёта<select id="v84ReportType" class="v84-select"><option>Ежедневный отчёт</option><option>Недельный отчёт</option><option>Отчёт по работе</option><option>Другое</option></select></label><label>Ссылка на доказательства<input id="v84ReportLink" class="v84-input" placeholder="форум / видео / облако"></label><label class="full">Комментарий<textarea id="v84ReportComment" class="v84-area" placeholder="Что сделал, сколько заявок/проверок/работы закрыл"></textarea></label><label class="full">Скриншоты напрямую<input id="v84ReportFiles" class="v84-input" type="file" accept="image/*" multiple></label></div><div id="v84Drop" class="v84-drop" tabindex="0">Перетащи скриншоты сюда или вставь Ctrl+V. Они сожмутся и прикрепятся к отчёту.</div><div id="v84ProofPreview" class="v84-preview"></div><div class="v84-actions" style="margin-top:1rem"><button id="v84SendReport" class="btn btn-primary" type="button">📤 Отправить гос отчёт</button><span id="v84SubmitMsg" class="v84-muted"></span></div></div><div class="v84-card"><h3 style="color:#fff;margin-top:0">Мои последние гос отчёты</h3><div class="v84-grid">'+list+'</div></div>';
     r.innerHTML = await appendLogs(html);
-    var files=$('v83ReportFiles'), drop=$('v83Drop'); files.onchange=function(){addFiles(files.files); files.value='';};
+    var files=$('v84ReportFiles'), drop=$('v84Drop'); files.onchange=function(){addFiles(files.files); files.value='';};
     drop.ondragover=function(e){e.preventDefault(); drop.style.borderColor='var(--color-success)';}; drop.ondragleave=function(){drop.style.borderColor='rgba(255,107,136,.46)';}; drop.ondrop=function(e){e.preventDefault(); drop.style.borderColor='rgba(255,107,136,.46)'; addFiles(e.dataTransfer.files);};
     drop.onpaste=function(e){ if(e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) addFiles(e.clipboardData.files); };
-    $('v83SendReport').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.id,orgName:o.short,type:$('v83ReportType').value,link:$('v83ReportLink').value.trim(),comment:$('v83ReportComment').value.trim(),proofs:state.proofs.slice(),userId:u.id,nick:nickOf(u),created:now(),day:dayKey(new Date()),checkedAt:'',reviewStatus:''}; if(!payload.link && !payload.comment && !payload.proofs.length) return alert('Добавьте комментарий, ссылку или скриншот.'); $('v83SubmitMsg').textContent='Отправляю...'; var res=await c.from('reports').insert([{id:rid('goss_user_report'),email:E.report,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error){$('v83SubmitMsg').textContent='Ошибка: '+res.error.message;return alert('Отчёт не отправился: '+res.error.message);} await c.from('reports').insert([{id:rid('goss_log_submit'),email:E.log,link:o.id,status:'report_submit',date:'Сдан гос отчёт: '+nickOf(u)+' · '+now(),xp:0}]); cache.reports=null; alert('Гос отчёт отправлен.'); renderSubmit(); };
+    $('v84SendReport').onclick = async function(){ var c=client(); if(!c) return alert('Supabase не подключен'); var payload={org:o.id,orgName:o.short,type:$('v84ReportType').value,link:$('v84ReportLink').value.trim(),comment:$('v84ReportComment').value.trim(),proofs:state.proofs.slice(),userId:u.id,nick:nickOf(u),created:now(),day:dayKey(new Date()),checkedAt:'',reviewStatus:''}; if(!payload.link && !payload.comment && !payload.proofs.length) return alert('Добавьте комментарий, ссылку или скриншот.'); $('v84SubmitMsg').textContent='Отправляю...'; var res=await c.from('reports').insert([{id:rid('goss_user_report'),email:E.report,link:o.id,status:u.id,date:JSON.stringify(payload),xp:0}]); if(res.error){$('v84SubmitMsg').textContent='Ошибка: '+res.error.message;return alert('Отчёт не отправился: '+res.error.message);} await c.from('reports').insert([{id:rid('goss_log_submit'),email:E.log,link:o.id,status:'report_submit',date:'Сдан гос отчёт: '+nickOf(u)+' · '+now(),xp:0}]); cache.reports=null; alert('Гос отчёт отправлен.'); renderSubmit(); };
   }
   async function renderShop(){
-    var o=activeOrg(), html='<div class="v83-card"><h3>🛒 Магазин ГОСС — '+esc(o.short)+'</h3><p class="v83-sub">Этот режим оставлен отдельно и больше не смешивается с отчётами/панелью руководства.</p>'+(o.id==='fsb'?'<div class="v83-actions"><button id="v83OpenFsbShop" class="btn btn-primary" type="button">Открыть магазин ФСБ</button></div>':'<div class="v83-empty">Для этой организации товары пока не настроены.</div>')+'</div>'; root().innerHTML = await appendLogs(html); var b=$('v83OpenFsbShop'); if(b) b.onclick=function(){ if(typeof switchMode==='function') switchMode('fsb_shop', b); };
+    var o=activeOrg(), html='<div class="v84-card"><h3>🛒 Магазин ГОСС — '+esc(o.short)+'</h3><p class="v84-sub">Этот режим оставлен отдельно и больше не смешивается с отчётами/панелью руководства.</p>'+(o.id==='fsb'?'<div class="v84-actions"><button id="v84OpenFsbShop" class="btn btn-primary" type="button">Открыть магазин ФСБ</button></div>':'<div class="v84-empty">Для этой организации товары пока не настроены.</div>')+'</div>'; root().innerHTML = await appendLogs(html); var b=$('v84OpenFsbShop'); if(b) b.onclick=function(){ if(typeof switchMode==='function') switchMode('fsb_shop', b); };
   }
   async function renderStaff(){
-    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Таблицу старшего состава видит только руководство '+esc(o.short)+'.</div>'); return; }
-    var staff=await seniorMembers(o.id); var body=staff.map(function(u){return '<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v83-muted">'+esc(u.email||u.id)+'</div></td><td><span class="v83-pill">СС '+esc(o.short)+'</span></td><td>'+esc(u.post||'Анкета не заполнена')+'</td><td>'+(u.forum?'<a class="v83-pill" target="_blank" rel="noreferrer" href="'+esc(u.forum)+'">Форум</a><br>':'')+esc(u.vk||'')+(u.discord?'<br>'+esc(u.discord):'')+'</td><td>'+esc(u.appointed||'—')+'<div class="v83-muted">'+esc(u.timezone||'')+'</div></td></tr>';}).join('');
-    var html='<div class="v83-card"><div class="v83-head"><div><h3>📋 Таблица старшего состава — '+esc(o.short)+'</h3><div class="v83-sub">Показываются только пользователи с выданным статусом СС/руководства этой ГОСС.</div></div><button id="v83StaffRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>'+(staff.length?'<div class="v83-scroll"><table class="v83-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Должность</th><th>Контакты</th><th>Поставлен</th></tr></thead><tbody>'+body+'</tbody></table></div>':'<div class="v83-empty">В этой организации пока нет пользователей со статусом старшего состава.</div>');
-    r.innerHTML = await appendLogs(html); $('v83StaffRefresh').onclick=function(){cache.users=null;cache.roles=null;renderStaff();};
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v84-empty">Таблицу старшего состава видит только руководство '+esc(o.short)+'.</div>'); return; }
+    var staff=await seniorMembers(o.id); var body=staff.map(function(u){return '<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v84-muted">'+esc(u.email||u.id)+'</div></td><td><span class="v84-pill">СС '+esc(o.short)+'</span></td><td>'+esc(u.post||'Анкета не заполнена')+'</td><td>'+(u.forum?'<a class="v84-pill" target="_blank" rel="noreferrer" href="'+esc(u.forum)+'">Форум</a><br>':'')+esc(u.vk||'')+(u.discord?'<br>'+esc(u.discord):'')+'</td><td>'+esc(u.appointed||'—')+'<div class="v84-muted">'+esc(u.timezone||'')+'</div></td></tr>';}).join('');
+    var html='<div class="v84-card"><div class="v84-head"><div><h3>📋 Таблица старшего состава — '+esc(o.short)+'</h3><div class="v84-sub">Показываются только пользователи с выданным статусом СС/руководства этой ГОСС.</div></div><button id="v84StaffRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>'+(staff.length?'<div class="v84-scroll"><table class="v84-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Должность</th><th>Контакты</th><th>Поставлен</th></tr></thead><tbody>'+body+'</tbody></table></div>':'<div class="v84-empty">В этой организации пока нет пользователей со статусом старшего состава.</div>');
+    r.innerHTML = await appendLogs(html); $('v84StaffRefresh').onclick=function(){cache.users=null;cache.roles=null;renderStaff();};
   }
   async function getReports(orgId){
     var rows = await rowsByEmail(E.report, orgId), ids = await seniorIds(orgId), allow={}; ids.forEach(function(x){allow[x]=true;});
@@ -19208,61 +19256,156 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
   async function renderReviewList(){
     var o=activeOrg(), reps=await getReports(o.id); reps.sort(function(a,b){return String(b.created||'').localeCompare(String(a.created||''));}); var unchecked=reps.filter(function(p){return !p.reviewStatus && !p.checkedAt;});
-    var html = '<div class="v83-card"><div class="v83-head"><div><h3>✅ Проверить сданные гос отчёты — '+esc(o.short)+'</h3><div class="v83-sub">Отдельного режима больше нет: проверка находится внутри таблицы отчётов.</div></div><button id="v83BackTable" class="btn btn-secondary" type="button">← К таблице</button></div></div>';
-    html += unchecked.length ? '<div class="v83-grid">'+unchecked.map(function(p,i){return '<div class="v83-mini"><div class="v83-head"><div><b>'+esc(p.nick||p.userId||'Пользователь')+'</b><div class="v83-muted">'+esc(p.type||'ГОСС отчёт')+' · '+esc(p.created||'')+'</div></div><span class="v83-pill warn">Ожидает</span></div><div>'+esc(p.comment||'Без комментария')+'</div>'+evidenceHtml(p)+'<div class="v83-actions"><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Норма" data-p="15" type="button">Норма</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Перенорма" data-p="30" type="button">Перенорма</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Натяг" data-p="7" type="button">Натяг</button><button class="btn btn-secondary v83-review" data-i="'+i+'" data-s="Отказ" data-p="0" type="button">Отказ</button></div></div>';}).join('')+'</div>' : '<div class="v83-empty">Новых непроверенных отчётов от СС нет.</div>';
-    root().innerHTML = await appendLogs(html); $('v83BackTable').onclick=function(){state.reviewMode=false;renderReportTable(false);}; qa('.v83-review').forEach(function(b){ b.onclick=function(){ var p=unchecked[Number(b.dataset.i)]; reviewReport(p._row,b.dataset.s,Number(b.dataset.p||0)); }; });
+    var html = '<div class="v84-card"><div class="v84-head"><div><h3>✅ Проверить сданные гос отчёты — '+esc(o.short)+'</h3><div class="v84-sub">Отдельного режима больше нет: проверка находится внутри таблицы отчётов.</div></div><button id="v84BackTable" class="btn btn-secondary" type="button">← К таблице</button></div></div>';
+    html += unchecked.length ? '<div class="v84-grid">'+unchecked.map(function(p,i){return '<div class="v84-mini"><div class="v84-head"><div><b>'+esc(p.nick||p.userId||'Пользователь')+'</b><div class="v84-muted">'+esc(p.type||'ГОСС отчёт')+' · '+esc(p.created||'')+'</div></div><span class="v84-pill warn">Ожидает</span></div><div>'+esc(p.comment||'Без комментария')+'</div>'+evidenceHtml(p)+'<div class="v84-actions"><button class="btn btn-secondary v84-review" data-i="'+i+'" data-s="Норма" data-p="15" type="button">Норма</button><button class="btn btn-secondary v84-review" data-i="'+i+'" data-s="Перенорма" data-p="30" type="button">Перенорма</button><button class="btn btn-secondary v84-review" data-i="'+i+'" data-s="Натяг" data-p="7" type="button">Натяг</button><button class="btn btn-secondary v84-review" data-i="'+i+'" data-s="Отказ" data-p="0" type="button">Отказ</button></div></div>';}).join('')+'</div>' : '<div class="v84-empty">Новых непроверенных отчётов от СС нет.</div>';
+    root().innerHTML = await appendLogs(html); $('v84BackTable').onclick=function(){state.reviewMode=false;renderReportTable(false);}; qa('.v84-review').forEach(function(b){ b.onclick=function(){ var p=unchecked[Number(b.dataset.i)]; reviewReport(p._row,b.dataset.s,Number(b.dataset.p||0)); }; });
   }
   async function renderReportTable(review){
-    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Таблицу отчётов видит только руководство '+esc(o.short)+'.</div>'); return; }
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v84-empty">Таблицу отчётов видит только руководство '+esc(o.short)+'.</div>'); return; }
     if(review || state.reviewMode) { state.reviewMode=true; return renderReviewList(); }
     var staff=await seniorMembers(o.id), reps=await getReports(o.id), days=weekDays(state.week), by={}; reps.forEach(function(p){ var k=(p.userId||p._row.status)+'|'+(p.day||''); if(!by[k] || String(p.created||'')>String(by[k].created||'')) by[k]=p; });
-    var header='<div class="v83-card"><div class="v83-head"><div><h3>📊 Таблица отчётов ГОСС — '+esc(o.short)+'</h3><div class="v83-sub">В таблице только пользователи со статусом СС. Проверка открывается кнопкой здесь, а не отдельным режимом.</div><div class="v83-muted">Неделя: '+esc(ruDay(days[0]))+' — '+esc(ruDay(days[6]))+'</div></div><div class="v83-actions"><button id="v83PrevW" class="btn btn-secondary" type="button">⬅️</button><button id="v83NowW" class="btn btn-secondary" type="button">Текущая</button><button id="v83NextW" class="btn btn-secondary" type="button">➡️</button><button id="v83OpenReview" class="btn btn-primary" type="button">Проверить сданные отчёты</button></div></div></div>';
-    var table=''; if(staff.length){ table='<div class="v83-scroll"><table class="v83-table"><thead><tr><th>СС</th>'+days.map(function(d){return '<th>'+esc(ruDay(d))+'</th>';}).join('')+'</tr></thead><tbody>'; staff.forEach(function(u){ table+='<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v83-muted">'+esc(u.post||u.email||'')+'</div></td>'; days.forEach(function(d){ var p=by[u.id+'|'+d], st=p?(p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает')):'—'; var cls=st==='Отказ'?'bad':(st==='Ожидает'?'warn':''); table+='<td><span class="v83-pill '+cls+'">'+esc(st)+'</span>'+(p?'<div class="v83-muted">'+esc(p.type||'отчёт')+'</div>'+evidenceHtml(p):'')+'</td>'; }); table+='</tr>'; }); table+='</tbody></table></div>'; } else table='<div class="v83-empty">Нет пользователей со статусом СС. Сначала выдайте статус в панели руководства.</div>';
-    r.innerHTML = await appendLogs(header+table); $('v83PrevW').onclick=function(){state.week--;renderReportTable(false);}; $('v83NowW').onclick=function(){state.week=0;renderReportTable(false);}; $('v83NextW').onclick=function(){state.week++;renderReportTable(false);}; $('v83OpenReview').onclick=function(){state.reviewMode=true;renderReportTable(true);};
+    var header='<div class="v84-card"><div class="v84-head"><div><h3>📊 Таблица отчётов ГОСС — '+esc(o.short)+'</h3><div class="v84-sub">В таблице только пользователи со статусом СС. Проверка открывается кнопкой здесь, а не отдельным режимом.</div><div class="v84-muted">Неделя: '+esc(ruDay(days[0]))+' — '+esc(ruDay(days[6]))+'</div></div><div class="v84-actions"><button id="v84PrevW" class="btn btn-secondary" type="button">⬅️</button><button id="v84NowW" class="btn btn-secondary" type="button">Текущая</button><button id="v84NextW" class="btn btn-secondary" type="button">➡️</button><button id="v84OpenReview" class="btn btn-primary" type="button">Очередь проверки</button></div></div></div>';
+    var table=''; if(staff.length){ table='<div class="v84-scroll"><table class="v84-table"><thead><tr><th>СС</th>'+days.map(function(d){return '<th>'+esc(ruDay(d))+'</th>';}).join('')+'</tr></thead><tbody>'; staff.forEach(function(u){ table+='<tr><td><b>'+esc(u.nick||u.id)+'</b><div class="v84-muted">'+esc(u.post||u.email||'')+'</div></td>'; days.forEach(function(d){ var p=by[u.id+'|'+d], st=p?(p.reviewStatus||p.result||(p.checkedAt?'Проверен':'Ожидает')):'—'; var cls=st==='Отказ'?'bad':(st==='Ожидает'?'warn':''); table+='<td><span class="v84-pill '+cls+'">'+esc(st)+'</span>'+(p?'<div class="v84-muted">'+esc(p.type||'отчёт')+'</div>'+evidenceHtml(p):'')+'</td>'; }); table+='</tr>'; }); table+='</tbody></table></div>'; } else table='<div class="v84-empty">Нет пользователей со статусом СС. Сначала выдайте статус в панели руководства.</div>';
+    r.innerHTML = await appendLogs(header+table); $('v84PrevW').onclick=function(){state.week--;renderReportTable(false);}; $('v84NowW').onclick=function(){state.week=0;renderReportTable(false);}; $('v84NextW').onclick=function(){state.week++;renderReportTable(false);}; $('v84OpenReview').onclick=function(){state.reviewMode=true;renderReportTable(true);};
   }
   async function renderManage(){
-    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v83-empty">Панель руководства доступна только руководству '+esc(o.short)+'.</div>'); return; }
+    var o=activeOrg(), r=root(); if(!r) return; if(!(await canLead(o.id))){ r.innerHTML=await appendLogs('<div class="v84-empty">Панель руководства доступна только руководству '+esc(o.short)+'.</div>'); return; }
     var users=await loadUsers(), roles=await loadRoles(), all=await canAll(); var current=roles.filter(function(x){return x.status==='goss_senior_'+o.id || x.status==='goss_senior_all';});
     var opts=users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nick||u.email||u.id)+' · '+esc(u.email||u.id)+'</option>';}).join('');
-    var currentHtml=current.length?current.map(function(x){var u=users.filter(function(y){return y.id===x.link;})[0]||{nick:x.link}; return '<div class="v83-mini"><b>'+esc(u.nick||x.link)+'</b><span class="v83-pill">'+esc(x.status==='goss_senior_all'?'СС всех ГОСС':'СС '+o.short)+'</span><div class="v83-muted">'+esc(u.email||x.link)+' · '+esc(x.date||'')+'</div></div>';}).join(''):'<div class="v83-empty">Статусы СС пока никому не выданы.</div>';
-    var html='<div class="v83-card"><div class="v83-head"><div><h3>👑 Панель руководства — '+esc(o.short)+'</h3><div class="v83-sub">Стабильная версия панели. Старые всплывающие блоки отключены.</div></div><button id="v83ManageRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div class="v83-form" style="margin-top:1rem"><label class="full">Поиск пользователя<input id="v83UserSearch" class="v83-input" placeholder="ник / email / UID"></label><label class="full">Пользователь<select id="v83SeniorUser" class="v83-select">'+(opts||'<option value="">Нет пользователей</option>')+'</select></label><label>Статус<select id="v83SeniorRole" class="v83-select"><option value="goss_senior_'+esc(o.id)+'">СС '+esc(o.short)+'</option>'+(all?'<option value="goss_senior_all">СС всех ГОСС</option>':'')+'</select></label><label>UID / email вручную<input id="v83ManualUid" class="v83-input" placeholder="если пользователя нет в списке"></label><label class="full">Комментарий<input id="v83RoleNote" class="v83-input" placeholder="причина выдачи / снятия"></label></div><div class="v83-actions" style="margin-top:1rem"><button id="v83Grant" class="btn btn-primary" type="button">➕ Выдать СС</button><button id="v83Remove" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" type="button">➖ Снять СС</button><span id="v83ManageMsg" class="v83-muted"></span></div></div><div class="v83-card"><h3 style="color:#fff;margin-top:0">Текущие статусы СС</h3><div class="v83-grid">'+currentHtml+'</div></div>';
-    r.innerHTML = await appendLogs(html); $('v83ManageRefresh').onclick=function(){cache.users=null;cache.roles=null;renderManage();}; $('v83UserSearch').oninput=function(){var q=this.value.toLowerCase(); qa('option',$('v83SeniorUser')).forEach(function(o){ o.hidden = q && String(o.textContent+' '+o.value).toLowerCase().indexOf(q)===-1; });};
-    async function change(grant){ var c=client(), u=await user(); if(!c) return alert('Supabase не подключен'); var uid=$('v83ManualUid').value.trim() || $('v83SeniorUser').value; var st=$('v83SeniorRole').value, note=$('v83RoleNote').value.trim(); if(!uid) return alert('Выберите пользователя или введите UID/email.'); if(st==='goss_senior_all' && !(await canAll())) return alert('СС всех ГОСС может выдавать только руководство всех ГОСС.'); $('v83ManageMsg').textContent='Сохраняю...'; if(grant){ await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); var ins=await c.from('reports').insert([{id:rid('goss_senior'),email:E.access,link:uid,status:st,date:now()+(note?' · '+note:''),xp:0}]); if(ins.error){$('v83ManageMsg').textContent='Ошибка'; return alert(ins.error.message);} await c.from('reports').insert([{id:rid('goss_log_grant'),email:E.log,link:o.id,status:'grant_senior',date:'Выдан '+st+' пользователю '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } else { var del=await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); if(del.error){$('v83ManageMsg').textContent='Ошибка'; return alert(del.error.message);} await c.from('reports').insert([{id:rid('goss_log_remove'),email:E.log,link:o.id,status:'remove_senior',date:'Снят '+st+' у '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } cache.roles=null; cache.users=null; $('v83ManageMsg').textContent=grant?'Статус выдан.':'Статус снят.'; setTimeout(renderManage,350); }
-    $('v83Grant').onclick=function(){change(true);}; $('v83Remove').onclick=function(){change(false);};
+    var currentHtml=current.length?current.map(function(x){var u=users.filter(function(y){return y.id===x.link;})[0]||{nick:x.link}; return '<div class="v84-mini"><b>'+esc(u.nick||x.link)+'</b><span class="v84-pill">'+esc(x.status==='goss_senior_all'?'СС всех ГОСС':'СС '+o.short)+'</span><div class="v84-muted">'+esc(u.email||x.link)+' · '+esc(x.date||'')+'</div></div>';}).join(''):'<div class="v84-empty">Статусы СС пока никому не выданы.</div>';
+    var html='<div class="v84-card"><div class="v84-head"><div><h3>👑 Панель руководства — '+esc(o.short)+'</h3><div class="v84-sub">Стабильная версия панели. Старые всплывающие блоки отключены.</div></div><button id="v84ManageRefresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div class="v84-form" style="margin-top:1rem"><label class="full">Поиск пользователя<input id="v84UserSearch" class="v84-input" placeholder="ник / email / UID"></label><label class="full">Пользователь<select id="v84SeniorUser" class="v84-select">'+(opts||'<option value="">Нет пользователей</option>')+'</select></label><label>Статус<select id="v84SeniorRole" class="v84-select"><option value="goss_senior_'+esc(o.id)+'">СС '+esc(o.short)+'</option>'+(all?'<option value="goss_senior_all">СС всех ГОСС</option>':'')+'</select></label><label>UID / email вручную<input id="v84ManualUid" class="v84-input" placeholder="если пользователя нет в списке"></label><label class="full">Комментарий<input id="v84RoleNote" class="v84-input" placeholder="причина выдачи / снятия"></label></div><div class="v84-actions" style="margin-top:1rem"><button id="v84Grant" class="btn btn-primary" type="button">➕ Выдать СС</button><button id="v84Remove" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" type="button">➖ Снять СС</button><span id="v84ManageMsg" class="v84-muted"></span></div></div><div class="v84-card"><h3 style="color:#fff;margin-top:0">Текущие статусы СС</h3><div class="v84-grid">'+currentHtml+'</div></div>';
+    r.innerHTML = await appendLogs(html); $('v84ManageRefresh').onclick=function(){cache.users=null;cache.roles=null;renderManage();}; $('v84UserSearch').oninput=function(){var q=this.value.toLowerCase(); qa('option',$('v84SeniorUser')).forEach(function(o){ o.hidden = q && String(o.textContent+' '+o.value).toLowerCase().indexOf(q)===-1; });};
+    async function change(grant){ var c=client(), u=await user(); if(!c) return alert('Supabase не подключен'); var uid=$('v84ManualUid').value.trim() || $('v84SeniorUser').value; var st=$('v84SeniorRole').value, note=$('v84RoleNote').value.trim(); if(!uid) return alert('Выберите пользователя или введите UID/email.'); if(st==='goss_senior_all' && !(await canAll())) return alert('СС всех ГОСС может выдавать только руководство всех ГОСС.'); $('v84ManageMsg').textContent='Сохраняю...'; if(grant){ await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); var ins=await c.from('reports').insert([{id:rid('goss_senior'),email:E.access,link:uid,status:st,date:now()+(note?' · '+note:''),xp:0}]); if(ins.error){$('v84ManageMsg').textContent='Ошибка'; return alert(ins.error.message);} await c.from('reports').insert([{id:rid('goss_log_grant'),email:E.log,link:o.id,status:'grant_senior',date:'Выдан '+st+' пользователю '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } else { var del=await c.from('reports').delete().eq('email',E.access).eq('link',uid).eq('status',st); if(del.error){$('v84ManageMsg').textContent='Ошибка'; return alert(del.error.message);} await c.from('reports').insert([{id:rid('goss_log_remove'),email:E.log,link:o.id,status:'remove_senior',date:'Снят '+st+' у '+uid+' · '+nickOf(u)+' · '+now(),xp:0}]); } cache.roles=null; cache.users=null; $('v84ManageMsg').textContent=grant?'Статус выдан.':'Статус снят.'; setTimeout(renderManage,350); }
+    $('v84Grant').onclick=function(){change(true);}; $('v84Remove').onclick=function(){change(false);};
   }
 
-  async function allowedTabs(orgId){ var tabs=[['trainer','🎮 Тренажёр',true]]; var special=await hasSpecial(orgId), lead=await canLead(orgId); if(special) tabs.push(['profile','📝 Мои данные',true],['submit','📤 Сдать гос отчёт',true],['shop','🛒 Магазин',true]); if(lead) tabs.push(['staff','📋 Таблица старшего состава',true],['reportTable','📊 Таблица отчётов',true],['manage','👑 Панель руководства',true]); return tabs; }
+  async function allowedTabs(orgId){ return allTabs().map(function(t){ return [t[0], t[1], true]; }); }
+
+  function activateGossPanel(){
+    ensureStyle();
+    var panel = ensurePanel();
+    if(!panel) return;
+    document.body.classList.add('t73-v84-goss-active','t73-v44-cat-organizations');
+    qa('.main-cat-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.cat === 'organizations'); });
+    qa('.sub-nav').forEach(function(n){
+      if(n.id === 'subNavOrganizations' || n.id === 'gossOrgActionNavV4') n.style.display='flex';
+      else if(n.id === 'subNavModeration' || n.id === 'subNavSupport' || n.id === 'subNavGeneral') n.style.display='none';
+    });
+    qa('[id^="mode-"]').forEach(function(p){ if(p !== panel) p.style.display='none'; });
+    panel.style.display='';
+    panel.classList.add('fade-in');
+    try{ document.documentElement.setAttribute('data-site-theme','quests'); }catch(e){}
+  }
+
+  function stableOrgNav(){
+    ensureStyle();
+    var nav = $('subNavOrganizations');
+    if(!nav) return;
+    var html = ORGS.map(function(o){
+      return '<button class="mode-btn gov-org-switch-v4 '+(state.org===o.id?'active':'')+'" data-mode="goss_center_v4" data-org-id="'+esc(o.id)+'" type="button">'+esc(o.icon+' '+o.short)+'</button>';
+    }).join('');
+    if(nav.dataset.v84Orgs !== html){
+      nav.innerHTML = html;
+      nav.dataset.v84Orgs = html;
+      nav.dataset.govV4 = '1';
+    }
+    nav.style.display='flex';
+    if(orgsVisible()) document.body.classList.add('t73-v44-cat-organizations','t73-v84-goss-active');
+    nav.classList.add('t73-v44-active-subnav');
+    qa('.gov-org-switch-v4[data-org-id]', nav).forEach(function(b){
+      b.classList.toggle('active', b.dataset.orgId === state.org);
+      b.onclick=function(e){
+        e.preventDefault(); e.stopPropagation();
+        state.org = b.dataset.orgId || state.org;
+        state.view = 'trainer';
+        state.reviewMode = false;
+        cache.reports = null;
+        try{ localStorage.setItem('t73_v84_org', state.org); localStorage.setItem('t73_v84_view', state.view); }catch(x){}
+        activateGossPanel();
+        renderCurrent();
+      };
+    });
+  }
+
   async function enforceNav(){
-    ensureStyle(); if(!gossVisible()) return; var o=activeOrg(), n=navRoot(); if(!n) return;
-    var tabs=await allowedTabs(o.id), allowed=tabs.map(function(t){return t[0];}); if(allowed.indexOf(state.view)<0) state.view='trainer';
-    var html=tabs.map(function(t){return '<button class="mode-btn '+(state.view===t[0]?'active':'')+'" data-v83-tab="1" data-v83-view="'+t[0]+'" type="button">'+t[1]+'</button>';}).join('');
-    if(n.dataset.v83Html !== html){ n.innerHTML=html; n.dataset.v83Html=html; }
+    ensureStyle();
+    stableOrgNav();
+    var o = activeOrg(), n = navRoot();
+    if(!n) return;
+    var tabs = await allowedTabs(o.id);
+    if(!allTabs().some(function(t){return t[0]===state.view;})) state.view='trainer';
+    var html=tabs.map(function(t){return '<button class="mode-btn '+(state.view===t[0]?'active':'')+'" data-v84-tab="1" data-v84-view="'+t[0]+'" type="button">'+t[1]+'</button>';}).join('');
+    if(n.dataset.v84Html !== html){ n.innerHTML=html; n.dataset.v84Html=html; }
     n.style.display='flex';
-    qa('[data-v83-tab]',n).forEach(function(b){ b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); state.view=b.dataset.v83View; state.reviewMode=false; renderCurrent(); }; });
-    var title=$('gossV4Title'), lead=$('gossV4Lead'), orgBox=$('gossV4Org'), access=$('gossV4Access'); if(title) title.textContent=o.icon+' '+o.name; if(lead) lead.textContent='ГОСС: тренажёры, СС, отчёты, таблицы и панель руководства без лишних режимов.'; if(orgBox) orgBox.textContent=o.short; if(access) access.textContent=await accessText(o.id);
+    n.classList.add('t73-v44-goss-actions','t73-v84-actions');
+    qa('[data-v84-tab]',n).forEach(function(b){ b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); state.view=b.dataset.v84View || 'trainer'; state.reviewMode=false; try{localStorage.setItem('t73_v84_view', state.view);}catch(x){} activateGossPanel(); renderCurrent(); }; });
+    var title=$('gossV4Title'), lead=$('gossV4Lead'), orgBox=$('gossV4Org'), access=$('gossV4Access');
+    if(title) title.textContent=o.icon+' '+o.name;
+    if(lead) lead.textContent='ГОСС: один стабильный набор режимов. Старые дубли и наложения отключены.';
+    if(orgBox) orgBox.textContent=o.short;
+    if(access) access.textContent=await accessText(o.id);
   }
+
   async function renderCurrent(){
-    if(state.busy){ state.pending = true; return; }
+    if(state.busy) return;
     state.busy=true;
-    try{ await enforceNav(); var o=activeOrg(); var special=await hasSpecial(o.id), lead=await canLead(o.id); if(state.view!=='trainer' && !special && !lead) state.view='trainer'; if(state.view==='profile') await renderProfile(); else if(state.view==='submit') await renderSubmit(); else if(state.view==='shop') await renderShop(); else if(state.view==='staff') await renderStaff(); else if(state.view==='reportTable') await renderReportTable(false); else if(state.view==='manage') await renderManage(); else await renderTrainer(); await enforceNav(); }
-    finally{ state.busy=false; if(state.pending){ state.pending=false; setTimeout(renderCurrent, 0); } }
+    try{
+      activateGossPanel();
+      await enforceNav();
+      var o=activeOrg();
+      if(state.view==='profile') await renderProfile();
+      else if(state.view==='submit') await renderSubmit();
+      else if(state.view==='shop') await renderShop();
+      else if(state.view==='staff') await renderStaff();
+      else if(state.view==='reportTable') await renderReportTable(false);
+      else if(state.view==='manage') await renderManage();
+      else await renderTrainer();
+      bindModeBars();
+      await enforceNav();
+      bindModeBars();
+    } finally { state.busy=false; }
   }
+
   function boot(delayRender){
-    ensureStyle(); if(!gossVisible()) return; activeOrg(); enforceNav(); if(delayRender !== false) renderCurrent();
+    ensureStyle();
+    stableOrgNav();
+    if(orgsVisible() || (ensurePanel() && getComputedStyle(ensurePanel()).display !== 'none')){
+      enforceNav();
+      if(delayRender !== false) renderCurrent();
+    }
   }
+
   document.addEventListener('click', function(e){
-    var orgBtn = e.target && e.target.closest && e.target.closest('.gov-org-switch-v4[data-org-id]');
-    if(orgBtn){ state.org = orgBtn.dataset.orgId || state.org; state.view='trainer'; state.reviewMode=false; cache.reports=null; setTimeout(function(){boot(true);},120); setTimeout(function(){boot(true);},520); }
-    var gossTop = e.target && e.target.closest && e.target.closest('[data-mode="goss_center_v4"],#subNavOrganizations .mode-btn');
-    if(gossTop) { setTimeout(function(){boot(false);},150); setTimeout(function(){boot(true);},650); }
+    var orgBtn = e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4[data-org-id]');
+    if(orgBtn){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      state.org = orgBtn.dataset.orgId || state.org;
+      state.view = 'trainer';
+      state.reviewMode=false;
+      cache.reports=null;
+      try{ localStorage.setItem('t73_v84_org', state.org); localStorage.setItem('t73_v84_view', state.view); }catch(x){}
+      renderCurrent(); setTimeout(renderCurrent,120); setTimeout(renderCurrent,420);
+      return false;
+    }
+    var tabBtn = e.target && e.target.closest && e.target.closest('[data-v84-view],[data-v84-tab]');
+    if(tabBtn){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      state.view = tabBtn.dataset.v84View || tabBtn.dataset.v84View || tabBtn.dataset.view || 'trainer';
+      state.reviewMode=false;
+      try{ localStorage.setItem('t73_v84_view', state.view); }catch(x){}
+      renderCurrent(); setTimeout(renderCurrent,120); setTimeout(renderCurrent,420);
+      return false;
+    }
+    var orgCat = e.target && e.target.closest && e.target.closest('.main-cat-btn[data-cat="organizations"]');
+    if(orgCat){ setTimeout(function(){ stableOrgNav(); enforceNav(); },40); setTimeout(function(){ boot(false); },220); }
   }, true);
-  document.addEventListener('paste', function(e){ var d=$('v83Drop'); if(d && document.activeElement===d && e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) addFiles(e.clipboardData.files); }, true);
+  document.addEventListener('paste', function(e){ var d=$('v84Drop'); if(d && document.activeElement===d && e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) addFiles(e.clipboardData.files); }, true);
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(function(){boot(false);},250); }); else setTimeout(function(){boot(false);},250);
   [700,1400,2600,4200].forEach(function(ms){ setTimeout(function(){boot(false);},ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73v83mo); window.__t73v83mo=setTimeout(function(){ if(gossVisible()) enforceNav(); },90); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
-  window.T73_V83_GOSS_ONLY = {render:renderCurrent,nav:enforceNav,submit:renderSubmit,table:renderReportTable,manage:renderManage,logs:logsHtml};
+  try { new MutationObserver(function(){ clearTimeout(window.__t73v84mo); window.__t73v84mo=setTimeout(function(){ if(gossVisible()){ enforceNav(); var rr=root(); if(rr && !rr.querySelector('.v84-modebar')) renderCurrent(); } },90); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e){}
+  window.T73_V84_GOSS_ONLY = {render:renderCurrent,nav:enforceNav,submit:renderSubmit,table:renderReportTable,manage:renderManage,logs:logsHtml};
 })();
-/* === /T73 V83 GOSS ONLY === */
+/* === /T73 V84 GOSS ONLY === */
 
 </script>
 </body>
