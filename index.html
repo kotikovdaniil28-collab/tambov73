@@ -14766,5 +14766,197 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V55 === -->
 
+<!-- === T73 V56: чистим лишние вкладки модерации + перенос проверки отчетности вниз === -->
+<style id="t73-v56-clean-moderation-tabs-style">
+  #subNavModeration #reportsTableBtnModV15,
+  #subNavModeration #reportsTableBtnModStatic,
+  #subNavModeration #v16ReportTableBtnMod,
+  #subNavModeration #v16ReportBtnMod,
+  #subNavModeration #v25ModViewReportsBtn,
+  #subNavModeration [data-mode="reports_table"],
+  #subNavModeration .t73-v56-hidden-bad-tab,
+  #v16OpenBar,
+  #v16OpenTableTop,
+  #v16OpenReportTop,
+  #v16ReportTableBtnGen {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  #subNavGeneral #reportsTableBtn {
+    display: inline-flex;
+  }
+
+  #mode-report,
+  #reportFormArea,
+  #adminPanelArea,
+  #reportsListArea {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    clear: both !important;
+    float: none !important;
+  }
+
+  #adminPanelArea {
+    order: 99 !important;
+    margin-top: 1.5rem !important;
+    padding-top: 1.5rem !important;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+  }
+
+  #reportsListArea {
+    order: 100 !important;
+    margin-top: 1rem !important;
+    flex-direction: column !important;
+    gap: 1.2rem !important;
+  }
+
+  #viewReportsBtn {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+  }
+
+  #reportsListArea > *,
+  #reportsListArea .message-card,
+  #reportsListArea .rule-item,
+  #reportsListArea [class*="report-card"],
+  #reportsListArea [class*="old-report-card"] {
+    max-width: 100% !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+</style>
+<script id="t73-v56-clean-moderation-tabs-script">
+(function(){
+  'use strict';
+  if (window.__T73_V56_CLEAN_MOD_REPORTS__) return;
+  window.__T73_V56_CLEAN_MOD_REPORTS__ = true;
+
+  const $ = id => document.getElementById(id);
+  const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  const BAD_MOD_IDS = new Set([
+    'reportsTableBtnModV15',
+    'reportsTableBtnModStatic',
+    'v16ReportTableBtnMod',
+    'v16ReportBtnMod',
+    'v25ModViewReportsBtn'
+  ]);
+
+  function normalizeText(value) {
+    return String(value || '')
+      .replace(/[📊📎✅🧾]/g, '')
+      .replace(/ё/g, 'е')
+      .trim()
+      .toLowerCase();
+  }
+
+  function isBadModerationTab(btn) {
+    if (!btn) return false;
+    if (btn.id === 'reportTabBtn') return false;
+    if (BAD_MOD_IDS.has(btn.id)) return true;
+    if (btn.dataset && btn.dataset.mode === 'reports_table') return true;
+
+    const txt = normalizeText(btn.textContent);
+    const isReportsTable = /таблица\s*отчет/.test(txt) || /просмотр.*отчет/.test(txt) || /просмотреть.*отчет/.test(txt);
+    const isSeparateSubmit = /(сдать|сдача)\s*отчет/.test(txt) || /сдать\s*отчетность/.test(txt);
+    return isReportsTable || isSeparateSubmit;
+  }
+
+  function cleanModerationTabs() {
+    const nav = $('subNavModeration');
+    if (!nav) return;
+
+    qsa('button', nav).forEach(btn => {
+      if (!isBadModerationTab(btn)) return;
+      btn.classList.add('t73-v56-hidden-bad-tab');
+      btn.setAttribute('aria-hidden', 'true');
+      btn.style.setProperty('display', 'none', 'important');
+      btn.style.setProperty('visibility', 'hidden', 'important');
+      btn.style.setProperty('pointer-events', 'none', 'important');
+      btn.onclick = null;
+    });
+  }
+
+  function keepReportsTableInGeneral() {
+    const general = $('subNavGeneral');
+    const table = $('reportsTableBtn');
+    if (!general || !table) return;
+
+    if (table.parentElement !== general) {
+      const before = general.querySelector('[data-mode="guide"]') || general.querySelector('[data-mode="about"]') || null;
+      general.insertBefore(table, before);
+    }
+
+    table.dataset.mode = 'reports_table';
+    table.textContent = '📊 Таблица отчетов';
+  }
+
+  function moveReportCheckDown() {
+    const form = $('reportFormArea');
+    const admin = $('adminPanelArea');
+    const list = $('reportsListArea');
+    const btn = $('viewReportsBtn');
+
+    if (form && admin) form.appendChild(admin);
+    if (form && list) form.appendChild(list);
+
+    if (admin) {
+      admin.style.setProperty('width', '100%', 'important');
+      admin.style.setProperty('max-width', '100%', 'important');
+      admin.style.setProperty('max-height', 'none', 'important');
+      admin.style.setProperty('overflow', 'visible', 'important');
+      admin.style.setProperty('order', '99', 'important');
+      admin.style.setProperty('grid-column', '1 / -1', 'important');
+    }
+
+    if (btn) {
+      btn.textContent = 'Проверить отчетность';
+      btn.style.setProperty('width', '100%', 'important');
+      btn.style.setProperty('max-width', '100%', 'important');
+      btn.style.setProperty('white-space', 'normal', 'important');
+    }
+
+    if (list) {
+      list.style.setProperty('width', '100%', 'important');
+      list.style.setProperty('max-width', '100%', 'important');
+      list.style.setProperty('max-height', 'none', 'important');
+      list.style.setProperty('overflow', 'visible', 'important');
+      list.style.setProperty('order', '100', 'important');
+      list.style.setProperty('grid-column', '1 / -1', 'important');
+    }
+  }
+
+  function bootV56() {
+    cleanModerationTabs();
+    keepReportsTableInGeneral();
+    moveReportCheckDown();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV56);
+  else bootV56();
+
+  [80, 250, 600, 1200, 2400, 5200].forEach(ms => setTimeout(bootV56, ms));
+  document.addEventListener('click', () => setTimeout(bootV56, 60), true);
+
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V56_CLEAN_TIMER__);
+    window.__T73_V56_CLEAN_TIMER__ = setTimeout(bootV56, 80);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  window.T73_V56_CLEAN_MOD_REPORTS = { boot: bootV56, cleanModerationTabs, keepReportsTableInGeneral, moveReportCheckDown };
+})();
+</script>
+<!-- === /T73 V56 === -->
+
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"39e87a2afe7c46788f2fe28e3346cf27","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
