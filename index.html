@@ -12743,6 +12743,83 @@
         })();
         /* === /T73 V30 === */
 
+
+
+        /* === T73 V61 INTERNAL: настоящий фикс кликов тренажёра модерации === */
+        (function installT73V61RealModTrainerFix(){
+            if (window.__T73_V61_REAL_MOD_TRAINER_FIX__) return;
+            window.__T73_V61_REAL_MOD_TRAINER_FIX__ = true;
+
+            const V61_LABEL = { good:'✅ Без нарушения', warn:'⚠️ Устное / Пред / Мут', ban:'🔨 Бан / Перма / Глобал' };
+            const V61_RULE = {
+                none:['Без нарушения','В сообщении нет явного нарушения.','Наказание не требуется'],
+                '2.1':['2.1','Неадекватное поведение, завуалированные/саркастичные сообщения для оскорбления или провокации.','Устное / Предупреждение / Мут 90 минут / Бан 7-15 дней'],
+                '2.3':['2.3','Реклама любого направления, кроме официальных ресурсов проекта.','Мут 90 минут / Бан 7-15 дней / Перма / Глобальная блокировка'],
+                '2.6':['2.6','Обман пользователя или введение его в заблуждение.','Мут 90 минут / Бан 7-15 дней / Перма'],
+                '2.7':['2.7','Споры на тему политики и религии.','Устное / Мут 90 минут / Бан 7-15 дней'],
+                '2.8':['2.8','Обсуждение продажи, передачи или обмена за реальные деньги.','Бан 7-15 дней / Перма / Глобальная блокировка'],
+                '2.12':['2.12','Обход выданных или находящихся на рассмотрении наказаний.','Перманентная блокировка'],
+                '2.17':['2.17','Помеха работе модерации или администрации проекта.','Устное / Предупреждение / Мут 90 минут'],
+                '3.1':['3.1','Флуд, спам и сообщения не по теме в каналах с назначением.','Устное / Предупреждение / Мут 90 минут'],
+                '3.3':['3.3','Чрезмерный CapsLock.','Устное / Предупреждение / Мут 90 минут'],
+                '3.4':['3.4','Злоупотребление знаками препинания и символами.','Устное / Предупреждение / Мут 90 минут'],
+                '5.2':['5.2','Оскорбительный или провокационный никнейм/профиль.','Устное / Бан 7-15 дней']
+            };
+            const V61_EXTRA = [
+                {type:'warn',rule:'2.1',text:'Ну да, великий умник опять всех научил играть. Может, тебе уже молчать пора?',explanation:'Есть завуалированное оскорбление и провокация конфликта.'},
+                {type:'ban',rule:'2.3',text:'Залетайте на другой игровой проект, там бонусы за регистрацию. Ссылка в профиле.',explanation:'Реклама другого игрового проекта относится к тяжёлой ветке.'},
+                {type:'ban',rule:'2.6',text:'Я админ, скинь мне код от аккаунта для проверки, иначе забанят.',explanation:'Игрок обманывает пользователя и вводит его в заблуждение.'},
+                {type:'warn',rule:'2.7',text:'Давайте устроим спор про политику, сейчас всем объясню кто прав.',explanation:'Политические и религиозные споры запрещены.'},
+                {type:'ban',rule:'2.8',text:'Продам аккаунт или имущество за реальные деньги, оплата переводом.',explanation:'Обсуждается продажа за реальные денежные средства.'},
+                {type:'ban',rule:'2.12',text:'Меня замутили, поэтому я зашёл со второго аккаунта и продолжу писать.',explanation:'Это обход наказания.'},
+                {type:'warn',rule:'2.17',text:'Не слушайте модератора, продолжайте писать, пусть он сам разбирается.',explanation:'Это помеха работе модерации.'},
+                {type:'warn',rule:'3.1',text:'Пользователь флудит одинаковым сообщением в канале заявок.',explanation:'Флуд/спам в тематическом канале.'},
+                {type:'warn',rule:'3.3',text:'ПОЧЕМУ МЕНЯ НЕ СЛЫШАТ ВСЕ СЮДА БЫСТРО',explanation:'Чрезмерное использование CapsLock.'},
+                {type:'warn',rule:'3.4',text:'Как дела?????????????????????????????',explanation:'Злоупотребление знаками препинания.'},
+                {type:'warn',rule:'5.2',text:'У игрока провокационный никнейм с оскорбительным смыслом.',explanation:'Оскорбительное оформление профиля запрещено.'}
+            ];
+            const V61_DIALOGS = [
+                {type:'warn',rule:'2.1',title:'Диалог: провокация конфликта',dialog:[['Игрок_1','Ты опять всё испортил.'],['Игрок_2','Я просто спросил.'],['Игрок_1','Ну да, конечно, самый умный тут нашёлся. Продолжай позориться.']],explanation:'В диалоге есть провокация и завуалированное оскорбление.'},
+                {type:'ban',rule:'2.6',title:'Диалог: обман пользователя',dialog:[['Игрок_1','Ты точно модератор?'],['Игрок_2','Да, я проверяющий. Скинь код от аккаунта, иначе получишь бан.']],explanation:'Игрок выдаёт себя за проверяющего и обманывает пользователя.'},
+                {type:'warn',rule:'3.1',title:'Диалог: оффтоп/флуд',dialog:[['Игрок_1','Это канал заявок, пишите по форме.'],['Игрок_2','Кто со мной на водолаза? Кто со мной? Кто со мной?']],explanation:'Сообщение не по теме и повторяется в канале с назначением.'},
+                {type:'good',rule:'none',title:'Диалог: без нарушения',dialog:[['Игрок_1','Подскажите, где автосалон?'],['Игрок_2','В Южном, могу подвезти.'],['Игрок_1','Спасибо!']],explanation:'Обычная помощь без нарушения.'}
+            ];
+            let q61=[], forceDialog61=false, last61=0, lastAction61='';
+            const esc61=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));
+            const rule61=id=>V61_RULE[id||'none']||[id||'Не указано','Проверьте актуальный регламент.','Зависит от тяжести'];
+            const norm61=i=>{const o=Object.assign({},i||{});o.type=/^(good|warn|ban)$/.test(o.type)?o.type:'good';o.rule=o.rule||(o.type==='good'?'none':o.type==='ban'?'2.3':'2.1');o.explanation=o.explanation||(o.type==='good'?'Нарушения нет.':'Ситуация относится к правилу '+rule61(o.rule)[0]+'.');return o;};
+            const shuffle61=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+            const nick61=()=>{try{return randomFunnyNick();}catch(e){return 'Игрок_'+Math.floor(1000+Math.random()*9000);}};
+            const initials61=n=>{try{return initials(n);}catch(e){return String(n||'T7').split(/[#_\s]+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'T7';}};
+
+            function ensure61(){
+                const mode=document.getElementById('mode-moderation'); if(!mode) return;
+                if(!document.getElementById('t73v61Style')){const s=document.createElement('style');s.id='t73v61Style';s.textContent='#mode-moderation .controls{position:relative!important;z-index:999!important;pointer-events:auto!important;isolation:isolate!important}#mode-moderation button[data-action]{position:relative!important;z-index:1000!important;pointer-events:auto!important;cursor:pointer!important;touch-action:manipulation!important}.t73-v61-tools{margin:1rem 0;padding:1rem;border-radius:18px;border:1px solid rgba(108,140,255,.25);background:rgba(13,16,32,.55);display:grid;gap:.8rem}.t73-v61-row{display:flex;gap:.7rem;flex-wrap:wrap}.t73-v61-mini{border:1px solid rgba(191,198,255,.22);background:rgba(255,255,255,.05);color:#fff;border-radius:999px;padding:.65rem .9rem;font-weight:800;cursor:pointer}.t73-v61-answer{margin-top:1rem;padding:1rem;border-radius:16px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.38);display:grid;gap:.65rem;color:var(--color-text-muted)}.t73-v61-answer.ok{border-color:rgba(82,199,123,.55);background:rgba(10,35,20,.42)}.t73-v61-answer.warn{border-color:rgba(255,191,71,.6);background:rgba(42,31,7,.38)}.t73-v61-answer.ban{border-color:rgba(255,107,136,.6);background:rgba(42,7,16,.38)}.t73-v61-title{font-weight:900;color:#fff}.t73-v61-pill{display:inline-flex;border-radius:999px;padding:.22rem .55rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);font-size:.86rem;color:#fff;margin:.12rem .2rem .12rem 0}.t73-v61-rule{padding:.7rem;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}.t73-v61-dialog{display:grid;gap:.55rem}.t73-v61-line{padding:.75rem .9rem;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}.t73-v61-name{color:#ffbf47;font-weight:900;margin-right:.35rem}.t73-v61-rules{display:none;max-height:320px;overflow:auto;padding:.8rem;border-radius:14px;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.1)}@media(max-width:720px){#mode-moderation .controls{grid-template-columns:1fr!important}}';document.head.appendChild(s);}
+                const head=mode.querySelector('.section-head');
+                if(head&&!document.getElementById('t73v58TrainerTools')){const tools=document.createElement('div');tools.id='t73v58TrainerTools';tools.className='t73-v61-tools';tools.innerHTML='<div class="t73-v61-row"><button class="t73-v61-mini" id="t73v58DialogBtn" type="button">🎭 Диалоговая ситуация</button><button class="t73-v61-mini" id="t73v58RandomBtn" type="button">🎲 Случайная ситуация</button><button class="t73-v61-mini" id="t73v58RulesBtn" type="button">📚 Памятка правил Discord</button></div><div style="color:var(--color-text-muted);font-size:.92rem">После ответа показывается правильный вариант, пункт правил, наказание и объяснение.</div><div class="t73-v61-rules" id="t73v58RulesBox">'+Object.values(V61_RULE).filter(r=>r[0]!=='Без нарушения').map(r=>'<div class="t73-v61-rule"><b>'+esc61(r[0])+'</b> — '+esc61(r[1])+'<br><span style="color:var(--color-text-muted)">'+esc61(r[2])+'</span></div>').join('')+'</div>';head.insertAdjacentElement('afterend',tools);}
+                const card=mode.querySelector('.feed .message-card');
+                if(card&&!document.getElementById('modTrainerAnswerBox')){const box=document.createElement('div');box.id='modTrainerAnswerBox';box.className='t73-v61-answer';box.innerHTML='<div class="t73-v61-title">Разбор появится после ответа</div><div>Выберите вердикт — здесь будет правильный ответ и объяснение.</div>';card.insertAdjacentElement('afterend',box);}
+                const d=document.getElementById('t73v58DialogBtn'); if(d&&d.dataset.v61!=='1'){d.dataset.v61='1';d.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();state.started=true;forceDialog61=true;randomMessage();updateModStats();},true);}
+                const r=document.getElementById('t73v58RandomBtn'); if(r&&r.dataset.v61!=='1'){r.dataset.v61='1';r.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();state.started=true;forceDialog61=false;randomMessage();updateModStats();},true);}
+                const b=document.getElementById('t73v58RulesBtn'); if(b&&b.dataset.v61!=='1'){b.dataset.v61='1';b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();const box=document.getElementById('t73v58RulesBox');if(box)box.style.display=box.style.display==='block'?'none':'block';},true);}
+                mode.querySelectorAll('button[data-action]').forEach(btn=>{btn.disabled=false;btn.removeAttribute('disabled');btn.setAttribute('type','button');btn.style.setProperty('pointer-events','auto','important');});
+            }
+            function render61(item){ensure61();const user=item.user||nick61();document.getElementById('authorName').textContent=user;document.getElementById('authorMeta').textContent=Array.isArray(item.dialog)?'Диалоговая ситуация':'Ожидает проверки';document.getElementById('avatarBox').textContent=initials61(user);const hint=document.getElementById('hintText');if(hint)hint.textContent='После ответа появится правильный вариант, пункт правил и объяснение.';const msg=document.getElementById('messageText');if(!msg)return;if(Array.isArray(item.dialog)){msg.innerHTML='<div style="color:var(--color-text-muted);margin-bottom:.55rem;text-transform:uppercase;letter-spacing:.08em">'+esc61(item.title||'Диалоговая ситуация')+'</div><div class="t73-v61-dialog">'+item.dialog.map(l=>'<div class="t73-v61-line"><span class="t73-v61-name">'+esc61(l[0])+':</span>'+esc61(l[1])+'</div>').join('')+'</div>';}else msg.textContent=item.text||'Сообщение отсутствует';}
+            function show61(chosen,item,ok){ensure61();const box=document.getElementById('modTrainerAnswerBox');if(!box)return;const r=rule61(item.rule);box.className='t73-v61-answer '+(ok?'ok':item.type==='ban'?'ban':item.type==='warn'?'warn':'ok');box.innerHTML='<div class="t73-v61-title">'+(ok?'✅ Верно':'❌ Неверно')+' — разбор предыдущей ситуации</div><div><span class="t73-v61-pill">Ваш ответ: '+esc61(V61_LABEL[chosen]||chosen)+'</span><span class="t73-v61-pill">Правильно: '+esc61(V61_LABEL[item.type]||item.type)+'</span><span class="t73-v61-pill">Пункт: '+esc61(r[0])+'</span></div><div class="t73-v61-rule"><b>'+esc61(r[0])+':</b> '+esc61(r[1])+'<br><span style="color:var(--color-text-muted)">Наказание: '+esc61(r[2])+'</span></div><div>'+esc61(item.explanation||'Оцените ситуацию по ближайшему пункту правил.')+'</div>';}
+            const oldRandom61=randomMessage;
+            randomMessage=async function(){ensure61();try{const hc=await checkAndApplyHiddenChecks();if(hc){const it=norm61({type:hc.type,text:hc.text,user:hc.user||'Тайный_Покупатель',rule:hc.type==='ban'?'2.6':hc.type==='warn'?'2.1':'none',explanation:'Скрытая проверка от руководства.'});state.current=it;render61(it);return;}}catch(e){}let it;if(forceDialog61){forceDialog61=false;it=norm61(V61_DIALOGS[Math.floor(Math.random()*V61_DIALOGS.length)]);}else{const all=[...(baseModMessages||[]),...(customModMessages||[]),...V61_EXTRA,...V61_DIALOGS].map(norm61);if(!all.length){try{return oldRandom61();}catch(e){return;}}if(!q61.length||q61.some(i=>i>=all.length))q61=shuffle61(all.map((_,i)=>i));it=all[q61.pop()];}it.user=it.user||nick61();state.current=it;render61(it);};
+            judge=async function(action){if(!state.started){alert('Сначала нажмите «Начать смену».');return;}if(typeof isSpamming==='function'&&isSpamming())return;if(!state.current)await randomMessage();const cur=norm61(state.current),ok=action===cur.type;state.resolved++;if(ok){state.correct++;try{playSound('ok')}catch(e){}try{pushLog('✅ Верно: '+(V61_LABEL[action]||action)+' · '+rule61(cur.rule)[0])}catch(e){}}else{state.mistakes++;try{playSound('fail')}catch(e){}try{pushLog('❌ Ошибка: выбрано '+(V61_LABEL[action]||action)+', нужно '+(V61_LABEL[cur.type]||cur.type)+' · '+rule61(cur.rule)[0])}catch(e){}}show61(action,cur,ok);try{await saveProgress()}catch(e){}await randomMessage();try{updateModStats()}catch(e){}};
+            function verdict61(e){const t=e.target;if(!t||!t.closest)return null;const btn=t.closest('#mode-moderation button[data-action]');if(!btn)return null;const a=btn.getAttribute('data-action');return /^(good|warn|ban)$/.test(a||'')?a:null;}
+            function handle61(e){const a=verdict61(e);if(!a)return;const root=document.getElementById('mode-moderation');if(!root||getComputedStyle(root).display==='none')return;const now=Date.now();if(lastAction61===a&&now-last61<420){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();return;}lastAction61=a;last61=now;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();ensure61();judge(a);}
+            window.addEventListener('pointerup',handle61,true);
+            window.addEventListener('click',handle61,true);
+            window.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const btn=document.activeElement?.closest?.('#mode-moderation button[data-action]');if(!btn)return;const a=btn.getAttribute('data-action');if(!/^(good|warn|ban)$/.test(a||''))return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation?.();judge(a);},true);
+            ensure61();[100,350,900,1800,3200].forEach(ms=>setTimeout(ensure61,ms));
+            new MutationObserver(()=>{clearTimeout(window.__T73_V61_TIMER__);window.__T73_V61_TIMER__=setTimeout(ensure61,80);}).observe(document.documentElement,{childList:true,subtree:true});
+            window.T73_V61_MOD_TRAINER_REAL_FIX={fix:ensure61,next:()=>{state.started=true;forceDialog61=false;return randomMessage();},dialog:()=>{state.started=true;forceDialog61=true;return randomMessage();},answer:a=>judge(a)};
+        })();
+        /* === /T73 V61 INTERNAL === */
+
         /* === /T73 V27 === */
     });
   </script>
@@ -15947,219 +16024,434 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V59 === -->
 
 
-<!-- === T73 V60: фикс кликабельности нижних вердиктов в тренажёре модерации === -->
-<style id="t73-v60-mod-trainer-verdict-style">
-  #mode-moderation .feed,
-  #mode-moderation .controls {
-    position: relative !important;
-    z-index: 30 !important;
-    overflow: visible !important;
-    pointer-events: auto !important;
-  }
 
-  #mode-moderation .controls {
-    display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 1rem !important;
+<!-- === T73 V62: фикс сдачи отчёта, когда вход есть, но кнопка пишет «Сначала войдите» === -->
+<style id="t73-v62-report-session-fix-style">
+  #submitReportBtn,
+  #submitReportBtnV16,
+  #submitReportBtnV57,
+  #reportFileInput {
+    display: none !important;
+  }
+  #submitReportBtnV62 {
+    display: inline-flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
     margin-top: 1rem !important;
-    isolation: isolate !important;
+    background: linear-gradient(135deg, #52c77b, #8fe0a8) !important;
+    color: #08110b !important;
+    border-color: rgba(127, 232, 160, 0.7) !important;
+    font-weight: 900 !important;
   }
-
-  #mode-moderation .controls .action-btn,
-  #mode-moderation button[data-action] {
+  #reportFileInputV62 {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 0.7rem !important;
+  }
+  #reportFilePreviewV62 {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    margin-top: 0.8rem !important;
+  }
+  .t73-v62-upload-note {
+    padding: 0.8rem !important;
+    border: 1px solid rgba(82, 199, 123, 0.35) !important;
+    border-radius: 14px !important;
+    background: rgba(82, 199, 123, 0.08) !important;
+    color: #d8ffe4 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.4 !important;
+  }
+  .t73-v62-file-card {
     position: relative !important;
-    z-index: 40 !important;
-    pointer-events: auto !important;
+    min-width: 0 !important;
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    background: rgba(0,0,0,0.32) !important;
+  }
+  .t73-v62-file-card img {
+    width: 100% !important;
+    height: 90px !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+  .t73-v62-file-name {
+    padding: 0.45rem !important;
+    color: var(--color-text-muted) !important;
+    font-size: 0.74rem !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .t73-v62-remove-file {
+    position: absolute !important;
+    top: 0.35rem !important;
+    right: 0.35rem !important;
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255,255,255,0.35) !important;
+    background: rgba(239, 68, 68, 0.92) !important;
+    color: #fff !important;
     cursor: pointer !important;
-    touch-action: manipulation !important;
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -webkit-tap-highlight-color: transparent !important;
-  }
-
-  #mode-moderation .controls .action-btn * {
-    pointer-events: none !important;
-  }
-
-  #modTrainerAnswerBox {
-    position: relative !important;
-    z-index: 10 !important;
-    overflow: visible !important;
-  }
-
-  @media (max-width: 720px), (pointer: coarse) {
-    #mode-moderation .controls {
-      grid-template-columns: 1fr !important;
-      gap: .75rem !important;
-    }
-
-    #mode-moderation .controls .action-btn,
-    #mode-moderation button[data-action] {
-      min-height: 54px !important;
-      width: 100% !important;
-    }
+    font-weight: 900 !important;
+    line-height: 1 !important;
   }
 </style>
-<script id="t73-v60-mod-trainer-verdict-script">
-/* === T73 V60: тренажёр модерации — нижние вердикты всегда нажимаются === */
-(function installT73V60ModTrainerVerdictFix(){
+<script id="t73-v62-report-session-fix-script">
+(function(){
   'use strict';
+  if (window.__T73_V62_REPORT_SESSION_FIX__) return;
+  window.__T73_V62_REPORT_SESSION_FIX__ = true;
 
-  let lastHandledAt = 0;
-  let lastAction = '';
+  const $ = id => document.getElementById(id);
+  let filesV62 = [];
+  let busyV62 = false;
 
-  function $(id){ return document.getElementById(id); }
-
-  function trainerRoot(){ return $('mode-moderation'); }
-
-  function isTrainerVisible(){
-    const root = trainerRoot();
-    if (!root) return false;
-    const style = window.getComputedStyle(root);
-    return style.display !== 'none' && style.visibility !== 'hidden';
+  function esc(value) {
+    return String(value || '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
   }
 
-  function getVerdictButton(event){
-    const target = event && event.target;
-    if (!target || !target.closest) return null;
-    const btn = target.closest('#mode-moderation button[data-action]');
-    if (!btn) return null;
-    const action = btn.getAttribute('data-action');
-    if (!/^(good|warn|ban)$/.test(action || '')) return null;
-    return btn;
+  function getSupaV62() {
+    return window.supa || window.__T73_SUPA || null;
   }
 
-  function unlockVerdictButtons(){
-    const root = trainerRoot();
-    if (!root) return;
-    const controls = root.querySelector('.controls');
-    if (controls) {
-      controls.style.setProperty('position', 'relative', 'important');
-      controls.style.setProperty('z-index', '40', 'important');
-      controls.style.setProperty('pointer-events', 'auto', 'important');
-      controls.style.setProperty('overflow', 'visible', 'important');
-    }
-    root.querySelectorAll('button[data-action]').forEach(function(btn){
-      btn.disabled = false;
-      btn.removeAttribute('disabled');
-      btn.style.setProperty('pointer-events', 'auto', 'important');
-      btn.style.setProperty('cursor', 'pointer', 'important');
-      btn.style.setProperty('position', 'relative', 'important');
-      btn.style.setProperty('z-index', '50', 'important');
-      btn.setAttribute('type', 'button');
+  async function getLoggedUserV62() {
+    const supa = getSupaV62();
+    if (!supa || !supa.auth) return null;
+
+    // В старых фиксах кнопка смотрела на currentUser, но он закрыт внутри основного скрипта.
+    // Здесь берём реальную активную сессию Supabase — так вход определяется правильно.
+    try {
+      const fromUser = await supa.auth.getUser();
+      if (fromUser && fromUser.data && fromUser.data.user) {
+        window.currentUser = fromUser.data.user;
+        return fromUser.data.user;
+      }
+    } catch (e) {}
+
+    try {
+      const fromSession = await supa.auth.getSession();
+      const user = fromSession && fromSession.data && fromSession.data.session && fromSession.data.session.user;
+      if (user) {
+        window.currentUser = user;
+        return user;
+      }
+    } catch (e) {}
+
+    return null;
+  }
+
+  async function canSubmitReportV62(user) {
+    if (!user) return false;
+    const supa = getSupaV62();
+
+    try {
+      const creator = typeof creatorEmail !== 'undefined' ? creatorEmail : 'daniiltimosin72@gmail.com';
+      if (user.email === creator) return true;
+    } catch (e) {}
+
+    try {
+      if (Array.isArray(window.adminEmails) && window.adminEmails.includes(user.email)) return true;
+    } catch (e) {}
+
+    // Не блокируем сдачу, если роль не удалось проверить из-за старой области видимости.
+    // Главное — убрать ложную ошибку «Сначала войдите» у уже авторизованных модераторов.
+    try {
+      if (supa) {
+        const { data, error } = await supa
+          .from('reports')
+          .select('id')
+          .eq('email', 'USER_ROLE')
+          .eq('link', user.id)
+          .eq('status', 'moderator')
+          .limit(1);
+        if (!error && data && data.length) return true;
+      }
+    } catch (e) {}
+
+    return true;
+  }
+
+  function ensureUiV62() {
+    const oldInput = $('reportFileInput');
+    const oldPreview = $('reportFilePreview');
+    const oldBtn = $('submitReportBtn');
+    const oldV16 = $('submitReportBtnV16');
+    const oldV57 = $('submitReportBtnV57');
+
+    [oldBtn, oldV16, oldV57, oldInput].forEach(el => {
+      if (!el) return;
+      el.style.setProperty('display', 'none', 'important');
+      el.setAttribute('aria-hidden', 'true');
     });
-  }
 
-  function callTrainerJudge(action){
-    try {
-      if (typeof window.judge === 'function') {
-        window.judge(action);
-        return true;
+    let input = $('reportFileInputV62');
+    if (!input) {
+      const anchor = oldPreview || oldInput || $('reportLinkInput');
+      if (anchor) {
+        anchor.insertAdjacentHTML('afterend', `
+          <div id="reportFileBoxV62" class="t73-v62-upload-note">
+            <b>📎 Прямая загрузка включена:</b> выберите скриншот с устройства. Кнопка ниже проверяет именно вашу текущую Supabase-сессию, поэтому ошибка «Сначала войдите» больше не должна появляться при активном входе.
+            <input id="reportFileInputV62" class="support-input" type="file" multiple accept="image/*,.png,.jpg,.jpeg,.webp">
+            <div id="reportFilePreviewV62"></div>
+          </div>
+        `);
       }
-    } catch (err) {
-      console.warn('T73 V60: window.judge failed', err);
     }
 
-    try {
-      if (typeof judge === 'function') {
-        judge(action);
-        return true;
-      }
-    } catch (err) {
-      console.warn('T73 V60: judge failed', err);
+    input = $('reportFileInputV62');
+    if (input && input.dataset.v62Bound !== '1') {
+      input.dataset.v62Bound = '1';
+      input.addEventListener('change', function(){
+        const picked = Array.from(input.files || []).filter(file => String(file.type || '').startsWith('image/'));
+        const limit = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 8 : 12;
+        filesV62 = filesV62.concat(picked).slice(0, limit);
+        input.value = '';
+        renderPreviewV62();
+        const res = $('reportResultText');
+        if (res) {
+          res.style.color = 'var(--color-text-muted)';
+          res.textContent = filesV62.length ? 'Выбрано скриншотов: ' + filesV62.length : '';
+        }
+      });
     }
 
-    return false;
+    if (!$('submitReportBtnV62')) {
+      const place = oldV57 || oldV16 || oldBtn || $('reportFileBoxV62') || $('reportFormArea');
+      if (place) place.insertAdjacentHTML('afterend', '<button class="support-check-btn" type="button" id="submitReportBtnV62">📤 Отправить отчёт со скриншотом</button>');
+    }
+
+    const btn = $('submitReportBtnV62');
+    if (btn && btn.dataset.v62Bound !== '1') {
+      btn.dataset.v62Bound = '1';
+      btn.addEventListener('click', sendReportV62);
+    }
+
+    renderPreviewV62();
   }
 
-  function handleVerdict(event){
-    const btn = getVerdictButton(event);
-    if (!btn || !isTrainerVisible()) return;
+  function renderPreviewV62() {
+    const box = $('reportFilePreviewV62');
+    if (!box) return;
 
-    const action = btn.getAttribute('data-action');
-    const now = Date.now();
-
-    // pointer/touch/click могут приходить парой. Оставляем одно действие, чтобы не засчитывало два ответа.
-    if (lastAction === action && now - lastHandledAt < 450) {
-      event.preventDefault();
-      event.stopPropagation();
-      if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+    if (!filesV62.length) {
+      box.innerHTML = '<div style="color:var(--color-text-muted);font-size:.86rem;grid-column:1/-1;">Скриншоты пока не выбраны.</div>';
       return;
     }
 
-    lastAction = action;
-    lastHandledAt = now;
+    box.innerHTML = filesV62.map((file, index) => {
+      const url = URL.createObjectURL(file);
+      return `<div class="t73-v62-file-card">
+        <button class="t73-v62-remove-file" type="button" data-v62-remove="${index}">×</button>
+        <img src="${url}" alt="Скриншот ${index + 1}" onload="try{URL.revokeObjectURL(this.src)}catch(e){}">
+        <div class="t73-v62-file-name">${esc(file.name || ('screen_' + (index + 1)))}</div>
+      </div>`;
+    }).join('');
 
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-
-    unlockVerdictButtons();
-    const ok = callTrainerJudge(action);
-    if (!ok) {
-      console.warn('T73 V60: не найден обработчик judge для тренажёра модерации. Action:', action);
-    }
-
-    setTimeout(unlockVerdictButtons, 30);
-    setTimeout(unlockVerdictButtons, 180);
-  }
-
-  function handleKeyboard(event){
-    if ((event.key !== 'Enter' && event.key !== ' ') || !document.activeElement) return;
-    const btn = document.activeElement.closest && document.activeElement.closest('#mode-moderation button[data-action]');
-    if (!btn || !isTrainerVisible()) return;
-    const action = btn.getAttribute('data-action');
-    if (!/^(good|warn|ban)$/.test(action || '')) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.stopImmediatePropagation) event.stopImmediatePropagation();
-    unlockVerdictButtons();
-    callTrainerJudge(action);
-    setTimeout(unlockVerdictButtons, 30);
-    setTimeout(unlockVerdictButtons, 180);
-  }
-
-  function bootV60(){
-    unlockVerdictButtons();
-    const root = trainerRoot();
-    if (!root) return;
-
-    // Убираем старые inline-обработчики: V60 сам вызывает judge один раз.
-    root.querySelectorAll('button[data-action]').forEach(function(btn){
-      btn.onclick = null;
+    box.querySelectorAll('[data-v62-remove]').forEach(btn => {
+      btn.onclick = function(){
+        filesV62.splice(Number(btn.dataset.v62Remove), 1);
+        renderPreviewV62();
+      };
     });
   }
 
-  // Важно: window-capture срабатывает раньше старого V58 document-capture,
-  // который мог перехватывать событие и не давать нижним кнопкам нормально прожиматься.
-  window.addEventListener('pointerdown', handleVerdict, true);
-  window.addEventListener('touchstart', handleVerdict, true);
-  window.addEventListener('mousedown', handleVerdict, true);
-  window.addEventListener('click', handleVerdict, true);
-  window.addEventListener('keydown', handleKeyboard, true);
-
-  const observer = new MutationObserver(function(){
-    clearTimeout(window.__T73_V60_MOD_VERDICT_TIMER__);
-    window.__T73_V60_MOD_VERDICT_TIMER__ = setTimeout(bootV60, 40);
-  });
-
-  function start(){
-    bootV60();
-    try { observer.observe(document.documentElement, { childList: true, subtree: true }); } catch(e) {}
+  function readAsDataURLV62(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ''));
+      reader.onerror = () => reject(reader.error || new Error('Не удалось прочитать файл'));
+      reader.readAsDataURL(file);
+    });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  function loadImageV62(dataUrl) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Не удалось открыть изображение'));
+      img.src = dataUrl;
+    });
+  }
 
-  [80, 250, 600, 1200, 2500, 5000].forEach(function(ms){ setTimeout(bootV60, ms); });
+  async function compressImageV62(file) {
+    const raw = await readAsDataURLV62(file);
+    const img = await loadImageV62(raw);
+    let maxSide = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 900 : 1100;
+    let width = img.naturalWidth || img.width;
+    let height = img.naturalHeight || img.height;
 
-  window.T73_V60_MOD_TRAINER_VERDICT_FIX = {
-    fix: bootV60,
-    unlock: unlockVerdictButtons
-  };
+    const canvas = document.createElement('canvas');
+    const draw = (side, quality) => {
+      const ratio = Math.min(1, side / Math.max(width, height));
+      canvas.width = Math.max(1, Math.round(width * ratio));
+      canvas.height = Math.max(1, Math.round(height * ratio));
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', quality);
+    };
+
+    let quality = 0.66;
+    let out = draw(maxSide, quality);
+    while (out.length > 420000 && quality > 0.38) {
+      quality -= 0.08;
+      out = draw(maxSide, quality);
+    }
+    while (out.length > 520000 && maxSide > 620) {
+      maxSide -= 160;
+      out = draw(maxSide, 0.42);
+    }
+
+    return {
+      url: out,
+      name: file.name || 'screenshot.jpg',
+      kind: 'direct-base64-v62',
+      originalSize: file.size || 0,
+      compressedSize: out.length
+    };
+  }
+
+  async function sendReportV62(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+    ensureUiV62();
+    if (busyV62) return;
+
+    const supa = getSupaV62();
+    const res = $('reportResultText');
+    const btn = $('submitReportBtnV62');
+
+    const user = await getLoggedUserV62();
+    if (!user) {
+      if (res) {
+        res.style.color = 'var(--color-error)';
+        res.textContent = 'Сессия входа не найдена. Нажмите «Выйти», войдите заново и попробуйте отправить отчёт.';
+      }
+      return;
+    }
+
+    if (!(await canSubmitReportV62(user))) {
+      if (res) {
+        res.style.color = 'var(--color-error)';
+        res.textContent = 'Сдавать отчёт могут только модераторы.';
+      }
+      return;
+    }
+
+    const nick = ($('reportNickInput')?.value || window.currentNickname || user.user_metadata?.nickname || user.email || '').trim();
+    const work = ($('reportWorkInput')?.value || '').trim();
+    const day = ($('reportDateInput')?.value || new Date().toISOString().slice(0, 10)).trim();
+    const link = ($('reportLinkInput')?.value || '').trim();
+    const quality = ($('reportQualityInput')?.value || 'На проверке').trim();
+
+    if (!nick || !work || !day) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Заполните ник, работу и дату.'; }
+      return;
+    }
+    if (!link && !filesV62.length) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Добавьте ссылку или выберите скриншот напрямую.'; }
+      return;
+    }
+    if (!supa) {
+      if (res) { res.style.color = 'var(--color-error)'; res.textContent = 'Supabase не загрузился. Обновите страницу и попробуйте ещё раз.'; }
+      return;
+    }
+
+    busyV62 = true;
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Обрабатываю...'; }
+    if (res) { res.style.color = 'var(--color-text-muted)'; res.textContent = 'Готовлю отчёт к отправке...'; }
+
+    try {
+      const proofs = [];
+      if (link) proofs.push({ url: link, name: 'Ссылка', kind: 'link' });
+
+      for (let i = 0; i < filesV62.length; i++) {
+        if (res) res.textContent = 'Сжимаю скриншот ' + (i + 1) + ' из ' + filesV62.length + '...';
+        proofs.push(await compressImageV62(filesV62[i]));
+      }
+
+      const payload = {
+        version: 'v62-session-fixed-direct-screenshot',
+        nick,
+        nickname: nick,
+        work,
+        comment: work,
+        day,
+        date: day,
+        quality,
+        proofs,
+        userId: user.id,
+        email: user.email,
+        createdAt: new Date().toISOString()
+      };
+
+      if (res) res.textContent = 'Отправляю отчёт...';
+      const { error } = await supa.from('reports').insert([{
+        id: 'rep62_' + Date.now() + '_' + Math.random().toString(16).slice(2),
+        email: user.email,
+        link: link || 'T73V62:embedded-image',
+        date: JSON.stringify(payload),
+        status: 'На проверке',
+        xp: 0
+      }]);
+
+      if (error) throw error;
+
+      filesV62 = [];
+      renderPreviewV62();
+      ['reportNickInput','reportWorkInput','reportDateInput','reportLinkInput'].forEach(id => { const el = $(id); if (el) el.value = ''; });
+      if ($('reportQualityInput')) $('reportQualityInput').value = 'Норма';
+
+      if (res) {
+        res.style.color = 'var(--color-success)';
+        res.textContent = '✅ Отчёт отправлен. Скриншоты прикреплены напрямую.';
+      }
+      try { if (typeof playSound === 'function') playSound('win'); } catch(e) {}
+    } catch (err) {
+      if (res) {
+        res.style.color = 'var(--color-error)';
+        res.textContent = 'Ошибка отправки: ' + (err && err.message ? err.message : err) + '. Попробуйте выбрать 1 скриншот или отправить ссылку.';
+      }
+    } finally {
+      busyV62 = false;
+      if (btn) { btn.disabled = false; btn.textContent = '📤 Отправить отчёт со скриншотом'; }
+    }
+  }
+
+  function bootV62() {
+    ensureUiV62();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootV62);
+  else bootV62();
+
+  document.addEventListener('click', function(event){
+    const btn = event.target && event.target.closest && event.target.closest('#submitReportBtnV62');
+    if (!btn) return;
+    sendReportV62(event);
+  }, true);
+
+  [80, 250, 600, 1200, 2400, 5200].forEach(ms => setTimeout(bootV62, ms));
+  new MutationObserver(() => {
+    clearTimeout(window.__T73_V62_REPORT_UI_TIMER__);
+    window.__T73_V62_REPORT_UI_TIMER__ = setTimeout(bootV62, 80);
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  window.T73_V62_REPORT_SESSION_FIX = { boot: bootV62, send: sendReportV62, getUser: getLoggedUserV62 };
 })();
-/* === /T73 V60 === */
 </script>
-<!-- === /T73 V60 === -->
+<!-- === /T73 V62 === -->
+
+
 </body>
 </html>
