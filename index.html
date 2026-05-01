@@ -17972,5 +17972,206 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V69 === -->
+<!-- === T73 V70: leadership user list fallback for all-access users === -->
+<style>
+  .t73-v70-userlist-note{margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;border:1px solid rgba(127,232,160,.28);background:rgba(82,199,123,.08);color:var(--color-text-muted);font-size:.88rem;line-height:1.4}
+</style>
+<script>
+(function(){
+  'use strict';
+  if (window.__T73_V70_USERLIST_FALLBACK__) return;
+  window.__T73_V70_USERLIST_FALLBACK__ = true;
+
+  var SUPA_URL = 'https://icfihnroblyjjflsfepq.supabase.co';
+  var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
+  var CREATOR_EMAIL = 'daniiltimosin72@gmail.com';
+  var STATIC_MOD_LEADERS = [CREATOR_EMAIL, 'leha.br222@gmail.com', 'isayevrufat37@gmail.com', 'maksimladnyj4@gmail.com'];
+  var USER_SELECT_IDS = [
+    'gossLeadUserSelect','gossV3SeniorUser','govV4SeniorUser','v22User','v23LeadUser','v24User','v26bUser',
+    'leadershipUserSelect','hiddenCheckUser','leadAddModSelect','apAdminUserSelect','leadAddApSelect','fsbAdminUserSelect','leadAddFsbSelect'
+  ];
+  var MOD_ONLY_SELECT_IDS = ['t73v66PunishUser'];
+  var cache = { at: 0, users: [], moderators: [], roles: [] };
+  var busy = false;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]; }); }
+  function safeJson(v){ try { return JSON.parse(v || '{}'); } catch(e){ return {}; } }
+  function norm(v){ return String(v == null ? '' : v).trim(); }
+  function looksEmptySelect(sel){
+    if (!sel) return false;
+    var txt = norm(sel.textContent).toLowerCase();
+    return !sel.options.length || txt === 'нет пользователей' || txt.indexOf('нет пользователей') !== -1 || txt.indexOf('загрузка') !== -1;
+  }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        window.__T73_SUPA = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+        window.supa = window.__T73_SUPA;
+        window.t73Supa = window.__T73_SUPA;
+        window.supabaseClient = window.__T73_SUPA;
+        return window.__T73_SUPA;
+      } catch(e) { console.warn('T73 V70 supabase create error', e); }
+    }
+    return null;
+  }
+  async function authUser(){
+    var c = client(); if (!c || !c.auth) return null;
+    try { var r = await c.auth.getUser(); return r && r.data ? r.data.user : null; } catch(e){ return null; }
+  }
+  async function loadRoles(){
+    var c = client(); if (!c) return [];
+    try { var r = await c.from('reports').select('id,email,link,status,date,xp').eq('email','ADMIN_ROLE').limit(5000); return r.data || []; } catch(e){ return []; }
+  }
+  function hasAnyAdminAccess(user, roles){
+    if (!user) return false;
+    if (user.email === CREATOR_EMAIL || STATIC_MOD_LEADERS.indexOf(user.email) !== -1) return true;
+    return (roles || []).some(function(r){
+      if (r.link !== user.id) return false;
+      var st = String(r.status || '');
+      return st === 'leadership' || st === 'ap_admin' || st === 'fsb_admin' || st === 'goss_admin_all' || st === 'goss_senior_all' || st.indexOf('goss_lead_') === 0 || st.indexOf('goss_senior_') === 0;
+    });
+  }
+  function addUser(map, id, nick, email, source){
+    id = norm(id);
+    if (!id || id === 'undefined' || id === 'null') return;
+    var old = map.get(id) || { id:id, nick:'', email:'', sources:[] };
+    old.nick = norm(old.nick || nick || email || id);
+    old.email = norm(old.email || email || '');
+    if (source && old.sources.indexOf(source) === -1) old.sources.push(source);
+    map.set(id, old);
+  }
+  async function collectUsers(force){
+    var now = Date.now();
+    if (!force && cache.users.length && now - cache.at < 12000) return cache;
+    var c = client();
+    var map = new Map();
+    var moderatorIds = new Set();
+    var roles = [];
+    if (!c) return cache;
+
+    try {
+      var us = await c.from('user_stats').select('user_id,nickname,email').limit(5000);
+      (us.data || []).forEach(function(u){ addUser(map, u.user_id, u.nickname || u.email, u.email, 'user_stats'); });
+    } catch(e) {}
+
+    try {
+      roles = await loadRoles();
+      roles.forEach(function(r){ addUser(map, r.link, '', '', 'admin_role'); });
+    } catch(e) {}
+
+    try {
+      var rr = await c.from('reports').select('id,email,link,status,date,xp').limit(8000);
+      (rr.data || []).forEach(function(r){
+        var email = norm(r.email), link = norm(r.link), status = norm(r.status), p = safeJson(r.date);
+        if (email === 'USER_ROLE') {
+          addUser(map, link, '', '', 'user_role');
+          if (status === 'moderator') moderatorIds.add(link);
+          return;
+        }
+        if (email === 'ADMIN_ROLE') { addUser(map, link, '', '', 'admin_role'); return; }
+        if (email === 'GOSS_PROFILE' || email.indexOf('GOSS_PROFILE') === 0 || email.indexOf('GOSS_REPORT_MEMBER') === 0 || email.indexOf('REPORT_TABLE_MEMBER') === 0) {
+          addUser(map, p.userId || p.user_id || p.id || status || link, p.nick || p.nickname || p.name || status || link, p.email || '', 'goss_profile');
+          return;
+        }
+        if (p && (p.userId || p.user_id || p.id)) {
+          addUser(map, p.userId || p.user_id || p.id, p.nick || p.nickname || p.name || status || link, p.email || (email.indexOf('@') > 0 ? email : ''), 'report_payload');
+        }
+      });
+    } catch(e) {}
+
+    // Второй проход: если нашли ID без ников — пробуем добрать их из user_stats точечно.
+    try {
+      var ids = Array.from(map.keys()).filter(function(id){ var u = map.get(id); return !u.email && (!u.nick || u.nick === id || u.nick.indexOf('ID:') === 0); }).slice(0, 500);
+      if (ids.length) {
+        var more = await c.from('user_stats').select('user_id,nickname,email').in('user_id', ids);
+        (more.data || []).forEach(function(u){ addUser(map, u.user_id, u.nickname || u.email, u.email, 'user_stats_lookup'); });
+      }
+    } catch(e) {}
+
+    var users = Array.from(map.values()).filter(function(u){ return !!u.id; }).sort(function(a,b){ return String(a.nick || a.email || a.id).localeCompare(String(b.nick || b.email || b.id), 'ru'); });
+    var moderators = users.filter(function(u){ return moderatorIds.has(u.id); });
+    cache = { at: now, users: users, moderators: moderators, roles: roles };
+    return cache;
+  }
+  function optionHtml(u, includeEmail){
+    var label = u.nick || u.email || u.id;
+    if (includeEmail && u.email && label.indexOf(u.email) === -1) label += ' · ' + u.email;
+    return '<option value="' + esc(u.id) + '">' + esc(label) + '</option>';
+  }
+  function fillSelect(sel, users, modOnly){
+    if (!sel || !users || !users.length) return false;
+    var old = sel.value;
+    sel.innerHTML = users.map(function(u){ return optionHtml(u, true); }).join('');
+    if (old && users.some(function(u){ return u.id === old; })) sel.value = old;
+    sel.dataset.t73v70Filled = modOnly ? 'moderators' : 'all';
+    return true;
+  }
+  function noteNear(sel, text){
+    if (!sel || !sel.parentElement || sel.parentElement.querySelector('.t73-v70-userlist-note')) return;
+    var div = document.createElement('div');
+    div.className = 't73-v70-userlist-note';
+    div.textContent = text;
+    sel.parentElement.appendChild(div);
+  }
+  async function syncUserSelects(force){
+    if (busy) return;
+    var allTargets = USER_SELECT_IDS.map($).concat(MOD_ONLY_SELECT_IDS.map($)).filter(Boolean);
+    if (!allTargets.length) return;
+    busy = true;
+    try {
+      var user = await authUser();
+      var data = await collectUsers(force);
+      if (!hasAnyAdminAccess(user, data.roles)) return;
+
+      USER_SELECT_IDS.forEach(function(id){
+        var sel = $(id);
+        if (!sel) return;
+        // Перезаполняем пустые списки и списки из старого рендера, где остался один пункт "Нет пользователей".
+        if (looksEmptySelect(sel) || sel.dataset.t73v70Filled === 'all') {
+          if (fillSelect(sel, data.users, false)) noteNear(sel, 'Список загружен через резервный загрузчик V70: user_stats + роли + анкеты/отчёты.');
+        }
+      });
+
+      MOD_ONLY_SELECT_IDS.forEach(function(id){
+        var sel = $(id);
+        if (!sel) return;
+        var mods = data.moderators.length ? data.moderators : data.users;
+        if (looksEmptySelect(sel) || sel.dataset.t73v70Filled === 'moderators') {
+          if (fillSelect(sel, mods, true)) noteNear(sel, 'Список модераторов загружен через резервный загрузчик V70.');
+        }
+      });
+    } catch(e) {
+      console.warn('T73 V70 user list fallback error', e);
+    } finally {
+      busy = false;
+    }
+  }
+  function boot(force){
+    clearTimeout(window.__t73_v70_users_timer);
+    window.__t73_v70_users_timer = setTimeout(function(){ syncUserSelects(!!force); }, 120);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest('#subNavGeneral,#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,#mode-goss,#mode-goss_global_access,#mode-leadership,#mode-ap_admin,#mode-fsb_admin,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,[data-mode]')) boot(false);
+  }, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ boot(true); }); else boot(true);
+  [300,900,1800,3500,6000].forEach(function(ms){ setTimeout(function(){ boot(ms < 1000); }, ms); });
+  try { var c = client(); if (c && c.auth) c.auth.onAuthStateChange(function(){ cache.at = 0; boot(true); }); } catch(e) {}
+  try { new MutationObserver(function(){ boot(false); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+
+  window.T73_V70_USERLIST_FALLBACK = { refresh:function(){ cache.at = 0; return syncUserSelects(true); }, collect:function(){ cache.at = 0; return collectUsers(true); } };
+})();
+</script>
+<!-- === /T73 V70 === -->
+
 </body>
 </html>
