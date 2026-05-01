@@ -13295,32 +13295,46 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   window.T73_V44_MOD_TABLE={open:openTable,load:loadModTableV44,syncNav};
 })();
 </script>
-
-
-<script id="t73-v46-auth-confirm-leadership-fix">
+<script id="t73-v48-auth-no-email-confirm-forgot-password">
 (function(){
   'use strict';
+  if(window.__T73_V48_AUTH_NO_CONFIRM__) return;
+  window.__T73_V48_AUTH_NO_CONFIRM__ = true;
+
   const SUPA_URL='https://icfihnroblyjjflsfepq.supabase.co';
   const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
-  const $=id=>document.getElementById(id);
+  const $ = id => document.getElementById(id);
   const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   function client(){
     if(window.__T73_SUPA && window.__T73_SUPA.auth) return window.__T73_SUPA;
-    if(window.supa && window.supa.auth) return window.supa;
+    if(window.supa && window.supa.auth) { window.__T73_SUPA = window.supa; return window.supa; }
+    if(window.t73Supa && window.t73Supa.auth) { window.__T73_SUPA = window.t73Supa; return window.t73Supa; }
+    if(window.supabaseClient && window.supabaseClient.auth) { window.__T73_SUPA = window.supabaseClient; return window.supabaseClient; }
+    if(window.supabase && window.supabase.auth) { window.__T73_SUPA = window.supabase; return window.supabase; }
     if(window.supabase && window.supabase.createClient){
       window.__T73_SUPA = window.supabase.createClient(SUPA_URL, SUPA_KEY);
       window.supa = window.__T73_SUPA;
+      window.t73Supa = window.__T73_SUPA;
+      window.supabaseClient = window.__T73_SUPA;
       return window.__T73_SUPA;
     }
     return null;
   }
-  function msg(text,color){
-    const e=$('authErrorMsg'); if(!e) return;
-    e.textContent=text; e.style.color=color||'var(--color-error)'; e.style.display='block';
+
+  function setMsg(text, color){
+    const e=$('authErrorMsg');
+    if(!e) return;
+    e.textContent=text;
+    e.style.color=color || 'var(--color-error)';
+    e.style.display='block';
   }
-  function cleanEmail(){ return String($('authEmail')?.value||'').trim().toLowerCase(); }
-  function cleanNick(){ return String($('authNickname')?.value||'').trim(); }
-  function redirectUrl(){ return window.location.origin + window.location.pathname; }
+
+  function cleanEmail(){ return String($('authEmail')?.value || '').trim().toLowerCase(); }
+  function cleanNick(){ return String($('authNickname')?.value || '').trim(); }
+  function cleanPassword(){ return String($('authPassword')?.value || ''); }
+  function baseRedirectUrl(){ return window.location.origin + window.location.pathname; }
+  function recoveryRedirectUrl(){ return baseRedirectUrl() + '?password_recovery=1'; }
 
   function fixAuthInputs(){
     const email=$('authEmail'), nick=$('authNickname'), pass=$('authPassword');
@@ -13332,7 +13346,18 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       email.setAttribute('autocapitalize','none');
       email.setAttribute('autocorrect','off');
       email.setAttribute('spellcheck','false');
-      email.placeholder='Email, а не ник';
+      email.placeholder='Email';
+      if(!email.dataset.v48FaceIdFix){
+        email.dataset.v48FaceIdFix='1';
+        email.addEventListener('blur',()=>{
+          const v=String(email.value||'').trim();
+          if(v && !emailRe.test(v) && nick && !nick.value && /^[A-Za-zА-Яа-я0-9_\-.]{3,32}$/.test(v)){
+            nick.value=v;
+            email.value='';
+            setMsg('iPhone вставил ник в поле почты. Я перенёс его в Nickname — теперь введите Email.','var(--color-warning)');
+          }
+        });
+      }
     }
     if(nick){
       nick.setAttribute('type','text');
@@ -13347,192 +13372,29 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       pass.setAttribute('name','password');
       pass.setAttribute('autocomplete','current-password');
     }
-    // Если iPhone/Face ID всё-таки вставил игровой ник в поле email — не даём отправить мусор в Auth.
-    email && email.addEventListener('blur',()=>{
-      const v=String(email.value||'').trim();
-      if(v && !emailRe.test(v) && nick && !nick.value && /^[A-Za-zА-Яа-я0-9_\-\.]{3,32}$/.test(v)){
-        nick.value=v;
-        email.value='';
-        msg('iPhone вставил ник в поле почты. Я перенёс его в Nickname — теперь введите Email.','var(--color-warning)');
-      }
+  }
+
+  function hideConfirmationUi(){
+    ['authResendConfirmBtn','authConfirmNotice','emailConfirmNotice','confirmEmailNotice'].forEach(id=>{ const el=$(id); if(el) el.remove(); });
+    document.querySelectorAll('#authModal button,#authModal .btn,#authModal p,#authModal div').forEach(el=>{
+      const t=String(el.textContent||'').trim().toLowerCase();
+      if(t.includes('отправить письмо подтверждения') || (t.includes('подтверд') && t.includes('почт') && el.id!=='authErrorMsg')) el.remove();
     });
-  }
-
-  function ensureResendButton(){
-    const reg=$('authRegisterSubmit');
-    if(!reg || $('authResendConfirmBtn')) return;
-    const btn=document.createElement('button');
-    btn.id='authResendConfirmBtn';
-    btn.type='button';
-    btn.className='btn btn-secondary';
-    btn.style.width='100%';
-    btn.textContent='Отправить письмо подтверждения ещё раз';
-    reg.insertAdjacentElement('afterend',btn);
-    btn.onclick=async()=>{
-      const c=client(), email=cleanEmail();
-      if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
-      if(!emailRe.test(email)) return msg('Введите настоящую почту, чтобы отправить подтверждение.');
-      msg('Отправляю письмо подтверждения...','var(--color-primary)');
-      const { error } = await c.auth.resend({ type:'signup', email, options:{ emailRedirectTo: redirectUrl() } });
-      if(error) return msg('Не удалось отправить письмо: '+error.message);
-      msg('Письмо отправлено. Проверьте входящие и папку «Спам».','var(--color-success)');
-    };
-  }
-
-  function bindAuthHandlers(){
-    const login=$('authLoginSubmit'), reg=$('authRegisterSubmit');
-    if(login && !login.dataset.v46){
-      login.dataset.v46='1';
-      login.onclick=async()=>{
-        const c=client(), email=cleanEmail(), password=String($('authPassword')?.value||'');
-        if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
-        if(!emailRe.test(email)) return msg('Введите именно Email. Если Face ID вставил ник — удалите его из поля почты.');
-        if(!password) return msg('Введите пароль.');
-        msg('Вхожу...','var(--color-primary)');
-        const { error } = await c.auth.signInWithPassword({ email, password });
-        if(error){
-          const t=String(error.message||'');
-          if(/confirm|verified|not.*confirmed|email/i.test(t)) return msg('Почта ещё не подтверждена. Откройте письмо от Supabase и подтвердите аккаунт.');
-          return msg(t);
-        }
-        window.location.reload();
-      };
-    }
-    if(reg && !reg.dataset.v46){
-      reg.dataset.v46='1';
-      reg.onclick=async()=>{
-        const c=client(), email=cleanEmail(), nickname=cleanNick(), password=String($('authPassword')?.value||'');
-        if(!c) return msg('Supabase ещё не загрузился. Обновите страницу.');
-        if(!emailRe.test(email)) return msg('Введите настоящую почту. Никнейм должен быть в отдельном поле.');
-        if(nickname.length<3) return msg('Введите игровой Nickname минимум 3 символа.');
-        if(password.length<6) return msg('Пароль должен быть минимум 6 символов.');
-        msg('Создаю аккаунт и отправляю письмо...','var(--color-primary)');
-        const { data, error } = await c.auth.signUp({
-          email,
-          password,
-          options:{ emailRedirectTo: redirectUrl(), data:{ nickname } }
-        });
-        if(error) return msg(error.message);
-        // Если Supabase требует подтверждение, session обычно пустая. Показываем правильную инструкцию.
-        if(!data || !data.session){
-          return msg('Аккаунт создан. Теперь подтвердите почту по ссылке в письме, потом вернитесь на сайт и войдите.','var(--color-success)');
-        }
-        msg('Аккаунт создан. Вход выполнен.','var(--color-success)');
-        setTimeout(()=>window.location.reload(),700);
-      };
-    }
-  }
-
-  function fixLeadershipDuplicates(){
-    // Не трогаем обычную вкладку «Руководство» модерации. Убираем только дубли кнопок «Панель руководства» в ГОСС.
-    const containers=['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav','subNavOrganizations'];
-    containers.forEach(id=>{
-      const root=$(id); if(!root) return;
-      let kept=false;
-      Array.from(root.querySelectorAll('button,.mode-btn')).forEach(btn=>{
-        const txt=String(btn.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-        if(!txt.includes('панель руководства')) return;
-        if(!kept){ kept=true; btn.style.display='inline-flex'; btn.removeAttribute('aria-hidden'); }
-        else { btn.style.display='none'; btn.setAttribute('aria-hidden','true'); }
-      });
-    });
-    // Если одновременно нарисованы две панели руководства в содержимом ГОСС, оставляем самую новую видимую.
-    const panels=Array.from(document.querySelectorAll('#gossV4Content .t73-v26-card,#gossV4Content .t73-v23-card,#gossV4Content .gov-v4-card,#gossV3Content .t73-v26-card,#gossV3Content .t73-v23-card,#gossV3Content .gov-v3-access-card')).filter(el=>/панель руководства/i.test(el.textContent||''));
-    if(panels.length>1){
-      panels.forEach((p,i)=>{ if(i<panels.length-1) p.style.display='none'; });
-    }
-  }
-
-  function boot(){ fixAuthInputs(); ensureResendButton(); bindAuthHandlers(); fixLeadershipDuplicates(); }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
-  setTimeout(boot,300); setTimeout(boot,1200); setTimeout(boot,3000);
-  let t; new MutationObserver(()=>{ clearTimeout(t); t=setTimeout(()=>{ fixAuthInputs(); ensureResendButton(); bindAuthHandlers(); fixLeadershipDuplicates(); },180); }).observe(document.documentElement,{childList:true,subtree:true});
-  window.T73_V46_AUTH_FIX={boot,client};
-})();
-</script>
-
-<script id="t73-v47-email-confirm-forgot-password">
-(function(){
-  'use strict';
-  if(window.__T73_V47_AUTH_PATCH__) return;
-  window.__T73_V47_AUTH_PATCH__ = true;
-
-  const $ = (id) => document.getElementById(id);
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const SUPA_URL = 'https://icfihnroblyjjflsfepq.supabase.co';
-  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ';
-
-  function client(){
-    if(window.supa && window.supa.auth) return window.supa;
-    if(window.__T73_SUPA && window.__T73_SUPA.auth) return window.__T73_SUPA;
-    if(window.T73_V46_AUTH_FIX && typeof window.T73_V46_AUTH_FIX.client === 'function'){
-      const c = window.T73_V46_AUTH_FIX.client();
-      if(c && c.auth) return c;
-    }
-    if(window.supabase && window.supabase.createClient){
-      window.__T73_SUPA = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-      window.supa = window.__T73_SUPA;
-      return window.__T73_SUPA;
-    }
-    return null;
-  }
-
-  function setMsg(text, color){
-    const e = $('authErrorMsg');
-    if(!e) return;
-    e.textContent = text;
-    e.style.color = color || 'var(--color-error)';
-    e.style.display = 'block';
-  }
-
-  function cleanEmail(){ return String($('authEmail')?.value || '').trim().toLowerCase(); }
-  function cleanNick(){ return String($('authNickname')?.value || '').trim(); }
-  function cleanPassword(){ return String($('authPassword')?.value || ''); }
-  function redirectUrl(){ return window.location.origin + window.location.pathname; }
-  function recoveryRedirectUrl(){ return redirectUrl() + '?password_recovery=1'; }
-
-  function userEmailConfirmed(user){
-    if(!user) return false;
-    return Boolean(user.email_confirmed_at || user.confirmed_at);
-  }
-
-  async function forceLogoutUnconfirmed(reason){
-    const c = client();
-    try { await c?.auth?.signOut?.(); } catch(e) {}
-    try {
-      window.currentUser = null;
-      if($('loginBtnUI')) $('loginBtnUI').style.display = 'inline-flex';
-      if($('logoutBtnUI')) $('logoutBtnUI').style.display = 'none';
-      if($('authModal')) $('authModal').style.display = 'flex';
-      setMsg(reason || 'Почта ещё не подтверждена. Подтвердите Email по ссылке из письма, затем войдите снова.', 'var(--color-warning)');
-    } catch(e) {}
-  }
-
-  async function enforceConfirmedSession(){
-    const c = client();
-    if(!c || !c.auth) return;
-    try{
-      const { data } = await c.auth.getUser();
-      const u = data?.user;
-      if(u && !userEmailConfirmed(u)){
-        await forceLogoutUnconfirmed('Почта ещё не подтверждена. Сначала откройте письмо подтверждения, потом войдите на сайт.');
-      }
-    }catch(e){}
   }
 
   function ensureForgotButton(){
-    const login = $('authLoginSubmit');
+    const login=$('authLoginSubmit');
     if(!login || $('authForgotPasswordBtn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'authForgotPasswordBtn';
-    btn.type = 'button';
-    btn.className = 'btn';
-    btn.style.cssText = 'width:100%;background:transparent;border:1px solid rgba(191,198,255,.24);color:var(--color-text-muted);';
-    btn.textContent = 'Забыли пароль?';
-    login.insertAdjacentElement('afterend', btn);
-    btn.onclick = async () => {
-      const c = client();
-      const email = cleanEmail();
+    const btn=document.createElement('button');
+    btn.id='authForgotPasswordBtn';
+    btn.type='button';
+    btn.className='btn';
+    btn.style.cssText='width:100%;background:transparent;border:1px solid rgba(191,198,255,.24);color:var(--color-text-muted);';
+    btn.textContent='Забыли пароль?';
+    login.insertAdjacentElement('afterend',btn);
+    btn.onclick=async()=>{
+      const c=client();
+      const email=cleanEmail();
       if(!c) return setMsg('Supabase ещё не загрузился. Обновите страницу.');
       if(!emailRe.test(email)) return setMsg('Введите почту в поле Email, потом нажмите «Забыли пароль?».');
       setMsg('Отправляю письмо для восстановления пароля...', 'var(--color-primary)');
@@ -13544,13 +13406,13 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
   function ensureResetPasswordModal(){
     if($('t73ResetPasswordModal')) return;
-    const wrap = document.createElement('div');
-    wrap.id = 't73ResetPasswordModal';
-    wrap.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);z-index:10050;align-items:center;justify-content:center;padding:1rem;';
-    wrap.innerHTML = `
+    const wrap=document.createElement('div');
+    wrap.id='t73ResetPasswordModal';
+    wrap.style.cssText='display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);z-index:10050;align-items:center;justify-content:center;padding:1rem;';
+    wrap.innerHTML=`
       <div class="panel" style="padding:2.2rem 1.8rem;width:100%;max-width:430px;display:grid;gap:1.2rem;">
         <h2 style="margin:0;font-family:var(--font-display);text-align:center;font-size:1.65rem;color:var(--color-primary);">Новый пароль</h2>
-        <p style="margin:0;color:var(--color-text-muted);font-size:var(--text-sm);line-height:1.55;text-align:center;">Введите новый пароль для аккаунта. После сохранения можно будет войти с новым паролем.</p>
+        <p style="margin:0;color:var(--color-text-muted);font-size:var(--text-sm);line-height:1.55;text-align:center;">Введите новый пароль для аккаунта.</p>
         <input type="password" id="t73NewPasswordInput" class="support-input" placeholder="Новый пароль" autocomplete="new-password">
         <input type="password" id="t73NewPasswordRepeat" class="support-input" placeholder="Повторите пароль" autocomplete="new-password">
         <div id="t73ResetPasswordMsg" style="display:none;text-align:center;font-weight:800;font-size:var(--text-sm);"></div>
@@ -13558,115 +13420,88 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
         <button id="t73CloseResetPasswordBtn" class="btn" type="button" style="background:transparent;border:1px solid rgba(191,198,255,.2);color:var(--color-text-muted);width:100%;">Закрыть</button>
       </div>`;
     document.body.appendChild(wrap);
-    $('t73CloseResetPasswordBtn').onclick = () => { wrap.style.display = 'none'; };
-    $('t73SaveNewPasswordBtn').onclick = async () => {
-      const c = client();
-      const p1 = String($('t73NewPasswordInput')?.value || '');
-      const p2 = String($('t73NewPasswordRepeat')?.value || '');
-      const m = $('t73ResetPasswordMsg');
-      const show = (t, color) => { if(m){ m.textContent=t; m.style.color=color||'var(--color-error)'; m.style.display='block'; } };
+    $('t73CloseResetPasswordBtn').onclick=()=>{ wrap.style.display='none'; };
+    $('t73SaveNewPasswordBtn').onclick=async()=>{
+      const c=client();
+      const p1=String($('t73NewPasswordInput')?.value||'');
+      const p2=String($('t73NewPasswordRepeat')?.value||'');
+      const m=$('t73ResetPasswordMsg');
+      const show=(t,color)=>{ if(m){ m.textContent=t; m.style.color=color||'var(--color-error)'; m.style.display='block'; } };
       if(!c) return show('Supabase ещё не загрузился. Обновите страницу.');
-      if(p1.length < 6) return show('Пароль должен быть минимум 6 символов.');
-      if(p1 !== p2) return show('Пароли не совпадают.');
-      show('Сохраняю новый пароль...', 'var(--color-primary)');
-      const { error } = await c.auth.updateUser({ password: p1 });
-      if(error) return show('Не удалось сохранить пароль: ' + error.message);
-      show('Пароль изменён. Сейчас выйдем из аккаунта, затем войдите заново.', 'var(--color-success)');
-      try { await c.auth.signOut(); } catch(e) {}
-      setTimeout(() => { window.location.href = redirectUrl(); }, 1000);
+      if(p1.length<6) return show('Пароль должен быть минимум 6 символов.');
+      if(p1!==p2) return show('Пароли не совпадают.');
+      show('Сохраняю новый пароль...','var(--color-primary)');
+      const { error } = await c.auth.updateUser({ password:p1 });
+      if(error) return show('Не удалось сохранить пароль: '+error.message);
+      show('Пароль изменён. Сейчас выйдем из аккаунта, затем войдите заново.','var(--color-success)');
+      try{ await c.auth.signOut(); }catch(e){}
+      setTimeout(()=>{ window.location.href=baseRedirectUrl(); },900);
     };
   }
 
-  function showResetPasswordModal(){
-    ensureResetPasswordModal();
-    const modal = $('t73ResetPasswordModal');
-    if(modal) modal.style.display = 'flex';
-  }
-
-  function recoveryInUrl(){
-    const raw = String(window.location.href || '').toLowerCase();
-    return raw.includes('type=recovery') || raw.includes('password_recovery=1') || raw.includes('recovery');
-  }
+  function showResetPasswordModal(){ ensureResetPasswordModal(); const modal=$('t73ResetPasswordModal'); if(modal) modal.style.display='flex'; }
+  function recoveryInUrl(){ const raw=String(window.location.href||'').toLowerCase(); return raw.includes('type=recovery') || raw.includes('password_recovery=1') || raw.includes('recovery'); }
 
   function bindAuthHandlers(){
-    const login = $('authLoginSubmit');
-    const reg = $('authRegisterSubmit');
-    if(login && !login.dataset.v47){
-      login.dataset.v47 = '1';
-      login.onclick = async () => {
-        const c = client();
-        const email = cleanEmail();
-        const password = cleanPassword();
+    const login=$('authLoginSubmit');
+    const reg=$('authRegisterSubmit');
+    if(login && !login.dataset.v48){
+      login.dataset.v48='1';
+      login.onclick=async()=>{
+        const c=client();
+        const email=cleanEmail();
+        const password=cleanPassword();
         if(!c) return setMsg('Supabase ещё не загрузился. Обновите страницу.');
         if(!emailRe.test(email)) return setMsg('Введите именно Email. Если Face ID вставил ник — удалите его из поля почты.');
         if(!password) return setMsg('Введите пароль.');
         setMsg('Вхожу...', 'var(--color-primary)');
-        const { data, error } = await c.auth.signInWithPassword({ email, password });
-        if(error){
-          const t = String(error.message || '');
-          if(/confirm|verified|not.*confirmed|email/i.test(t)) return setMsg('Почта ещё не подтверждена. Подтвердите Email по ссылке из письма, затем войдите снова.', 'var(--color-warning)');
-          return setMsg(t);
-        }
-        const userResp = await c.auth.getUser();
-        const u = data?.user || userResp?.data?.user;
-        if(!userEmailConfirmed(u)){
-          await forceLogoutUnconfirmed('Почта ещё не подтверждена. Без подтверждения вход на сайт закрыт.');
-          return;
-        }
+        const { error } = await c.auth.signInWithPassword({ email, password });
+        if(error) return setMsg(error.message);
         window.location.reload();
       };
     }
-    if(reg && !reg.dataset.v47){
-      reg.dataset.v47 = '1';
-      reg.onclick = async () => {
-        const c = client();
-        const email = cleanEmail();
-        const nickname = cleanNick();
-        const password = cleanPassword();
+    if(reg && !reg.dataset.v48){
+      reg.dataset.v48='1';
+      reg.onclick=async()=>{
+        const c=client();
+        const email=cleanEmail();
+        const nickname=cleanNick();
+        const password=cleanPassword();
         if(!c) return setMsg('Supabase ещё не загрузился. Обновите страницу.');
         if(!emailRe.test(email)) return setMsg('Введите настоящую почту. Никнейм должен быть в отдельном поле.');
-        if(nickname.length < 3) return setMsg('Введите игровой Nickname минимум 3 символа.');
-        if(password.length < 6) return setMsg('Пароль должен быть минимум 6 символов.');
-        setMsg('Создаю аккаунт и отправляю письмо подтверждения...', 'var(--color-primary)');
-        const { data, error } = await c.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: redirectUrl(), data: { nickname } }
-        });
+        if(nickname.length<3) return setMsg('Введите игровой Nickname минимум 3 символа.');
+        if(password.length<6) return setMsg('Пароль должен быть минимум 6 символов.');
+        setMsg('Создаю аккаунт...', 'var(--color-primary)');
+        const { error } = await c.auth.signUp({ email, password, options:{ data:{ nickname } } });
         if(error) return setMsg(error.message);
-        if(data?.user && !userEmailConfirmed(data.user)){
-          try { await c.auth.signOut(); } catch(e) {}
-          return setMsg('Аккаунт создан. Подтвердите почту по ссылке из письма, затем войдите на сайт.', 'var(--color-success)');
-        }
-        setMsg('Аккаунт создан. Если вход произошёл без письма, проверьте переключатель Confirm email в Supabase.', 'var(--color-success)');
-        setTimeout(() => window.location.reload(), 800);
+        setMsg('Аккаунт создан. Теперь можно войти на сайт.', 'var(--color-success)');
+        setTimeout(()=>window.location.reload(), 700);
       };
     }
   }
 
   function bindRecoveryListener(){
-    const c = client();
-    if(!c || !c.auth || window.__T73_V47_RECOVERY_BOUND__) return;
-    window.__T73_V47_RECOVERY_BOUND__ = true;
-    c.auth.onAuthStateChange((event) => {
-      if(event === 'PASSWORD_RECOVERY') setTimeout(showResetPasswordModal, 150);
-      if(event === 'SIGNED_IN') setTimeout(enforceConfirmedSession, 250);
-    });
+    const c=client();
+    if(!c || !c.auth || window.__T73_V48_RECOVERY_BOUND__) return;
+    window.__T73_V48_RECOVERY_BOUND__=true;
+    c.auth.onAuthStateChange((event)=>{ if(event==='PASSWORD_RECOVERY') setTimeout(showResetPasswordModal,150); });
   }
 
   function boot(){
+    fixAuthInputs();
+    hideConfirmationUi();
     ensureForgotButton();
     ensureResetPasswordModal();
     bindAuthHandlers();
     bindRecoveryListener();
-    enforceConfirmedSession();
-    if(recoveryInUrl()) setTimeout(showResetPasswordModal, 700);
+    if(recoveryInUrl()) setTimeout(showResetPasswordModal,700);
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  setTimeout(boot, 300); setTimeout(boot, 1200); setTimeout(boot, 3000);
-  let t; new MutationObserver(() => { clearTimeout(t); t = setTimeout(boot, 220); }).observe(document.documentElement, { childList: true, subtree: true });
-  window.T73_V47_AUTH = { boot, client, showResetPasswordModal };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  setTimeout(boot,300); setTimeout(boot,1200); setTimeout(boot,3000);
+  let t;
+  new MutationObserver(()=>{ clearTimeout(t); t=setTimeout(boot,220); }).observe(document.documentElement,{childList:true,subtree:true});
+  window.T73_V48_AUTH_NO_CONFIRM = { boot, client, showResetPasswordModal };
 })();
 </script>
 
