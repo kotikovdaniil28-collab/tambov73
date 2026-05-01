@@ -7950,7 +7950,7 @@
             function v4RenderTrainer(){
                 const org = v4Org(), pack = GOV_TRAINERS_V4[org.id] || GOV_TRAINERS_V4.fsb, round = v4GetRound(org.id), root = document.getElementById('gossV4Content');
                 if (!root) return;
-                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#6c8cff;margin:0;">' + v4Esc(pack.title) + '</h3><p class="gov-v4-sub">' + v4Esc(pack.lead) + '</p></div><span class="gov-v4-pill">' + v4Esc(pack.badge) + '</span></div></div><div class="message-card" style="min-height:auto;"><div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># ' + v4Esc(org.short.toLowerCase()) + ' / тренажёр СС</div><div class="author-row"><div class="avatar">' + v4Esc(org.icon) + '</div><div><div class="author-name">' + v4Esc(round.scenario.from) + '</div><div class="author-meta">' + v4Esc(org.name) + '</div></div></div><div class="message-text">' + v4Esc(round.scenario.text) + '</div><div class="gov-v4-options">' + round.options.map((o, idx) => '<button class="gov-v4-option" data-idx="' + idx + '" type="button"><span class="gov-v4-choice-tag">Вариант ' + String.fromCharCode(65 + idx) + '</span><span class="gov-v4-choice-text">' + v4Esc(o.text) + '</span></button>').join('') + '</div><div id="govV4TrainerFeedback"></div></div><div class="gov-v4-actions"><button id="govV4NextScenarioBtn" class="btn btn-secondary" type="button">Следующая ситуация</button></div>' + (!v4HasSpecial(org.id) ? '<div class="gov-v4-denied">Сейчас у вас обычный доступ: доступен только тренажёр. Разделы «Мои данные», «Отчётность», «Магазин» появятся после выдачи прав старшего состава. Панель руководства появится только после выдачи прав руководства.</div>' : '');
+                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#6c8cff;margin:0;">' + v4Esc(pack.title) + '</h3><p class="gov-v4-sub">' + v4Esc(pack.lead) + '</p></div><span class="gov-v4-pill">' + v4Esc(pack.badge) + '</span></div></div><div class="message-card" style="min-height:auto;"><div class="channel"><span class="channel-dot" style="background:#6c8cff;"></span># ' + v4Esc(org.short.toLowerCase()) + ' / тренажёр СС</div><div class="author-row"><div class="avatar">' + v4Esc(org.icon) + '</div><div><div class="author-name">' + v4Esc(round.scenario.from) + '</div><div class="author-meta">' + v4Esc(org.name) + '</div></div></div><div class="message-text">' + v4Esc(round.scenario.text) + '</div><div class="gov-v4-options">' + round.options.map((o, idx) => '<button class="gov-v4-option" data-idx="' + idx + '" type="button"><span class="gov-v4-choice-tag">Вариант ' + String.fromCharCode(65 + idx) + '</span><span class="gov-v4-choice-text">' + v4Esc(o.text) + '</span></button>').join('') + '</div><div id="govV4TrainerFeedback"></div></div><div class="gov-v4-actions"><button id="govV4NextScenarioBtn" class="btn btn-secondary" type="button">Следующая ситуация</button></div>' + (!v4HasSpecial(org.id) ? '<div class="gov-v4-denied">Сейчас у вас обычный доступ: доступен только тренажёр. Разделы «Мои данные», «Сдать ГОСС отчёт», «Магазин» появятся после выдачи прав старшего состава. Панель руководства появится только после выдачи прав руководства.</div>' : '');
                 root.querySelectorAll('.gov-v4-option').forEach(btn => v4Bind(btn, () => {
                     if (round.answered) return;
                     round.answered = true;
@@ -9113,9 +9113,8 @@
           async function renderShop(){const o=org(),r=root();active('g19Shop');if(!r)return;if(!(await orgAccess(o.id))){r.innerHTML='<div class="g19-denied">Магазин ГОСС доступен только сотрудникам организации.</div>';return}const lead=await orgLead(o.id),bal=await balance(o.id,currentUser.id),d=(await supa.from('reports').select('*').eq('email',E.shop).eq('link',o.id).limit(200)).data||[],items=d.map(x=>Object.assign({id:x.id,price:Number(x.xp||0)},parse(x.date,{})));r.innerHTML=`<div class="g19-card"><h3 style="color:#6c8cff;margin:0">🛒 Магазин ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Баланс: <b>${bal}</b></p></div><div class="g19-shop">${items.map(it=>`<div class="g19-item"><div style="font-size:1.5rem">${esc(it.icon||'🎁')}</div><b>${esc(it.title||'Товар')}</b><div class="g19-muted">${esc(it.desc||'')}</div><span class="g19-pill">${it.price} баллов</span><button class="btn btn-primary buy" data-id="${esc(it.id)}" data-price="${it.price}" data-title="${esc(it.title||'Товар')}">Купить</button>${lead?`<button class="btn btn-secondary del" data-id="${esc(it.id)}">Удалить</button>`:''}</div>`).join('')||'<div class="g19-denied">Товары ещё не добавлены.</div>'}</div>`+(lead?`<div class="g19-card"><h3 style="margin:0 0 1rem;color:#fff">🛠 Конструктор магазина ${esc(o.short)}</h3><div class="g19-form"><label>Иконка<input id="g19Icon" class="g19-input" placeholder="🎁"></label><label>Цена<input id="g19Price" class="g19-input" type="number" value="10"></label><label class="full">Название<input id="g19Title" class="g19-input"></label><label class="full">Описание<textarea id="g19Desc" class="g19-area"></textarea></label></div><button id="g19AddItem" class="btn btn-primary" style="margin-top:1rem">➕ Добавить товар</button></div>`:'');r.querySelectorAll('.buy').forEach(b=>b.onclick=async()=>{const price=+b.dataset.price;if(await balance(o.id,currentUser.id)<price)return alert('Недостаточно баллов');await supa.from('reports').insert([{id:rid('gbuy'),email:E.buy,link:o.id,status:currentUser.id,date:JSON.stringify({title:b.dataset.title,user:currentUser.email,at:now()}),xp:price}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'shop_buy',date:'Покупка '+b.dataset.title+' · '+(currentNickname||currentUser.email)+' · '+now(),xp:price}]);alert('Покупка отправлена в логи.');renderShop()});r.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{if(confirm('Удалить товар?')){await supa.from('reports').delete().eq('id',b.dataset.id);renderShop()}});if($('g19AddItem'))$('g19AddItem').onclick=async()=>{const title=String($('g19Title').value||'').trim();if(!title)return alert('Введите название');await supa.from('reports').insert([{id:rid('gshop'),email:E.shop,link:o.id,status:'active',date:JSON.stringify({title,desc:$('g19Desc').value||'',icon:$('g19Icon').value||'🎁',by:currentUser.email,at:now()}),xp:Number($('g19Price').value||0)}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'shop_add',date:'Добавлен товар '+title+' · '+now(),xp:Number($('g19Price').value||0)}]);renderShop()}}
           async function renderGlobal(){const o=org(),r=root();active('g19Global');if(!r)return;if(!(await globalLead())){r.innerHTML='<div class="g19-denied">Доступно только руководству всех ГОСС.</div>';return}const us=await users(),rs=(await roles()).filter(x=>String(x.status||'').startsWith('goss_')),orgOpts=((typeof GOSS_ORGS!=='undefined'?GOSS_ORGS:[])||[]).map(x=>`<option value="${esc(x.id)}">${esc(x.short)}</option>`).join('');r.innerHTML=`<div class="g19-card"><h3 style="color:#6c8cff;margin:0 0 .7rem">👑 Руководство всех ГОСС</h3><p class="g19-muted">Отдельная таблица для пользователей с доступом ко всем ГОСС. Им не нужно регаться в каждой организации.</p><div class="g19-form"><label class="full">Пользователь<select id="g19User" class="g19-select">${us.map(u=>`<option value="${esc(u.id)}">${esc(u.nick||u.email||u.id)}</option>`).join('')}</select></label><label>Доступ<select id="g19Role" class="g19-select"><option value="goss_admin_all">Руководство всех ГОСС</option><option value="goss_senior_all">СС всех ГОСС</option><option value="lead_one">Руководство выбранной организации</option><option value="senior_one">СС выбранной организации</option></select></label><label>Организация<select id="g19RoleOrg" class="g19-select">${orgOpts}</select></label><label>Баллы<input id="g19Points" class="g19-input" type="number" value="10"></label><label>Баланс<select id="g19PointOrg" class="g19-select"><option value="all">Все ГОСС</option>${orgOpts}</select></label></div><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-primary" id="g19Grant">➕ Выдать доступ</button><button class="btn btn-secondary" id="g19Remove">➖ Забрать доступ</button><button class="btn btn-secondary" id="g19Give">💠 Выдать/списать баллы</button></div></div><div class="g19-card"><h3 style="margin:0 0 1rem;color:#fff">Текущие ГОСС-доступы</h3><div class="g19-grid">${rs.map(x=>`<div class="g19-mini"><b>${esc((us.find(u=>u.id===x.link)||{}).nick||x.link)}</b><div class="g19-muted">${esc(x.status)} · ${esc(x.date||'')}</div></div>`).join('')||'<div class="g19-denied">Доступов пока нет.</div>'}</div></div>`;function status(){const v=$('g19Role').value,oid=$('g19RoleOrg').value;if(v==='lead_one')return'goss_lead_'+oid;if(v==='senior_one')return'goss_senior_'+oid;return v}$('g19Grant').onclick=async()=>{const u=$('g19User').value,st=status();await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);await supa.from('reports').insert([{id:rid('gaccess'),email:'ADMIN_ROLE',link:u,status:st,date:now(),xp:0}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'grant_access',date:'Выдан '+st+' пользователю '+u+' · '+now(),xp:0}]);alert('Доступ выдан');renderGlobal()};$('g19Remove').onclick=async()=>{const u=$('g19User').value,st=status();await supa.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',u).eq('status',st);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'remove_access',date:'Снят '+st+' у '+u+' · '+now(),xp:0}]);alert('Доступ снят');renderGlobal()};$('g19Give').onclick=async()=>{const u=$('g19User').value,amount=Number($('g19Points').value||0),po=$('g19PointOrg').value;if(!amount)return;await supa.from('reports').insert([{id:rid('gpts'),email:E.points,link:u,status:po,date:'Баллы ГОСС '+amount+' · '+(currentUser?.email||'')+' · '+now(),xp:amount}]);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:po,status:'points',date:'Баллы '+amount+' пользователю '+u+' · '+now(),xp:amount}]);alert('Баллы изменены')}}
           async function renderLogs(){const o=org(),r=root();active('g19Logs');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Логи видит только руководство организации.</div>';return}let rows=[];try{rows=(await supa.from('reports').select('*').in('email',[E.report,E.table,E.member,E.points,E.log,E.shop,E.buy]).order('id',{ascending:false}).limit(500)).data||[];rows=rows.filter(x=>x.link===o.id||x.status===o.id||x.status==='all')}catch(e){}try{const rr=(await supa.from('reports').select('*').eq('email','ADMIN_ROLE').order('id',{ascending:false}).limit(500)).data||[];rows=rows.concat(rr.filter(x=>['goss_admin_all','goss_senior_all','goss_lead_'+o.id,'goss_senior_'+o.id].includes(x.status)))}catch(e){}r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#6c8cff;margin:0">🧾 Логи организации — ${esc(o.short)}</h3><p class="g19-muted">Отдельные логи этой организации: отчёты, таблица, магазин, доступы, баллы.</p></div><button id="g19RefLogs" class="btn btn-secondary">🔄 Обновить</button></div></div><div class="g19-grid">${rows.slice(0,180).map(x=>`<div class="g19-mini"><div class="g19-head"><b>${esc(x.email)} · ${esc(x.status||'')}</b><span class="g19-pill">${Number(x.xp||0)} б.</span></div><div class="g19-muted">link: ${esc(x.link||'')}</div><div style="overflow-wrap:anywhere">${esc(typeof x.date==='string'?x.date.slice(0,600):JSON.stringify(x.date||{}).slice(0,600))}</div></div>`).join('')||'<div class="g19-denied">Логов пока нет.</div>'}</div>`;$('g19RefLogs').onclick=renderLogs}
-          document.addEventListener('click',e=>{if(e.target.closest?.('.gov-action-switch-v4[data-view="shop"]'))setTimeout(renderShop,80)},true);
-          let t;function tick(){clearTimeout(t);t=setTimeout(nav,120)}
-          setTimeout(tick,500);setTimeout(tick,1800);setTimeout(tick,3500);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V19={renderTable,renderSubmit,renderGlobal,renderLogs,renderShop};
+          // T73 V78: automatic ГОСС nav injection disabled; controlled by T73_V78_GOSS_ROUTER.
+          window.T73_GOSS_V19={renderTable,renderSubmit,renderGlobal,renderLogs,renderShop};
         })();
         /* === /T73 V19 === */
 
@@ -9157,9 +9156,8 @@
           async function renderReportsSheet(o){const body=$('g20SheetBody');if(!body)return;body.innerHTML='<div class="g19-card">Загружаю отчёты...</div>';let rows=[];try{rows=(await supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(180)).data||[]}catch(e){}const proofHtml=p=>{let arr=[];if(Array.isArray(p.proofs))arr=arr.concat(p.proofs);if(Array.isArray(p.files))arr=arr.concat(p.files.map(x=>typeof x==='string'?{url:x,name:'Файл'}:x));if(p.link)arr.push({url:p.link,name:'Ссылка'});return arr.length?arr.map((a,n)=>`<a class="g20-proof" target="_blank" rel="noreferrer" href="${esc(a.url||a.href||a.src||'')}">📎 ${esc(a.name||('Файл '+(n+1)))}</a>`).join(''):'<span class="g19-muted">Файлов нет</span>'};const btns=(id)=>`<div class="g19-actions" style="margin-top:.75rem"><button class="btn btn-secondary g20fastCheck" data-id="${esc(id)}" data-status="Норма" data-xp="15" style="border-color:#52c77b;color:#52c77b">Норма</button><button class="btn btn-secondary g20fastCheck" data-id="${esc(id)}" data-status="Перенорма" data-xp="30" style="border-color:#3dd68c;color:#3dd68c">Перенорма</button><button class="btn btn-secondary g20fastCheck" data-id="${esc(id)}" data-status="Натяг" data-xp="7" style="border-color:#00e5ff;color:#00e5ff">Натяг</button><button class="btn btn-secondary g20fastCheck" data-id="${esc(id)}" data-status="Отказ" data-xp="0" style="border-color:var(--color-error);color:var(--color-error)">Отказ</button></div>`;body.innerHTML=`<div class="g20-help">Проверка ГОСС отчётов сделана как в модерации: только 4 кнопки — Норма, Перенорма, Натяг, Отказ. Нажатие сразу записывает результат в недельную таблицу.</div><div class="g20-subgrid" style="margin-top:1rem">${rows.map(row=>{const p=parse(row.date,{}),day=String(p.day||p.createdIso||p.created||'').slice(0,10)||new Date().toISOString().slice(0,10),st=p.reviewStatus||p.result||'На проверке';return`<div class="g20-report-card"><div><b>${esc(p.nick||row.status||'Пользователь')}</b><div class="g19-muted">${esc(p.type||p.work||'ГОСС отчёт')} · ${esc(day)} · ${esc(p.created||'')}</div></div><div>${esc(p.comment||p.work||'Без комментария')}</div><div class="g20-proofs">${proofHtml(p)}</div><span class="g19-pill">${esc(st)} · ${Number(p.reviewPoints??row.xp??0)||0} б.</span>${p.checkedAt?`<div class="g19-muted">Проверено: ${esc(p.checkedBy||'')} · ${esc(p.checkedAt||'')}</div>`:''}${btns(row.id)}</div>`}).join('')||'<div class="g19-denied">Отчётов пока нет.</div>'}</div>`;body.querySelectorAll('.g20fastCheck').forEach(btn=>btn.onclick=async()=>{const id=btn.dataset.id,status=btn.dataset.status,xp=Number(btn.dataset.xp)||0;btn.disabled=true;const got=await supa.from('reports').select('*').eq('id',id).limit(1);const row=(got.data||[])[0];if(!row){btn.disabled=false;return alert('Отчёт не найден')}const p=parse(row.date,{}),user=String(p.userId||p.user_id||row.status||''),day=String(p.day||p.createdIso||p.created||new Date().toISOString()).slice(0,10);if(!user||!day){btn.disabled=false;return alert('Не удалось определить пользователя или дату отчёта')}p.reviewStatus=status;p.result=status;p.reviewPoints=xp;p.checkedAt=now();p.checkedBy=currentUser?.email||'';await supa.from('reports').update({date:JSON.stringify(p),xp:xp,status:row.status}).eq('id',id);try{const old=await supa.from('reports').select('id').eq('email',E.member).eq('link',o.id).eq('status',user).limit(1);if(!(old.data||[]).length)await supa.from('reports').insert([{id:rid('g20mem_auto'),email:E.member,link:o.id,status:user,date:JSON.stringify({nick:p.nick||user,post:p.post||'Сотрудник',at:now(),by:currentUser?.email||''}),xp:0}])}catch(e){}await saveSingleMark(o.id,user,day,{report:status,day:status==='Отказ'?'Отказ':'Сдано',note:'Проверено через лист отчётов: '+status+' · '+now(),by:currentUser?.email||'',at:now(),reportId:id});if(xp>0)await supa.from('reports').insert([{id:rid('g20pts'),email:E.points,link:user,status:o.id,date:'Баллы за ГОСС отчёт: '+status+' · '+now(),xp}]);await supa.from('reports').insert([{id:rid('g20log'),email:E.log,link:o.id,status:'report_check',date:'Отчёт проверен и записан в таблицу: '+user+' · '+day+' · '+status+' · '+now(),xp}]);btn.disabled=false;alert('Записано в таблицу: '+status);renderReportsSheet(o)})}
           async function renderManageHub(){style();activate('g20Manage');const o=org(),r=root();if(!r)return;const lead=await orgLead(o.id),glob=await globalLead();if(!lead&&!glob){r.innerHTML='<div class="g19-denied">Управление доступно только руководству организации.</div>';return}r.innerHTML=`<div class="g20-compact-card"><h3 style="color:#6c8cff;margin:0 0 .6rem">🧭 Управление ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Чтобы не было кучи кнопок, логи и управление доступом собраны здесь.</p><div class="g19-actions" style="margin-top:1rem"><button class="btn btn-secondary" id="g20OpenLogs">🧾 Логи организации</button>${glob?'<button class="btn btn-primary" id="g20OpenGlobal">👑 Руководство всех ГОСС</button>':''}</div></div>`;$('g20OpenLogs').onclick=()=>fns().renderLogs?fns().renderLogs():alert('Модуль логов не найден');if($('g20OpenGlobal'))$('g20OpenGlobal').onclick=()=>fns().renderGlobal?fns().renderGlobal():alert('Модуль руководства не найден')}
           async function nav(){style();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;['g19Submit','g19Table','g19Shop','g19Logs','g19Global'].forEach(id=>{const b=$(id);if(b)b.style.display='none'});const o=org(),lead=await orgLead(o.id),access=await orgAccess(o.id),glob=await globalLead();const items=[['g20Submit','📎 Сдать ГОСС отчёт',access,()=>fns().renderSubmit?fns().renderSubmit():alert('Модуль сдачи отчёта не найден')],['g20Table','📊 Таблица',lead,()=>renderTableHub('table')],['g20Shop','🛒 Магазин',access,()=>fns().renderShop?fns().renderShop():alert('Модуль магазина не найден')],['g20Manage','🧭 Управление',lead||glob,renderManageHub]];items.forEach(([id,label,show,fn])=>{let b=$(id);if(!b){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${label}</button>`);b=$(id)}b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}})}
-          let timer;function tick(){clearTimeout(timer);timer=setTimeout(nav,220)}
-          document.addEventListener('click',e=>{if(e.target.closest?.('.gov-org-switch-v4,.gov-action-switch-v4'))setTimeout(tick,180)},true);
-          setTimeout(tick,600);setTimeout(tick,1800);setTimeout(tick,3600);new MutationObserver(tick).observe(document.body,{childList:true,subtree:true});window.T73_GOSS_V20={renderTableHub,renderManageHub,nav};
+          // T73 V78: automatic compact ГОСС nav injection disabled; controlled by T73_V78_GOSS_ROUTER.
+          window.T73_GOSS_V20={renderTableHub,renderManageHub,nav};
         })();
         /* === /T73 V20 === */
 
@@ -11307,336 +11305,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V67 === -->
 
 <!-- === T73 V68: логи ГОСС только внутри выбранной организации, не в общем списке === -->
-<style id="t73-v68-goss-logs-inside-style">
-  #subNavOrganizations #gossOrgLogsTabBtnV15,
-  #subNavOrganizations #gossShopLogsTabBtn,
-  #subNavOrganizations #fsbAdminLogTabBtn,
-  #subNavOrganizations [data-mode="goss_org_logs"],
-  #subNavOrganizations [data-mode="goss_shop_logs"],
-  #subNavOrganizations [data-mode="fsb_admin_log"] {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    min-width: 0 !important;
-    max-width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    overflow: hidden !important;
-  }
-  .t73-v68-log-card {
-    padding: 1rem;
-    border-radius: 18px;
-    border: 1px solid rgba(255,107,136,.28);
-    background: linear-gradient(145deg, rgba(13,16,32,.94), rgba(5,7,14,.98));
-    box-shadow: 0 14px 34px rgba(0,0,0,.35);
-    display: grid;
-    gap: .75rem;
-  }
-  .t73-v68-log-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: .8rem;
-    flex-wrap: wrap;
-  }
-  .t73-v68-log-list { display: grid; gap: .7rem; }
-  .t73-v68-log-row {
-    padding: .9rem;
-    border-radius: 15px;
-    border: 1px solid rgba(255,255,255,.13);
-    background: rgba(0,0,0,.30);
-    display: grid;
-    gap: .35rem;
-    overflow-wrap: anywhere;
-  }
-  .t73-v68-muted { color: var(--color-text-muted); font-size: .9rem; line-height: 1.45; }
-  .t73-v68-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: .28rem .62rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.16);
-    background: rgba(255,255,255,.07);
-    color: #fff;
-    font-size: .78rem;
-    font-weight: 900;
-  }
-  .t73-v68-denied {
-    padding: 1rem;
-    border-radius: 16px;
-    border: 1px solid rgba(255,191,71,.35);
-    background: rgba(255,191,71,.08);
-    color: #fff;
-  }
-</style>
-<script id="t73-v68-goss-logs-inside-script">
-(function(){
-  var LOG_EMAILS = ['GOSS_ORG_LOG_V19','GOSS_USER_REPORT','GOSS_REPORT_TABLE_V19','GOSS_SHOP_BUY_V19','GOSS_SHOP_ITEMS_V19','GOSS_POINTS_V19','GOSS_REPORT_MEMBER_V19','GOSS_PROFILE'];
-  var SHOP_EMAILS = ['GOSS_SHOP_BUY_V19','GOSS_SHOP_ITEMS_V19','GOSS_ORG_LOG_V19'];
-  var FALLBACK_ORGS = [
-    {id:'prav', short:'Правительство', icon:'🏛️'}, {id:'fsb', short:'ФСБ', icon:'🛡️'},
-    {id:'gibdd', short:'ГИБДД', icon:'🚓'}, {id:'umvd', short:'УМВД', icon:'👮'},
-    {id:'army', short:'Армия', icon:'🎖️'}, {id:'hospital', short:'Больница', icon:'🏥'},
-    {id:'smi', short:'СМИ', icon:'🎙️'}, {id:'fsin', short:'ФСИН', icon:'⛓️'}
-  ];
-  function $(id){ return document.getElementById(id); }
-  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
-  function parse(v, d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
-  function orgs(){ try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){} return FALLBACK_ORGS; }
-  function activeOrgId(){
-    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
-    return (btn && btn.dataset && btn.dataset.orgId) || window.currentGossOrgId || 'fsb';
-  }
-  function currentOrg(){
-    var id = activeOrgId();
-    var found = orgs().find(function(o){ return String(o.id) === String(id); });
-    if (found) return found;
-    var btn = document.querySelector('[data-org-id="' + String(id).replace(/"/g,'\\"') + '"]');
-    return { id:id, short:(btn ? btn.textContent.trim() : id.toUpperCase()), icon:'🏛️' };
-  }
-  function root(){
-    var panel4 = $('mode-goss_center_v4'), panel3 = $('mode-goss_center_v3'), dash = $('mode-goss_dashboard');
-    if (panel4 && panel4.style.display !== 'none' && $('gossV4Content')) return $('gossV4Content');
-    if (panel3 && panel3.style.display !== 'none' && $('gossV3Content')) return $('gossV3Content');
-    if (dash && dash.style.display !== 'none' && $('gossDashView')) return $('gossDashView');
-    return $('gossV4Content') || $('gossV3Content') || $('gossDashView');
-  }
-  function navs(){ return qa('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav'); }
-  function client(){ return window.supa || (typeof supa !== 'undefined' ? supa : null); }
-  function isCreator(){
-    try { return !!(currentUser && (currentUser.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)))); } catch(e){ return false; }
-  }
-  async function isLeader(orgId){
-    var c = client();
-    try {
-      if (!currentUser) return false;
-      if (isCreator()) return true;
-      var res = await c.from('reports').select('id,link,status').eq('email','ADMIN_ROLE').eq('link',currentUser.id).limit(1000);
-      var rows = res.data || [];
-      return rows.some(function(r){ return r.status === 'goss_admin_all' || r.status === ('goss_lead_' + orgId); });
-    } catch(e){ return false; }
-  }
-  function hideGlobalLogTabs(){
-    qa('#subNavOrganizations #gossOrgLogsTabBtnV15,#subNavOrganizations #gossShopLogsTabBtn,#subNavOrganizations #fsbAdminLogTabBtn,#subNavOrganizations [data-mode="goss_org_logs"],#subNavOrganizations [data-mode="goss_shop_logs"],#subNavOrganizations [data-mode="fsb_admin_log"]').forEach(function(el){
-      el.classList.add('t73-v68-hidden-global-log');
-      el.style.setProperty('display','none','important');
-      el.style.setProperty('visibility','hidden','important');
-      el.style.setProperty('pointer-events','none','important');
-    });
-  }
-  function rowDate(r){ return r.created_at || r.inserted_at || r.updated_at || r.id || r.date || ''; }
-  function rowTitle(r){
-    var p = parse(r.date, {});
-    return r.item_name || p.title || p.type || p.text || r.email || r.status || 'Запись';
-  }
-  function rowBody(r){
-    var p = parse(r.date, null);
-    if (r.item_name) return 'Покупка/выдача: ' + r.item_name + (r.cost ? ' · стоимость: ' + r.cost : '');
-    if (p && typeof p === 'object') return p.comment || p.text || p.work || p.desc || JSON.stringify(p).slice(0, 700);
-    return String(r.date || '').slice(0, 700);
-  }
-  function renderRows(rows, empty){
-    if (!rows.length) return '<div class="t73-v68-denied">' + esc(empty) + '</div>';
-    return '<div class="t73-v68-log-list">' + rows.map(function(r){
-      var at = rowDate(r);
-      var when = '';
-      try { when = at ? new Date(at).toLocaleString('ru-RU') : ''; } catch(e){ when = String(at || ''); }
-      return '<div class="t73-v68-log-row">'
-        + '<div class="t73-v68-log-head"><strong>' + esc(rowTitle(r)) + '</strong><span class="t73-v68-pill">' + esc(r.email || r.type || r.source || r.status || 'лог') + '</span></div>'
-        + '<div class="t73-v68-muted">' + esc(r.status || '') + (when ? ' · ' + esc(when) : '') + '</div>'
-        + '<div>' + esc(rowBody(r)) + '</div>'
-        + (r.nickname || r.nick ? '<div class="t73-v68-muted">Пользователь: ' + esc(r.nickname || r.nick) + '</div>' : '')
-        + '</div>';
-    }).join('') + '</div>';
-  }
-  async function renderOrgLogs(){
-    hideGlobalLogTabs();
-    var c = client(), r = root(), o = currentOrg();
-    if (!r || !c) return;
-    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи организации видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
-    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#6c8cff;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка журнала этой организации...</div></div>';
-    var rows = [];
-    try {
-      var res = await c.from('reports').select('*').in('email', LOG_EMAILS).eq('link', o.id).order('id', { ascending:false }).limit(220);
-      rows = rows.concat(res.data || []);
-    } catch(e){}
-    try {
-      var roles = await c.from('reports').select('*').eq('email','ADMIN_ROLE').order('id', { ascending:false }).limit(500);
-      rows = rows.concat((roles.data || []).filter(function(x){ return ['goss_admin_all','goss_senior_all','goss_lead_' + o.id,'goss_senior_' + o.id].includes(x.status); }));
-    } catch(e){}
-    rows.sort(function(a,b){ return String(rowDate(b)).localeCompare(String(rowDate(a))); });
-    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#6c8cff;">🧾 Логи организации — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Здесь только журнал выбранной организации, а не общий список ГОСС.</p></div><button id="t73V68RefreshOrgLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи этой организации пока пустые.');
-    var b = $('t73V68RefreshOrgLogs'); if (b) b.onclick = renderOrgLogs;
-  }
-  async function renderShopLogs(){
-    hideGlobalLogTabs();
-    var c = client(), r = root(), o = currentOrg();
-    if (!r || !c) return;
-    if (!(await isLeader(o.id))) { r.innerHTML = '<div class="t73-v68-denied">Логи магазина видит только руководство этой организации или руководство всех ГОСС.</div>'; return; }
-    r.innerHTML = '<div class="t73-v68-log-card"><h3 style="margin:0;color:#6c8cff;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><div class="t73-v68-muted">Загрузка покупок и действий магазина...</div></div>';
-    var rows = [];
-    try {
-      var res = await c.from('reports').select('*').in('email', SHOP_EMAILS).eq('link', o.id).order('id', { ascending:false }).limit(220);
-      rows = rows.concat((res.data || []).filter(function(x){
-        var text = String(x.status || '') + ' ' + String(x.date || '') + ' ' + String(x.email || '');
-        return /shop|buy|магазин|покуп|товар|рулет/i.test(text);
-      }));
-    } catch(e){}
-    if (o.id === 'fsb') {
-      try {
-        var a = await c.from('admin_logs').select('*').eq('type','fsb_shop').order('created_at', { ascending:false }).limit(160);
-        rows = rows.concat((a.data || []).map(function(x){ x.source = 'admin_logs'; return x; }));
-      } catch(e){}
-    }
-    rows.sort(function(a,b){ return String(rowDate(b)).localeCompare(String(rowDate(a))); });
-    r.innerHTML = '<div class="t73-v68-log-card"><div class="t73-v68-log-head"><div><h3 style="margin:0;color:#6c8cff;">🛒 Логи магазина — ' + esc(o.short || o.id) + '</h3><p class="t73-v68-muted">Показываются покупки и действия магазина только выбранной организации.</p></div><button id="t73V68RefreshShopLogs" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + renderRows(rows.slice(0,180), 'Логи магазина этой организации пока пустые.');
-    var b = $('t73V68RefreshShopLogs'); if (b) b.onclick = renderShopLogs;
-  }
-  function ensureInsideButtons(){
-    hideGlobalLogTabs();
-    navs().forEach(function(nav){
-      if (!nav) return;
-      var org = currentOrg();
-      var orgBtn = nav.querySelector('.t73-v68-org-logs');
-      if (!orgBtn) {
-        nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-org-logs" type="button">🧾 Логи организации</button>');
-        orgBtn = nav.querySelector('.t73-v68-org-logs');
-      }
-      var shopBtn = nav.querySelector('.t73-v68-shop-logs');
-      if (!shopBtn) {
-        nav.insertAdjacentHTML('beforeend', '<button class="mode-btn t73-v68-shop-logs" type="button">🛒 Логи магазина</button>');
-        shopBtn = nav.querySelector('.t73-v68-shop-logs');
-      }
-      if (orgBtn) { orgBtn.textContent = '🧾 Логи ' + (org.short || 'организации'); orgBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderOrgLogs(); }; }
-      if (shopBtn) { shopBtn.textContent = '🛒 Логи магазина ' + (org.short || ''); shopBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); renderShopLogs(); }; }
-    });
-  }
-  function boot(){ hideGlobalLogTabs(); ensureInsideButtons(); }
-  document.addEventListener('click', function(e){
-    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch')) setTimeout(boot, 90);
-  }, true);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [200,700,1500,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__t73_v68_logs); window.__t73_v68_logs = setTimeout(boot, 120); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V68_GOSS_LOGS_INSIDE = { refresh:boot, orgLogs:renderOrgLogs, shopLogs:renderShopLogs };
-})();
-</script>
-<!-- === /T73 V68 === -->
-
-
-<!-- === T73 V69: ГОСС — убрать дубль логов в Правительстве === -->
-<style id="t73-v69-gov-logs-dedup-style">
-  .t73-v69-hidden-duplicate-gov-log {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-  }
-</style>
-<script id="t73-v69-gov-logs-dedup-script">
-(function(){
-  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function txt(el){ return String((el && el.textContent) || '').replace(/\s+/g,' ').trim(); }
-  function activeOrgId(){
-    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
-    return (btn && btn.dataset && btn.dataset.orgId) || window.currentGossOrgId || '';
-  }
-  function activeOrgName(){
-    var btn = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active');
-    return txt(btn);
-  }
-  function isGovernment(){
-    var id = String(activeOrgId() || '').toLowerCase();
-    var name = activeOrgName().toLowerCase();
-    return id === 'government' || id === 'prav' || id === 'gov' || /правитель/.test(name);
-  }
-  function setLabel(el){
-    if (!el) return;
-    var t = txt(el);
-    if (/логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t))) {
-      var label = '🧾 Логи Правительства';
-      if (txt(el) !== label) el.textContent = label;
-      if (el.title !== 'Открыть единый журнал Правительства') el.title = 'Открыть единый журнал Правительства';
-    }
-  }
-  function getLogButtons(){
-    var selectors = [
-      '#gossOrgActionNavV4 button',
-      '#gossOrgActionNavV3 button',
-      '#gossOrgActionNav button',
-      '#gossV4Content button',
-      '#gossV3Content button',
-      '#gossDashView button',
-      '#mode-goss_center_v4 button',
-      '#mode-goss_center_v3 button',
-      '#mode-goss_dashboard button'
-    ].join(',');
-    return qa(selectors).filter(function(b){
-      var t = txt(b);
-      return /логи/i.test(t) && (/организац/i.test(t) || /правитель/i.test(t));
-    });
-  }
-  function dedupeGovernmentLogs(){
-    if (!isGovernment()) {
-      qa('.t73-v69-hidden-duplicate-gov-log').forEach(function(el){
-        el.classList.remove('t73-v69-hidden-duplicate-gov-log');
-      });
-      return;
-    }
-
-    var buttons = getLogButtons();
-    buttons.forEach(setLabel);
-
-    // В Правительстве оставляем один вход в логи.
-    // Приоритет: новая кнопка V68/V69 в навигации организации. Старые дубляжи в карточках скрываем.
-    var preferred = buttons.find(function(b){ return b.classList.contains('t73-v68-org-logs') || b.id === 't73V69GovLogsBtn'; });
-    if (!preferred) preferred = buttons.find(function(b){ return /gossOrgActionNav/.test((b.parentElement && b.parentElement.id) || ''); });
-    if (!preferred) preferred = buttons[0] || null;
-
-    buttons.forEach(function(b){
-      if (b === preferred) {
-        b.classList.remove('t73-v69-hidden-duplicate-gov-log');
-        setLabel(b);
-      } else {
-        b.classList.add('t73-v69-hidden-duplicate-gov-log');
-      }
-    });
-
-    // Если старые версии ещё не успели создать кнопку логов в навигации — создаём одну свою.
-    var nav = document.getElementById('gossOrgActionNavV4') || document.getElementById('gossOrgActionNavV3') || document.getElementById('gossOrgActionNav');
-    if (nav && !preferred && !document.getElementById('t73V69GovLogsBtn')) {
-      var btn = document.createElement('button');
-      btn.id = 't73V69GovLogsBtn';
-      btn.type = 'button';
-      btn.className = 'mode-btn t73-v68-org-logs';
-      btn.textContent = '🧾 Логи Правительства';
-      btn.onclick = function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        if (window.T73_V68_GOSS_LOGS_INSIDE && typeof window.T73_V68_GOSS_LOGS_INSIDE.orgLogs === 'function') {
-          window.T73_V68_GOSS_LOGS_INSIDE.orgLogs();
-        }
-      };
-      nav.appendChild(btn);
-    }
-  }
-  function boot(){
-    clearTimeout(window.__t73_v69_gov_logs_dedupe_timer);
-    window.__t73_v69_gov_logs_dedupe_timer = setTimeout(dedupeGovernmentLogs, 100);
-  }
-  document.addEventListener('click', function(e){
-    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav,.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch,#gossV4Content,#gossV3Content,#gossDashView')) boot();
-  }, true);
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [150,500,1000,1800,3000,5200].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ boot(); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e){}
-  window.T73_V69_GOV_LOGS_DEDUPE = { refresh: dedupeGovernmentLogs };
-})();
-</script>
-<!-- === /T73 V69 === -->
+<!-- removed by T73 V78: old V68 log button injector -->
+<!-- removed by T73 V78: old V69 government log dedupe injector -->
 <!-- === T73 V70: leadership user list fallback for all-access users === -->
 <style>
   .t73-v70-userlist-note{margin:.55rem 0 .2rem;padding:.7rem .85rem;border-radius:14px;border:1px solid rgba(127,232,160,.28);background:rgba(82,199,123,.08);color:var(--color-text-muted);font-size:.88rem;line-height:1.4}
@@ -12571,47 +12241,121 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- removed by T73 V76 CLEAN: V75 final overlay/click interceptor -->
 
 
-<!-- === T73 V77 STABLE MODES + GOV FINAL === -->
-<script>
+
+
+<!-- === T73 V78: deterministic ГОСС router, leadership panel, reports button visibility === -->
+<style id="t73-v78-goss-style">
+  body:not(.t73-v78-modlead) #reportsTableBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #subNavOrganizations [data-mode^="goss_"]:not([data-mode="goss_center_v4"]),
+  #gossOrgActionNav,#gossOrgActionNavV3,
+  #g19Submit,#g19Table,#g19Shop,#g19Logs,#g19Global,
+  #g20Submit,#g20Table,#g20Shop,#g20Manage,
+  .t73-v68-org-logs,.t73-v68-shop-logs,#t73V69GovLogsBtn,
+  #g77Trainer,#g77Reports{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #gossV4Title,#gossV4Org,.t78-accent{color:#6c8cff!important;}
+  .gov-v4-card,.g19-card,.g20-compact-card,.g20-report-card,.t78-card{border-color:rgba(108,140,255,.25)!important;background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(5,7,14,.98))!important;}
+  .gov-v4-table th,.g19-table th{background:linear-gradient(180deg,rgba(108,140,255,.28),rgba(139,108,255,.16))!important;}
+  .g19-drop{border-color:rgba(108,140,255,.45)!important;background:rgba(108,140,255,.08)!important;}
+  #gossOrgActionNavV4{gap:.55rem;flex-wrap:wrap;margin-top:.6rem;}
+  #gossOrgActionNavV4 .mode-btn.active,#subNavOrganizations .gov-org-switch-v4.active{background:linear-gradient(135deg,#6c8cff,#8b6cff)!important;color:#fff!important;border-color:rgba(108,140,255,.55)!important;}
+  .t78-card{padding:1rem;border-radius:18px;border:1px solid rgba(108,140,255,.25);box-shadow:0 12px 30px rgba(0,0,0,.35);margin-bottom:1rem;}
+  .t78-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+  .t78-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45;}
+  .t78-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.8rem;}
+  .t78-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;}
+  .t78-form label{display:grid;gap:.35rem;color:var(--color-text-muted);font-size:.9rem;font-weight:900;}
+  .t78-full{grid-column:1/-1;}
+  .t78-actions{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:1rem;}
+  .t78-mini{padding:.85rem;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.30);}
+  .t78-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .58rem;border-radius:999px;border:1px solid rgba(108,140,255,.35);background:rgba(108,140,255,.12);font-size:.78rem;font-weight:900;color:#dfe6ff;}
+  .t78-option{width:100%;text-align:left;margin:.45rem 0;border-radius:14px;border:1px solid rgba(191,198,255,.20);background:rgba(13,16,32,.9);color:#fff;padding:.85rem;cursor:pointer;font-weight:800;line-height:1.35;}
+  .t78-option:hover{border-color:rgba(108,140,255,.55);}
+  .t78-option.good{border-color:rgba(82,199,123,.75);background:rgba(82,199,123,.12);}
+  .t78-option.bad{border-color:rgba(255,90,90,.75);background:rgba(255,90,90,.10);}
+  .t78-log{overflow-wrap:anywhere;}
+  @media(max-width:760px){#gossOrgActionNavV4 .mode-btn{flex:1 1 100%;min-height:48px}.t78-form{grid-template-columns:1fr}.t78-actions .btn{width:100%;}}
+</style>
+<script id="t73-v78-goss-router-script">
 (function(){
-'use strict';
-const PATCH='T73_V77_STABLE_MODES_GOV_FINAL'; if(window[PATCH]) return; window[PATCH]=true;
-const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const parse=(v,d={})=>{try{return typeof v==='string'?JSON.parse(v):(v||d)}catch(e){return d}};
-function orgs(){return Array.isArray(window.GOSS_ORGS)?window.GOSS_ORGS:[{id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},{id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},{id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚔'},{id:'mvd',short:'МВД',name:'МВД',icon:'👮'},{id:'smi',short:'СМИ',name:'СМИ',icon:'📺'},{id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},{id:'army',short:'Армия',name:'Армия',icon:'🎖️'}]}
-function selOrg(){const id=document.querySelector('.gov-org-switch-v4.active')?.dataset.orgId||sessionStorage.getItem('t73_v77_org')||'fsb';return orgs().find(o=>o.id===id)||orgs()[0]}
-function style(){if($('t73V77Style'))return;document.head.insertAdjacentHTML('beforeend',`<style id="t73V77Style">
-#subNavOrganizations [data-mode^="goss_"]:not([data-mode="goss_center_v4"]){display:none!important}#gossV4Title,#gossV4Org,.g77-accent{color:#6c8cff!important}.gov-v4-card,.g20-compact-card,.g19-card,.g20-report-card{border-color:rgba(108,140,255,.24)!important}.gov-v4-table th,.g19-table th{background:linear-gradient(180deg,rgba(108,140,255,.28),rgba(139,108,255,.16))!important}.g19-drop{border-color:rgba(108,140,255,.45)!important;background:rgba(108,140,255,.08)!important}.g20-sheetbar .mode-btn.active,#gossOrgActionNavV4 .mode-btn.active{background:linear-gradient(135deg,#6c8cff,#8b6cff)!important;color:#fff!important;border-color:rgba(108,140,255,.55)!important}.g77-trainer{border:1px solid rgba(108,140,255,.25);border-radius:18px;padding:1rem;background:rgba(0,0,0,.28)}.g77-option{width:100%;text-align:left;margin:.45rem 0;border-radius:14px;border:1px solid rgba(191,198,255,.20);background:rgba(13,16,32,.9);color:#fff;padding:.85rem;cursor:pointer}.g77-option:hover{border-color:rgba(108,140,255,.55)}.g77-option.good{border-color:rgba(82,199,123,.7);background:rgba(82,199,123,.12)}.g77-option.bad{border-color:rgba(255,90,90,.7);background:rgba(255,90,90,.10)}.g77-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.45}.g77-pill{display:inline-flex;border-radius:999px;padding:.35rem .6rem;background:rgba(108,140,255,.12);border:1px solid rgba(108,140,255,.28);font-size:.78rem;font-weight:900}@media(max-width:760px){#gossOrgActionNavV4 .mode-btn{flex:1 1 100%;min-height:48px}}
-</style>`)}
-function isModLead(){try{if(!currentUser)return false;return currentUser.email===creatorEmail||(Array.isArray(adminEmails)&&adminEmails.includes(currentUser.email))||(Array.isArray(dynamicModLeaders)&&dynamicModLeaders.includes(currentUser.id))}catch(e){return false}}
-function normMode(mode){mode=String(mode||'moderation');if(mode==='goss_dashboard'||mode==='goss_center_v3'||/^goss_(government|gibdd|mvd|smi|hospital|army)$/.test(mode)||mode==='goss_global_access'||mode==='goss_org_logs'||mode==='goss_shop_logs')return'goss_center_v4';return mode}
-function cleanup(){style();document.querySelectorAll('#subNavOrganizations [data-mode^="goss_"]:not([data-mode="goss_center_v4"])').forEach(e=>e.remove());document.querySelectorAll('[id^="mode-goss_"]').forEach(e=>{if(e.id!=='mode-goss_center_v4')e.remove()});['mode-goss_dashboard','mode-goss_center_v3','mode-goss_global_access','mode-goss_org_logs','mode-goss_shop_logs','gossOrgActionNav','gossOrgActionNavV3','gossDashView','gossV3Content','gossDashboardBtn','gossGlobalAccessBtn','gossShopLogsTabBtn'].forEach(id=>$(id)?.remove());const seen=new Set();document.querySelectorAll('[id^="mode-"]').forEach(e=>{if(seen.has(e.id))e.remove();else seen.add(e.id)});document.querySelectorAll('#reportsTableBtn,[data-mode="reports_table"]').forEach(b=>b.style.display=isModLead()?'':'none');document.querySelectorAll('#gossOrgActionNavV4 button,.mode-btn').forEach(b=>{let t=String(b.textContent||'').replace(/ё/g,'е');if(/сдать\s+(отчетность|отчет)$/i.test(t.trim()))b.textContent='📎 Сдать ГОСС отчёт';if(b.closest('#gossOrgActionNavV4')&&/отчетность/i.test(t))b.textContent=t.replace(/Отчетность|Отчётность/g,'Сдать ГОСС отчёт')})}
-const legacySwitch=window.switchMode;
-function enforce(mode,btn){mode=normMode(mode);cleanup();document.querySelectorAll('[id^="mode-"]').forEach(sec=>sec.style.display=(sec.id==='mode-'+mode?'block':'none'));document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b===btn||(btn&&b.dataset&&normMode(b.dataset.mode)===mode&&b.dataset.mode===btn.dataset.mode)));if(btn?.dataset?.orgId)sessionStorage.setItem('t73_v77_org',btn.dataset.orgId);if(mode==='goss_center_v4')setTimeout(afterGov,80)}
-window.switchMode=function(mode,btn){mode=normMode(mode);cleanup();let res;try{if(typeof legacySwitch==='function')res=legacySwitch(mode,btn)}catch(e){console.warn('legacy switch failed',e)}[0,80,220].forEach(ms=>setTimeout(()=>enforce(mode,btn),ms));return res};
-document.addEventListener('click',e=>{const b=e.target.closest?.('.mode-btn[data-mode]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();window.switchMode(b.dataset.mode,b)},true);
-async function collectUsers(){const m=new Map(),add=u=>{if(!u)return;const id=String(u.user_id||u.id||u.link||u.status||'').trim();if(!id)return;const nick=String(u.nickname||u.nick||u.name||u.email||id).trim();m.set(id,{id,nick,email:String(u.email||'')})};try{if(typeof loadUsersForAdmin==='function')await loadUsersForAdmin()}catch(e){}try{(creatorUsersList||[]).forEach(add);(adminUsersList||[]).forEach(add)}catch(e){}try{((await supa.from('user_stats').select('user_id,nickname,email').limit(4000)).data||[]).forEach(add)}catch(e){}try{((await supa.from('reports').select('email,link,status,date').limit(7000)).data||[]).forEach(r=>{const p=parse(r.date,{});add({id:p.userId||p.user_id||r.link||r.status,nickname:p.nick||p.nickname||p.name,email:p.email||(!/^GOSS_|ADMIN_ROLE|ACCESS_KEY/i.test(String(r.email))?r.email:'')})})}catch(e){}try{if(currentUser)add({id:currentUser.id,nickname:currentNickname||currentUser.email,email:currentUser.email})}catch(e){}const arr=[...m.values()].sort((a,b)=>String(a.nick).localeCompare(String(b.nick),'ru'));try{window.adminUsersList=arr.map(u=>({user_id:u.id,nickname:u.nick,email:u.email}));if(!window.creatorUsersList||!window.creatorUsersList.length)window.creatorUsersList=window.adminUsersList.slice()}catch(e){}return arr}
-async function fillSelects(){const users=await collectUsers();if(!users.length)return;const ids=new Set(['govV4SeniorUser','gossLeadUserSelect','gossV3SeniorUser','v26SeniorUser']);document.querySelectorAll('select').forEach(sel=>{const text=String((sel.closest('label')||sel.parentElement||{}).textContent||'').toLowerCase().replace(/ё/g,'е');const need=ids.has(sel.id)||(text.includes('пользователь')&&String(sel.textContent||'').toLowerCase().replace(/ё/g,'е').includes('нет пользователей'));if(!need)return;const old=sel.value;sel.innerHTML=users.map(u=>`<option value="${esc(u.id)}">${esc(u.nick||u.email||u.id)}${u.email?' · '+esc(u.email):''}</option>`).join('');if(users.some(u=>u.id===old))sel.value=old})}
-async function isLeadOrg(id){try{if(!currentUser)return false;if(currentUser.email===creatorEmail||(Array.isArray(adminEmails)&&adminEmails.includes(currentUser.email)))return true;const rows=(await supa.from('reports').select('*').eq('email','ADMIN_ROLE').limit(3000)).data||[];return rows.some(r=>r.link===currentUser.id&&(r.status==='goss_admin_all'||r.status==='goss_lead_'+id))}catch(e){return false}}
-async function addGovButtons(){const nav=$('gossOrgActionNavV4');if(!nav)return;const o=selOrg(),lead=await isLeadOrg(o.id);let r=$('g77Reports');if(!r){nav.insertAdjacentHTML('beforeend','<button class="mode-btn" id="g77Reports" type="button">✅ Проверить отчёты</button>');r=$('g77Reports')}r.style.display=lead?'inline-flex':'none';r.onclick=e=>{e.preventDefault();nav.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));r.classList.add('active');if(window.T73_GOSS_V20?.renderTableHub)window.T73_GOSS_V20.renderTableHub('reports')};let tr=$('g77Trainer');if(!tr){nav.insertAdjacentHTML('afterbegin','<button class="mode-btn" id="g77Trainer" type="button">🎓 Тренажёр</button>');tr=$('g77Trainer')}tr.style.display='inline-flex';tr.onclick=e=>{e.preventDefault();nav.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));tr.classList.add('active');renderTrainer(o.id)}}
-const qs=o=>[
-['Жалоба',`Поступила жалоба на сотрудника ${o.short}. Что делает СС?`,'Запросить доказательства, выслушать стороны и оформить решение по фактам','Поддержать сотрудника без проверки из-за его должности','Закрыть жалобу, если текст выглядит слишком коротким','Перенести спор в общий чат и не фиксировать итог'],
-['Отчёт','Сотрудник сдал отчёт без даты, сути работы и доказательств. Вердикт?','Вернуть на доработку с понятным списком недостающих данных','Засчитать отчёт, если комментарий выглядит уверенно','Удалить отчёт без объяснений и права исправления','Попросить написать текст длиннее без проверки фактов'],
-['Конфликт',`Внутри ${o.short} спорят два сотрудника разных должностей. Действие?`,'Остановить конфликт, сверить факты и зафиксировать итоговое решение','Автоматически выбрать сторону старшего по должности','Выдать максимальное наказание обоим без разбора','Игнорировать ситуацию, пока нет публичной жалобы'],
-['Проверка','При проверке обнаружены ошибки, но сотрудник готов исправить их сразу. Что правильно?','Зафиксировать ошибки, дать срок исправления и проконтролировать результат','Сразу отказать во всём, потому что ошибка уже была','Не фиксировать ошибку, если сотрудник обещает исправиться','Передать проверку случайному сотруднику без контроля'],
-['Дисциплина','Сотрудник грубит гражданину или коллеге. Реакция СС?','Остановить грубость, собрать материалы и применить меру по регламенту','Поддержать грубость, если сотрудник защищал организацию','Удалить переписку, чтобы не портить статистику','Не вмешиваться, если конфликт быстро закончился'],
-['Состав',`Новый кандидат путается в базовых обязанностях ${o.short}. Решение?`,'Отказать или отправить на подготовку с объяснением слабых мест','Принять, если анкета длинная и красиво оформлена','Принять без записи результата, чтобы закрыть набор','Попросить другого кандидата отвечать вместо него'],
-['Документы','Нужно оформить итог проверки организации. Что обязательно указать?','Дату, участников, суть проверки, доказательства, решение и ответственного','Только ник проверяющего и короткий итог без доказательств','Любой длинный текст, чтобы документ выглядел официально','Скрин без пояснения и без статуса решения'],
-['Права','СС просит выдать доступ своему знакомому без проверки. Что делать?','Проверить основания, роль и необходимость доступа перед выдачей','Выдать доступ сразу, если просьба написана уверенно','Выдать временно без записи, чтобы не тратить время','Отправить доступ в общий чат для всех желающих']
-];
-function sh(a){return a.map(x=>[Math.random(),x]).sort((x,y)=>x[0]-y[0]).map(x=>x[1])}
-function renderTrainer(orgId){const o=orgs().find(x=>x.id===orgId)||selOrg(),root=$('gossV4Content');if(!root)return;const arr=sh(qs(o));let i=0,ok=0;function draw(){const q=arr[i];if(!q){root.innerHTML=`<div class="g77-trainer"><h3 class="g77-accent">Тренажёр завершён</h3><p class="g77-muted">Результат: ${ok}/${arr.length}. Ответы выровнены по длине и смыслу, поэтому выбор “где текста побольше” больше не помогает.</p><button class="btn btn-primary" id="g77Restart">Пройти заново</button></div>`;$('g77Restart').onclick=()=>renderTrainer(o.id);return}const opts=sh([{t:q[2],g:1},{t:q[3],g:0},{t:q[4],g:0},{t:q[5],g:0}]);root.innerHTML=`<div class="g77-trainer"><div class="g77-pill">${esc(o.short)} · ${esc(q[0])} · ${i+1}/${arr.length}</div><h3 style="margin:.8rem 0;color:#fff">${esc(q[1])}</h3>${opts.map((x,n)=>`<button class="g77-option" data-good="${x.g}" type="button">${n+1}. ${esc(x.t)}</button>`).join('')}<div id="g77Feed" class="g77-muted"></div></div>`;root.querySelectorAll('.g77-option').forEach(b=>b.onclick=()=>{const good=b.dataset.good==='1';if(good)ok++;root.querySelectorAll('.g77-option').forEach(x=>{x.disabled=true;x.classList.add(x.dataset.good==='1'?'good':'bad')});$('g77Feed').textContent=good?'✅ Верно.':'❌ Неверно. Верный вариант подсвечен зелёным.';setTimeout(()=>{i++;draw()},850)})}draw()}
-function afterGov(){cleanup();fillSelects();addGovButtons();const root=$('gossV4Content');const active=document.querySelector('#gossOrgActionNavV4 .mode-btn.active');if(root&&(!active||active.id==='g77Trainer'||active.dataset.view==='trainer'))renderTrainer(selOrg().id)}
-function boot(){cleanup();fillSelects();addGovButtons()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();let t=0;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(boot,180)}).observe(document.body,{childList:true,subtree:true});
+  'use strict';
+  if (window.T73_V78_GOSS_ROUTER) return;
+  window.T73_V78_GOSS_ROUTER = true;
+  var selectedOrg = sessionStorage.getItem('t73_v78_org') || 'fsb';
+  var selectedView = 'trainer';
+  var roleCache = { at:0, rows:[] };
+  var userCache = { at:0, rows:[] };
+  function $(id){ return document.getElementById(id); }
+  function qa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+  function parse(v,d){ try { return typeof v === 'string' ? JSON.parse(v) : (v || d || {}); } catch(e){ return d || {}; } }
+  function now(){ return new Date().toLocaleString('ru-RU'); }
+  function rid(p){ return p + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function orgs(){ try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e){} return [{id:'government',short:'Правительство',name:'Правительство',icon:'🏛️'},{id:'fsb',short:'ФСБ',name:'ФСБ',icon:'🛡️'},{id:'gibdd',short:'ГИБДД',name:'ГИБДД',icon:'🚔'},{id:'umvd',short:'УМВД',name:'УМВД',icon:'👮'},{id:'army',short:'Армия',name:'Армия',icon:'🎖️'},{id:'hospital',short:'Больница',name:'Больница',icon:'🏥'},{id:'smi',short:'СМИ',name:'СМИ',icon:'🎙️'},{id:'fsin',short:'ФСИН',name:'ФСИН',icon:'🔒'}]; }
+  function org(id){ id = id || selectedOrg || activeOrgId(); return orgs().find(function(o){ return String(o.id) === String(id); }) || orgs()[0]; }
+  function activeOrgId(){ var b = document.querySelector('.gov-org-switch-v4.active,[data-t78-org].active'); return (b && (b.dataset.orgId || b.dataset.t78Org)) || selectedOrg || 'fsb'; }
+  function root(){ ensureShell(); return $('gossV4Content'); }
+  function client(){ try { return supa || window.supa || window.supabaseClient || null; } catch(e){ return window.supa || window.supabaseClient || null; } }
+  function creator(){ try { return !!(currentUser && (currentUser.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)))); } catch(e){ return false; } }
+  async function roles(force){ var c = client(); if (!c) return []; if (!force && Date.now() - roleCache.at < 3500) return roleCache.rows; try { var res = await c.from('reports').select('*').eq('email','ADMIN_ROLE').limit(4000); roleCache = { at:Date.now(), rows:res.data || [] }; } catch(e){ roleCache = { at:Date.now(), rows:[] }; } return roleCache.rows; }
+  async function isLeader(oid){ try { if (!currentUser) return false; if (creator()) return true; var rows = await roles(); return rows.some(function(r){ return r.link === currentUser.id && (r.status === 'goss_admin_all' || r.status === ('goss_lead_' + oid)); }); } catch(e){ return false; } }
+  async function isGlobalLeader(){ try { if (!currentUser) return false; if (creator()) return true; var rows = await roles(); return rows.some(function(r){ return r.link === currentUser.id && r.status === 'goss_admin_all'; }); } catch(e){ return false; } }
+  async function hasAccess(oid){ try { if (await isLeader(oid)) return true; if (!currentUser) return false; var rows = await roles(); return rows.some(function(r){ return r.link === currentUser.id && (r.status === 'goss_senior_all' || r.status === ('goss_senior_' + oid)); }); } catch(e){ return false; } }
+  async function isModLead(){ var c = client(); try { if (!currentUser) return false; if (creator()) return true; if (Array.isArray(dynamicModLeaders) && dynamicModLeaders.includes(currentUser.id)) return true; var res = await c.from('reports').select('id').eq('email','ADMIN_ROLE').eq('link',currentUser.id).eq('status','leadership').limit(1); return !!(res.data && res.data.length); } catch(e){ return false; } }
+  async function updateModReportButton(){ var yes = await isModLead(); document.body.classList.toggle('t73-v78-modlead', !!yes); var b = $('reportsTableBtn'); if (b) { b.style.display = yes ? 'inline-flex' : 'none'; b.style.visibility = yes ? 'visible' : 'hidden'; } }
+  function ensureShell(){
+    var orgNav = $('subNavOrganizations');
+    if (orgNav) {
+      var expected = orgs().map(function(o){ return o.id; }).join('|');
+      if (orgNav.dataset.t78Orgs !== expected) {
+        orgNav.dataset.t78Orgs = expected;
+        orgNav.innerHTML = orgs().map(function(o){ return '<button class="mode-btn gov-org-switch-v4" data-mode="goss_center_v4" data-org-id="' + esc(o.id) + '" type="button">' + esc(o.icon + ' ' + o.short) + '</button>'; }).join('');
+      }
+    }
+    if (orgNav && !$('gossOrgActionNavV4')) orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4" style="display:none;"></div>');
+    ['gossOrgActionNav','gossOrgActionNavV3','gossDashView','gossV3Content','gossDashboardBtn','gossGlobalAccessBtn','gossShopLogsTabBtn'].forEach(function(id){ var e=$(id); if(e) e.remove(); });
+    var sec = $('mode-goss_center_v4');
+    if (!sec) {
+      var host = $('game') || document.body;
+      var html = '<section class="panel game-card fade-in" id="mode-goss_center_v4" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#6c8cff;">ГОСС</h2><p id="gossV4Lead">Тренажёр и рабочие разделы выбранной организации.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#6c8cff;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>';
+      var profile = $('mode-profile'); if (profile) profile.insertAdjacentHTML('beforebegin', html); else host.insertAdjacentHTML('afterbegin', html);
+    }
+    return $('mode-goss_center_v4');
+  }
+  function setHeader(status){ var o=org(); var t=$('gossV4Title'), l=$('gossV4Lead'), og=$('gossV4Org'), ac=$('gossV4Access'); if(t)t.textContent=o.icon + ' ' + o.name; if(l)l.textContent='Режимы открываются без дублей: тренажёр, данные, отчёты, таблица, управление и логи выбранной организации.'; if(og)og.textContent=o.short; if(ac)ac.textContent=status || '—'; }
+  function showGoss(){ ensureShell(); qa('#game > section[id^="mode-"], section.game-card[id^="mode-"]').forEach(function(sec){ if(sec.id) sec.style.display = sec.id === 'mode-goss_center_v4' ? 'block' : 'none'; }); qa('.mode-btn').forEach(function(b){ b.classList.remove('active'); }); qa('.gov-org-switch-v4').forEach(function(b){ b.classList.toggle('active', String(b.dataset.orgId) === String(selectedOrg)); }); document.body.classList.remove('t73-v44-cat-moderation','t73-v44-cat-support','t73-v44-cat-general'); document.body.classList.add('t73-v44-cat-organizations'); var nav=$('gossOrgActionNavV4'); if(nav){ nav.classList.add('t73-v44-goss-actions'); nav.style.display='flex'; } try { document.documentElement.setAttribute('data-site-theme','quests'); } catch(e){} }
+  async function renderNav(){ ensureShell(); var nav=$('gossOrgActionNavV4'); if(!nav) return; var o=org(); var lead=await isLeader(o.id), access=await hasAccess(o.id), glob=await isGlobalLeader(); var items=[['trainer','🎓 Тренажёр',true],['profile','📝 Мои данные',access],['submit','📎 Сдать ГОСС отчёт',access],['shop','🛒 Магазин',access],['staff','📋 Таблица состава',lead],['reports','✅ Проверить отчёты',lead],['manage','👑 Панель руководства',lead],['logs','🧾 Логи',lead],['global','🌐 Все ГОСС',glob]]; var visible=items.filter(function(x){return x[2];}); if(!visible.some(function(x){return x[0]===selectedView;})) selectedView='trainer'; var key=o.id+'|'+selectedView+'|'+visible.map(function(x){return x[0];}).join(','); if(nav.dataset.t78Key!==key){ nav.dataset.t78Key=key; nav.innerHTML=visible.map(function(x){ return '<button class="mode-btn t78-action" data-t78-view="'+x[0]+'" type="button">'+esc(x[1])+'</button>'; }).join(''); }
+    qa('[data-t78-view]', nav).forEach(function(b){ b.classList.toggle('active', b.dataset.t78View === selectedView); b.onclick=function(e){ e.preventDefault(); e.stopPropagation(); selectedView=b.dataset.t78View; openGoss(selectedOrg, selectedView); }; }); setHeader(lead?'Руководство':(access?'Старший состав':'Обычный пользователь'));
+  }
+  function qs(o){ return [
+    ['Жалоба','Поступила жалоба на сотрудника '+o.short+'. Что делает СС?','Запросить доказательства, выслушать стороны и оформить решение по фактам','Поддержать сотрудника без проверки из-за его должности','Закрыть жалобу, если текст выглядит коротким','Перенести спор в общий чат и не фиксировать итог'],
+    ['Отчёт','Сотрудник сдал отчёт без даты, сути работы и доказательств. Вердикт?','Вернуть на доработку с понятным списком недостающих данных','Засчитать отчёт, если комментарий выглядит уверенно','Удалить отчёт без объяснений и права исправления','Попросить написать текст длиннее без проверки фактов'],
+    ['Конфликт','Внутри '+o.short+' спорят два сотрудника разных должностей. Действие?','Остановить конфликт, сверить факты и зафиксировать итоговое решение','Автоматически выбрать сторону старшего по должности','Выдать максимальное наказание обоим без разбора','Игнорировать ситуацию, пока нет публичной жалобы'],
+    ['Проверка','При проверке обнаружены ошибки, но сотрудник готов исправить их сразу. Что правильно?','Зафиксировать ошибки, дать срок исправления и проконтролировать результат','Сразу отказать во всём, потому что ошибка уже была','Не фиксировать ошибку, если сотрудник обещает исправиться','Передать проверку случайному сотруднику без контроля'],
+    ['Дисциплина','Сотрудник грубит гражданину или коллеге. Реакция СС?','Остановить грубость, собрать материалы и применить меру по регламенту','Поддержать грубость, если сотрудник защищал организацию','Удалить переписку, чтобы не портить статистику','Не вмешиваться, если конфликт быстро закончился'],
+    ['Состав','Новый кандидат путается в базовых обязанностях '+o.short+'. Решение?','Отказать или отправить на подготовку с объяснением слабых мест','Принять, если анкета длинная и красиво оформлена','Принять без записи результата, чтобы закрыть набор','Попросить другого кандидата отвечать вместо него'],
+    ['Документы','Нужно оформить итог проверки организации. Что обязательно указать?','Дату, участников, суть проверки, доказательства, решение и ответственного','Только ник проверяющего и короткий итог без доказательств','Любой длинный текст, чтобы документ выглядел официально','Скрин без пояснения и без статуса решения'],
+    ['Права','СС просит выдать доступ своему знакомому без проверки. Что делать?','Проверить основания, роль и необходимость доступа перед выдачей','Выдать доступ сразу, если просьба написана уверенно','Выдать временно без записи, чтобы не тратить время','Отправить доступ в общий чат для всех желающих']
+  ]; }
+  function shuffle(a){ return a.map(function(x){return [Math.random(),x];}).sort(function(x,y){return x[0]-y[0];}).map(function(x){return x[1];}); }
+  function renderTrainer(){ var o=org(), r=root(); var list=shuffle(qs(o)); var i=0, ok=0; function draw(){ var q=list[i]; if(!q){ r.innerHTML='<div class="t78-card"><h3 class="t78-accent" style="margin:0 0 .6rem;">Тренажёр завершён</h3><p class="t78-muted">Результат: '+ok+'/'+list.length+'. Варианты перемешаны и выровнены по смыслу, поэтому выбор самого длинного текста больше не помогает.</p><button class="btn btn-primary" id="t78RestartTrainer" type="button">Пройти заново</button></div>'; $('t78RestartTrainer').onclick=renderTrainer; return; } var opts=shuffle([{t:q[2],g:1},{t:q[3],g:0},{t:q[4],g:0},{t:q[5],g:0}]); r.innerHTML='<div class="t78-card"><span class="t78-pill">'+esc(o.short)+' · '+esc(q[0])+' · '+(i+1)+'/'+list.length+'</span><h3 style="margin:.85rem 0;color:#fff;">'+esc(q[1])+'</h3>'+opts.map(function(x,n){return '<button class="t78-option" data-good="'+x.g+'" type="button">'+(n+1)+'. '+esc(x.t)+'</button>';}).join('')+'<div id="t78TrainerFeed" class="t78-muted"></div></div>'; qa('.t78-option',r).forEach(function(b){ b.onclick=function(){ var good=b.dataset.good==='1'; if(good)ok++; qa('.t78-option',r).forEach(function(x){ x.disabled=true; x.classList.add(x.dataset.good==='1'?'good':'bad'); }); $('t78TrainerFeed').textContent=good?'✅ Верно.':'❌ Неверно. Верный вариант подсвечен зелёным.'; setTimeout(function(){ i++; draw(); },850); }; }); } draw(); }
+  async function collectUsers(force){ if(!force && Date.now()-userCache.at<5000 && userCache.rows.length) return userCache.rows; var m=new Map(); function add(u){ if(!u)return; var id=String(u.user_id||u.id||u.link||u.status||'').trim(); if(!id || /^goss_|^ADMIN_ROLE$/i.test(id))return; var nick=String(u.nickname||u.nick||u.name||u.email||id).trim(); m.set(id,{id:id,nick:nick,email:String(u.email||'')}); } try{ if(typeof loadUsersForAdmin==='function') await loadUsersForAdmin(); }catch(e){} try{ (creatorUsersList||[]).forEach(add); (adminUsersList||[]).forEach(add); }catch(e){} var c=client(); try{ ((await c.from('user_stats').select('user_id,nickname,email').limit(5000)).data||[]).forEach(add); }catch(e){} try{ ((await c.from('reports').select('email,link,status,date').limit(8000)).data||[]).forEach(function(r){ var p=parse(r.date,{}); add({id:p.userId||p.user_id||p.id||r.link||r.status,nickname:p.nick||p.nickname||p.name||r.status||r.link,email:p.email||(!/^GOSS_|ADMIN_ROLE|USER_ROLE/i.test(String(r.email))?r.email:'')}); }); }catch(e){} try{ if(currentUser)add({id:currentUser.id,nickname:currentNickname||currentUser.email,email:currentUser.email}); }catch(e){} var arr=Array.from(m.values()).sort(function(a,b){return String(a.nick).localeCompare(String(b.nick),'ru');}); userCache={at:Date.now(),rows:arr}; try{ window.adminUsersList=arr.map(function(u){return {user_id:u.id,nickname:u.nick,email:u.email};}); if(!window.creatorUsersList || !window.creatorUsersList.length) window.creatorUsersList=window.adminUsersList.slice(); }catch(e){} return arr; }
+  async function renderProfile(){ var o=org(), r=root(); if(!(await hasAccess(o.id))){ r.innerHTML='<div class="t78-card">Мои данные доступны после выдачи СС или руководства этой организации.</div>'; return; } var c=client(), old=null; try{ old=((await c.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',o.id).eq('status',currentUser.id).order('id',{ascending:false}).limit(1)).data||[])[0]||null; }catch(e){} var d=parse(old&&old.date,{appointed:new Date().toISOString().slice(0,10)}); r.innerHTML='<div class="t78-card"><h3 class="t78-accent" style="margin:0 0 .75rem;">Мои данные СС — '+esc(o.short)+'</h3><div class="t78-form"><label>Ник<input id="t78Nick" class="support-input" value="'+esc(d.nick||currentNickname||'')+'"></label><label>Должность<input id="t78Post" class="support-input" value="'+esc(d.post||'')+'"></label><label>Возраст<input id="t78Age" type="number" class="support-input" value="'+esc(d.age||'')+'"></label><label>Форум<input id="t78Forum" class="support-input" value="'+esc(d.forum||'')+'"></label><label>VK ID<input id="t78Vk" class="support-input" value="'+esc(d.vk||'')+'"></label><label>Discord<input id="t78Discord" class="support-input" value="'+esc(d.discord||'')+'"></label><label>Когда поставлен<input id="t78Appointed" type="date" class="support-input" value="'+esc(d.appointed||new Date().toISOString().slice(0,10))+'"></label><label>Часовой пояс<input id="t78Timezone" class="support-input" value="'+esc(d.timezone||'')+'"></label></div><div class="t78-actions"><button id="t78SaveProfile" class="btn btn-primary" type="button">💾 Сохранить</button></div><div id="t78ProfileMsg" class="t78-muted"></div></div>'; $('t78SaveProfile').onclick=async function(){ var p={nick:$('t78Nick').value.trim(),post:$('t78Post').value.trim(),age:$('t78Age').value.trim(),forum:$('t78Forum').value.trim(),vk:$('t78Vk').value.trim(),discord:$('t78Discord').value.trim(),appointed:$('t78Appointed').value.trim(),timezone:$('t78Timezone').value.trim(),org:o.short,email:currentUser.email}; if(!p.nick||!p.post){alert('Заполните ник и должность.');return;} var q=old?await c.from('reports').update({date:JSON.stringify(p)}).eq('id',old.id):await c.from('reports').insert([{id:rid('t78profile'),email:'GOSS_PROFILE',link:o.id,status:currentUser.id,date:JSON.stringify(p),xp:0}]); if(q.error) alert('Ошибка: '+q.error.message); else { $('t78ProfileMsg').textContent='✅ Данные сохранены.'; userCache.at=0; } }; }
+  async function renderStaff(){ var o=org(), r=root(), c=client(); if(!(await isLeader(o.id))){ r.innerHTML='<div class="t78-card">Таблица состава доступна только руководству.</div>'; return; } r.innerHTML='<div class="t78-card">Загружаю состав...</div>'; var rows=[]; try{ rows=((await c.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',o.id).order('id',{ascending:false}).limit(1000)).data||[]); }catch(e){} r.innerHTML='<div class="t78-card"><div class="t78-head"><div><h3 class="t78-accent" style="margin:0;">Таблица состава — '+esc(o.short)+'</h3><p class="t78-muted">Данные берутся из анкет СС.</p></div><button id="t78ReloadStaff" class="btn btn-secondary">🔄 Обновить</button></div></div><div class="t78-grid">'+(rows.map(function(row){ var d=parse(row.date,{}); return '<div class="t78-mini"><b>'+esc(d.nick||row.status||'Без ника')+'</b><div class="t78-muted">'+esc(d.post||'Должность не указана')+'</div><div class="t78-muted">Discord: '+esc(d.discord||'—')+'</div><div class="t78-muted">Форум: '+esc(d.forum||'—')+'</div><span class="t78-pill">'+esc(d.appointed||'дата не указана')+'</span></div>'; }).join('') || '<div class="t78-card">Состав пока пустой. Пользователь появится после заполнения «Мои данные».</div>')+'</div>'; $('t78ReloadStaff').onclick=renderStaff; }
+  async function renderManage(){ var o=org(), r=root(), c=client(); var lead=await isLeader(o.id), glob=await isGlobalLeader(); if(!lead&&!glob){ r.innerHTML='<div class="t78-card">Панель руководства доступна только руководству организации.</div>'; return; } var users=await collectUsers(true), rows=(await roles(true)).filter(function(x){ return glob ? /^goss_(senior|lead|admin)/.test(String(x.status||'')) : x.status === ('goss_senior_' + o.id); }); r.innerHTML='<div class="t78-card" id="t78LeadPanel"><h3 class="t78-accent" style="margin:0 0 .65rem;">Панель руководства — '+esc(o.short)+'</h3><p class="t78-muted">Один стабильный блок без вложенных панелей. Здесь выдаётся и снимается статус старшего состава.</p><div class="t78-form"><label class="t78-full">Пользователь<select id="t78SeniorUser" class="support-input">'+(users.length?users.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.nick||u.email||u.id)+(u.email?' · '+esc(u.email):'')+'</option>';}).join(''):'<option value="">Нет пользователей</option>')+'</select></label><label>Права<select id="t78SeniorScope" class="support-input"><option value="one">СС '+esc(o.short)+'</option>'+(glob?'<option value="all">СС всех ГОСС</option>':'')+'</select></label></div><div class="t78-actions"><button id="t78GrantSenior" class="btn btn-secondary" style="border-color:var(--color-success);color:var(--color-success);" type="button">➕ Выдать СС</button><button id="t78RemoveSenior" class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" type="button">➖ Снять СС</button></div><div id="t78ManageMsg" class="t78-muted"></div></div><div class="t78-card"><h3 style="margin:0 0 .75rem;color:#fff;">Текущие права</h3><div class="t78-grid">'+(rows.length?rows.map(function(x){ var u=users.find(function(a){return a.id===x.link;})||{}; return '<div class="t78-mini"><b>'+esc(u.nick||u.email||x.link)+'</b><div class="t78-muted">'+esc(x.status)+'</div><span class="t78-pill">'+esc(x.date||'')+'</span></div>';}).join(''):'<div class="t78-muted">Права СС пока никому не выданы.</div>')+'</div></div>'; async function save(action){ var uid=$('t78SeniorUser').value, scope=$('t78SeniorScope').value; if(!uid)return; var st=scope==='all'?'goss_senior_all':'goss_senior_'+o.id; if(scope==='all'&&!glob){alert('Вы не можете выдавать СС всех ГОСС.');return;} if(action==='grant'){ await c.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid).eq('status',st); var q=await c.from('reports').insert([{id:rid('t78senior'),email:'ADMIN_ROLE',link:uid,status:st,date:now(),xp:0}]); if(q.error){alert('Ошибка: '+q.error.message);return;} await c.from('reports').insert([{id:rid('t78log'),email:'GOSS_ORG_LOG_V19',link:o.id,status:'grant_senior',date:'Выдан '+st+' пользователю '+uid+' · '+now(),xp:0}]); $('t78ManageMsg').textContent='✅ СС выдан.'; } else { var del=c.from('reports').delete().eq('email','ADMIN_ROLE').eq('link',uid); if(scope==='all') del=del.in('status',['goss_senior_all'].concat(orgs().map(function(x){return 'goss_senior_'+x.id;}))); else del=del.eq('status',st); var q2=await del; if(q2.error){alert('Ошибка: '+q2.error.message);return;} await c.from('reports').insert([{id:rid('t78log'),email:'GOSS_ORG_LOG_V19',link:o.id,status:'remove_senior',date:'Снят '+st+' у '+uid+' · '+now(),xp:0}]); $('t78ManageMsg').textContent='✅ СС снят.'; } roleCache.at=0; setTimeout(renderManage,350); }
+    $('t78GrantSenior').onclick=function(){save('grant');}; $('t78RemoveSenior').onclick=function(){save('remove');}; }
+  async function renderLogs(){ var o=org(), r=root(), c=client(); if(!(await isLeader(o.id))){ r.innerHTML='<div class="t78-card">Логи доступны только руководству.</div>'; return; } r.innerHTML='<div class="t78-card">Загружаю логи...</div>'; var emails=['GOSS_ORG_LOG_V19','GOSS_USER_REPORT','GOSS_REPORT_TABLE_V19','GOSS_SHOP_BUY_V19','GOSS_SHOP_ITEMS_V19','GOSS_POINTS_V19','GOSS_REPORT_MEMBER_V19','GOSS_PROFILE']; var rows=[]; try{ rows=((await c.from('reports').select('*').in('email',emails).order('id',{ascending:false}).limit(600)).data||[]).filter(function(x){ return x.link===o.id || x.status===o.id || x.status==='all'; }); }catch(e){} try{ var rr=(await c.from('reports').select('*').eq('email','ADMIN_ROLE').order('id',{ascending:false}).limit(600)).data||[]; rows=rows.concat(rr.filter(function(x){return ['goss_admin_all','goss_senior_all','goss_lead_'+o.id,'goss_senior_'+o.id].includes(x.status);})); }catch(e){} r.innerHTML='<div class="t78-card"><div class="t78-head"><div><h3 class="t78-accent" style="margin:0;">Логи — '+esc(o.short)+'</h3><p class="t78-muted">Единый журнал выбранной организации.</p></div><button id="t78ReloadLogs" class="btn btn-secondary">🔄 Обновить</button></div></div><div class="t78-grid">'+(rows.slice(0,180).map(function(x){ var body=typeof x.date==='string'?x.date:JSON.stringify(x.date||{}); return '<div class="t78-mini t78-log"><b>'+esc(x.email)+' · '+esc(x.status||'')+'</b><div class="t78-muted">link: '+esc(x.link||'')+' · '+Number(x.xp||0)+' б.</div><div>'+esc(String(body||'').slice(0,650))+'</div></div>'; }).join('') || '<div class="t78-card">Логов пока нет.</div>')+'</div>'; $('t78ReloadLogs').onclick=renderLogs; }
+  async function renderView(){ await renderNav(); var view=selectedView, o=org(); if(view==='trainer') return renderTrainer(); if(view==='profile') return renderProfile(); if(view==='submit') { if(!(await hasAccess(o.id))){ root().innerHTML='<div class="t78-card">Сдать ГОСС отчёт может только СС или руководство.</div>'; return; } if(window.T73_GOSS_V19 && T73_GOSS_V19.renderSubmit){ T73_GOSS_V19.renderSubmit(); setTimeout(function(){ renderNav(); },80); return; } root().innerHTML='<div class="t78-card">Модуль сдачи отчёта не найден.</div>'; return; } if(view==='shop') { if(window.T73_GOSS_V19 && T73_GOSS_V19.renderShop){ T73_GOSS_V19.renderShop(); setTimeout(function(){ renderNav(); },80); return; } root().innerHTML='<div class="t78-card">Модуль магазина не найден.</div>'; return; } if(view==='staff') return renderStaff(); if(view==='reports') { if(!(await isLeader(o.id))){ root().innerHTML='<div class="t78-card">Проверка отчётов доступна только руководству.</div>'; return; } if(window.T73_GOSS_V20 && T73_GOSS_V20.renderTableHub) { T73_GOSS_V20.renderTableHub('reports'); setTimeout(function(){ renderNav(); },80); return; } root().innerHTML='<div class="t78-card">Модуль проверки отчётов не найден.</div>'; return; } if(view==='manage') return renderManage(); if(view==='logs') return renderLogs(); if(view==='global') { if(window.T73_GOSS_V19 && T73_GOSS_V19.renderGlobal){ T73_GOSS_V19.renderGlobal(); setTimeout(function(){ renderNav(); },80); return; } root().innerHTML='<div class="t78-card">Модуль всех ГОСС не найден.</div>'; return; } }
+  async function openGoss(oid, view){ selectedOrg = oid || selectedOrg || 'fsb'; selectedView = view || selectedView || 'trainer'; sessionStorage.setItem('t73_v78_org', selectedOrg); showGoss(); await renderView(); }
+  function cleanConflicts(){ ensureShell(); qa('#subNavOrganizations [data-mode^="goss_"]:not([data-mode="goss_center_v4"])').forEach(function(e){e.remove();}); qa('#gossOrgActionNavV4 #g19Submit,#gossOrgActionNavV4 #g19Table,#gossOrgActionNavV4 #g19Shop,#gossOrgActionNavV4 #g19Logs,#gossOrgActionNavV4 #g19Global,#gossOrgActionNavV4 #g20Submit,#gossOrgActionNavV4 #g20Table,#gossOrgActionNavV4 #g20Shop,#gossOrgActionNavV4 #g20Manage,#gossOrgActionNavV4 .t73-v68-org-logs,#gossOrgActionNavV4 .t73-v68-shop-logs,#gossOrgActionNavV4 #t73V69GovLogsBtn,#gossOrgActionNavV4 #g77Trainer,#gossOrgActionNavV4 #g77Reports').forEach(function(e){e.remove();}); var submitOnTop=qa('#subNavOrganizations button').filter(function(b){return /отправить\s+гос|отправить\s+госс|сдать\s+гос/i.test(String(b.textContent||''));}); submitOnTop.forEach(function(b){b.remove();}); updateModReportButton(); }
+  document.addEventListener('click', function(e){ var orgBtn=e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4[data-org-id]'); if(orgBtn){ e.preventDefault(); e.stopImmediatePropagation(); selectedView='trainer'; openGoss(orgBtn.dataset.orgId || 'fsb', 'trainer'); return false; } var action=e.target && e.target.closest && e.target.closest('#gossOrgActionNavV4 [data-t78-view]'); if(action){ e.preventDefault(); e.stopImmediatePropagation(); openGoss(selectedOrg, action.dataset.t78View); return false; } }, true);
+  function boot(){ cleanConflicts(); var visible=$('mode-goss_center_v4') && $('mode-goss_center_v4').style.display !== 'none'; if(visible) renderNav(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [150,600,1400,2600,4200].forEach(function(ms){ setTimeout(boot,ms); });
+  var moTimer=0; try{ new MutationObserver(function(){ clearTimeout(moTimer); moTimer=setTimeout(boot,120); }).observe(document.body,{childList:true,subtree:true}); }catch(e){}
+  window.T73_V78_OPEN_GOSS = openGoss;
 })();
 </script>
-<!-- === /T73 V77 STABLE MODES + GOV FINAL === -->
+<!-- === /T73 V78 === -->
 
 </body>
 </html>
