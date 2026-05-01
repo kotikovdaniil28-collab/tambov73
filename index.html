@@ -13506,273 +13506,365 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 
 
+<!-- === T73 V53: точечный фикс ГОСС без переименования режимов === -->
+<style id="t73-v53-goss-clean-style">
+  :root {
+    --t73-goss-accent: #6c8cff;
+    --t73-goss-accent-soft: rgba(108, 140, 255, .14);
+    --t73-goss-accent-border: rgba(108, 140, 255, .34);
+    --t73-goss-card-bg: linear-gradient(145deg, rgba(13,16,32,.94), rgba(7,9,18,.98));
+  }
 
-<!-- v52: clean fixes from v48 only — no UX top block, no renamed modes, no font override -->
-<style id="t73-v52-clean-fixes-style">
-  /* Скрываем только дубли кнопки сдачи отчёта из старой v16-панели, не меняя названия режимов. */
-  #v16ReportBtnMod,
-  #v16OpenReportTop,
-  .t73-v52-hide-duplicate {
+  /* ГОСС: убираем красный/розовый акцент именно в государственных организациях */
+  #mode-goss_center_v4 .gov-v4-card,
+  #mode-goss_center_v3 .gov-v3-access-card,
+  #mode-goss_dashboard .gov-v3-access-card,
+  #mode-goss_global_access .t73-v22-card {
+    border-color: var(--t73-goss-accent-border) !important;
+    background: var(--t73-goss-card-bg) !important;
+  }
+
+  #mode-goss_center_v4 h2,
+  #mode-goss_center_v4 h3,
+  #mode-goss_center_v4 .stat-value,
+  #mode-goss_center_v3 h2,
+  #mode-goss_center_v3 h3,
+  #mode-goss_dashboard h2,
+  #mode-goss_dashboard h3,
+  #mode-goss_global_access .section-head h2,
+  #mode-goss_global_access h3,
+  #gossV4Title,
+  #gossV4Org,
+  #gossV3Title,
+  #gossV3Org {
+    color: var(--t73-goss-accent) !important;
+    text-shadow: 0 0 18px rgba(108, 140, 255, .18) !important;
+  }
+
+  #mode-goss_center_v4 [style*="#ff6b88"],
+  #mode-goss_center_v4 [style*="ff6b88"],
+  #mode-goss_center_v3 [style*="#ff6b88"],
+  #mode-goss_center_v3 [style*="ff6b88"],
+  #mode-goss_dashboard [style*="#ff6b88"],
+  #mode-goss_dashboard [style*="ff6b88"],
+  #mode-goss_global_access [style*="#ff6b88"],
+  #mode-goss_global_access [style*="ff6b88"] {
+    color: var(--t73-goss-accent) !important;
+    border-color: var(--t73-goss-accent-border) !important;
+  }
+
+  #mode-goss_center_v4 .channel-dot,
+  #mode-goss_center_v3 .channel-dot,
+  #mode-goss_dashboard .channel-dot,
+  #mode-goss_center_v4 .gov-v4-card .channel-dot[style*="ff6b88"] {
+    background: var(--t73-goss-accent) !important;
+    box-shadow: 0 0 14px rgba(108, 140, 255, .45) !important;
+  }
+
+  #mode-goss_center_v4 .gov-v4-option:hover,
+  #mode-goss_center_v4 .gov-v4-option:focus-visible,
+  #mode-goss_center_v3 .gov-v3-option:hover,
+  #mode-goss_center_v3 .gov-v3-option:focus-visible {
+    border-color: var(--t73-goss-accent) !important;
+    background: var(--t73-goss-accent-soft) !important;
+  }
+
+  #mode-goss_center_v4 .gov-v4-option.bad,
+  #mode-goss_center_v3 .gov-v3-option.bad {
+    border-color: rgba(255, 191, 71, .7) !important;
+    background: rgba(255, 191, 71, .10) !important;
+  }
+
+  #mode-goss_center_v4 .gov-v4-pill,
+  #mode-goss_center_v3 .gov-v3-pill,
+  #mode-goss_global_access .t73-v22-pill {
+    border-color: var(--t73-goss-accent-border) !important;
+    background: rgba(108, 140, 255, .10) !important;
+    color: #eef2ff !important;
+  }
+
+  #mode-goss_center_v4 .gov-v4-denied,
+  #mode-goss_center_v3 .gov-v3-denied,
+  #mode-goss_dashboard .gov-v3-denied,
+  #mode-goss_global_access .t73-v22-denied {
+    border-color: rgba(255, 191, 71, .38) !important;
+    background: rgba(255, 191, 71, .08) !important;
+    color: #fff !important;
+  }
+
+  body.t73-v53-goss-context #rightCards .rule-icon.ban,
+  body.t73-v53-goss-context #rightCards .rule-icon.warn {
+    background: rgba(108, 140, 255, .16) !important;
+    border-color: var(--t73-goss-accent-border) !important;
+    color: #dfe6ff !important;
+  }
+
+  .t73-v53-hidden-duplicate-report {
     display: none !important;
     visibility: hidden !important;
   }
 
-  /* Блок проверки отчетов модерации раскрывается внизу формы, без жесткого обрезания. */
-  #mode-report,
-  #reportFormArea,
-  #adminPanelArea,
   #reportsListArea {
-    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
     max-height: none !important;
-  }
-
-  #reportsListArea {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    box-sizing: border-box !important;
-    grid-column: 1 / -1 !important;
-    clear: both !important;
-    margin-top: 1.5rem !important;
-    flex-direction: column !important;
-    gap: 1.2rem !important;
-  }
-
-  #reportsListArea .mod-old-report-card,
-  #reportsListArea .t73-v27-old-report-card,
-  #reportsListArea [class*="report-card"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
     overflow: visible !important;
   }
 
-  #reportsListArea .mod-report-actions-v31,
-  #reportsListArea [class*="report-actions"] {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-    gap: .45rem !important;
-  }
-
-  #reportsListArea .btn {
-    white-space: normal !important;
-    line-height: 1.2 !important;
-  }
-
-  @media (max-width: 760px) {
-    #reportsListArea .mod-report-actions-v31,
-    #reportsListArea [class*="report-actions"] {
-      grid-template-columns: 1fr 1fr !important;
-    }
-  }
-
-  @media (max-width: 460px) {
-    #reportsListArea .mod-report-actions-v31,
-    #reportsListArea [class*="report-actions"] {
-      grid-template-columns: 1fr !important;
-    }
+  #reportsListArea .rule-item,
+  #reportsListArea .message-card,
+  #reportsListArea [class*="report-card"],
+  #reportsListArea [class*="old-report-card"] {
+    max-width: 100% !important;
+    overflow: visible !important;
   }
 </style>
-<script id="t73-v52-clean-fixes-script">
+<script id="t73-v53-goss-clean-script">
 (function(){
   'use strict';
-  if (window.__T73_V52_CLEAN_FIXES__) return;
-  window.__T73_V52_CLEAN_FIXES__ = true;
+  if (window.__T73_V53_GOSS_CLEAN__) return;
+  window.__T73_V53_GOSS_CLEAN__ = true;
 
   const $ = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
-  function getGossOrgs(){
-    try { if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e) {}
-    return [];
+  const ORG_FALLBACK = [
+    { id:'government', aliases:['government','prav','pravitelstvo','gov'], short:'Правительство', name:'Правительство', icon:'🏛️' },
+    { id:'fsb', aliases:['fsb','ufsb'], short:'ФСБ', name:'Федеральная Служба Безопасности', icon:'🛡️' },
+    { id:'gibdd', aliases:['gibdd','gaibdd'], short:'ГИБДД', name:'Государственная инспекция безопасности дорожного движения', icon:'🚔' },
+    { id:'umvd', aliases:['umvd','mvd'], short:'УМВД', name:'Управление Министерства внутренних дел', icon:'👮' },
+    { id:'army', aliases:['army','mo','voenkomat'], short:'Армия', name:'Вооруженные силы', icon:'🎖️' },
+    { id:'hospital', aliases:['hospital','minzdrav','med'], short:'Больница', name:'Больница', icon:'🏥' },
+    { id:'smi', aliases:['smi','massmedia'], short:'СМИ', name:'Средства массовой информации', icon:'🎙️' },
+    { id:'fsin', aliases:['fsin','uin'], short:'ФСИН', name:'Федеральная служба исполнения наказаний', icon:'🔒' }
+  ];
+
+  function normalizeOrgId(id){
+    id = String(id || '').trim().toLowerCase();
+    const found = ORG_FALLBACK.find(o => o.aliases.includes(id) || o.id === id);
+    return found ? found.id : id;
   }
 
-  function currentGossOrg(){
-    const active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,[data-org-id].active');
-    const orgId = active?.dataset?.orgId || 'fsb';
-    const orgs = getGossOrgs();
-    return orgs.find(o => String(o.id) === String(orgId)) || { id: orgId, short: 'ГОСС', name: 'Государственная организация', icon: '🏛️' };
+  function safeGossOrgs(){
+    try {
+      if (Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) {
+        return GOSS_ORGS.map(o => {
+          const normalized = normalizeOrgId(o.id);
+          const fb = ORG_FALLBACK.find(x => x.id === normalized) || {};
+          return {
+            id: normalized || o.id,
+            short: o.short || fb.short || o.name || normalized || 'ГОСС',
+            name: o.name || fb.name || o.short || normalized || 'ГОСС',
+            icon: o.icon || fb.icon || '🏛️'
+          };
+        });
+      }
+    } catch(e) {}
+    return ORG_FALLBACK.map(o => ({ id:o.id, short:o.short, name:o.name, icon:o.icon }));
   }
 
-  function restoreGossOrganizationNames(){
-    const org = currentGossOrg();
-    const fullName = (org.icon ? org.icon + ' ' : '') + (org.name || org.short || 'ГОСС');
+  function findOrgById(id){
+    const normalized = normalizeOrgId(id);
+    return safeGossOrgs().find(o => normalizeOrgId(o.id) === normalized) || ORG_FALLBACK.find(o => o.id === normalized) || ORG_FALLBACK[1];
+  }
+
+  function detectOrgFromText(text){
+    const value = String(text || '').toLowerCase();
+    if (!value) return null;
+    return safeGossOrgs().find(o => value.includes(String(o.short || '').toLowerCase()) || value.includes(String(o.name || '').toLowerCase())) || null;
+  }
+
+  function currentOrg(){
+    const active = document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active,#subNavOrganizations [data-org-id].active,[data-org-id].active');
+    const clicked = window.__T73_V53_SELECTED_GOSS_ORG__;
+    const fromTitle = detectOrgFromText(($('gossV4Title')?.textContent || '') + ' ' + ($('gossV3Title')?.textContent || '') + ' ' + ($('gossV4Org')?.textContent || '') + ' ' + ($('gossV3Org')?.textContent || ''));
+    const id = active?.dataset?.orgId || clicked || fromTitle?.id || 'fsb';
+    return findOrgById(id);
+  }
+
+  function looksLikeGossVisible(){
+    const p4 = $('mode-goss_center_v4');
+    const p3 = $('mode-goss_center_v3');
+    const pd = $('mode-goss_dashboard');
+    const pg = $('mode-goss_global_access');
+    return [p4,p3,pd,pg].some(p => p && p.style.display !== 'none');
+  }
+
+  function applyOrgNames(){
+    const org = currentOrg();
+    const title = (org.icon ? org.icon + ' ' : '') + (org.name || org.short || 'ГОСС');
     const shortName = org.short || org.name || 'ГОСС';
+    document.body.classList.toggle('t73-v53-goss-context', looksLikeGossVisible());
 
-    const v4Title = $('gossV4Title');
-    const v3Title = $('gossV3Title');
-    const dashTitle = $('gossDashTitle');
-    if (v4Title) v4Title.textContent = fullName;
-    if (v3Title) v3Title.textContent = fullName;
-    if (dashTitle) dashTitle.textContent = fullName;
+    ['gossV4Title','gossV3Title','gossDashTitle'].forEach(id => {
+      const el = $(id);
+      if (el && el.textContent !== title) el.textContent = title;
+    });
+    ['gossV4Org','gossV3Org'].forEach(id => {
+      const el = $(id);
+      if (el) {
+        if (el.textContent !== shortName) el.textContent = shortName;
+        el.dataset.orgId = org.id;
+      }
+    });
 
-    const v4Org = $('gossV4Org');
-    const v3Org = $('gossV3Org');
-    if (v4Org) v4Org.textContent = shortName;
-    if (v3Org) v3Org.textContent = shortName;
-  }
-
-  function fixGossSubmitButtons(){
-    const navs = ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav']
-      .map($)
-      .filter(Boolean);
-
-    navs.forEach(nav => {
-      const candidates = Array.from(nav.querySelectorAll('button')).filter(btn => {
-        const id = btn.id || '';
-        const text = String(btn.textContent || '').toLowerCase();
-        return id === 'g20Submit' || id === 'g19Submit' || btn.dataset?.view === 'submit' || (/сдат|сдач/.test(text) && /отч/.test(text));
-      });
-      if (!candidates.length) return;
-      const keep = candidates.find(btn => btn.id === 'g20Submit') || candidates.find(btn => btn.id === 'g19Submit') || candidates.find(btn => btn.dataset?.view === 'submit') || candidates[0];
-      candidates.forEach(btn => {
-        const shouldKeep = btn === keep;
-        btn.classList.toggle('t73-v52-hide-duplicate', !shouldKeep);
-        if (shouldKeep) {
-          btn.style.display = 'inline-flex';
-          btn.style.visibility = 'visible';
-          btn.textContent = '📎 Сдача гос отчета';
-          btn.title = 'Сдача гос отчета';
-          btn.setAttribute('aria-label', 'Сдача гос отчета');
+    const roots = ['gossV4Content','gossV3Content','gossOrgPanel','gossOrgArea','mode-goss_center_v4','mode-goss_center_v3','mode-goss_dashboard']
+      .map($).filter(Boolean);
+    roots.forEach(root => {
+      root.querySelectorAll('.author-meta,.gov-v4-sub,.gov-v3-sub,h3,span,div').forEach(el => {
+        if (!el || el.children.length > 2) return;
+        const txt = String(el.textContent || '').trim();
+        if (txt === 'Государственная организация') {
+          const next = org.name || shortName;
+          if (el.textContent !== next) el.textContent = next;
+        } else if (/^ГОСС\s*тренаж[её]р$/i.test(txt)) {
+          const next = shortName + ' — тренажёр';
+          if (el.textContent !== next) el.textContent = next;
+        } else if (/^Тренаж[её]р\s+ГОСС$/i.test(txt)) {
+          const next = 'Тренажёр ' + shortName;
+          if (el.textContent !== next) el.textContent = next;
         }
       });
     });
   }
 
-  function hideExtraModReportButtons(){
-    ['v16ReportBtnMod','v16OpenReportTop'].forEach(id => {
-      const el = $(id);
-      if (!el) return;
-      el.classList.add('t73-v52-hide-duplicate');
-      el.style.setProperty('display','none','important');
-      el.style.setProperty('visibility','hidden','important');
-      el.setAttribute('aria-hidden','true');
+  function keepOnlyOneGossSubmit(){
+    const navs = ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav']
+      .map($).filter(Boolean);
+    navs.forEach(nav => {
+      const buttons = Array.from(nav.querySelectorAll('button'));
+      const submitButtons = buttons.filter(btn => {
+        const txt = String(btn.textContent || '').toLowerCase();
+        return btn.dataset?.view === 'submit' || btn.id === 'g20Submit' || btn.id === 'g19Submit' || (/сдат|сдач/.test(txt) && /отч/.test(txt));
+      });
+      if (!submitButtons.length) return;
+      const keep = submitButtons.find(btn => btn.dataset?.view === 'submit') || submitButtons[0];
+      submitButtons.forEach(btn => {
+        if (btn === keep) {
+          btn.classList.remove('t73-v53-hidden-duplicate-report');
+          btn.style.display = 'inline-flex';
+          btn.textContent = '📎 Сдача гос отчета';
+          btn.title = 'Сдача гос отчета';
+          btn.setAttribute('aria-label','Сдача гос отчета');
+        } else {
+          btn.classList.add('t73-v53-hidden-duplicate-report');
+          btn.setAttribute('aria-hidden','true');
+        }
+      });
     });
   }
 
-  function keepReportsBelowForm(){
+  function moveModerationReportsBelow(){
     const area = $('reportsListArea');
     const admin = $('adminPanelArea');
-    if (!area) return;
-    if (admin && area.previousElementSibling !== admin) admin.insertAdjacentElement('afterend', area);
-    area.style.setProperty('width','100%','important');
-    area.style.setProperty('max-width','100%','important');
-    area.style.setProperty('overflow','visible','important');
-    area.style.setProperty('max-height','none','important');
+    if (area && admin && area.previousElementSibling !== admin) admin.insertAdjacentElement('afterend', area);
+    if (area) {
+      area.style.setProperty('width','100%','important');
+      area.style.setProperty('max-width','100%','important');
+      area.style.setProperty('max-height','none','important');
+      area.style.setProperty('overflow','visible','important');
+    }
   }
 
-  async function loadLeaderboardV52(){
+  async function loadLeaderboardV53(){
     const list = $('leaderboardList');
-    if (!list) return;
-    if (typeof supa === 'undefined') {
-      list.innerHTML = '<div class="message-text">Supabase не подключен.</div>';
-      return;
-    }
+    if (!list || typeof supa === 'undefined') return;
     list.innerHTML = '<div class="message-text" style="text-align:center; padding:2rem;">⏳ Загрузка данных лидеров...</div>';
     try {
-      const [modRolesRes, apRolesRes, reportsRes, usersRes] = await Promise.all([
+      const [rolesMod, rolesAp, usersRes, reportsRes] = await Promise.all([
         supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','moderator').limit(5000),
         supa.from('reports').select('link').eq('email','USER_ROLE').eq('status','ap').limit(5000),
-        supa.from('reports').select('email,xp').gt('xp',0).limit(5000),
-        supa.from('user_stats').select('user_id,nickname,email,shop_spent,ap_spent,sup_correct').limit(5000)
+        supa.from('user_stats').select('user_id,nickname,email,shop_spent,ap_spent,sup_correct').limit(5000),
+        supa.from('reports').select('email,xp').gt('xp',0).limit(5000)
       ]);
-
-      if (modRolesRes.error) throw modRolesRes.error;
-      if (apRolesRes.error) throw apRolesRes.error;
-      if (reportsRes.error) throw reportsRes.error;
+      if (rolesMod.error) throw rolesMod.error;
+      if (rolesAp.error) throw rolesAp.error;
       if (usersRes.error) throw usersRes.error;
+      if (reportsRes.error) throw reportsRes.error;
 
-      const modIds = new Set((modRolesRes.data || []).map(r => String(r.link || '')).filter(Boolean));
-      const apIds = new Set((apRolesRes.data || []).map(r => String(r.link || '')).filter(Boolean));
+      const users = usersRes.data || [];
+      const userById = new Map(users.map(u => [String(u.user_id || ''), u]));
       const xpByEmail = new Map();
       (reportsRes.data || []).forEach(r => {
         const email = String(r.email || '');
-        if (!email) return;
-        xpByEmail.set(email, (xpByEmail.get(email) || 0) + Number(r.xp || 0));
+        if (email) xpByEmail.set(email, (xpByEmail.get(email) || 0) + Number(r.xp || 0));
       });
-
-      const userMap = new Map((usersRes.data || []).map(u => [String(u.user_id || ''), u]));
-      const buildUser = (id, kind) => {
-        const u = userMap.get(id) || { user_id:id, nickname:id, email:'' };
-        const name = u.nickname || u.email || u.user_id || 'Без ника';
-        if (kind === 'ap') {
-          return { name, score: Math.max(0, Math.floor(Number(u.sup_correct || 0) / 10) * 15 - Number(u.ap_spent || 0)) };
-        }
-        return { name, score: Math.max(0, (xpByEmail.get(String(u.email || '')) || 0) - Number(u.shop_spent || 0)) };
+      const isLeader = u => {
+        try { return (Array.isArray(adminEmails) && adminEmails.includes(u.email)) || (Array.isArray(dynamicModLeaders) && dynamicModLeaders.includes(u.user_id)) || u.email === creatorEmail; } catch(e) { return false; }
       };
-
-      const modArr = Array.from(modIds).map(id => buildUser(id, 'mod')).sort((a,b) => b.score - a.score || a.name.localeCompare(b.name, 'ru'));
-      const apArr = Array.from(apIds).map(id => buildUser(id, 'ap')).sort((a,b) => b.score - a.score || a.name.localeCompare(b.name, 'ru'));
-
-      const modRow = (u, i) => `<div class="rule-item" style="border-color: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center; gap:1rem;"><strong>${esc(u.name)}</strong><span class="badge xp">${u.score} Real XP</span></div></div>`;
-      const apRow = (u, i) => `<div class="rule-item" style="border-color: ${i<3?'#ff8fc4':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background: ${i<3?'#ff8fc4':'transparent'}; color: ${i<3?'#000':'var(--color-text-faint)'}; font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex; justify-content:space-between; align-items:center; gap:1rem;"><strong>${esc(u.name)}</strong><span class="badge" style="background:#ff8fc4; color:#000;">${u.score} Баллов</span></div></div>`;
-
-      window.lbModHTML = modArr.length ? modArr.slice(0,10).map(modRow).join('') : '<div class="message-text">Пользователи со статусом moderator не найдены.</div>';
-      window.lbApHTML = apArr.length ? apArr.slice(0,10).map(apRow).join('') : '<div class="message-text">Топ АП пуст.</div>';
-      const isApTab = $('lbBtnAp')?.classList.contains('btn-primary');
-      list.innerHTML = isApTab ? window.lbApHTML : window.lbModHTML;
-    } catch (err) {
+      const makeMod = id => {
+        const u = userById.get(String(id)) || { user_id:id, nickname:id, email:'', shop_spent:0 };
+        const score = Math.max(0, (xpByEmail.get(String(u.email || '')) || 0) - Number(u.shop_spent || 0));
+        return { name:u.nickname || u.email || u.user_id || id, score, leader:isLeader(u) };
+      };
+      const makeAp = id => {
+        const u = userById.get(String(id)) || { user_id:id, nickname:id, email:'', sup_correct:0, ap_spent:0 };
+        const score = Math.max(0, Math.floor(Number(u.sup_correct || 0) / 10) * 15 - Number(u.ap_spent || 0));
+        return { name:u.nickname || u.email || u.user_id || id, score, leader:isLeader(u) };
+      };
+      const modIds = Array.from(new Set((rolesMod.data || []).map(r => String(r.link || '')).filter(Boolean)));
+      const apIds = Array.from(new Set((rolesAp.data || []).map(r => String(r.link || '')).filter(Boolean)));
+      const modArr = modIds.map(makeMod).filter(u => !u.leader).sort((a,b) => b.score - a.score || a.name.localeCompare(b.name, 'ru'));
+      const apArr = apIds.map(makeAp).filter(u => !u.leader).sort((a,b) => b.score - a.score || a.name.localeCompare(b.name, 'ru'));
+      const row = (u, i, ap) => `<div class="rule-item" style="border-color:${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'rgba(191,198,255,0.3)'};"><div class="rule-icon" style="background:${i===0?'#ffbf47':i===1?'#a7afcf':i===2?'#cd7f32':'transparent'};color:${i<3?'#000':'var(--color-text-faint)'};font-size:1.2rem;">${i+1}</div><div class="rule-copy" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;"><strong>${esc(u.name)}</strong><span class="badge ${ap?'':'xp'}">${u.score} ${ap?'Баллов':'Real XP'}</span></div></div>`;
+      window.lbModHTML = modArr.length ? modArr.slice(0,10).map((u,i)=>row(u,i,false)).join('') : '<div class="message-text">Пользователи со статусом moderator не найдены.</div>';
+      window.lbApHTML = apArr.length ? apArr.slice(0,10).map((u,i)=>row(u,i,true)).join('') : '<div class="message-text">Топ АП пуст.</div>';
+      list.innerHTML = $('lbBtnAp')?.classList.contains('btn-primary') ? window.lbApHTML : window.lbModHTML;
+    } catch(err) {
       list.innerHTML = '<div class="message-text" style="color:var(--color-error);">Ошибка загрузки лидерборда: ' + esc(err.message || err) + '</div>';
     }
   }
 
-  function bindLeaderboardButtons(){
-    const mod = $('lbBtnMod');
-    const ap = $('lbBtnAp');
-    const list = $('leaderboardList');
-    if (mod && mod.dataset.v52Bound !== '1') {
-      mod.dataset.v52Bound = '1';
-      mod.onclick = () => {
-        if (list) list.innerHTML = window.lbModHTML || '<div class="message-text">Загрузка...</div>';
-        mod.className = 'btn btn-primary';
-        if (ap) ap.className = 'btn btn-secondary';
-      };
+  function bindLeaderboard(){
+    if (typeof window.loadLeaderboard !== 'function' || !window.loadLeaderboard.__t73v53) {
+      loadLeaderboardV53.__t73v53 = true;
+      window.loadLeaderboard = loadLeaderboardV53;
     }
-    if (ap && ap.dataset.v52Bound !== '1') {
-      ap.dataset.v52Bound = '1';
-      ap.onclick = () => {
-        if (list) list.innerHTML = window.lbApHTML || '<div class="message-text">Загрузка...</div>';
-        ap.className = 'btn btn-primary';
-        if (mod) mod.className = 'btn btn-secondary';
-      };
+    const mod = $('lbBtnMod'), ap = $('lbBtnAp'), list = $('leaderboardList');
+    if (mod && mod.dataset.t73v53 !== '1') {
+      mod.dataset.t73v53 = '1';
+      mod.addEventListener('click', () => { if (list) list.innerHTML = window.lbModHTML || '<div class="message-text">Загрузка...</div>'; }, true);
+    }
+    if (ap && ap.dataset.t73v53 !== '1') {
+      ap.dataset.t73v53 = '1';
+      ap.addEventListener('click', () => { if (list) list.innerHTML = window.lbApHTML || '<div class="message-text">Загрузка...</div>'; }, true);
     }
   }
 
   function boot(){
-    restoreGossOrganizationNames();
-    fixGossSubmitButtons();
-    hideExtraModReportButtons();
-    keepReportsBelowForm();
-    bindLeaderboardButtons();
-    if (typeof window.loadLeaderboard !== 'function' || !window.loadLeaderboard.__v52Clean) {
-      loadLeaderboardV52.__v52Clean = true;
-      window.loadLeaderboard = loadLeaderboardV52;
-    }
-    if ($('mode-leaderboard') && $('mode-leaderboard').style.display !== 'none') loadLeaderboardV52();
+    applyOrgNames();
+    keepOnlyOneGossSubmit();
+    moveModerationReportsBelow();
+    bindLeaderboard();
+    if ($('mode-leaderboard') && $('mode-leaderboard').style.display !== 'none') loadLeaderboardV53();
   }
 
-  document.addEventListener('click', () => setTimeout(boot, 80), true);
-  document.addEventListener('click', e => {
-    const btn = e.target.closest && e.target.closest('#viewReportsBtn');
-    if (!btn) return;
+  document.addEventListener('click', event => {
+    const orgBtn = event.target.closest && event.target.closest('[data-org-id]');
+    if (orgBtn?.dataset?.orgId) window.__T73_V53_SELECTED_GOSS_ORG__ = normalizeOrgId(orgBtn.dataset.orgId);
+    setTimeout(boot, 60);
+    setTimeout(boot, 220);
+  }, true);
+
+  document.addEventListener('click', event => {
+    if (!(event.target.closest && event.target.closest('#viewReportsBtn'))) return;
     setTimeout(() => {
-      keepReportsBelowForm();
+      moveModerationReportsBelow();
       const area = $('reportsListArea');
-      if (area && area.style.display !== 'none') area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (area && area.style.display !== 'none') area.scrollIntoView({ behavior:'smooth', block:'start' });
     }, 180);
   }, true);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
-  setTimeout(boot, 400);
-  setTimeout(boot, 1200);
-  setTimeout(boot, 2600);
+  [250, 700, 1400, 2600].forEach(ms => setTimeout(boot, ms));
   new MutationObserver(() => {
-    clearTimeout(window.__t73V52CleanTick);
-    window.__t73V52CleanTick = setTimeout(boot, 140);
-  }).observe(document.documentElement, { childList:true, subtree:true });
+    clearTimeout(window.__T73_V53_GOSS_TICK__);
+    window.__T73_V53_GOSS_TICK__ = setTimeout(boot, 120);
+  }).observe(document.documentElement, { childList:true, subtree:true, characterData:true });
 })();
 </script>
+<!-- === /T73 V53 === -->
 
 </body>
 </html>
