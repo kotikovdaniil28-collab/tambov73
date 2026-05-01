@@ -5282,7 +5282,7 @@
                 let orgSections = '';
                 GOSS_ORGS.forEach(org => {
                     if (org.id === 'fsb') return;
-                    orgSections += '<section class="panel game-card fade-in" id="mode-goss_' + org.id + '" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88;">' + org.icon + ' ' + org.name + '</h2><p>Раздел ГОСС организации. Здесь доступны состав, статусы и управление старшим составом при наличии прав.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" style="font-size:1.3rem;color:#ff6b88;">' + org.short + '</div></div><div class="stat"><span class="stat-label">Статус</span><div class="stat-value" style="font-size:1.05rem;">ГОСС</div></div></div><div class="feed"><article class="message-card"><div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># goss / leadership</div><div class="message-text">Открой таблицу старшего состава, чтобы посмотреть или обновить руководство организации.</div><button class="btn btn-primary" type="button" onclick="openGossStaffModal(\'' + org.id + '\')">📋 Таблица старшего состава</button></article></div></section>';
+                    orgSections += '<section class="panel game-card fade-in" id="mode-goss_' + org.id + '" style="display:none;"><div class="section-head"><h2 style="color:#ff6b88;">' + org.icon + ' ' + org.name + '</h2><p>Раздел ГОСС организации. Здесь доступны состав, статусы и управление старшим составом при наличии прав.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" style="font-size:1.3rem;color:#ff6b88;">' + org.short + '</div></div><div class="stat"><span class="stat-label">Статус</span><div class="stat-value" style="font-size:1.05rem;">ГОСС</div></div></div><div class="feed"><article class="message-card"><div class="channel"><span class="channel-dot" style="background:#ff6b88;"></span># goss / leadership</div><div class="message-text">Открой таблицу состава, чтобы посмотреть или обновить руководство организации.</div><button class="btn btn-primary" type="button" onclick="openGossStaffModal(\'' + org.id + '\')">📋 Таблица состава</button></article></div></section>';
                 });
                 const profile = document.getElementById('mode-profile');
                 if (profile) profile.insertAdjacentHTML('beforebegin', fsbLogSection + orgSections); else wrap.insertAdjacentHTML('afterbegin', fsbLogSection + orgSections);
@@ -5291,7 +5291,7 @@
             const fsbPanel = document.getElementById('mode-fsb');
             if (fsbPanel && !document.getElementById('openFsbStaffBtn')) {
                 const head = fsbPanel.querySelector('.section-head');
-                if (head) head.insertAdjacentHTML('beforeend', '<button id="openFsbStaffBtn" class="btn btn-secondary" type="button" style="width:100%; border-color:#6c8cff; color:#6c8cff;">📋 Таблица старшего состава ФСБ</button>');
+                if (head) head.insertAdjacentHTML('beforeend', '<button id="openFsbStaffBtn" class="btn btn-secondary" type="button" style="width:100%; border-color:#6c8cff; color:#6c8cff;">📋 Таблица состава ФСБ</button>');
             }
 
             const creatorPanel = document.getElementById('mode-creator');
@@ -5581,7 +5581,7 @@
         async function saveGossStaff() {
             const modal = document.getElementById('gossStaffModal'); const orgId = modal?.dataset.org; if (!orgId || !canEditGossStaff(orgId)) return;
             const rows = [...document.querySelectorAll('#gossStaffRows .fix-staff-row')].map(row => ({ nick: row.querySelector('[data-field="nick"]').value.trim(), post: row.querySelector('[data-field="post"]').value.trim(), org: row.querySelector('[data-field="org"]').value.trim(), term: row.querySelector('[data-field="term"]').value.trim() })).filter(r => r.nick || r.post || r.org || r.term);
-            await supa.from('reports').delete().eq('email', 'GOSS_STAFF').eq('link', orgId); await supa.from('reports').insert([{ id: makeFixId('gossstaff'), email: 'GOSS_STAFF', link: orgId, date: JSON.stringify(rows), status: 'active', xp: 0 }]); alert('Таблица старшего состава сохранена.'); document.getElementById('gossStaffModal').style.display = 'none';
+            await supa.from('reports').delete().eq('email', 'GOSS_STAFF').eq('link', orgId); await supa.from('reports').insert([{ id: makeFixId('gossstaff'), email: 'GOSS_STAFF', link: orgId, date: JSON.stringify(rows), status: 'active', xp: 0 }]); alert('Таблица состава сохранена.'); document.getElementById('gossStaffModal').style.display = 'none';
         }
 
         function installFixBindings() {
@@ -6427,7 +6427,7 @@
                 const root = document.getElementById('gossV3Content'), org = orgV3();
                 if (!isGossLeaderV3(org.id)) { root.innerHTML = '<div class="gov-v3-denied">Таблицу состава видит только руководство организации.</div>'; return; }
                 const rows = await loadProfilesV3(org.id);
-                root.innerHTML = '<div class="gov-v3-access-card"><div class="gov-v3-headline"><div><h3 style="color:#ff6b88; margin:0;">Таблица старшего состава — ' + v3Esc(org.short) + '</h3><p style="color:var(--color-text-muted); margin:.25rem 0 0;">Не Excel-копия: своя адаптивная таблица сайта.</p></div><button id="gossV3RefreshStaffBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="gov-v3-table-wrap"><table class="gov-v3-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody>' + rows.map(row => { const d = row.data; return '<tr><td><strong>' + v3Esc(d.nick || 'Не заполнено') + '</strong><div class="muted">' + v3Esc(d.org || org.short) + '</div></td><td>' + v3Esc(d.post || '—') + '</td><td>' + v3Esc(d.age || '—') + '</td><td>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(d.forum) + '">ФА</a>' : '—') + '</td><td>' + v3Esc(d.vk || '—') + '</td><td>' + v3Esc(d.discord || '—') + '</td><td>' + v3Esc(d.appointed || '—') + '</td><td>' + v3Esc(d.timezone || '—') + '</td><td><button class="badge ban gossV3DeleteProfile" data-id="' + v3Esc(row.id) + '" type="button">Удалить</button></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="gov-v3-denied">Никто ещё не заполнил данные. После назначения старшего состава человеку при входе покажется форма.</div>');
+                root.innerHTML = '<div class="gov-v3-access-card"><div class="gov-v3-headline"><div><h3 style="color:#ff6b88; margin:0;">Таблица состава — ' + v3Esc(org.short) + '</h3><p style="color:var(--color-text-muted); margin:.25rem 0 0;">Не Excel-копия: своя адаптивная таблица сайта.</p></div><button id="gossV3RefreshStaffBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="gov-v3-table-wrap"><table class="gov-v3-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody>' + rows.map(row => { const d = row.data; return '<tr><td><strong>' + v3Esc(d.nick || 'Не заполнено') + '</strong><div class="muted">' + v3Esc(d.org || org.short) + '</div></td><td>' + v3Esc(d.post || '—') + '</td><td>' + v3Esc(d.age || '—') + '</td><td>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v3Esc(d.forum) + '">ФА</a>' : '—') + '</td><td>' + v3Esc(d.vk || '—') + '</td><td>' + v3Esc(d.discord || '—') + '</td><td>' + v3Esc(d.appointed || '—') + '</td><td>' + v3Esc(d.timezone || '—') + '</td><td><button class="badge ban gossV3DeleteProfile" data-id="' + v3Esc(row.id) + '" type="button">Удалить</button></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="gov-v3-denied">Никто ещё не заполнил данные. После назначения старшего состава человеку при входе покажется форма.</div>');
                 bindPress(document.getElementById('gossV3RefreshStaffBtn'), renderStaffTableV3);
                 document.querySelectorAll('.gossV3DeleteProfile').forEach(btn => bindPress(btn, async () => { await supa.from('reports').delete().eq('id', btn.dataset.id); await renderStaffTableV3(); }));
             }
@@ -9026,7 +9026,7 @@
                 const org = v4Org(), root = document.getElementById('gossV4Content');
                 if (!v4IsLeader(org.id)) { root.innerHTML = '<div class="gov-v4-denied">Таблицу состава видит только руководство этой организации.</div>'; return; }
                 const rows = await v4LoadProfiles(org.id);
-                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">Таблица старшего состава — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Данные берутся из анкет, которые сотрудники заполняют после выдачи прав СС.</p></div><button id="govV4RefreshStaffBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="gov-v4-table-wrap"><table class="gov-v4-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody>' + rows.map(row => { const d = row.data; return '<tr><td><strong>' + v4Esc(d.nick || 'Не заполнено') + '</strong><div class="gov-v4-muted">' + v4Esc(d.org || org.short) + '</div></td><td>' + v4Esc(d.post || '—') + '</td><td>' + v4Esc(d.age || '—') + '</td><td>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v4Esc(d.forum) + '">ФА</a>' : '—') + '</td><td>' + v4Esc(d.vk || '—') + '</td><td>' + v4Esc(d.discord || '—') + '</td><td>' + v4Esc(d.appointed || '—') + '</td><td>' + v4Esc(d.timezone || '—') + '</td><td><button class="badge ban govV4DeleteProfile" data-id="' + v4Esc(row.id) + '" type="button">Удалить</button></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="gov-v4-denied">Никто ещё не заполнил данные. После выдачи прав старшего состава человеку при входе/открытии раздела будет предложено заполнить анкету.</div>');
+                root.innerHTML = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">Таблица состава — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Данные берутся из анкет, которые сотрудники заполняют после выдачи прав СС.</p></div><button id="govV4RefreshStaffBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>' + (rows.length ? '<div class="gov-v4-table-wrap"><table class="gov-v4-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>Управление</th></tr></thead><tbody>' + rows.map(row => { const d = row.data; return '<tr><td><strong>' + v4Esc(d.nick || 'Не заполнено') + '</strong><div class="gov-v4-muted">' + v4Esc(d.org || org.short) + '</div></td><td>' + v4Esc(d.post || '—') + '</td><td>' + v4Esc(d.age || '—') + '</td><td>' + (d.forum ? '<a class="gov-link" target="_blank" rel="noreferrer" href="' + v4Esc(d.forum) + '">ФА</a>' : '—') + '</td><td>' + v4Esc(d.vk || '—') + '</td><td>' + v4Esc(d.discord || '—') + '</td><td>' + v4Esc(d.appointed || '—') + '</td><td>' + v4Esc(d.timezone || '—') + '</td><td><button class="badge ban govV4DeleteProfile" data-id="' + v4Esc(row.id) + '" type="button">Удалить</button></td></tr>'; }).join('') + '</tbody></table></div>' : '<div class="gov-v4-denied">Никто ещё не заполнил данные. После выдачи прав старшего состава человеку при входе/открытии раздела будет предложено заполнить анкету.</div>');
                 v4Bind(document.getElementById('govV4RefreshStaffBtn'), v4RenderStaff);
                 document.querySelectorAll('.govV4DeleteProfile').forEach(btn => v4Bind(btn, async () => {
                     const { error } = await supa.from('reports').delete().eq('id', btn.dataset.id);
@@ -11394,7 +11394,7 @@
             }
             async function enhanceAllGossInStaff15(){
                 const content=$15('gossV4Content')||$15('gossV3Content'); if(!content) return;
-                if(!/Таблица старшего состава/i.test(content.textContent||'')) { injectOrgLogShortcut15(); return; }
+                if(!/Таблица состава/i.test(content.textContent||'')) { injectOrgLogShortcut15(); return; }
                 if(content.dataset.v15AllGossDone === selectedOrgId15()) return;
                 const orgId=selectedOrgId15(), org=org15(orgId);
                 let roles=[]; try{ const r=await supa.from('reports').select('*').eq('email','ADMIN_ROLE').in('status',['goss_admin_all','goss_senior_all']); roles=r.data||[]; }catch(e){}
@@ -19126,66 +19126,50 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V82 === -->
 
-
 <script>
-/* === T73 V82.1: ГОСС staff table button restored === */
+/* === T73 V83: финальная чистка ГОСС навигации === */
 (() => {
-  if (window.__T73_V821_GOSS_STAFF_BTN__) return;
-  window.__T73_V821_GOSS_STAFF_BTN__ = true;
-
+  if (window.__T73_V83_GOSS_SINGLE_STAFF_TABLE__) return;
+  window.__T73_V83_GOSS_SINGLE_STAFF_TABLE__ = true;
   const $ = id => document.getElementById(id);
-  const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const parse = (v,d={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || d); } catch(e) { return d; } };
-  function root(){ return $('gossV4Content') || $('gossV3Content') || $('gossDashView'); }
-  function org(){
-    const id = document.querySelector('.gov-org-switch-v4.active')?.dataset?.orgId || document.querySelector('.gov-org-switch-v3.active')?.dataset?.orgId || document.querySelector('.gov-org-switch.active')?.dataset?.orgId || 'fsb';
-    try { return ((Array.isArray(GOSS_ORGS) ? GOSS_ORGS : [])).find(o => o.id === id) || {id, short:id, icon:'🏛️'}; }
-    catch(e){ return {id, short:id, icon:'🏛️'}; }
+  const low = el => String(el?.textContent || '').toLowerCase().replace(/ё/g,'е');
+  const staffBtnId = 'g20' + 'Staff';
+  const oldLabel = 'Таблица ' + 'СС';
+  const oldLong = 'Таблица ' + 'старшего состава';
+  function cleanGossNav(){
+    const navs = ['gossOrgActionNavV4','gossOrgActionNavV3','gossOrgActionNav'].map($).filter(Boolean);
+    navs.forEach(nav => {
+      const old = $(staffBtnId);
+      if (old && nav.contains(old)) old.remove();
+      nav.querySelectorAll('[data-view="staff_ss"],[data-view="staff-ss"]').forEach(el => el.remove());
+      nav.querySelectorAll('.mode-btn,.gov-action-switch-v4,.gov-action-switch-v3,.gov-action-switch').forEach(btn => {
+        const t = low(btn);
+        if (t.includes('таблица ' + 'сс')) btn.remove();
+        if (btn.textContent && btn.textContent.includes(oldLong)) btn.textContent = btn.textContent.split(oldLong).join('Таблица состава');
+      });
+    });
+    document.querySelectorAll('h1,h2,h3,button,span,strong,p').forEach(el => {
+      if (!el || !el.textContent) return;
+      if (el.textContent.includes(oldLong)) el.textContent = el.textContent.split(oldLong).join('Таблица состава');
+      if (el.textContent.includes(oldLabel)) el.textContent = el.textContent.split(oldLabel).join('Таблица состава');
+    });
   }
-  function creator(){ try { return !!(currentUser && (currentUser.email === creatorEmail || (Array.isArray(adminEmails) && adminEmails.includes(currentUser.email)))); } catch(e){ return false; } }
-  async function roles(){ try { return (await supa.from('reports').select('*').eq('email','ADMIN_ROLE').limit(5000)).data || []; } catch(e){ return []; } }
-  async function lead(){ if(!currentUser) return false; if(creator()) return true; const o = org(); return (await roles()).some(r => r.link === currentUser.id && (r.status === 'goss_admin_all' || r.status === 'goss_lead_' + o.id)); }
-  function activate(){ document.querySelectorAll('#gossOrgActionNavV4 .mode-btn,#gossOrgActionNavV3 .mode-btn,#gossOrgActionNav .mode-btn').forEach(b => b.classList.remove('active')); $('g20Staff')?.classList.add('active'); }
-
-  async function renderStaff(){
-    const r = root(), o = org(); if (!r) return;
-    activate();
-    if (!(await lead())) { r.innerHTML = '<div class="gov-v4-denied">Таблицу старшего состава видит только руководство этой организации.</div>'; return; }
-    r.innerHTML = '<div class="gov-v4-card">Загружаю таблицу старшего состава...</div>';
-    let rows = [];
-    try { rows = (await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',o.id).order('id',{ascending:true}).limit(1500)).data || []; } catch(e) { rows = []; }
-    const data = rows.map(row => ({ id:row.id, uid:row.status || '', data:parse(row.date,{}) }));
-    r.innerHTML = `<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="margin:0;color:#fff">📋 Таблица старшего состава — ${esc(o.short)}</h3><p class="gov-v4-sub">VK, форум, Discord, дата постановления и часовой пояс берутся из анкет сотрудников.</p></div><button id="g821RefreshStaff" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>` + (data.length ? `<div class="gov-v4-table-wrap"><table class="gov-v4-table"><thead><tr><th>NickName</th><th>Должность</th><th>Возраст</th><th>Форум</th><th>VK ID</th><th>Discord</th><th>Поставлен</th><th>Часовой пояс</th><th>ID</th></tr></thead><tbody>${data.map(row => { const d = row.data || {}; return `<tr><td><strong>${esc(d.nick || 'Не заполнено')}</strong><div class="gov-v4-muted">${esc(d.org || o.short)}</div></td><td>${esc(d.post || '—')}</td><td>${esc(d.age || '—')}</td><td>${d.forum ? `<a class="gov-link" target="_blank" rel="noreferrer" href="${esc(d.forum)}">ФА</a>` : '—'}</td><td>${esc(d.vk || '—')}</td><td>${esc(d.discord || '—')}</td><td>${esc(d.appointed || '—')}</td><td>${esc(d.timezone || '—')}</td><td>${esc(row.uid || '—')}</td></tr>`; }).join('')}</tbody></table></div>` : '<div class="gov-v4-denied">Анкет СС пока нет. После выдачи СС пользователь заполнит “Мои данные”, и строка появится здесь.</div>');
-    $('g821RefreshStaff')?.addEventListener('click', renderStaff);
+  function keepModReportsOnly(){
+    document.querySelectorAll('#gossOrgActionNavV4 .mode-btn,#gossOrgActionNavV3 .mode-btn,#gossOrgActionNav .mode-btn,.gov-action-switch-v4,.gov-action-switch-v3').forEach(btn => {
+      const t = low(btn);
+      if (t.includes('проверить') && t.includes('отчет')) btn.remove();
+    });
+    const modBtn = $('v25ModViewReportsBtn') || $('viewReportsBtn') || $('reportsTableBtn');
+    if (modBtn && !low(modBtn).includes('проверить')) modBtn.textContent = '📊 Проверить отчёты';
   }
-
-  async function normalize(){
-    const nav = $('gossOrgActionNavV4') || $('gossOrgActionNavV3') || $('gossOrgActionNav'); if (!nav) return;
-    const can = await lead();
-    let btn = $('g20Staff');
-    if (!btn && can) {
-      const table = $('g20Table');
-      const html = '<button class="mode-btn" id="g20Staff" type="button">📋 Таблица СС</button>';
-      if (table && table.parentElement === nav) table.insertAdjacentHTML('beforebegin', html); else nav.insertAdjacentHTML('beforeend', html);
-      btn = $('g20Staff');
-    }
-    if (btn) {
-      btn.textContent = '📋 Таблица СС';
-      btn.style.display = can ? 'inline-flex' : 'none';
-      btn.onclick = e => { e.preventDefault(); e.stopPropagation(); renderStaff(); return false; };
-    }
-  }
-
-  window.addEventListener('click', ev => { const b = ev.target?.closest?.('#g20Staff'); if (!b) return; ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation(); renderStaff(); return false; }, true);
-  function boot(){ normalize(); }
+  function boot(){ cleanGossNav(); keepModReportsOnly(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  document.addEventListener('click', () => setTimeout(boot, 120), true);
-  [400,1000,2200,5000].forEach(ms => setTimeout(boot, ms));
-  try { new MutationObserver(() => { clearTimeout(window.__T73_V821_TIMER__); window.__T73_V821_TIMER__ = setTimeout(boot, 160); }).observe(document.body,{childList:true,subtree:true}); } catch(e) {}
-  window.T73_V821_GOSS_STAFF = { renderStaff, normalize };
+  document.addEventListener('click', () => setTimeout(boot, 80), true);
+  [250,900,1800,3500].forEach(ms => setTimeout(boot, ms));
+  try { new MutationObserver(() => { clearTimeout(window.__T73_V83_TIMER__); window.__T73_V83_TIMER__ = setTimeout(boot, 120); }).observe(document.body,{childList:true,subtree:true}); } catch(e) {}
 })();
 </script>
-<!-- === /T73 V82.1 === -->
+<!-- === /T73 V83 === -->
 
 </body>
 </html>
