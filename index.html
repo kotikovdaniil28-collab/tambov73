@@ -19602,6 +19602,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   let clientCache = null;
+  let accessCache = { key:'', ts:0, mod:false, ap:false, fsb:false, modLeader:false, apLeader:false, fsbLeader:false, gossLeader:false };
+  let accessLoading = false;
 
   function supaClient(){
     try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
@@ -19622,32 +19624,80 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function arr(name){ try { return Array.isArray(window[name]) ? window[name] : eval('typeof '+name+' !== "undefined" && Array.isArray('+name+') ? '+name+' : []'); } catch(e) { return []; } }
   function bool(name){ try { return !!eval('typeof '+name+' !== "undefined" && '+name); } catch(e) { return false; } }
   function isCreator(){ const u=user(); return !!(u && u.email === creator()); }
+  function userKeys(){ const u=user(); return u ? Array.from(new Set([u.id, u.user_id, u.email].filter(Boolean).map(String))) : []; }
+  function accessKey(){ return userKeys().join('|'); }
   function inArr(list,val){ return Array.isArray(list) && list.indexOf(val) !== -1; }
-  function isModLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('adminEmails'), u.email) || inArr(arr('dynamicModLeaders'), u.id) || inArr(arr('dynamicModLeaders'), u.user_id); }
-  function isApLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('apLeadershipEmails'), u.email) || inArr(arr('dynamicApLeaders'), u.id) || inArr(arr('dynamicApLeaders'), u.user_id); }
-  function isFsbLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('dynamicFsbLeaders'), u.id) || inArr(arr('dynamicFsbLeaders'), u.user_id); }
-  function hasModAccess(){ return !!(user() && (bool('isModerator') || isModLeader() || isCreator())); }
-  function anyLeader(){ return isModLeader() || isApLeader() || isFsbLeader(); }
+  function roleStatus(row){ return String(row && row.status || '').trim().toLowerCase(); }
+  function roleLinkMatches(row){ const link = String(row && row.link || ''); return userKeys().indexOf(link) !== -1; }
+  function isModLeader(){ const u=user(); if(!u) return false; return isCreator() || accessCache.modLeader || inArr(arr('adminEmails'), u.email) || inArr(arr('dynamicModLeaders'), u.id) || inArr(arr('dynamicModLeaders'), u.user_id); }
+  function isApLeader(){ const u=user(); if(!u) return false; return isCreator() || accessCache.apLeader || inArr(arr('apLeadershipEmails'), u.email) || inArr(arr('dynamicApLeaders'), u.id) || inArr(arr('dynamicApLeaders'), u.user_id); }
+  function isFsbLeader(){ const u=user(); if(!u) return false; return isCreator() || accessCache.fsbLeader || inArr(arr('adminEmails'), u.email) || inArr(arr('dynamicFsbLeaders'), u.id) || inArr(arr('dynamicFsbLeaders'), u.user_id); }
+  function hasModAccess(){ return !!(user() && (bool('isModerator') || accessCache.mod || isModLeader() || isCreator())); }
+  function anyLeader(){ return isModLeader() || isApLeader() || isFsbLeader() || !!accessCache.gossLeader; }
+  function syncLegacyAccessFlags(){
+    try { if (accessCache.mod || accessCache.modLeader || isCreator()) isModerator = true; } catch(e) {}
+    try { if (accessCache.ap || accessCache.apLeader || isCreator()) isAp = true; } catch(e) {}
+    try { if (accessCache.fsb || accessCache.fsbLeader || isCreator()) isFsbUser = true; } catch(e) {}
+  }
+  async function refreshAccessFromDb(force){
+    const u = user(), client = supaClient(), keys = userKeys();
+    if(!u || !client || !keys.length) return;
+    const key = accessKey(), now = Date.now();
+    if(!force && accessCache.key === key && now - accessCache.ts < 3500) return;
+    if(accessLoading) return;
+    accessLoading = true;
+    try{
+      const res = await withTimeout(client.from('reports').select('email,status,link').in('email',['USER_ROLE','ADMIN_ROLE']).in('link', keys).limit(160), 7000, 'Проверка прав долго отвечает');
+      if(res && res.error) throw res.error;
+      const rows = (res && res.data) || [];
+      const next = { key, ts:Date.now(), mod:false, ap:false, fsb:false, modLeader:false, apLeader:false, fsbLeader:false, gossLeader:false };
+      rows.forEach(row => {
+        if(!roleLinkMatches(row)) return;
+        const email = String(row.email || '').trim();
+        const st = roleStatus(row);
+        if(email === 'USER_ROLE'){
+          if(['moderator','mod','модератор'].includes(st)) next.mod = true;
+          if(['ap','support','agent','агент поддержки','ап'].includes(st)) next.ap = true;
+          if(['fsb','фсб'].includes(st)) next.fsb = true;
+        }
+        if(email === 'ADMIN_ROLE'){
+          if(['leadership','moderation','moderation_lead','mod_lead','mod_admin','руководство','руководство модерации'].includes(st)) next.modLeader = true;
+          if(['ap_admin','ap_lead','support_lead','support_admin','руководство ап'].includes(st)) next.apLeader = true;
+          if(['fsb_admin','fsb_lead','руководство фсб'].includes(st)) next.fsbLeader = true;
+          if(st === 'goss_admin_all' || st === 'goss_senior_all' || st.indexOf('goss_lead_') === 0 || st.indexOf('goss_senior_') === 0 || st.indexOf('goss_admin_') === 0) next.gossLeader = true;
+        }
+      });
+      if(isCreator()) { next.mod = next.modLeader = next.apLeader = next.fsbLeader = true; }
+      accessCache = next;
+      syncLegacyAccessFlags();
+    } catch(e) { console.warn('T73 V100 access refresh failed', e); }
+    finally { accessLoading = false; }
+  }
   function setShown(id, yes, display='inline-flex'){ const el=$(id); if(!el) return; el.style.setProperty('display', yes ? display : 'none', 'important'); el.style.setProperty('visibility', yes ? 'visible' : 'hidden', 'important'); el.style.setProperty('pointer-events', yes ? 'auto' : 'none', 'important'); }
 
   function applyAccess(){
-    document.body.classList.toggle('t73-v94-mod-access', hasModAccess());
-    document.body.classList.toggle('t73-v94-mod-leader', isModLeader());
-    document.body.classList.toggle('t73-v94-ap-leader', isApLeader());
-    document.body.classList.toggle('t73-v94-fsb-leader', isFsbLeader());
+    syncLegacyAccessFlags();
+    const modAccess = hasModAccess();
+    const modLead = isModLeader();
+    const apLead = isApLeader();
+    const fsbLead = isFsbLeader();
+    document.body.classList.toggle('t73-v94-mod-access', modAccess);
+    document.body.classList.toggle('t73-v94-mod-leader', modLead);
+    document.body.classList.toggle('t73-v94-ap-leader', apLead);
+    document.body.classList.toggle('t73-v94-fsb-leader', fsbLead);
     document.body.classList.toggle('t73-v94-any-leader', anyLeader());
-    setShown('shopTabBtn', hasModAccess());
-    setShown('reportTabBtn', hasModAccess());
-    setShown('inactiveTabBtn', hasModAccess());
-    setShown('reportsTableBtn', hasModAccess());
-    setShown('viewReportsBtn', isModLeader(), 'flex');
-    setShown('viewInactivesBtn', isModLeader(), 'flex');
-    setShown('leadershipTabBtn', isModLeader());
-    setShown('adminLogTabBtn', isModLeader());
-    setShown('apAdminTabBtn', isApLeader());
-    setShown('apAdminLogTabBtn', isApLeader());
-    setShown('fsbAdminTabBtn', isFsbLeader());
-    setShown('fsbAdminLogTabBtn', isFsbLeader());
+    setShown('shopTabBtn', modAccess);
+    setShown('reportTabBtn', modAccess);
+    setShown('inactiveTabBtn', modAccess);
+    setShown('reportsTableBtn', modAccess);
+    setShown('viewReportsBtn', modLead, 'flex');
+    setShown('viewInactivesBtn', modLead, 'flex');
+    setShown('leadershipTabBtn', modLead);
+    setShown('adminLogTabBtn', modLead);
+    setShown('apAdminTabBtn', apLead);
+    setShown('apAdminLogTabBtn', apLead);
+    setShown('fsbAdminTabBtn', fsbLead);
+    setShown('fsbAdminLogTabBtn', fsbLead);
     const guideBtn = document.querySelector('#subNavGeneral [data-mode="guide"]');
     if (guideBtn) {
       guideBtn.style.setProperty('display', anyLeader() ? 'inline-flex' : 'none', 'important');
@@ -20025,11 +20075,26 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   const oldSwitch = window.switchMode;
   window.switchMode = function(mode, btn){
     if(mode === 'reports_table'){ openReportsTable(btn || $('reportsTableBtn')); return; }
-    if(['report','inactives','shop'].includes(mode) && !hasModAccess()){ alert('Этот раздел доступен только модераторам, руководству и создателю.'); return; }
-    if(['guide'].includes(mode) && !anyLeader()){ alert('Раздел «Руководство» доступен только пользователям с выданным доступом.'); return; }
-    if(['leadership','admin_log'].includes(mode) && !isModLeader()){ alert('Раздел доступен только руководству модерации.'); return; }
-    if(['ap_admin','ap_admin_log'].includes(mode) && !isApLeader()){ alert('Раздел доступен только руководству АП.'); return; }
-    if(['fsb_admin','fsb_admin_log'].includes(mode) && !isFsbLeader()){ alert('Раздел доступен только руководству ФСБ.'); return; }
+    if(['report','inactives','shop'].includes(mode) && !hasModAccess()){
+      refreshAccessFromDb(true).then(()=>{ applyAccess(); if(hasModAccess()) window.switchMode(mode, btn); else alert('Этот раздел доступен только модераторам, руководству и создателю.'); }).catch(()=>alert('Этот раздел доступен только модераторам, руководству и создателю.'));
+      return;
+    }
+    if(['guide'].includes(mode) && !anyLeader()){
+      refreshAccessFromDb(true).then(()=>{ applyAccess(); if(anyLeader()) window.switchMode(mode, btn); else alert('Раздел «Руководство» доступен только пользователям с выданным доступом.'); }).catch(()=>alert('Раздел «Руководство» доступен только пользователям с выданным доступом.'));
+      return;
+    }
+    if(['leadership','admin_log'].includes(mode) && !isModLeader()){
+      refreshAccessFromDb(true).then(()=>{ applyAccess(); if(isModLeader()) window.switchMode(mode, btn); else alert('Раздел доступен только руководству модерации.'); }).catch(()=>alert('Раздел доступен только руководству модерации.'));
+      return;
+    }
+    if(['ap_admin','ap_admin_log'].includes(mode) && !isApLeader()){
+      refreshAccessFromDb(true).then(()=>{ applyAccess(); if(isApLeader()) window.switchMode(mode, btn); else alert('Раздел доступен только руководству АП.'); }).catch(()=>alert('Раздел доступен только руководству АП.'));
+      return;
+    }
+    if(['fsb_admin','fsb_admin_log'].includes(mode) && !isFsbLeader()){
+      refreshAccessFromDb(true).then(()=>{ applyAccess(); if(isFsbLeader()) window.switchMode(mode, btn); else alert('Раздел доступен только руководству ФСБ.'); }).catch(()=>alert('Раздел доступен только руководству ФСБ.'));
+      return;
+    }
     const out = typeof oldSwitch === 'function' ? oldSwitch.apply(this, arguments) : undefined;
     setTimeout(run, 80);
     return out;
@@ -20048,9 +20113,12 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if(tableBtn){ e.preventDefault(); e.stopImmediatePropagation(); openReportsTable(tableBtn); return false; }
   }, true);
 
-  function run(){ ensureReportTableButton(); bindSubmitReport(); bindReviewButtons(); enhanceSupport(); applyAccess(); }
+  function run(){
+    ensureReportTableButton(); bindSubmitReport(); bindReviewButtons(); enhanceSupport(); applyAccess();
+    refreshAccessFromDb(false).then(applyAccess).catch(()=>{});
+  }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
-  [80,250,700,1500,3000].forEach(ms=>setTimeout(run,ms));
+  [80,250,700,1500,3000,6000].forEach(ms=>setTimeout(run,ms));
   setInterval(run, 1800);
   let moTimer;
   new MutationObserver(()=>{ clearTimeout(moTimer); moTimer=setTimeout(run,120); }).observe(document.documentElement,{childList:true,subtree:true});
