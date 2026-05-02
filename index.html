@@ -19069,5 +19069,312 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V91 === -->
 
+
+
+<!-- === T73 V92: smooth ГОСС tabs / no visual late-loading === -->
+<style id="t73-v92-goss-smooth-style">
+  #mode-goss_center_v4,
+  #mode-goss_center_v3,
+  #mode-goss_dashboard{
+    overflow: hidden;
+  }
+
+  #gossOrgActionNavV4,
+  #gossOrgActionNavV3,
+  #gossOrgActionNav{
+    min-height: 52px;
+    align-items: center;
+    gap: .55rem;
+    contain: layout paint;
+  }
+
+  #gossOrgActionNavV4 .mode-btn,
+  #gossOrgActionNavV3 .mode-btn,
+  #gossOrgActionNav .mode-btn,
+  #subNavOrganizations .gov-org-switch-v4,
+  #subNavOrganizations .gov-org-switch-v3,
+  #subNavOrganizations .gov-org-switch{
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform, opacity, box-shadow, border-color;
+  }
+
+  #gossV4Content,
+  #gossV3Content,
+  #gossDashView{
+    min-height: var(--t73-goss-content-height, 430px);
+    position: relative;
+    contain: layout paint;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    transition:
+      min-height .28s cubic-bezier(.22,.72,.21,1),
+      opacity .22s ease,
+      transform .22s cubic-bezier(.22,.72,.21,1),
+      filter .22s ease;
+    will-change: min-height, opacity, transform, filter;
+  }
+
+  #mode-goss_center_v4.t73-goss-switching #gossV4Content,
+  #mode-goss_center_v3.t73-goss-switching #gossV3Content,
+  #mode-goss_dashboard.t73-goss-switching #gossDashView{
+    opacity: .58;
+    transform: translate3d(0, 8px, 0) scale(.992);
+    filter: saturate(.92);
+    pointer-events: none;
+  }
+
+  #gossV4Content.t73-goss-enter > *,
+  #gossV3Content.t73-goss-enter > *,
+  #gossDashView.t73-goss-enter > *{
+    animation: t73GossSmoothEnter .34s cubic-bezier(.22,.72,.21,1) both;
+  }
+
+  #gossV4Content.t73-goss-enter > *:nth-child(2),
+  #gossV3Content.t73-goss-enter > *:nth-child(2),
+  #gossDashView.t73-goss-enter > *:nth-child(2){ animation-delay: .025s; }
+  #gossV4Content.t73-goss-enter > *:nth-child(3),
+  #gossV3Content.t73-goss-enter > *:nth-child(3),
+  #gossDashView.t73-goss-enter > *:nth-child(3){ animation-delay: .045s; }
+  #gossV4Content.t73-goss-enter > *:nth-child(n+4),
+  #gossV3Content.t73-goss-enter > *:nth-child(n+4),
+  #gossDashView.t73-goss-enter > *:nth-child(n+4){ animation-delay: .06s; }
+
+  @keyframes t73GossSmoothEnter{
+    from{ opacity:0; transform:translate3d(0, 10px, 0) scale(.992); filter:saturate(.9); }
+    to{ opacity:1; transform:translate3d(0, 0, 0) scale(1); filter:saturate(1); }
+  }
+
+  /* Старые/дублирующие ГОСС-кнопки больше не успевают визуально появиться при поздних патчах. */
+  #g19Submit,#g19Table,#g19Shop,#g19Logs,#g19Global,
+  #g20Submit,#g20Table,#g20Shop,#g20Manage,
+  #t73V88ReviewBtn,#t73V88ShopLogsBtn,#t73V87GossReview,
+  #v25GossSubmitReportBar,#v30GossReviewBar,#v30GossReviewBtn,
+  #v27GossViewReportsBtn,#v27GossReportAdminPanel,
+  #v28GossReportsList,#v29GossReportsList,#v30GossReportsArea,
+  #v55GossReportsArea{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+    opacity:0!important;
+  }
+
+  #mode-goss_center_v4 .gov-v4-card,
+  #mode-goss_center_v4 .message-card,
+  #mode-goss_center_v4 .gov-v4-table-wrap,
+  #mode-goss_center_v3 .gov-v3-access-card,
+  #mode-goss_dashboard .gov-v3-access-card{
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  @media(max-width:760px){
+    #gossOrgActionNavV4,
+    #gossOrgActionNavV3,
+    #gossOrgActionNav{
+      min-height: 54px;
+      scroll-snap-type: x proximity;
+    }
+    #gossOrgActionNavV4 .mode-btn,
+    #gossOrgActionNavV3 .mode-btn,
+    #gossOrgActionNav .mode-btn{
+      scroll-snap-align: start;
+    }
+    #gossV4Content,
+    #gossV3Content,
+    #gossDashView{
+      min-height: var(--t73-goss-content-height, 500px);
+    }
+  }
+
+  @media(prefers-reduced-motion: reduce){
+    #gossV4Content,#gossV3Content,#gossDashView{
+      transition:none!important;
+      transform:none!important;
+      filter:none!important;
+    }
+    #gossV4Content.t73-goss-enter > *,
+    #gossV3Content.t73-goss-enter > *,
+    #gossDashView.t73-goss-enter > *{
+      animation:none!important;
+    }
+  }
+</style>
+<script id="t73-v92-goss-smooth-script">
+(function(){
+  'use strict';
+  if (window.__T73_V92_GOSS_SMOOTH__) return;
+  window.__T73_V92_GOSS_SMOOTH__ = true;
+
+  var cache = new Map();
+  var cacheOrder = [];
+  var finishTimer = 0;
+  var rememberTimer = 0;
+  var lastMutationAt = 0;
+  var MAX_CACHE = 36;
+  var HIDDEN_IDS = [
+    'g19Submit','g19Table','g19Shop','g19Logs','g19Global',
+    'g20Submit','g20Table','g20Shop','g20Manage',
+    't73V88ReviewBtn','t73V88ShopLogsBtn','t73V87GossReview',
+    'v25GossSubmitReportBar','v30GossReviewBar','v30GossReviewBtn',
+    'v27GossViewReportsBtn','v27GossReportAdminPanel','v28GossReportsList',
+    'v29GossReportsList','v30GossReportsArea','v55GossReportsArea'
+  ];
+
+  function $(id){ return document.getElementById(id); }
+  function visible(el){ return !!(el && getComputedStyle(el).display !== 'none' && el.offsetParent !== null); }
+  function root(){
+    if (visible($('mode-goss_center_v4')) && $('gossV4Content')) return $('gossV4Content');
+    if (visible($('mode-goss_center_v3')) && $('gossV3Content')) return $('gossV3Content');
+    if (visible($('mode-goss_dashboard')) && $('gossDashView')) return $('gossDashView');
+    return $('gossV4Content') || $('gossV3Content') || $('gossDashView');
+  }
+  function panelFor(r){ return r && (r.closest('#mode-goss_center_v4,#mode-goss_center_v3,#mode-goss_dashboard') || r.closest('.panel')); }
+  function getOrg(){
+    var active = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active,#subNavOrganizations .gov-org-switch-v3.active,#subNavOrganizations [data-org-id].active');
+    var title = $('gossV4Org') || $('gossV3Org') || $('gossDashOrgShort');
+    return (active && active.dataset && active.dataset.orgId) || (title && title.dataset && title.dataset.orgId) || (window.__T73_V53_SELECTED_GOSS_ORG__) || 'fsb';
+  }
+  function getView(){
+    var active = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4.active,#gossOrgActionNavV3 .gov-action-switch-v3.active,#gossOrgActionNav .active[data-view]');
+    return (active && active.dataset && active.dataset.view) || 'trainer';
+  }
+  function key(org, view){ return String(org || 'fsb') + '::' + String(view || 'trainer'); }
+  function looksLoading(html){ return /Загрузка|Загружаю|⏳/i.test(String(html || '')); }
+  function remember(){
+    var r = root();
+    if (!r || !r.innerHTML || looksLoading(r.innerHTML)) return;
+    var k = key(getOrg(), getView());
+    if (!cache.has(k)) cacheOrder.push(k);
+    cache.set(k, r.innerHTML);
+    while (cacheOrder.length > MAX_CACHE) cache.delete(cacheOrder.shift());
+  }
+  function targetFromButton(btn){
+    var org = getOrg(), view = getView();
+    if (btn && btn.dataset) {
+      if (btn.dataset.orgId) { org = btn.dataset.orgId || org; view = 'trainer'; }
+      if (btn.dataset.view) view = btn.dataset.view || view;
+    }
+    return { org:org, view:view };
+  }
+  function setActiveFast(btn){
+    if (!btn || !btn.dataset) return;
+    if (btn.dataset.orgId) {
+      document.querySelectorAll('#subNavOrganizations [data-org-id]').forEach(function(b){ b.classList.toggle('active', b === btn); });
+      window.__T73_V53_SELECTED_GOSS_ORG__ = btn.dataset.orgId;
+    }
+    if (btn.dataset.view) {
+      var nav = btn.closest('#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav');
+      if (nav) nav.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b === btn); });
+    }
+  }
+  function hideLegacy(){
+    HIDDEN_IDS.forEach(function(id){
+      var el = $(id);
+      if (!el) return;
+      el.setAttribute('aria-hidden','true');
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('pointer-events','none','important');
+    });
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="submit"]').forEach(function(b){ b.textContent = '📎 Сдать ГОСС отчёт'; });
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"]').forEach(function(b){ b.textContent = '✅ Проверить отчётность'; });
+  }
+  function prepare(btn){
+    remember();
+    setActiveFast(btn);
+    hideLegacy();
+    var r = root();
+    if (!r) return;
+    var before = Math.max(r.offsetHeight || 0, r.scrollHeight || 0, 380);
+    r.style.setProperty('--t73-goss-content-height', before + 'px');
+    var p = panelFor(r);
+    if (p) p.classList.add('t73-goss-switching');
+
+    var target = targetFromButton(btn);
+    var cached = cache.get(key(target.org, target.view));
+    if (cached && cached !== r.innerHTML && !looksLoading(cached)) {
+      r.dataset.t73V92Preview = '1';
+      r.innerHTML = cached;
+    }
+    scheduleFinish(90);
+    scheduleFinish(260);
+    scheduleFinish(520);
+  }
+  function scheduleFinish(ms){
+    setTimeout(finish, ms || 140);
+  }
+  function finish(){
+    hideLegacy();
+    var r = root();
+    if (!r) return;
+    var h = Math.max(r.scrollHeight || 0, r.offsetHeight || 0, 380);
+    r.style.setProperty('--t73-goss-content-height', h + 'px');
+    var p = panelFor(r);
+    if (p) p.classList.remove('t73-goss-switching');
+    r.classList.remove('t73-goss-enter');
+    void r.offsetWidth;
+    r.classList.add('t73-goss-enter');
+    clearTimeout(rememberTimer);
+    rememberTimer = setTimeout(function(){
+      r.classList.remove('t73-goss-enter');
+      r.dataset.t73V92Preview = '0';
+      remember();
+      var finalH = Math.max(r.scrollHeight || 0, 380);
+      r.style.setProperty('--t73-goss-content-height', finalH + 'px');
+    }, 430);
+  }
+  function isGossClickTarget(el){
+    return !!(el && el.closest && el.closest('#subNavOrganizations .gov-org-switch-v4,#subNavOrganizations .gov-org-switch-v3,#gossOrgActionNavV4 [data-view],#gossOrgActionNavV3 [data-view],#gossOrgActionNav [data-view]'));
+  }
+
+  ['pointerdown','mousedown','touchstart'].forEach(function(type){
+    document.addEventListener(type, function(e){
+      var btn = e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4,#subNavOrganizations .gov-org-switch-v3,#gossOrgActionNavV4 [data-view],#gossOrgActionNavV3 [data-view],#gossOrgActionNav [data-view]');
+      if (btn) prepare(btn);
+    }, {capture:true, passive:true});
+  });
+
+  if (typeof window.switchMode === 'function' && !window.switchMode.__t73v92Smooth) {
+    var oldSwitch = window.switchMode;
+    var wrappedSwitch = function(mode, btn){
+      var isGoss = mode === 'goss_center_v4' || mode === 'goss_center_v3' || mode === 'goss_dashboard' || String(mode || '').indexOf('goss_') === 0;
+      if (isGoss) prepare(btn || null);
+      var out = oldSwitch.apply(this, arguments);
+      if (isGoss) scheduleFinish(180);
+      return out;
+    };
+    wrappedSwitch.__t73v92Smooth = true;
+    window.switchMode = wrappedSwitch;
+  }
+
+  var mo = new MutationObserver(function(muts){
+    var relevant = false;
+    for (var i = 0; i < muts.length; i++) {
+      var t = muts[i].target;
+      if (t && t.closest && t.closest('#gossV4Content,#gossV3Content,#gossDashView,#gossOrgActionNavV4,#gossOrgActionNavV3,#gossOrgActionNav')) { relevant = true; break; }
+    }
+    if (!relevant) return;
+    lastMutationAt = Date.now();
+    hideLegacy();
+    scheduleFinish(120);
+  });
+
+  function boot(){
+    hideLegacy();
+    remember();
+    try { mo.observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+    setTimeout(hideLegacy, 80);
+    setTimeout(remember, 280);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [250, 700, 1400, 2600].forEach(function(ms){ setTimeout(function(){ hideLegacy(); remember(); }, ms); });
+  window.T73_V92_GOSS_SMOOTH = { prepare:prepare, finish:finish, remember:remember, clean:hideLegacy, cache:cache };
+})();
+</script>
+<!-- === /T73 V92 === -->
+
+
 </body>
 </html>
