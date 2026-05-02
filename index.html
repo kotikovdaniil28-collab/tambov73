@@ -5308,6 +5308,7 @@
 
         function getTrainingBalance() { return Math.floor(Number(state.correct || 0) / 10) * 15; }
         function getRealBalance() { return Math.max(0, Number(state.reportXp || 0)); }
+        function getRealSpendableBalance() { return Math.max(0, getRealBalance() - Number(shopState.spent || 0)); }
         function getGameNetBalance() { return Number(manualXpMod || 0); }
         function availableXp() { return Math.max(0, getRealBalance() + getTrainingBalance() + getGameNetBalance() - Number(shopState.spent || 0)); }
         function availablePts() { return Math.max(0, Math.floor(Number(supportState.correct || 0) / 10) * 15 + Number(apPointsMod || 0) - Number(shopState.apSpent || 0)); }
@@ -5398,18 +5399,22 @@
 
         function updateShopStats() {
             if (document.getElementById('shopGameXp')) document.getElementById('shopGameXp').textContent = Math.max(0, getTrainingBalance() + getGameNetBalance());
-            if (document.getElementById('shopRealXp')) document.getElementById('shopRealXp').textContent = getRealBalance();
+            if (document.getElementById('shopRealXp')) document.getElementById('shopRealXp').textContent = getRealSpendableBalance();
             if (document.getElementById('apShopTotalPts')) document.getElementById('apShopTotalPts').textContent = availablePts();
             if (document.getElementById('fsbShopTotalPts')) document.getElementById('fsbShopTotalPts').textContent = getFsbPoints();
             if (document.getElementById('apShopSpentPts')) document.getElementById('apShopSpentPts').textContent = Number(shopState.apSpent || 0);
             renderShopItems(); renderApShopItems(); renderFsbShopItems();
+        }
+        function isLimitedRankDiscount(item) {
+            return !!(item && (item.id === 'mm_1' || item.id === 'm_1' || /^\s*(ММ|MМ|MM|М|M)\s*:\s*Скидка/i.test(String(item.title || ''))));
         }
         function renderShopItems() {
             const container = document.getElementById('shopItemsContainer'); if (!container) return;
             container.innerHTML = ''; const totalXp = availableXp();
             shopItems.forEach(item => {
                 const isGame = !!item.action, canAfford = totalXp >= item.price;
-                container.innerHTML += '<div class="shop-card"><div style="display:flex; justify-content:space-between; align-items:start;"><h3>' + item.icon + ' ' + escapeHtmlFix(item.title) + '</h3><div class="shop-price">' + item.price + ' XP</div></div><p>' + escapeHtmlFix(item.desc) + '</p><button class="shop-buy-btn" ' + (!canAfford ? 'disabled' : '') + ' onclick="buyItem(\'' + item.id + '\', ' + item.price + ', \'' + (item.action || '') + '\')">' + (canAfford ? (isGame ? 'Играть' : 'Купить') : 'Не хватает XP') + '</button></div>';
+                const limitNote = isLimitedRankDiscount(item) ? '<div class="t73-shop-limit-note" style="margin-top:.45rem;color:var(--color-warning);font-size:.82rem;font-weight:800;">Лимит: максимум 2 покупки на этот тип скидки.</div>' : '';
+                container.innerHTML += '<div class="shop-card"><div style="display:flex; justify-content:space-between; align-items:start;"><h3>' + item.icon + ' ' + escapeHtmlFix(item.title) + '</h3><div class="shop-price">' + item.price + ' XP</div></div><p>' + escapeHtmlFix(item.desc) + '</p>' + limitNote + '<button class="shop-buy-btn" ' + (!canAfford ? 'disabled' : '') + ' onclick="buyItem(\'' + item.id + '\', ' + item.price + ', \'' + (item.action || '') + '\')">' + (canAfford ? (isGame ? 'Играть' : 'Купить') : 'Не хватает XP') + '</button></div>';
             });
         }
         async function logPurchase(itemName, isAutoLog, type, cost, currency) {
@@ -5417,7 +5422,7 @@
             let logType = type || 'mod_shop';
             if (typeof type === 'boolean') logType = type ? 'ap_shop' : 'mod_shop';
             const amount = Number(cost || 0);
-            const currencyText = currency || (logType === 'ap_shop' ? 'Баллы АП' : logType === 'fsb_shop' ? 'Баллы ФСБ' : 'XP');
+            const currencyText = currency || (logType === 'ap_shop' ? 'Баллы АП' : logType === 'fsb_shop' ? 'Баллы ГОСС' : 'XP');
             await supa.from('admin_logs').insert([{ user_email: currentUser.email, nickname: currentNickname || currentUser.email, item_name: itemName + ' | Валюта: ' + currencyText + ' | Списано: ' + amount, cost: amount, type: logType, status: isAutoLog ? 'Автоматически зачислено' : 'Ожидает выдачи' }]);
             updateTicker();
         }
@@ -5429,8 +5434,8 @@
                 const realBtn = document.getElementById('currencyRealBtn');
                 const cancelBtn = document.getElementById('currencyCancelBtn');
                 const gameBal = Math.max(0, getTrainingBalance() + getGameNetBalance());
-                const realBal = getRealBalance();
-                text.textContent = 'Операция: ' + title + '. Ставка: ' + price + ' XP. Выберите валюту один раз, дальше действие продолжится автоматически.';
+                const realBal = getRealSpendableBalance();
+                text.textContent = 'Операция: ' + title + '. Стоимость: ' + price + ' XP. Выберите, какой XP списать: игровой или реальный.';
                 document.getElementById('currencyGameInfo').textContent = 'Доступно: ' + gameBal + ' XP';
                 document.getElementById('currencyRealInfo').textContent = 'Доступно: ' + realBal + ' XP';
                 gameBtn.disabled = gameBal < price; realBtn.disabled = realBal < price;
@@ -5439,16 +5444,35 @@
                 modal.style.display = 'flex';
             });
         }
+        async function countRankDiscountPurchases(item) {
+            if (!currentUser || !item) return 0;
+            try {
+                const { data, error } = await supa.from('admin_logs').select('id,item_name').eq('user_email', currentUser.email).eq('type', 'mod_shop').ilike('item_name', '%' + item.title + '%').limit(20);
+                if (error) throw error;
+                return (data || []).filter(row => String(row.item_name || '').includes(item.title)).length;
+            } catch(e) {
+                try { return Number(localStorage.getItem('t73_rank_discount_count_' + currentUser.email + '_' + item.id) || 0); } catch(_e) { return 0; }
+            }
+        }
+        function rememberRankDiscountPurchase(item, countBefore) {
+            if (!currentUser || !item) return;
+            try { localStorage.setItem('t73_rank_discount_count_' + currentUser.email + '_' + item.id, String(Math.max(Number(countBefore || 0) + 1, Number(localStorage.getItem('t73_rank_discount_count_' + currentUser.email + '_' + item.id) || 0)))); } catch(e) {}
+        }
         window.buyItem = async function(id, price, action) {
             const item = shopItems.find(i => i.id === id); if (!item) return;
-            const isGame = !!action; let currencyType = 'real';
-            if (isGame) {
-                currencyType = await chooseCurrencyForOperation(price, item.title);
-                if (!currencyType) return;
-                const bucket = currencyType === 'game' ? Math.max(0, getTrainingBalance() + getGameNetBalance()) : getRealBalance();
-                if (bucket < price) { playSound('fail'); alert('Не хватает выбранной валюты.'); return; }
-            } else if (availableXp() < price) { playSound('fail'); alert('Не хватает XP.'); return; }
-            shopState.spent += Math.abs(Number(price)); window.currentGameCurrency = currencyType; playSound('ok'); updateShopStats(); await saveProgress();
+            const isGame = !!action;
+            let discountCountBefore = 0;
+            if (isLimitedRankDiscount(item)) {
+                discountCountBefore = await countRankDiscountPurchases(item);
+                if (discountCountBefore >= 2) { playSound('fail'); alert('Лимит исчерпан: скидки на М и ММ можно купить максимум 2 раза.'); return; }
+            }
+            const currencyType = await chooseCurrencyForOperation(price, item.title);
+            if (!currencyType) return;
+            const bucket = currencyType === 'game' ? Math.max(0, getTrainingBalance() + getGameNetBalance()) : getRealSpendableBalance();
+            if (bucket < price) { playSound('fail'); alert('Не хватает выбранной валюты.'); return; }
+            if (currencyType === 'game') await addGameXp(-Math.abs(Number(price)));
+            else shopState.spent += Math.abs(Number(price));
+            window.currentGameCurrency = currencyType; playSound('ok'); updateShopStats(); await saveProgress();
             if (action === 'mod_roulette') { openFortune(false); return; }
             if (action === 'mod_coin') { openCoinGame(); return; }
             if (action === 'mod_safes') { openSafesGame(); return; }
@@ -5459,7 +5483,11 @@
                 ['ggRps','ggSlots','ggTiming','ggRocket','ggCases','ggDice','ggMines','ggHiLo','ggWheelX','ggShells'].forEach(a => { const el = document.getElementById(a); if (el) el.style.display = 'none'; });
                 if (overlay) overlay.style.display = 'flex'; if (modal) modal.style.display = 'flex';
                 if (startBtn) startBtn.onclick = () => { if (overlay) overlay.style.display = 'none'; if (action === 'mod_crash') openRocketGame(price); else if (action === 'mod_cases') openCasesGame(price); else if (action === 'mod_dice') openDiceGame(price); else if (action === 'mod_mines') openMinesGame(price); else if (action === 'mod_hilo') openHiLoGame(price); else if (action === 'mod_wheelx') openWheelXGame(price); else if (action === 'mod_shells') openShellsGame(price); else window.playGenericGame(id, price); };
-            } else { await logPurchase('Покупка: ' + item.title, false, 'mod_shop', price, 'XP'); alert('Куплено: ' + item.title + '. Заявка отправлена руководству!'); }
+            } else {
+                await logPurchase('Покупка: ' + item.title, false, 'mod_shop', price, currencyType === 'game' ? 'Игровой XP' : 'Реальный XP');
+                if (isLimitedRankDiscount(item)) rememberRankDiscountPurchase(item, discountCountBefore);
+                alert('Куплено: ' + item.title + '. Списано: ' + (currencyType === 'game' ? 'Игровой XP' : 'Реальный XP') + '. Заявка отправлена руководству!');
+            }
         };
         window.buyApItem = async function(id, price, action) {
             const item = apShopItems.find(i => i.id === id); if (!item) return;
@@ -5470,7 +5498,7 @@
         window.buyFsbItem = async function(id, price) {
             const item = fsbShopItems.find(i => i.id === id); if (!item) return;
             if (getFsbPoints() < price) { playSound('fail'); return; }
-            await spendFsbPoints(price, 'Покупка ФСБ: ' + item.title); playSound('ok'); updateShopStats(); await saveProgress(); await logPurchase('Покупка ФСБ: ' + item.title, false, 'fsb_shop', price, 'Баллы ФСБ'); alert('Успешно куплено: ' + item.title + '. Покупка записана в логи ФСБ.');
+            await spendFsbPoints(price, 'Покупка ФСБ: ' + item.title); playSound('ok'); updateShopStats(); await saveProgress(); await logPurchase('Покупка ФСБ: ' + item.title, false, 'fsb_shop', price, 'Баллы ГОСС'); alert('Успешно куплено: ' + item.title + '. Покупка записана в логи ФСБ.');
         };
 
         function startGame() {
@@ -5511,13 +5539,118 @@
             await saveProgress(); randomFsbApp(); updateShopStats();
         };
 
+        function parseLogRefundMeta(log) {
+            const text = String(log && log.item_name || '');
+            let amount = Math.abs(Number(log && log.cost || 0));
+            if (!amount) {
+                const m = text.match(/Списано:\s*(\d+(?:[.,]\d+)?)/i) || text.match(/Стоимость:\s*(\d+(?:[.,]\d+)?)/i);
+                amount = m ? Math.abs(Number(String(m[1]).replace(',', '.'))) : 0;
+            }
+            const type = String(log && log.type || '').toLowerCase();
+            const low = text.toLowerCase();
+            let currency = '';
+            if (/игров/.test(low)) currency = 'game';
+            else if (/реаль/.test(low)) currency = 'real';
+            else if (/балл[ыа]?\s*ап|ап/.test(low) || type === 'ap_shop') currency = 'ap';
+            else if (/балл[ыа]?\s*(фсб|госс)|фсб|госс/.test(low) || ['fsb_shop','goss_shop','gov_shop'].includes(type)) currency = 'goss';
+            else if (type === 'mod_shop') currency = 'real';
+            return { amount, currency, type };
+        }
+        function logRefundWasDone(log) {
+            return /xp\s*возвращ|хр\s*возвращ|возврат/i.test(String(log && log.status || ''));
+        }
+        function jsArg(value) {
+            return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
+        }
+        function logRefundButtonHtml(log, logType) {
+            const meta = parseLogRefundMeta(log);
+            if (!log || !log.id || !meta.amount || !meta.currency || logRefundWasDone(log)) return '';
+            const title = meta.currency === 'game' ? 'Вернуть игровой XP' : meta.currency === 'real' ? 'Вернуть реальный XP' : meta.currency === 'ap' ? 'Вернуть баллы АП' : meta.currency === 'goss' ? 'Вернуть баллы ГОСС' : 'Вернуть XP';
+            return '<button class="btn btn-secondary" style="padding:.45rem .7rem; font-size:.8rem; margin-top:.45rem; border-color:var(--color-success); color:var(--color-success);" onclick="refundLogXp(\'' + jsArg(log.id) + '\', \'' + jsArg(logType) + '\')">↩ ' + title + '</button>';
+        }
+        async function findUserForLogRefund(log) {
+            const email = String(log && log.user_email || '').trim();
+            const nick = String(log && log.nickname || '').trim();
+            let data = null, error = null;
+            if (email) {
+                const res = await supa.from('user_stats').select('user_id,nickname,email,shop_spent,ap_spent').eq('email', email).maybeSingle();
+                data = res.data; error = res.error;
+                if (error && !/multiple|rows/i.test(String(error.message || ''))) throw error;
+            }
+            if (!data && nick) {
+                const res2 = await supa.from('user_stats').select('user_id,nickname,email,shop_spent,ap_spent').eq('nickname', nick).maybeSingle();
+                data = res2.data; error = res2.error;
+                if (error && !/multiple|rows/i.test(String(error.message || ''))) throw error;
+            }
+            return data;
+        }
+        window.refundLogXp = async function(id, type) {
+            try {
+                if (!id) return;
+                const { data: log, error: logError } = await supa.from('admin_logs').select('*').eq('id', id).maybeSingle();
+                if (logError) throw logError;
+                if (!log) return alert('Лог не найден.');
+                if (logRefundWasDone(log)) return alert('XP по этому логу уже возвращали.');
+                const meta = parseLogRefundMeta(log);
+                if (!meta.amount) return alert('Не смог определить сумму возврата из лога.');
+                const user = await findUserForLogRefund(log);
+                if (!user || !user.user_id) return alert('Не нашёл пользователя для возврата XP. Проверь, есть ли он в базе user_stats.');
+                const curText = meta.currency === 'game' ? 'игрового XP' : meta.currency === 'real' ? 'реального XP' : meta.currency === 'ap' ? 'баллов АП' : meta.currency === 'goss' ? 'баллов ГОСС' : 'XP';
+                if (!confirm('Вернуть ' + meta.amount + ' ' + curText + ' пользователю ' + (user.nickname || user.email || log.nickname) + '?')) return;
+
+                if (meta.currency === 'game') {
+                    await supa.from('reports').insert([{ id: makeFixId('refund_game'), email: 'MANUAL_XP', link: user.user_id, date: 'Возврат игрового XP по логу: ' + String(log.item_name || '').slice(0, 140), status: 'mod_refund', xp: meta.amount }]);
+                    if (currentUser && currentUser.id === user.user_id) manualXpMod += meta.amount;
+                } else if (meta.currency === 'real') {
+                    const newSpent = Math.max(0, Number(user.shop_spent || 0) - meta.amount);
+                    const upd = await supa.from('user_stats').update({ shop_spent: newSpent }).eq('user_id', user.user_id);
+                    if (upd.error) throw upd.error;
+                    if (currentUser && currentUser.id === user.user_id) shopState.spent = newSpent;
+                } else if (meta.currency === 'ap') {
+                    const newApSpent = Math.max(0, Number(user.ap_spent || 0) - meta.amount);
+                    const upd = await supa.from('user_stats').update({ ap_spent: newApSpent }).eq('user_id', user.user_id);
+                    if (upd.error) throw upd.error;
+                    if (currentUser && currentUser.id === user.user_id) shopState.apSpent = newApSpent;
+                } else if (meta.currency === 'goss') {
+                    const isLegacyFsbShop = String(log.type || '').toLowerCase() === 'fsb_shop';
+                    if (isLegacyFsbShop) {
+                        await supa.from('reports').insert([{ id: makeFixId('refund_goss_fsb_legacy'), email: 'FSB_POINTS', link: user.user_id, date: 'Возврат баллов ГОСС по старому ФСБ-магазину: ' + String(log.item_name || '').slice(0, 140), status: 'goss_refund', xp: meta.amount }]);
+                        if (currentUser && currentUser.id === user.user_id) fsbPointsMod += meta.amount;
+                    } else {
+                        const orgId = String(log.org_id || log.organization || log.link || '').trim() || 'all';
+                        await supa.from('reports').insert([{ id: makeFixId('refund_goss'), email: 'GOSS_POINTS_V19', link: user.user_id, date: 'Возврат баллов ГОСС по логу: ' + String(log.item_name || '').slice(0, 140), status: orgId, xp: meta.amount }]);
+                    }
+                } else {
+                    return alert('Не смог определить тип валюты для возврата.');
+                }
+
+                const oldStatus = String(log.status || '').trim();
+                const nextStatus = oldStatus ? (oldStatus + ' · Возврат выполнен') : 'Возврат выполнен';
+                await supa.from('admin_logs').update({ status: nextStatus }).eq('id', id);
+                if (typeof playSound === 'function') playSound('ok');
+                updateShopStats();
+                if (type === 'goss_shop_logs' && typeof renderGossShopLogsV12 === 'function') renderGossShopLogsV12();
+                else if (typeof renderAdminLogs === 'function') renderAdminLogs(type || log.type || 'mod_shop');
+                alert('Возврат выполнен. Лог помечен как обработанный.');
+            } catch (e) {
+                console.error('refundLogXp error', e);
+                alert('Ошибка возврата XP: ' + (e && e.message ? e.message : e));
+            }
+        };
         async function renderAdminLogs(type = 'mod_shop') {
             let logType = type; if (type === true) logType = 'ap_shop'; if (type === false) logType = 'mod_shop';
-            const areaId = logType === 'ap_shop' ? 'apAdminLogsArea' : logType === 'fsb_shop' ? 'fsbAdminLogsArea' : 'adminLogsArea'; const area = document.getElementById(areaId); if (!area) return; area.innerHTML = 'Загрузка...';
+            const areaId = logType === 'ap_shop' ? 'apAdminLogsArea' : logType === 'fsb_shop' ? 'fsbAdminLogsArea' : 'adminLogsArea';
+            const area = document.getElementById(areaId); if (!area) return; area.innerHTML = 'Загрузка...';
             const { data: logs, error } = await supa.from('admin_logs').select('*').eq('type', logType).order('created_at', { ascending: false }).limit(80);
             if (error) { area.innerHTML = '<div class="message-text" style="color: var(--color-error);">Ошибка: ' + escapeHtmlFix(error.message) + '</div>'; return; }
             const accent = logType === 'ap_shop' ? '#ff8fc4' : logType === 'fsb_shop' ? '#6c8cff' : '#ffbf47';
-            if (logs && logs.length > 0) area.innerHTML = logs.map(log => '<div style="background:rgba(0,0,0,.5); padding:1rem; border-radius:12px; border:1px solid rgba(191,198,255,.2); display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;"><div><strong style="color:' + accent + ';">' + escapeHtmlFix(log.nickname) + '</strong><div style="font-size:.9rem; margin:.2rem 0;">Покупка/выигрыш: <span style="font-weight:bold;">' + escapeHtmlFix(log.item_name) + '</span></div><div style="font-size:.8rem; color:var(--color-text-faint);">' + new Date(log.created_at).toLocaleString('ru-RU') + '</div></div><div style="text-align:right;"><div style="margin-bottom:.5rem; color:' + ((log.status === 'Выдано' || log.status === 'Автоматически зачислено') ? 'var(--color-success)' : 'var(--color-warning)') + ';">' + escapeHtmlFix(log.status) + '</div>' + (log.status === 'Ожидает выдачи' ? '<button class="btn btn-secondary" style="padding:.45rem .7rem; font-size:.8rem;" onclick="markLogIssued(\'' + log.id + '\', \'' + logType + '\')">Отметить как выданное</button>' : '') + '</div></div>').join('');
+            if (logs && logs.length > 0) area.innerHTML = logs.map(log => {
+                const status = String(log.status || 'Ожидает выдачи');
+                const isDone = status === 'Выдано' || status === 'Автоматически зачислено' || logRefundWasDone(log);
+                const markBtn = status === 'Ожидает выдачи' ? '<button class="btn btn-secondary" style="padding:.45rem .7rem; font-size:.8rem;" onclick="markLogIssued(\'' + jsArg(log.id) + '\', \'' + jsArg(logType) + '\')">Отметить как выданное</button>' : '';
+                const refundBtn = logRefundButtonHtml(log, logType);
+                return '<div style="background:rgba(0,0,0,.5); padding:1rem; border-radius:12px; border:1px solid rgba(191,198,255,.2); display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap;"><div><strong style="color:' + accent + ';">' + escapeHtmlFix(log.nickname || 'Пользователь') + '</strong><div style="font-size:.9rem; margin:.2rem 0;">Покупка/выигрыш: <span style="font-weight:bold;">' + escapeHtmlFix(log.item_name || '—') + '</span></div><div style="font-size:.8rem; color:var(--color-text-faint);">' + (log.created_at ? new Date(log.created_at).toLocaleString('ru-RU') : '') + '</div></div><div style="text-align:right;"><div style="margin-bottom:.5rem; color:' + (isDone ? 'var(--color-success)' : 'var(--color-warning)') + ';">' + escapeHtmlFix(status) + '</div>' + markBtn + refundBtn + '</div></div>';
+            }).join('');
             else area.innerHTML = '<div class="message-text">Логи пусты.</div>';
         }
         window.markLogIssued = async function(id, type) { await supa.from('admin_logs').update({ status: 'Выдано' }).eq('id', id); renderAdminLogs(type); };
@@ -6116,7 +6249,7 @@
                 if (getFsbPoints() < price) { playSound('fail'); alert('Не хватает Баллов ФСБ.'); return; }
                 await spendFsbPoints(price, 'Покупка ФСБ: ' + item.title);
                 playSound('ok'); updateShopStats(); await saveProgress();
-                await logPurchase('Покупка ФСБ: ' + item.title, false, 'fsb_shop', price, 'Баллы ФСБ');
+                await logPurchase('Покупка ФСБ: ' + item.title, false, 'fsb_shop', price, 'Баллы ГОСС');
                 if (item.action === 'fsb_roulette_pts' || item.action === 'fsb_roulette_items') {
                     openFsbFortune(item.action, false);
                 } else {
@@ -10456,7 +10589,7 @@
                 try { const res = await supa.from('admin_logs').select('*').in('type',['fsb_shop','goss_shop','gov_shop']).order('created_at',{ascending:false}).limit(150); logs=res.data||[]; error=res.error; } catch(e){ error=e; }
                 if (error) { area.innerHTML='<div class="message-text" style="color:var(--color-error);">Ошибка: '+escV12(error.message||error)+'</div>'; return; }
                 if(!logs.length){ area.innerHTML='<div class="message-text">Логи ГОСС-магазинов пустые. Покупки ФСБ-магазина тоже будут здесь.</div>'; return; }
-                area.innerHTML = logs.map(log => '<div class="t73-v12-report-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><strong style="color:#6c8cff;">'+escV12(log.nickname||'Пользователь')+'</strong><span style="color:var(--color-text-faint);">'+escV12(log.type||'goss_shop')+' • '+(log.created_at?new Date(log.created_at).toLocaleString('ru-RU'):'')+'</span></div><div>Покупка/выигрыш: <b>'+escV12(log.item_name||'—')+'</b></div><div style="color:'+(log.status==='Выдано'||log.status==='Автоматически зачислено'?'var(--color-success)':'var(--color-warning)')+';font-weight:900;">'+escV12(log.status||'Ожидает выдачи')+'</div>'+(log.status==='Ожидает выдачи'?'<button class="btn btn-secondary" onclick="markLogIssued(\''+escV12(log.id)+'\',\'goss_shop_logs\')">Отметить как выданное</button>':'')+'</div>').join('');
+                area.innerHTML = logs.map(log => '<div class="t73-v12-report-card"><div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;"><strong style="color:#6c8cff;">'+escV12(log.nickname||'Пользователь')+'</strong><span style="color:var(--color-text-faint);">'+escV12(log.type||'goss_shop')+' • '+(log.created_at?new Date(log.created_at).toLocaleString('ru-RU'):'')+'</span></div><div>Покупка/выигрыш: <b>'+escV12(log.item_name||'—')+'</b></div><div style="color:'+(log.status==='Выдано'||log.status==='Автоматически зачислено'||/возвращ/i.test(String(log.status||''))?'var(--color-success)':'var(--color-warning)')+';font-weight:900;">'+escV12(log.status||'Ожидает выдачи')+'</div>'+(log.status==='Ожидает выдачи'?'<button class="btn btn-secondary" onclick="markLogIssued(\''+escV12(log.id)+'\',\'goss_shop_logs\')">Отметить как выданное</button>':'')+(typeof logRefundButtonHtml==='function'?logRefundButtonHtml(log,'goss_shop_logs'):'')+'</div>').join('');
             }
 
             const prevRenderAdminLogsV12 = typeof renderAdminLogs === 'function' ? renderAdminLogs : null;
@@ -13342,11 +13475,11 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
   async function updateStatusV44(sel){ const client=supaClient(); if(!client){ alert('Supabase ещё не загрузился.'); return; } let val=norm(sel.value); const id=String(sel.dataset.id||''); const nick=String(sel.dataset.nick||''); const date=String(sel.dataset.date||''); const email=String(sel.dataset.email||''); sel.disabled=true; sel.style.opacity='.55'; sel.className='t73-v44-select '+cls(val); try{ if(id){ if(val==='none'){ const r=await client.from('reports').delete().eq('id',id); if(r.error) throw r.error; sel.dataset.id=''; } else { const r=await client.from('reports').update({status:val,xp:xp(val)}).eq('id',id); if(r.error) throw r.error; } } else if(val!=='none'){ const newId='rep_manual_'+Date.now()+'_'+Math.random().toString(16).slice(2); const data=`Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством`; const r=await client.from('reports').insert([{id:newId,email,link:'',date:data,status:val,xp:xp(val)}]); if(r.error) throw r.error; sel.dataset.id=newId; } setTimeout(loadModTableV44,250); }catch(e){ alert('Ошибка сохранения: '+(e?.message||e)); } finally{ sel.disabled=false; sel.style.opacity='1'; } }
   function openTable(btn){ qa('.game-card[id^="mode-"],section[id^="mode-"]').forEach(sec=>{ if(sec.id) sec.style.display=sec.id==='mode-reports_table'?'grid':'none'; }); qa('.mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.documentElement.setAttribute('data-site-theme','shop'); shell(); setTimeout(loadModTableV44,40); }
-  function bindTableButton(){ const b=$('reportsTableBtn'); if(b){ b.textContent='📊 Таблица Отчетов'; b.dataset.mode='reports_table'; b.style.display='inline-flex'; b.onclick=e=>{e.preventDefault();e.stopPropagation();openTable(b);return false;}; } ['reportsTableBtnModV15','reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportTableBtnGen','v16OpenTableTop','v25ModViewReportsBtn'].forEach(id=>{const el=$(id); if(el){el.style.display='none'; el.onclick=null; el.setAttribute('aria-hidden','true');}}); }
-  const oldSwitch=window.switchMode; window.switchMode=function(mode,btn){ if(mode==='reports_table'){ openTable(btn||$('reportsTableBtn')); return; } const out=typeof oldSwitch==='function'?oldSwitch.apply(this,arguments):undefined; setTimeout(()=>{syncNav();prettyGoss();dedupeGossActions();bindTableButton();},60); return out; };
-  window.loadReportsTable=loadModTableV44; try{ loadReportsTable=loadModTableV44; }catch(e){} window.updateReportStatusDirectly=function(sel,nick,date,id){ if(sel){ if(nick) sel.dataset.nick=nick; if(date) sel.dataset.date=date; if(id) sel.dataset.id=id; } return updateStatusV44(sel); };
-  const oldProcess=window.processReport; if(typeof oldProcess==='function'&&!oldProcess.__t73v44){ const wrapped=async function(){ const out=await oldProcess.apply(this,arguments); const sec=$('mode-reports_table'); if(sec&&getComputedStyle(sec).display!=='none') setTimeout(loadModTableV44,350); return out; }; wrapped.__t73v44=true; window.processReport=wrapped; }
-  document.addEventListener('click',e=>{ const btn=e.target&&e.target.closest&&e.target.closest('#reportsTableBtn,[data-mode="reports_table"]'); if(!btn) return; e.preventDefault(); e.stopImmediatePropagation(); openTable(btn); return false; },true);
+  function bindTableButton(){ const b=$('reportsTableBtn'); if(b){ b.textContent='📊 Таблица Отчетов'; b.dataset.mode='reports_table'; b.style.display='inline-flex'; b.onclick=e=>{e.preventDefault();e.stopPropagation(); if(typeof window.switchMode==='function') window.switchMode('reports_table', b); return false;}; } ['reportsTableBtnModV15','reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportTableBtnGen','v16OpenTableTop','v25ModViewReportsBtn'].forEach(id=>{const el=$(id); if(el){el.style.display='none'; el.onclick=null; el.setAttribute('aria-hidden','true');}}); }
+  const oldSwitch=window.switchMode; window.switchMode=function(mode,btn){ const out=typeof oldSwitch==='function'?oldSwitch.apply(this,arguments):undefined; setTimeout(()=>{syncNav();prettyGoss();dedupeGossActions();bindTableButton();},60); return out; };
+  // Старую таблицу V44 оставляем только как резервную функцию, но больше не перехватываем кнопку в «Общее».
+  if(!window.loadReportsTable) window.loadReportsTable=loadModTableV44; try{ if(typeof loadReportsTable === 'undefined') loadReportsTable=loadModTableV44; }catch(e){} window.updateReportStatusDirectly=function(sel,nick,date,id){ if(sel){ if(nick) sel.dataset.nick=nick; if(date) sel.dataset.date=date; if(id) sel.dataset.id=id; } return updateStatusV44(sel); };
+  const oldProcess=window.processReport; if(typeof oldProcess==='function'&&!oldProcess.__t73v44){ const wrapped=async function(){ const out=await oldProcess.apply(this,arguments); const sec=$('mode-reports_table'); if(sec&&getComputedStyle(sec).display!=='none' && sec.classList.contains('t73-v44-mod-table')) setTimeout(loadModTableV44,350); return out; }; wrapped.__t73v44=true; window.processReport=wrapped; }
   function activeCat(){ return (document.querySelector('.main-cat-btn.active')?.dataset?.cat)||'moderation'; }
   function syncNav(){ const cat=activeCat(); document.body.classList.remove('t73-v44-cat-moderation','t73-v44-cat-support','t73-v44-cat-general','t73-v44-cat-organizations'); document.body.classList.add('t73-v44-cat-'+cat); const map={moderation:'subNavModeration',support:'subNavSupport',general:'subNavGeneral',organizations:'subNavOrganizations'}; Object.values(map).forEach(id=>{ const n=$(id); if(n) n.classList.remove('t73-v44-active-subnav'); }); const nav=$(map[cat]||'subNavModeration'); if(nav) nav.classList.add('t73-v44-active-subnav'); const g4=$('gossOrgActionNavV4'); if(g4){ if(cat==='organizations') g4.classList.add('t73-v44-goss-actions'); else g4.classList.remove('t73-v44-goss-actions'); } }
   document.addEventListener('click',e=>{ const btn=e.target&&e.target.closest&&e.target.closest('.main-cat-btn'); if(!btn) return; setTimeout(()=>{ syncNav(); dedupeGossActions(); },45); },true);
@@ -17761,6 +17894,50 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if (p && typeof p === 'object') return p.comment || p.text || p.work || p.desc || JSON.stringify(p).slice(0, 700);
     return String(r.date || '').slice(0, 700);
   }
+  function gossReportRefundDone(r){
+    var p = parse(r && r.date, {});
+    return !!(p && p.refunded) || /возвращ|refund/i.test(String(r && r.date || '') + ' ' + String(r && r.status || ''));
+  }
+  function jsq(v){ return String(v == null ? '' : v).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' '); }
+  function gossReportRefundButton(r){
+    if (!r) return '';
+    if (r.source === 'admin_logs') return (typeof logRefundButtonHtml === 'function' ? logRefundButtonHtml(r, 'goss_shop_logs') : '');
+    if (String(r.email || '') !== 'GOSS_SHOP_BUY_V19') return '';
+    if (gossReportRefundDone(r)) return '<div class="t73-v68-muted" style="color:var(--color-success);font-weight:900;">↩ Баллы ГОСС уже возвращены</div>';
+    var amount = Math.abs(Number(r.xp || 0));
+    if (!r.id || !amount) return '';
+    return '<button class="btn btn-secondary" type="button" style="margin-top:.65rem;border-color:var(--color-success);color:var(--color-success);" onclick="refundGossReportPurchase(\'' + jsq(r.id) + '\')">↩ Вернуть баллы ГОСС</button>';
+  }
+  window.refundGossReportPurchase = async function(id){
+    var c = client();
+    if (!c || !id) return;
+    try {
+      var res = await c.from('reports').select('*').eq('id', id).limit(1);
+      var row = res && res.data && res.data[0];
+      if (!row) return alert('Покупка ГОСС не найдена.');
+      if (String(row.email || '') !== 'GOSS_SHOP_BUY_V19') return alert('Это не покупка магазина ГОСС.');
+      var p = parse(row.date, {});
+      if (p.refunded) return alert('Баллы по этой покупке уже возвращали.');
+      var amount = Math.abs(Number(row.xp || 0));
+      var userId = String(row.status || p.userId || '').trim();
+      var orgId = String(row.link || p.org || activeOrgId() || 'all').trim();
+      if (!amount || !userId) return alert('Не смог определить пользователя или сумму возврата.');
+      var title = p.title || p.item || 'покупка';
+      if (!confirm('Вернуть ' + amount + ' баллов ГОСС за "' + title + '"?')) return;
+      await c.from('reports').insert([{ id:'goss_refund_' + Date.now() + '_' + Math.random().toString(16).slice(2), email:'GOSS_POINTS_V19', link:userId, status:orgId, date:'Возврат баллов ГОСС по покупке: ' + title + ' · ' + (currentUser && currentUser.email ? currentUser.email : 'руководство') + ' · ' + new Date().toLocaleString('ru-RU'), xp:amount }]);
+      p.refunded = true;
+      p.refundedAt = new Date().toISOString();
+      p.refundedBy = currentUser && currentUser.email ? currentUser.email : 'руководство';
+      await c.from('reports').update({ date: JSON.stringify(p) }).eq('id', id);
+      await c.from('reports').insert([{ id:'goss_log_refund_' + Date.now() + '_' + Math.random().toString(16).slice(2), email:'GOSS_ORG_LOG_V19', link:orgId, status:'shop_refund', date:'Возврат баллов ГОСС: ' + amount + ' · ' + title + ' · ' + p.refundedBy + ' · ' + new Date().toLocaleString('ru-RU'), xp:amount }]);
+      if (typeof playSound === 'function') playSound('ok');
+      alert('Баллы ГОСС возвращены.');
+      renderShopLogs();
+    } catch(e) {
+      console.error('refundGossReportPurchase error', e);
+      alert('Ошибка возврата баллов ГОСС: ' + (e && e.message ? e.message : e));
+    }
+  };
   function renderRows(rows, empty){
     if (!rows.length) return '<div class="t73-v68-denied">' + esc(empty) + '</div>';
     return '<div class="t73-v68-log-list">' + rows.map(function(r){
@@ -17772,6 +17949,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
         + '<div class="t73-v68-muted">' + esc(r.status || '') + (when ? ' · ' + esc(when) : '') + '</div>'
         + '<div>' + esc(rowBody(r)) + '</div>'
         + (r.nickname || r.nick ? '<div class="t73-v68-muted">Пользователь: ' + esc(r.nickname || r.nick) + '</div>' : '')
+        + gossReportRefundButton(r)
         + '</div>';
     }).join('') + '</div>';
   }
@@ -18834,201 +19012,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
 
 
-<!-- === T73 V89: отчётная таблица модерации только в панели руководства === -->
-<style id="t73-v89-mod-report-placement-style">
-  #subNavModeration #reportsTableBtnModV15,
-  #subNavModeration #reportsTableBtnModStatic,
-  #subNavModeration #v16ReportTableBtnMod,
-  #subNavModeration #v16ReportBtnMod,
-  #subNavModeration #v25ModViewReportsBtn,
-  #subNavModeration [data-mode="reports_table"],
-  #subNavGeneral #reportsTableBtn,
-  #v16OpenBar,
-  #v16OpenTableTop,
-  #v16OpenReportTop,
-  #v16ReportTableBtnGen {
-    display:none!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-  }
-  #mode-leadership .t73-v89-lead-report-card{
-    background:rgba(10,23,14,.62);
-    padding:1.5rem;
-    border-radius:16px;
-    border:1px solid rgba(82,199,123,.45);
-    margin-bottom:1.5rem;
-    box-shadow:0 12px 28px rgba(0,0,0,.22);
-  }
-  #mode-leadership .t73-v89-lead-report-card h3{margin:0 0 .45rem;color:#7fe8a0;font-size:var(--text-base)}
-  #mode-leadership .t73-v89-lead-report-card p{margin:0 0 1rem;color:var(--color-text-muted);line-height:1.45}
-  #t73V89LeadershipReportsBtn{width:100%;justify-content:center;min-height:46px}
-</style>
-<script id="t73-v89-mod-report-placement-script">
-(function(){
-  'use strict';
-  if (window.__T73_V89_MOD_REPORT_PLACEMENT__) return;
-  window.__T73_V89_MOD_REPORT_PLACEMENT__ = true;
 
-  var $ = function(id){ return document.getElementById(id); };
-  var qa = function(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  var allowOpen = false;
-  var cleanupTimer = null;
 
-  function norm(v){ return String(v || '').replace(/ё/g, 'е').replace(/[📊✅🧾📎]/g, '').trim().toLowerCase(); }
-  function isCreatorOrAdmin(){
-    try {
-      return !!(window.currentUser && (
-        currentUser.email === window.creatorEmail ||
-        (Array.isArray(window.adminEmails) && window.adminEmails.indexOf(currentUser.email) !== -1)
-      ));
-    } catch(e){ return false; }
-  }
-  function isModLead(){
-    try {
-      return !!(window.currentUser && (
-        isCreatorOrAdmin() ||
-        (Array.isArray(window.dynamicModLeaders) && window.dynamicModLeaders.indexOf(currentUser.id) !== -1)
-      ));
-    } catch(e){ return false; }
-  }
-  function looksLikeReportTableButton(el){
-    if (!el || el.id === 't73V89LeadershipReportsBtn') return false;
-    if (el.id === 'reportTabBtn' || el.dataset?.mode === 'report') return false;
-    if (/^(reportsTableBtn|reportsTableBtnModV15|reportsTableBtnModStatic|v16ReportTableBtnMod|v16ReportBtnMod|v25ModViewReportsBtn|v16OpenTableTop|v16OpenReportTop|v16ReportTableBtnGen)$/.test(el.id || '')) return true;
-    if (el.dataset && el.dataset.mode === 'reports_table') return true;
-    var t = norm(el.textContent);
-    return /таблица\s*отчет|таблица\s*отчетов|проверить\s*отчеты|проверка\s*отчетов/.test(t);
-  }
-
-  function removeWrongReportButtons(){
-    var selectors = [
-      '#subNavModeration #reportsTableBtnModV15',
-      '#subNavModeration #reportsTableBtnModStatic',
-      '#subNavModeration #v16ReportTableBtnMod',
-      '#subNavModeration #v16ReportBtnMod',
-      '#subNavModeration #v25ModViewReportsBtn',
-      '#subNavModeration [data-mode="reports_table"]',
-      '#subNavGeneral #reportsTableBtn',
-      '#v16OpenBar',
-      '#v16OpenTableTop',
-      '#v16OpenReportTop',
-      '#v16ReportTableBtnGen'
-    ];
-    qa(selectors.join(',')).forEach(function(el){
-      if (el && el.id !== 't73V89LeadershipReportsBtn') el.remove();
-    });
-
-    ['subNavModeration','subNavGeneral'].forEach(function(navId){
-      var nav = $(navId);
-      if (!nav) return;
-      qa('button,a', nav).forEach(function(btn){
-        if (looksLikeReportTableButton(btn)) btn.remove();
-      });
-    });
-  }
-
-  function injectLeadershipButton(){
-    var section = $('mode-leadership');
-    if (!section) return;
-    var card = $('t73V89LeadershipReportsCard');
-    if (!isModLead()) {
-      if (card) card.remove();
-      return;
-    }
-    if (!card) {
-      card = document.createElement('div');
-      card.id = 't73V89LeadershipReportsCard';
-      card.className = 't73-v89-lead-report-card';
-      card.innerHTML = '<h3>📊 Проверить отчёты модерации</h3><p>Таблица отчётности вынесена из тренажёра и жалоб. Она доступна только здесь, в панели руководства модерации.</p><button class="btn btn-primary" id="t73V89LeadershipReportsBtn" type="button">Открыть таблицу отчётов</button>';
-      var before = section.querySelector('[style*="Изменить цену"], .t73-v44-mod-table') || section.children[1] || null;
-      section.insertBefore(card, before);
-    }
-    var btn = $('t73V89LeadershipReportsBtn');
-    if (btn && btn.dataset.t73v89Bound !== '1') {
-      btn.dataset.t73v89Bound = '1';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        if (!isModLead()) {
-          alert('Таблица отчётов доступна только руководству модерации.');
-          return false;
-        }
-        removeWrongReportButtons();
-        allowOpen = true;
-        try {
-          if (window.T73_V44_MOD_TABLE && typeof window.T73_V44_MOD_TABLE.open === 'function') {
-            window.T73_V44_MOD_TABLE.open(btn);
-          } else if (typeof window.switchMode === 'function') {
-            window.switchMode('reports_table', btn);
-          } else {
-            var sec = $('mode-reports_table');
-            if (sec) sec.style.display = 'grid';
-            if (typeof window.loadReportsTable === 'function') window.loadReportsTable();
-          }
-        } finally {
-          setTimeout(function(){ allowOpen = false; removeWrongReportButtons(); }, 120);
-        }
-        return false;
-      }, true);
-    }
-  }
-
-  function patchSwitchMode(){
-    if (typeof window.switchMode !== 'function' || window.switchMode.__t73v89Patched) return;
-    var old = window.switchMode;
-    var wrapped = function(mode, btn){
-      if (mode === 'reports_table' && !allowOpen && !(btn && btn.id === 't73V89LeadershipReportsBtn')) {
-        removeWrongReportButtons();
-        injectLeadershipButton();
-        if (!isModLead()) alert('Таблица отчётов доступна только руководству модерации.');
-        return false;
-      }
-      return old.apply(this, arguments);
-    };
-    wrapped.__t73v89Patched = true;
-    window.switchMode = wrapped;
-  }
-
-  function protectReportTableMode(){
-    var sec = $('mode-reports_table');
-    if (!sec) return;
-    if (!isModLead() && getComputedStyle(sec).display !== 'none') {
-      sec.style.display = 'none';
-      alert('Таблица отчётов доступна только руководству модерации.');
-    }
-  }
-
-  function boot(){
-    removeWrongReportButtons();
-    injectLeadershipButton();
-    patchSwitchMode();
-    protectReportTableMode();
-  }
-
-  document.addEventListener('click', function(e){
-    var btn = e.target && e.target.closest && e.target.closest('button,a,[data-mode]');
-    if (!btn || btn.id === 't73V89LeadershipReportsBtn') return;
-    if (looksLikeReportTableButton(btn)) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      removeWrongReportButtons();
-      injectLeadershipButton();
-      if (!isModLead()) alert('Таблица отчётов доступна только руководству модерации.');
-      return false;
-    }
-    clearTimeout(cleanupTimer);
-    cleanupTimer = setTimeout(boot, 80);
-  }, true);
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [200, 600, 1200, 2400, 5000].forEach(function(ms){ setTimeout(boot, ms); });
-  new MutationObserver(function(){ clearTimeout(cleanupTimer); cleanupTimer = setTimeout(boot, 120); }).observe(document.documentElement, {childList:true, subtree:true});
-
-  window.T73_V89_MOD_REPORT_PLACEMENT = { refresh: boot, clean: removeWrongReportButtons, openFromLeadership: function(){ var b=$('t73V89LeadershipReportsBtn'); if (b) b.click(); } };
-})();
-</script>
-<!-- === /T73 V89 === -->
 
 
 
@@ -19890,6 +19875,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   window.processReport = processReportV94;
   window.processInactive = processInactiveV94;
   window.T73_V94_REPORTS = { open:openReportsTable, load:loadReportsTableV94, access:applyAccess, support:enhanceSupport };
+
 
   document.addEventListener('click', function(e){
     const tableBtn = e.target && e.target.closest && e.target.closest('#reportsTableBtn,[data-mode="reports_table"]');
