@@ -18791,5 +18791,401 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V96 === -->
 
 
+
+
+<!-- === T73 V97: починка наследования прав создателя/руководства === -->
+<style id="t73-v97-role-inheritance-style">
+  body.t73-v97-mod-access #shopTabBtn,
+  body.t73-v97-mod-access #reportTabBtn,
+  body.t73-v97-mod-access #inactiveTabBtn,
+  body.t73-v97-mod-access #v16ReportBtnMod,
+  body.t73-v97-mod-access #v16OpenReportTop {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v97-leader-access #leadershipTabBtn,
+  body.t73-v97-leader-access #adminLogTabBtn,
+  body.t73-v97-leader-access #reportsTableBtn,
+  body.t73-v97-leader-access #reportsTableBtnModV15,
+  body.t73-v97-leader-access #reportsTableBtnModStatic,
+  body.t73-v97-leader-access #v16ReportTableBtnMod,
+  body.t73-v97-leader-access #v16ReportTableBtnGen,
+  body.t73-v97-leader-access #v16OpenTableTop,
+  body.t73-v97-leader-access #v25ModViewReportsBtn,
+  body.t73-v97-leader-access #t73V89LeadershipReportsBtn,
+  body.t73-v97-leader-access #viewReportsBtn {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v97-creator-access #creatorTabBtn {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v97-mod-access #reportFormArea,
+  body.t73-v97-mod-access #inactiveFormArea {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v97-mod-access #reportAccessWarning,
+  body.t73-v97-mod-access #inactiveAccessWarning {
+    display: none !important;
+  }
+  body.t73-v97-leader-access #adminPanelArea,
+  body.t73-v97-leader-access #adminPanelAreaInactives,
+  body.t73-v97-leader-access #t73V89LeadershipReportsCard {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v97-leader-access #reportsListArea {
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+</style>
+<script id="t73-v97-role-inheritance-script">
+(function(){
+  'use strict';
+  if (window.__T73_V97_ROLE_INHERITANCE__) return;
+  window.__T73_V97_ROLE_INHERITANCE__ = true;
+
+  var MOD_BUTTON_IDS = ['shopTabBtn','reportTabBtn','inactiveTabBtn','v16ReportBtnMod','v16OpenReportTop'];
+  var LEADER_BUTTON_IDS = ['leadershipTabBtn','adminLogTabBtn','reportsTableBtn','reportsTableBtnModV15','reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportTableBtnGen','v16OpenTableTop','v25ModViewReportsBtn','t73V89LeadershipReportsBtn','viewReportsBtn'];
+  var MOD_MODES = { shop:1, report:1, inactives:1 };
+  var LEADER_MODES = { leadership:1, admin_log:1, reports_table:1 };
+  var roleCache = { loaded:false, mod:false, lead:false, ts:0 };
+  var applying = false;
+
+  function $(id){ return document.getElementById(id); }
+  function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function val(name){
+    try { if (typeof window[name] !== 'undefined') return window[name]; } catch(e) {}
+    try { return (0, eval)(name); } catch(e) {}
+    return undefined;
+  }
+  function norm(v){ return String(v == null ? '' : v).trim().toLowerCase(); }
+  function emailOf(u){ return norm(u && u.email); }
+  function idsOf(u){
+    var out = [];
+    if (!u) return out;
+    ['id','user_id','uid'].forEach(function(k){ if (u[k]) out.push(String(u[k])); });
+    if (u.email) out.push(norm(u.email));
+    return out;
+  }
+  function arrHasAny(arr, values){
+    if (!Array.isArray(arr) || !values || !values.length) return false;
+    var set = arr.map(function(x){ return norm(x); });
+    return values.some(function(v){ return set.indexOf(norm(v)) !== -1; });
+  }
+  function pushUniqueGlobalArray(name, value){
+    if (!value) return;
+    try {
+      var arr = val(name);
+      if (Array.isArray(arr) && arr.indexOf(value) === -1) arr.push(value);
+      else if (Array.isArray(window[name]) && window[name].indexOf(value) === -1) window[name].push(value);
+    } catch(e) {}
+  }
+  function user(){
+    var u = val('currentUser') || window.currentUser || null;
+    if (u && !window.currentUser) { try { window.currentUser = u; } catch(e) {} }
+    return u;
+  }
+  function creatorEmail(){ return norm(val('creatorEmail') || window.creatorEmail || 'daniiltimosin72@gmail.com'); }
+  function adminEmails(){ return val('adminEmails') || window.adminEmails || []; }
+  function dynamicLeaders(){ return val('dynamicModLeaders') || window.dynamicModLeaders || []; }
+  function activeModerators(){ return val('activeMods') || window.activeMods || []; }
+
+  function hasCreatorMeta(u){
+    var meta = (u && (u.user_metadata || u.raw_user_meta_data || u.app_metadata)) || {};
+    var role = norm(meta.role || meta.status || meta.access || meta.type);
+    return ['creator','owner','создатель','владелец'].indexOf(role) !== -1;
+  }
+  function hasLeadMeta(u){
+    var meta = (u && (u.user_metadata || u.raw_user_meta_data || u.app_metadata)) || {};
+    var role = norm(meta.role || meta.status || meta.access || meta.type);
+    return ['leadership','leader','admin','mod_leader','руководство','админ'].indexOf(role) !== -1;
+  }
+  function hasModMeta(u){
+    var meta = (u && (u.user_metadata || u.raw_user_meta_data || u.app_metadata)) || {};
+    var role = norm(meta.role || meta.status || meta.access || meta.type);
+    return ['moderator','mod','модератор'].indexOf(role) !== -1;
+  }
+
+  function access(){
+    var u = user();
+    if (!u) return { creator:false, lead:false, mod:false, ids:[] };
+    var email = emailOf(u), ids = idsOf(u), uid = u.id || u.user_id || '';
+    var creator = !!(email && email === creatorEmail()) || hasCreatorMeta(u);
+    var admin = arrHasAny(adminEmails(), [email]);
+    var lead = creator || admin || hasLeadMeta(u) || arrHasAny(dynamicLeaders(), ids) || !!roleCache.lead;
+    var modFlag = false;
+    try { modFlag = (isModerator === true); } catch(e) {}
+    var mod = lead || creator || admin || modFlag || hasModMeta(u) || arrHasAny(activeModerators(), ids) || arrHasAny(dynamicLeaders(), ids) || !!roleCache.mod;
+    return { creator:creator, lead:lead, mod:mod, ids:ids, uid:uid, email:email };
+  }
+
+  function syncGlobals(a){
+    var u = user();
+    if (!u || !a) return;
+    if (a.mod) {
+      try { isModerator = true; } catch(e) { window.isModerator = true; }
+      if (u.id) pushUniqueGlobalArray('activeMods', u.id);
+      if (u.user_id) pushUniqueGlobalArray('activeMods', u.user_id);
+    }
+    if (a.lead) {
+      if (u.id) pushUniqueGlobalArray('dynamicModLeaders', u.id);
+      if (u.user_id) pushUniqueGlobalArray('dynamicModLeaders', u.user_id);
+    }
+  }
+
+  function show(el, yes, display){
+    if (!el) return;
+    if (yes) {
+      el.style.removeProperty('visibility');
+      el.style.removeProperty('pointer-events');
+      if (el.style && el.style.getPropertyPriority && el.style.getPropertyPriority('display') === 'important') el.style.removeProperty('display');
+      el.style.display = display || 'inline-flex';
+      el.removeAttribute('aria-hidden');
+      el.removeAttribute('aria-disabled');
+      if ('disabled' in el) el.disabled = false;
+    } else {
+      el.style.setProperty('display','none','important');
+      el.style.setProperty('visibility','hidden','important');
+      el.style.setProperty('pointer-events','none','important');
+      el.setAttribute('aria-hidden','true');
+      el.setAttribute('aria-disabled','true');
+      if ('disabled' in el) el.disabled = true;
+    }
+  }
+  function unlockPanel(id){
+    var el = $(id);
+    if (!el) return;
+    el.style.removeProperty('visibility');
+    el.style.removeProperty('pointer-events');
+    if (el.style && el.style.getPropertyPriority && el.style.getPropertyPriority('display') === 'important') el.style.removeProperty('display');
+  }
+  function activeMode(){
+    var btn = document.querySelector('.mode-btn.active[data-mode]');
+    if (btn && btn.dataset) return btn.dataset.mode;
+    var visible = qsa('[id^="mode-"]').find(function(sec){ return sec && getComputedStyle(sec).display !== 'none'; });
+    return visible ? visible.id.replace(/^mode-/,'') : 'moderation';
+  }
+  function fallback(){
+    qsa('[id^="mode-"]').forEach(function(sec){ sec.style.display = sec.id === 'mode-moderation' ? '' : 'none'; });
+    qsa('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+    var b = document.querySelector('.mode-btn[data-mode="moderation"]');
+    if (b) b.classList.add('active');
+    var nav = $('subNavModeration');
+    if (nav) nav.style.display = 'flex';
+    try { document.documentElement.setAttribute('data-site-theme','mod'); } catch(e) {}
+    try { if (typeof renderRight === 'function') renderRight('moderation'); } catch(e) {}
+  }
+  function canOpen(mode, a){
+    mode = String(mode || '');
+    a = a || access();
+    if (MOD_MODES[mode]) return !!a.mod;
+    if (LEADER_MODES[mode]) return !!a.lead;
+    if (mode === 'creator') return !!a.creator;
+    return true;
+  }
+  function apply(){
+    if (applying) return;
+    applying = true;
+    try {
+      var a = access();
+      syncGlobals(a);
+      document.body.classList.toggle('t73-v97-mod-access', !!a.mod);
+      document.body.classList.toggle('t73-v97-leader-access', !!a.lead);
+      document.body.classList.toggle('t73-v97-creator-access', !!a.creator);
+      document.body.classList.toggle('t73-v95-mod-access', !!a.mod);
+      document.body.classList.toggle('t73-v96-mod-access', !!a.mod);
+      document.body.classList.toggle('t73-v95-mod-leader-access', !!a.lead);
+
+      MOD_BUTTON_IDS.forEach(function(id){ show($(id), !!a.mod, 'inline-flex'); });
+      LEADER_BUTTON_IDS.forEach(function(id){ show($(id), !!a.lead, 'inline-flex'); });
+      show($('creatorTabBtn'), !!a.creator, 'inline-flex');
+
+      ['mode-shop','mode-report','mode-inactives'].forEach(function(id){ if (a.mod) unlockPanel(id); else show($(id), false); });
+      ['mode-leadership','mode-admin_log','mode-reports_table'].forEach(function(id){ if (a.lead) unlockPanel(id); else show($(id), false); });
+
+      show($('reportAccessWarning'), !a.mod, 'block');
+      show($('inactiveAccessWarning'), !a.mod, 'block');
+      show($('reportFormArea'), !!a.mod, 'block');
+      show($('inactiveFormArea'), !!a.mod, 'block');
+      show($('adminPanelArea'), !!a.lead, 'block');
+      show($('adminPanelAreaInactives'), !!a.lead, 'block');
+      show($('t73V89LeadershipReportsCard'), !!a.lead, 'block');
+      if ($('reportsListArea') && a.lead) unlockPanel('reportsListArea');
+
+      var m = activeMode();
+      if (!canOpen(m, a)) fallback();
+    } finally { applying = false; }
+  }
+
+  async function refreshAuthUser(){
+    var c = val('supa') || window.supa || window.__T73_SUPA;
+    if (!c || !c.auth) return;
+    try {
+      var r = await c.auth.getUser();
+      if (r && r.data && r.data.user) { try { currentUser = r.data.user; } catch(e) {} window.currentUser = r.data.user; }
+    } catch(e) {}
+  }
+  async function refreshDbRoles(){
+    var u = user();
+    var c = val('supa') || window.supa || window.__T73_SUPA;
+    if (!u || !c || !c.from) return;
+    try {
+      var res = await c.from('reports').select('link,status,email').in('email', ['ADMIN_ROLE','USER_ROLE']).limit(5000);
+      var rows = (res && res.data) || [];
+      var ids = idsOf(u);
+      var lead = false, mod = false;
+      rows.forEach(function(r){
+        var email = norm(r.email), status = norm(r.status), link = norm(r.link);
+        var match = ids.indexOf(link) !== -1;
+        if (!match) return;
+        if (email === 'admin_role' && status === 'leadership') lead = true;
+        if (email === 'user_role' && status === 'moderator') mod = true;
+      });
+      roleCache.loaded = true; roleCache.lead = lead; roleCache.mod = mod || lead; roleCache.ts = Date.now();
+      if (lead) {
+        if (u.id) pushUniqueGlobalArray('dynamicModLeaders', u.id);
+        if (u.user_id) pushUniqueGlobalArray('dynamicModLeaders', u.user_id);
+      }
+      if (mod || lead) {
+        if (u.id) pushUniqueGlobalArray('activeMods', u.id);
+        if (u.user_id) pushUniqueGlobalArray('activeMods', u.user_id);
+      }
+    } catch(e) {}
+  }
+
+  function directOpen(mode, btn){
+    if (!canOpen(mode)) { apply(); return false; }
+    qsa('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+    var list = val('allModesList') || ['moderation','timeattack','complaints','support','guide','leaderboard','about','profile','shop','ap_shop','report','inactives','admin_log','ap_admin_log','quests','creator','leadership','ap_admin','reports_table','fsb','fsb_shop','fsb_admin'];
+    list.forEach(function(m){ var p = $('mode-' + m); if (p) p.style.display = (m === mode) ? '' : 'none'; });
+    var theme = 'mod';
+    if (['support','ap_admin','ap_admin_log','ap_shop'].indexOf(mode) !== -1) theme = 'support';
+    else if (['shop','leadership','reports_table'].indexOf(mode) !== -1) theme = 'shop';
+    else if (['fsb','fsb_shop','fsb_admin','fsb_admin_log'].indexOf(mode) !== -1 || String(mode).indexOf('goss_') === 0) theme = 'quests';
+    else if (mode === 'complaints') theme = 'complaints';
+    else if (mode === 'timeattack') theme = 'timeattack';
+    else if (mode === 'creator') theme = 'creator';
+    else if (['leaderboard','admin_log'].indexOf(mode) !== -1) theme = 'leaderboard';
+    else if (mode === 'guide') theme = 'guide';
+    else if (['about','profile'].indexOf(mode) !== -1) theme = 'general';
+    try { document.documentElement.setAttribute('data-site-theme', theme); } catch(e) {}
+    try { if (typeof renderRight === 'function') renderRight(mode); } catch(e) {}
+    try { if (mode === 'leaderboard' && typeof loadLeaderboard === 'function') loadLeaderboard(); } catch(e) {}
+    try { if (['shop','ap_shop','fsb_shop'].indexOf(mode) !== -1 && typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
+    try { if (mode === 'admin_log' && typeof renderAdminLogs === 'function') renderAdminLogs('mod_shop'); } catch(e) {}
+    try { if (mode === 'reports_table' && typeof loadReportsTable === 'function') loadReportsTable(); } catch(e) {}
+    try { if (mode === 'leadership' && typeof loadUsersForAdmin === 'function') loadUsersForAdmin(); } catch(e) {}
+    try { if (mode === 'creator' && typeof loadCreatorPanelData === 'function') { var out = loadCreatorPanelData(); if (out && out.then && typeof refreshGossLeadershipPanel === 'function') out.then(refreshGossLeadershipPanel); } } catch(e) {}
+    setTimeout(apply, 0);
+    setTimeout(apply, 120);
+    return true;
+  }
+
+  function patchSwitch(){
+    if (typeof window.switchMode !== 'function' || window.switchMode.__t73v97RoleInheritance) return;
+    var old = window.switchMode;
+    var wrapped = function(mode, btn){
+      var a = access();
+      syncGlobals(a);
+      if (!canOpen(mode, a)) { apply(); return false; }
+      var protectedMode = MOD_MODES[String(mode || '')] || LEADER_MODES[String(mode || '')] || String(mode || '') === 'creator';
+      if (protectedMode) return directOpen(String(mode || ''), btn);
+      var out = old.apply(this, arguments);
+      setTimeout(apply, 0);
+      setTimeout(apply, 120);
+      return out;
+    };
+    wrapped.__t73v97RoleInheritance = true;
+    window.switchMode = wrapped;
+  }
+  function patchChecks(){
+    if (typeof window.checkRolesAndAccess === 'function' && !window.checkRolesAndAccess.__t73v97RoleInheritance) {
+      var oldCheck = window.checkRolesAndAccess;
+      var wrappedCheck = function(){
+        syncGlobals(access());
+        var out = oldCheck.apply(this, arguments);
+        setTimeout(apply, 0);
+        setTimeout(apply, 140);
+        return out;
+      };
+      wrappedCheck.__t73v97RoleInheritance = true;
+      window.checkRolesAndAccess = wrappedCheck;
+      try { checkRolesAndAccess = wrappedCheck; } catch(e) {}
+    }
+    if (typeof window.loadGlobalShopAndRoulette === 'function' && !window.loadGlobalShopAndRoulette.__t73v97RoleInheritance) {
+      var oldLoad = window.loadGlobalShopAndRoulette;
+      var wrappedLoad = function(){
+        var out = oldLoad.apply(this, arguments);
+        if (out && typeof out.then === 'function') return out.then(function(v){ syncGlobals(access()); apply(); return v; });
+        syncGlobals(access()); apply(); return out;
+      };
+      wrappedLoad.__t73v97RoleInheritance = true;
+      window.loadGlobalShopAndRoulette = wrappedLoad;
+      try { loadGlobalShopAndRoulette = wrappedLoad; } catch(e) {}
+    }
+  }
+  function bindClicks(){
+    if (document.documentElement.dataset.t73v97Clicks) return;
+    document.documentElement.dataset.t73v97Clicks = '1';
+    document.addEventListener('click', function(e){
+      var t = e.target && e.target.closest && e.target.closest('[data-mode],#shopTabBtn,#reportTabBtn,#inactiveTabBtn,#leadershipTabBtn,#adminLogTabBtn,#reportsTableBtn,#creatorTabBtn');
+      if (!t) return;
+      var mode = (t.dataset && t.dataset.mode) || '';
+      if (!mode) {
+        if (t.id === 'shopTabBtn') mode = 'shop';
+        else if (t.id === 'reportTabBtn') mode = 'report';
+        else if (t.id === 'inactiveTabBtn') mode = 'inactives';
+        else if (t.id === 'leadershipTabBtn') mode = 'leadership';
+        else if (t.id === 'adminLogTabBtn') mode = 'admin_log';
+        else if (t.id === 'reportsTableBtn') mode = 'reports_table';
+        else if (t.id === 'creatorTabBtn') mode = 'creator';
+      }
+      if (!(MOD_MODES[mode] || LEADER_MODES[mode] || mode === 'creator')) return;
+      if (!canOpen(mode)) { apply(); return; }
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      directOpen(mode, t);
+    }, true);
+  }
+  async function boot(full){
+    patchSwitch();
+    patchChecks();
+    bindClicks();
+    await refreshAuthUser();
+    if (full || !roleCache.loaded || Date.now() - roleCache.ts > 20000) await refreshDbRoles();
+    syncGlobals(access());
+    apply();
+    try { if (window.T73_V95_MOD_ACCESS && typeof window.T73_V95_MOD_ACCESS.refresh === 'function') window.T73_V95_MOD_ACCESS.refresh(); } catch(e) {}
+    apply();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ boot(true); }); else boot(true);
+  [80,200,450,900,1600,3000,6000,10000].forEach(function(ms){ setTimeout(function(){ boot(ms > 500); }, ms); });
+  try {
+    var moTimer = null;
+    new MutationObserver(function(){ clearTimeout(moTimer); moTimer = setTimeout(function(){ boot(false); }, 120); })
+      .observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:['class','style'] });
+  } catch(e) {}
+
+  window.T73_V97_ROLE_INHERITANCE = {
+    refresh: function(){ return boot(true); },
+    access: access,
+    canOpen: canOpen,
+    open: directOpen
+  };
+})();
+</script>
+<!-- === /T73 V97 === -->
+
 </body>
 </html>
