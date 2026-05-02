@@ -19380,5 +19380,531 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V93 === -->
 
 
+<!-- === T73 V94: moderation reports/inactives/access/support final patch === -->
+<style id="t73-v94-final-style">
+  body:not(.t73-v94-mod-access) #shopTabBtn,
+  body:not(.t73-v94-mod-access) #reportTabBtn,
+  body:not(.t73-v94-mod-access) #inactiveTabBtn,
+  body:not(.t73-v94-mod-access) #reportsTableBtn { display:none!important; visibility:hidden!important; pointer-events:none!important; }
+  body.t73-v94-mod-access #shopTabBtn,
+  body.t73-v94-mod-access #reportTabBtn,
+  body.t73-v94-mod-access #inactiveTabBtn,
+  body.t73-v94-mod-access #reportsTableBtn { display:inline-flex!important; visibility:visible!important; pointer-events:auto!important; }
+  body:not(.t73-v94-mod-leader) #viewReportsBtn,
+  body:not(.t73-v94-mod-leader) #viewInactivesBtn,
+  body:not(.t73-v94-mod-leader) #adminPanelArea,
+  body:not(.t73-v94-mod-leader) #adminPanelAreaInactives,
+  body:not(.t73-v94-mod-leader) #leadershipTabBtn,
+  body:not(.t73-v94-mod-leader) #adminLogTabBtn { display:none!important; visibility:hidden!important; pointer-events:none!important; }
+  body.t73-v94-mod-leader #viewReportsBtn,
+  body.t73-v94-mod-leader #viewInactivesBtn,
+  body.t73-v94-mod-leader #adminPanelArea,
+  body.t73-v94-mod-leader #adminPanelAreaInactives,
+  body.t73-v94-mod-leader #leadershipTabBtn,
+  body.t73-v94-mod-leader #adminLogTabBtn { visibility:visible!important; pointer-events:auto!important; }
+  body:not(.t73-v94-ap-leader) #apAdminTabBtn,
+  body:not(.t73-v94-ap-leader) #apAdminLogTabBtn { display:none!important; visibility:hidden!important; pointer-events:none!important; }
+  body:not(.t73-v94-fsb-leader) #fsbAdminTabBtn,
+  body:not(.t73-v94-fsb-leader) #fsbAdminLogTabBtn { display:none!important; visibility:hidden!important; pointer-events:none!important; }
+  body:not(.t73-v94-any-leader) #subNavGeneral [data-mode="guide"] { display:none!important; visibility:hidden!important; pointer-events:none!important; }
+
+  #mode-reports_table.t73-v94-table { overflow:visible!important; background:radial-gradient(circle at 0 0,rgba(82,199,123,.18),transparent 44%),radial-gradient(circle at 100% 0,rgba(108,140,255,.12),transparent 38%),linear-gradient(155deg,rgba(8,20,13,.98),rgba(5,7,13,.99))!important; border-color:rgba(127,232,160,.32)!important; }
+  #mode-reports_table.t73-v94-table .section-head h2 { color:#dfffea!important; text-shadow:0 0 24px rgba(127,232,160,.22)!important; }
+  .t73-v94-rt-controls,.rt-controls.t73-v94-rt-controls { display:flex; justify-content:space-between; align-items:center; margin:0 0 1.15rem; background:linear-gradient(135deg,rgba(0,0,0,.46),rgba(82,199,123,.08)); padding:1rem; border-radius:20px; border:1px solid rgba(127,232,160,.24); flex-wrap:wrap; gap:.8rem; box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 16px 42px rgba(0,0,0,.28); }
+  .t73-v94-rt-controls h3 { margin:0; flex:1; min-width:210px; color:#fff; text-align:center; font-weight:950; letter-spacing:.03em; }
+  .t73-v94-rt-note { margin:.25rem 0 1rem; padding:.8rem 1rem; border-radius:18px; border:1px solid rgba(127,232,160,.18); background:rgba(127,232,160,.07); color:var(--color-text-muted); font-size:.92rem; }
+  .reports-modern-container.t73-v94-modern { display:grid; gap:1.05rem; overflow:visible!important; }
+  .mod-report-card.t73-v94-card { background:radial-gradient(circle at 0 0,rgba(127,232,160,.12),transparent 42%),linear-gradient(145deg,rgba(12,16,31,.96),rgba(7,9,18,.99)); border:1px solid rgba(191,198,255,.21); border-radius:22px; padding:1rem; display:flex; flex-direction:column; gap:.86rem; box-shadow:0 14px 44px rgba(0,0,0,.44); width:100%; overflow:hidden; }
+  .mod-report-header.t73-v94-head { display:flex; justify-content:space-between; gap:.8rem; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:.78rem; }
+  .mod-report-name.t73-v94-name { font-size:1.08rem; font-weight:950; color:#fff; overflow-wrap:anywhere; }
+  .t73-v94-mail { margin-top:.16rem; color:var(--color-text-faint); font-size:.78rem; overflow-wrap:anywhere; }
+  .t73-v94-xp { color:#7fe8a0; font-weight:950; white-space:nowrap; text-shadow:0 0 14px rgba(127,232,160,.22); }
+  .mod-report-days.t73-v94-days { display:flex; gap:.65rem; overflow-x:auto!important; overflow-y:hidden!important; padding:.1rem .05rem .66rem; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; touch-action:pan-x!important; }
+  .mod-report-days.t73-v94-days::-webkit-scrollbar { height:8px; }
+  .mod-report-days.t73-v94-days::-webkit-scrollbar-thumb { background:rgba(127,232,160,.45); border-radius:999px; }
+  .report-day-item.t73-v94-day { flex:0 0 142px; min-width:142px; min-height:104px; scroll-snap-align:start; background:rgba(255,255,255,.045); border-radius:16px; padding:.75rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:.45rem; border:1px solid rgba(255,255,255,.10); }
+  .t73-v94-date { font-size:.86rem; font-weight:950; color:#fff; letter-spacing:.04em; }
+  .t73-v94-picked { font-size:.68rem; color:var(--color-text-faint); line-height:1.15; text-align:center; min-height:1.2em; }
+  .status-select.t73-v94-select,.t73-v94-status { width:100%; min-height:36px; border-radius:11px; border:1px solid rgba(255,255,255,.16); font-size:.74rem; font-weight:950; text-align:center; padding:.35rem .4rem; }
+  .status-select.t73-v94-select { color:#fff; background:#111827; cursor:pointer; outline:none; }
+  .status-select.t73-v94-select option { background:#111827; color:#fff; font-weight:800; }
+  .t73-v94-status { display:grid; place-items:center; }
+  .t73-v94-good{background:rgba(22,163,74,.20)!important;color:#4ade80!important;border-color:#16a34a!important}.t73-v94-hero{background:rgba(59,130,246,.22)!important;color:#60a5fa!important;border-color:#3b82f6!important}.t73-v94-stretch{background:rgba(168,85,247,.20)!important;color:#c084fc!important;border-color:#a855f7!important}.t73-v94-inactive{background:rgba(234,88,12,.20)!important;color:#fb923c!important;border-color:#ea580c!important}.t73-v94-missing{background:rgba(239,68,68,.20)!important;color:#ff6b88!important;border-color:#ef4444!important}.t73-v94-pending{background:rgba(250,204,21,.16)!important;color:#facc15!important;border-color:#eab308!important}.t73-v94-empty{background:rgba(255,255,255,.055)!important;color:var(--color-text-faint)!important;border-color:rgba(255,255,255,.08)!important}
+  .t73-v94-review-card,.t73-v94-inactive-card,.t73-v94-ap-card { border:1px solid rgba(191,198,255,.18); background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(0,0,0,.25)); border-radius:18px; padding:1rem; display:grid; gap:.75rem; box-shadow:0 10px 34px rgba(0,0,0,.26); }
+  .t73-v94-review-actions,.t73-v94-inactive-actions { display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:.45rem; }
+  .t73-v94-chip { display:inline-flex; align-items:center; gap:.35rem; width:max-content; max-width:100%; border-radius:999px; padding:.25rem .6rem; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); color:var(--color-text-muted); font-size:.78rem; font-weight:900; }
+  .t73-v94-ap-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:1rem; margin:1rem 0; }
+  .t73-v94-ap-card h3 { margin:.1rem 0 .25rem; color:#ffb0dd; }
+  .t73-v94-ap-card ul { margin:.25rem 0 0 1.15rem; color:var(--color-text-muted); line-height:1.55; }
+  .t73-v94-drill-box { border:1px solid rgba(255,176,221,.22); background:rgba(255,120,180,.07); border-radius:16px; padding:.85rem; color:var(--color-text-muted); display:grid; gap:.5rem; }
+  @media(max-width:820px){ .t73-v94-rt-controls{display:grid;grid-template-columns:1fr}.t73-v94-rt-controls .btn{width:100%}.mod-report-header.t73-v94-head{display:grid}.t73-v94-xp{white-space:normal}.report-day-item.t73-v94-day{flex-basis:42vw;min-width:136px}.t73-v94-ap-grid{grid-template-columns:1fr}.t73-v94-review-actions,.t73-v94-inactive-actions{grid-template-columns:1fr} }
+</style>
+<script id="t73-v94-final-script">
+(function(){
+  'use strict';
+  if (window.__T73_V94_FINAL_PATCH__) return;
+  window.__T73_V94_FINAL_PATCH__ = true;
+
+  const SERVICE = new Set(['ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP','AP_POINTS','FSB_POINTS','FSB_SPEND','SHOP_FSB','ROULETTE_FSB','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_PROFILE','GOSS_REPORT_TABLE','GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG']);
+  const $ = id => document.getElementById(id);
+  const qa = (s,r=document) => Array.from((r||document).querySelectorAll(s));
+  const esc = v => String(v ?? '').replace(/[&<>'"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  let clientCache = null;
+
+  function supaClient(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    for (const key of ['supa','__T73_SUPA','t73Supa','supabaseClient']) {
+      if (window[key] && typeof window[key].from === 'function') return window[key];
+    }
+    if (clientCache && typeof clientCache.from === 'function') return clientCache;
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      try {
+        clientCache = window.supabase.createClient('https://icfihnroblyjjflsfepq.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZmlobnJvYmx5ampmbHNmZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NjAxMDksImV4cCI6MjA5MTQzNjEwOX0.Hrvjg572mIKBG-2ffYEr4Fxvpz0hOAex9d6n7WylVkQ');
+        return clientCache;
+      } catch(e) {}
+    }
+    return null;
+  }
+  function user(){ try { return typeof currentUser !== 'undefined' ? currentUser : null; } catch(e) { return null; } }
+  function creator(){ try { return typeof creatorEmail !== 'undefined' ? creatorEmail : 'daniiltimosin72@gmail.com'; } catch(e) { return 'daniiltimosin72@gmail.com'; } }
+  function arr(name){ try { return Array.isArray(window[name]) ? window[name] : eval('typeof '+name+' !== "undefined" && Array.isArray('+name+') ? '+name+' : []'); } catch(e) { return []; } }
+  function bool(name){ try { return !!eval('typeof '+name+' !== "undefined" && '+name); } catch(e) { return false; } }
+  function isCreator(){ const u=user(); return !!(u && u.email === creator()); }
+  function inArr(list,val){ return Array.isArray(list) && list.indexOf(val) !== -1; }
+  function isModLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('adminEmails'), u.email) || inArr(arr('dynamicModLeaders'), u.id) || inArr(arr('dynamicModLeaders'), u.user_id); }
+  function isApLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('apLeadershipEmails'), u.email) || inArr(arr('dynamicApLeaders'), u.id) || inArr(arr('dynamicApLeaders'), u.user_id); }
+  function isFsbLeader(){ const u=user(); if(!u) return false; return isCreator() || inArr(arr('dynamicFsbLeaders'), u.id) || inArr(arr('dynamicFsbLeaders'), u.user_id); }
+  function hasModAccess(){ return !!(user() && (bool('isModerator') || isModLeader() || isCreator())); }
+  function anyLeader(){ return isModLeader() || isApLeader() || isFsbLeader(); }
+  function setShown(id, yes, display='inline-flex'){ const el=$(id); if(!el) return; el.style.setProperty('display', yes ? display : 'none', 'important'); el.style.setProperty('visibility', yes ? 'visible' : 'hidden', 'important'); el.style.setProperty('pointer-events', yes ? 'auto' : 'none', 'important'); }
+
+  function applyAccess(){
+    document.body.classList.toggle('t73-v94-mod-access', hasModAccess());
+    document.body.classList.toggle('t73-v94-mod-leader', isModLeader());
+    document.body.classList.toggle('t73-v94-ap-leader', isApLeader());
+    document.body.classList.toggle('t73-v94-fsb-leader', isFsbLeader());
+    document.body.classList.toggle('t73-v94-any-leader', anyLeader());
+    setShown('shopTabBtn', hasModAccess());
+    setShown('reportTabBtn', hasModAccess());
+    setShown('inactiveTabBtn', hasModAccess());
+    setShown('reportsTableBtn', hasModAccess());
+    setShown('viewReportsBtn', isModLeader(), 'flex');
+    setShown('viewInactivesBtn', isModLeader(), 'flex');
+    setShown('leadershipTabBtn', isModLeader());
+    setShown('adminLogTabBtn', isModLeader());
+    setShown('apAdminTabBtn', isApLeader());
+    setShown('apAdminLogTabBtn', isApLeader());
+    setShown('fsbAdminTabBtn', isFsbLeader());
+    setShown('fsbAdminLogTabBtn', isFsbLeader());
+    const guideBtn = document.querySelector('#subNavGeneral [data-mode="guide"]');
+    if (guideBtn) {
+      guideBtn.style.setProperty('display', anyLeader() ? 'inline-flex' : 'none', 'important');
+      guideBtn.style.setProperty('visibility', anyLeader() ? 'visible' : 'hidden', 'important');
+      guideBtn.style.setProperty('pointer-events', anyLeader() ? 'auto' : 'none', 'important');
+    }
+    const repWarn=$('reportAccessWarning'), repForm=$('reportFormArea'), inaWarn=$('inactiveAccessWarning'), inaForm=$('inactiveFormArea');
+    if (repWarn) repWarn.style.display = hasModAccess() ? 'none' : 'block';
+    if (repForm) repForm.style.display = hasModAccess() ? 'block' : 'none';
+    if (inaWarn) inaWarn.style.display = hasModAccess() ? 'none' : 'block';
+    if (inaForm) inaForm.style.display = hasModAccess() ? 'block' : 'none';
+  }
+
+  function ensureReportTableButton(){
+    const general = $('subNavGeneral'); if(!general) return;
+    let btn = $('reportsTableBtn');
+    if(!btn){ btn = document.createElement('button'); btn.id='reportsTableBtn'; btn.type='button'; btn.className='mode-btn'; btn.dataset.mode='reports_table'; btn.textContent='📊 Таблица Отчетов'; }
+    btn.textContent='📊 Таблица Отчетов';
+    btn.dataset.mode='reports_table';
+    if(btn.parentElement !== general){
+      const lb = general.querySelector('[data-mode="leaderboard"]');
+      if(lb && lb.nextSibling) general.insertBefore(btn, lb.nextSibling); else general.appendChild(btn);
+    }
+    btn.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); openReportsTable(btn); return false; };
+    applyAccess();
+  }
+
+  function normalizeStatus(s){ s=String(s||'').trim(); if(!s || s==='-' || s==='—') return 'none'; if(s==='Отказ') return 'Не засчитано'; return s; }
+  function displayStatus(s){ s=normalizeStatus(s); if(s==='none') return '-'; if(s==='Не засчитано') return 'Отказ'; return s; }
+  function xpFor(s){ s=normalizeStatus(s); if(s==='Норма') return 15; if(s==='Перенорма') return 30; if(s==='Натяг') return 7; if(s==='Герой дня') return 60; return 0; }
+  function clsFor(s){ s=normalizeStatus(s); if(s==='Норма'||s==='Перенорма') return 't73-v94-good'; if(s==='Герой дня') return 't73-v94-hero'; if(s==='Натяг') return 't73-v94-stretch'; if(s==='Неактив') return 't73-v94-inactive'; if(s==='Нет отчета'||s==='Не засчитано'||s==='Отказано') return 't73-v94-missing'; if(s==='На проверке'||s.indexOf('Ожидает')===0) return 't73-v94-pending'; return 't73-v94-empty'; }
+  function parseDatePayload(row){
+    const raw = String(row && row.date || '');
+    try { const obj = JSON.parse(raw); if(obj && typeof obj === 'object') return obj; } catch(e) {}
+    const pick = (re) => { const m = raw.match(re); return m ? m[1].trim() : ''; };
+    return { raw, nick: pick(/Ник:\s*([^|]+)/i), day: pick(/Дата:\s*([\d-]+)/i), date: pick(/Дата:\s*([\d-]+)/i), work: pick(/Работа:\s*([^|]+)/i), quality: pick(/Тип\s*сдачи:\s*([^|]+)/i) };
+  }
+  function rowDay(row){ const p=parseDatePayload(row); return String(p.day || p.date || p.createdIso || '').slice(0,10); }
+  function rowNick(row){ const p=parseDatePayload(row); return String(p.nick || p.nickname || '').trim(); }
+  function rowQuality(row){ const p=parseDatePayload(row); return String(p.quality || p.requestedStatus || p.type || '').trim(); }
+  function rowText(row){ const p=parseDatePayload(row); return String(p.raw || row.date || JSON.stringify(p)); }
+  function isService(row){ return SERVICE.has(String(row && row.email || '')); }
+  function findReport(reports, mod, day){
+    const nick = String(mod.nickname || mod.email || '').toLowerCase();
+    const email = String(mod.email || '').toLowerCase();
+    return (reports||[]).find(row => {
+      if(isService(row)) return false;
+      const d = rowDay(row), txt = rowText(row).toLowerCase();
+      if(d ? d !== day : !txt.includes(day)) return false;
+      if(String(row.email||'').toLowerCase() === email) return true;
+      return !!nick && (txt.includes(nick) || rowNick(row).toLowerCase() === nick);
+    });
+  }
+  function inactiveRange(row){
+    const txt = String(row && row.date || '');
+    const from = txt.match(/С:\s*([\d-]+)/i), to = txt.match(/По:\s*([\d-]+)/i), nick = txt.match(/Ник:\s*([^|]+)/i), reason = txt.match(/Причина:\s*([^|]+)/i);
+    return { nick:nick?nick[1].trim():'', from:from?from[1]:'', to:to?to[1]:'', reason:reason?reason[1].trim():'' };
+  }
+  function isInactiveFor(inactives, nick, day){
+    nick=String(nick||'').toLowerCase(); if(!nick) return false;
+    const dd = new Date(day); dd.setHours(0,0,0,0);
+    return (inactives||[]).some(row => {
+      const r = inactiveRange(row); if(!r.nick || r.nick.toLowerCase() !== nick) return false;
+      if(!r.from || !r.to) return false;
+      const a = new Date(r.from), b = new Date(r.to); a.setHours(0,0,0,0); b.setHours(0,0,0,0);
+      return dd >= a && dd <= b;
+    });
+  }
+  function weekOffset(){ return Number(window.__T73_V94_WEEK_OFFSET || 0); }
+  function setWeekOffset(v){ window.__T73_V94_WEEK_OFFSET = Math.max(0, Number(v)||0); }
+  function weekDays(){ const today=new Date(); today.setHours(0,0,0,0); today.setDate(today.getDate() - weekOffset()*7); const out=[]; for(let i=6;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); out.push(d.toISOString().slice(0,10)); } return out; }
+  function withTimeout(p, ms, label){ let timer; return Promise.race([p, new Promise((_,rej)=>{ timer=setTimeout(()=>rej(new Error(label || 'База слишком долго отвечает')), ms); })]).finally(()=>clearTimeout(timer)); }
+
+  function tableShell(){
+    let sec = $('mode-reports_table');
+    const host = $('game') || document.body;
+    if(!sec){ host.insertAdjacentHTML('beforeend','<section class="panel game-card fade-in" id="mode-reports_table" style="display:none;"></section>'); sec = $('mode-reports_table'); }
+    sec.className = 'panel game-card fade-in t73-v94-table';
+    sec.style.display = 'grid';
+    sec.innerHTML = '<div class="section-head"><h2>Таблица Отчетов Модерации</h2><p>Автоматическая таблица из «Общее»: отчёты модераторов, выбранный тип сдачи, вердикт руководства и неактивы по датам.</p></div><div class="rt-controls t73-v94-rt-controls"><button class="btn btn-secondary" id="rtPrevWeekBtn" type="button">⬅️ Прошлая неделя</button><h3 id="rtCurrentWeekLabel">Текущая неделя</h3><button class="btn btn-secondary" id="rtNextWeekBtn" type="button">Следующая ➡️</button></div><div class="t73-v94-rt-note">Статусы обновляются сразу: модератор отправляет отчёт, руководство нажимает вердикт, и этот день меняется в таблице. Одобренные неактивы автоматически закрывают диапазон дат статусом <b>НЕАКТИВ</b>.</div><div id="reportsTableWrapper"><div class="message-text" style="text-align:center;padding:2rem;">⏳ Загрузка таблицы...</div></div>';
+    bindWeekButtons();
+    return $('reportsTableWrapper');
+  }
+  function bindWeekButtons(){
+    const prev=$('rtPrevWeekBtn'), next=$('rtNextWeekBtn'), lbl=$('rtCurrentWeekLabel');
+    if(lbl) lbl.textContent = weekOffset() === 0 ? 'Текущая неделя' : `${weekOffset()} нед. назад`;
+    if(next) next.disabled = weekOffset() === 0;
+    if(prev) prev.onclick = e => { e.preventDefault(); setWeekOffset(weekOffset()+1); loadReportsTableV94(); };
+    if(next) next.onclick = e => { e.preventDefault(); if(weekOffset()>0) setWeekOffset(weekOffset()-1); loadReportsTableV94(); };
+  }
+  function hideModesExcept(id){ qa('.game-card[id^="mode-"],section[id^="mode-"]').forEach(sec => { if(sec.id) sec.style.display = sec.id === id ? 'grid' : 'none'; }); }
+  function openReportsTable(btn){
+    if(!hasModAccess()){ alert('Таблица отчётов доступна только модерации, руководству и создателю.'); return; }
+    hideModesExcept('mode-reports_table');
+    qa('.mode-btn').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    document.documentElement.setAttribute('data-site-theme','reports_table');
+    tableShell();
+    setTimeout(loadReportsTableV94, 30);
+  }
+
+  async function loadReportsTableV94(){
+    const wrap = tableShell(); if(!wrap) return;
+    const client = supaClient();
+    if(!client){ wrap.innerHTML = '<div class="t73-v94-review-card" style="color:var(--color-error);">Supabase ещё не загрузился. Открой таблицу ещё раз через пару секунд.</div>'; return; }
+    bindWeekButtons();
+    wrap.innerHTML = '<div class="message-text" style="text-align:center;padding:2rem;">⏳ Загружаю модераторов, отчёты и неактивы...</div>';
+    try{
+      const rolesRes = await withTimeout(client.from('reports').select('link,status,email').eq('email','USER_ROLE').eq('status','moderator'), 12000, 'Не удалось загрузить роли модераторов');
+      if(rolesRes.error) throw rolesRes.error;
+      const ids = Array.from(new Set((rolesRes.data||[]).map(r=>String(r.link||'').trim()).filter(Boolean)));
+      if(!ids.length){ wrap.innerHTML = '<div class="t73-v94-review-card">Модераторы не найдены. В таблицу попадают пользователи со статусом <b>moderator</b>.</div>'; return; }
+      const usersRes = await withTimeout(client.from('user_stats').select('user_id,nickname,email,shop_spent').in('user_id', ids), 12000, 'Не удалось загрузить профили модераторов');
+      if(usersRes.error) throw usersRes.error;
+      const mods = (usersRes.data||[]).filter(u => u && ids.includes(String(u.user_id||'')) && u.email);
+      if(!mods.length){ wrap.innerHTML = '<div class="t73-v94-review-card">Роли moderator есть, но профили в user_stats не найдены.</div>'; return; }
+      const emails = Array.from(new Set(mods.map(m=>String(m.email||'')).filter(Boolean)));
+      const directRes = await withTimeout(client.from('reports').select('*').in('email', emails).order('id',{ascending:false}).limit(1400), 14000, 'Не удалось загрузить отчёты');
+      if(directRes.error) throw directRes.error;
+      const manualRes = await withTimeout(client.from('reports').select('*').not('email','in','("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP","MANUAL_XP","AP_POINTS","FSB_POINTS","FSB_SPEND","SHOP_FSB","ROULETTE_FSB","GOSS_USER_REPORT","GOSS_REPORT_CHECK","GOSS_PROFILE","GOSS_REPORT_TABLE","GOSS_REPORT_TABLE_V13","GOSS_REPORT_TABLE_V15","GOSS_REPORT_TABLE_V16","GOSS_REPORT_TABLE_V19","GOSS_REPORT_MEMBER_V19","GOSS_REPORT_PROOF_V19","GOSS_POINTS_V19","GOSS_ORG_LOG","GOSS_ORG_LOG_V19","GOSS_ORG_LOG_V24","GOSS_SHOP_ITEMS_V13","GOSS_SHOP_ITEMS_V19","GOSS_SHOP_ITEMS_V24","GOSS_SHOP_ITEMS_V26","GOSS_SHOP_PURCHASE","FSB_SHOP_LOG")').order('id',{ascending:false}).limit(1400), 14000, 'Не удалось загрузить ручные отметки');
+      if(manualRes.error) throw manualRes.error;
+      const inactiveRes = await withTimeout(client.from('reports').select('*').eq('email','INACTIVE_REQ').eq('status','Одобрено').limit(700), 12000, 'Не удалось загрузить неактивы');
+      if(inactiveRes.error) throw inactiveRes.error;
+      const reports = [...(directRes.data||[]), ...((manualRes.data||[]).filter(r=>!isService(r)))];
+      const inactives = inactiveRes.data || [];
+      const days = weekDays();
+      const today = new Date(); today.setHours(0,0,0,0);
+      mods.forEach(mod => {
+        const nick=String(mod.nickname||'').toLowerCase(), mail=String(mod.email||'').toLowerCase(); let total=0; const seen=new Set();
+        reports.forEach(r => { const id=String(r.id||''); if(seen.has(id)) return; const txt=rowText(r).toLowerCase(); if((mail && String(r.email||'').toLowerCase()===mail) || (nick && txt.includes(nick))){ total += Number(r.xp||0); seen.add(id); } });
+        mod.realXp = Math.max(0, total - Number(mod.shop_spent||0));
+      });
+      mods.sort((a,b)=>String(a.nickname||a.email||'').localeCompare(String(b.nickname||b.email||''),'ru'));
+      const leader = isModLeader();
+      let html = '<div class="reports-modern-container t73-v94-modern">';
+      for(const mod of mods){
+        const nick = String(mod.nickname || mod.email || 'Без ника').trim();
+        html += `<article class="mod-report-card t73-v94-card"><div class="mod-report-header t73-v94-head"><div><div class="mod-report-name t73-v94-name">${esc(nick)}</div><div class="t73-v94-mail">${esc(mod.email)}</div></div><div class="t73-v94-xp">${Number(mod.realXp||0)} Real XP</div></div><div class="mod-report-days t73-v94-days">`;
+        for(const d of days){
+          const rep = findReport(reports, mod, d);
+          let st = rep ? normalizeStatus(rep.status) : 'none';
+          if(!rep && isInactiveFor(inactives, nick, d)) st = 'Неактив';
+          if(!rep && st === 'none'){ const dd=new Date(d); dd.setHours(0,0,0,0); if(dd < today) st = 'Нет отчета'; }
+          const cls = clsFor(st), short = d.slice(5).split('-').reverse().join('.'), picked = rep ? rowQuality(rep) : '';
+          if(leader){
+            html += `<div class="report-day-item t73-v94-day ${cls}"><div class="t73-v94-date">${esc(short)}</div><div class="t73-v94-picked">${picked ? 'Выбрал: '+esc(picked) : '&nbsp;'}</div><select class="status-select t73-v94-select ${cls}" data-id="${rep?esc(rep.id):''}" data-email="${esc(mod.email)}" data-nick="${esc(nick)}" data-date="${esc(d)}"><option value="none" ${st==='none'?'selected':''}>-</option><option value="На проверке" ${st==='На проверке'?'selected':''}>На проверке</option><option value="Норма" ${st==='Норма'?'selected':''}>Норма</option><option value="Перенорма" ${st==='Перенорма'?'selected':''}>Перенорма</option><option value="Натяг" ${st==='Натяг'?'selected':''}>Натяг</option><option value="Герой дня" ${st==='Герой дня'?'selected':''}>Герой дня</option><option value="Неактив" ${st==='Неактив'?'selected':''}>Неактив</option><option value="Нет отчета" ${st==='Нет отчета'?'selected':''}>Нет отчета</option><option value="Не засчитано" ${st==='Не засчитано'?'selected':''}>Отказ</option></select></div>`;
+          } else {
+            html += `<div class="report-day-item t73-v94-day ${cls}"><div class="t73-v94-date">${esc(short)}</div><div class="t73-v94-picked">${picked ? 'Выбрал: '+esc(picked) : '&nbsp;'}</div><div class="t73-v94-status ${cls}">${esc(displayStatus(st))}</div></div>`;
+          }
+        }
+        html += '</div></article>';
+      }
+      wrap.innerHTML = html + '</div>';
+      wrap.querySelectorAll('.t73-v94-select').forEach(sel => sel.onchange = () => updateStatusV94(sel));
+    } catch(e){ wrap.innerHTML = `<div class="t73-v94-review-card" style="color:var(--color-error);">Ошибка таблицы: ${esc(e && e.message || e)}<br><button class="btn btn-secondary" type="button" style="margin-top:.7rem;" onclick="window.T73_V94_REPORTS.load()">Повторить</button></div>`; }
+  }
+
+  async function updateStatusV94(sel){
+    if(!isModLeader()){ alert('Изменять таблицу может только руководство.'); if(sel) sel.disabled=true; return; }
+    const client=supaClient(); if(!client){ alert('Supabase ещё не загрузился.'); return; }
+    const val=normalizeStatus(sel.value), id=String(sel.dataset.id||''), nick=String(sel.dataset.nick||''), date=String(sel.dataset.date||''), email=String(sel.dataset.email||user()?.email||'manual');
+    sel.disabled=true; sel.style.opacity='.55'; sel.className='status-select t73-v94-select '+clsFor(val);
+    try{
+      if(id){
+        if(val==='none'){ const r=await client.from('reports').delete().eq('id', id); if(r.error) throw r.error; sel.dataset.id=''; }
+        else { const r=await client.from('reports').update({status:val, xp:xpFor(val)}).eq('id', id); if(r.error) throw r.error; }
+      } else if(val !== 'none'){
+        const newId = 'rep_manual_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        const data = `Ник: ${nick} | Дата: ${date} | Работа: Выставлено руководством | Тип сдачи: ручная отметка`;
+        const r = await client.from('reports').insert([{id:newId,email,link:'',date:data,status:val,xp:xpFor(val)}]);
+        if(r.error) throw r.error; sel.dataset.id = newId;
+      }
+      setTimeout(loadReportsTableV94, 280);
+    } catch(e){ alert('Ошибка сохранения: '+(e && e.message || e)); }
+    finally { sel.disabled=false; sel.style.opacity='1'; }
+  }
+
+  function ensureQualityInput(){
+    const work = $('reportWorkInput');
+    if(!work) return;
+    let box = $('reportQualityInput');
+    const html = '<div class="admin-field" id="reportQualityField"><label>Что сделал модератор:</label><select id="reportQualityInput" class="support-input"><option value="Норма">Норма</option><option value="Перенорма">Перенорма</option><option value="Натяг">Натяг</option><option value="Герой дня">Герой дня</option></select></div>';
+    if(!box){ work.closest('.admin-field')?.insertAdjacentHTML('beforebegin', html); }
+    else {
+      const current = box.value || 'Норма';
+      box.innerHTML = '<option value="Норма">Норма</option><option value="Перенорма">Перенорма</option><option value="Натяг">Натяг</option><option value="Герой дня">Герой дня</option>';
+      box.value = ['Норма','Перенорма','Натяг','Герой дня'].includes(current) ? current : 'Норма';
+    }
+  }
+  function fileToDataURL(file){
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(String(e.target.result||''));
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    });
+  }
+  async function submitReportV94(){
+    const res=$('reportResultText');
+    if(!hasModAccess()){ if(res){ res.textContent='Отчётность доступна только модераторам, руководству и создателю.'; res.style.color='var(--color-error)'; } return; }
+    const client=supaClient(); if(!client){ if(res) res.textContent='База ещё не загрузилась.'; return; }
+    const nick=String($('reportNickInput')?.value || (typeof currentNickname !== 'undefined' ? currentNickname : '') || '').trim();
+    const work=String($('reportWorkInput')?.value || '').trim();
+    const date=String($('reportDateInput')?.value || new Date().toISOString().slice(0,10));
+    const link=String($('reportLinkInput')?.value || '').trim();
+    const quality=String($('reportQualityInput')?.value || 'Норма').trim();
+    const fileInput=$('reportFileInput');
+    if(!nick || !work || !date){ if(res){ res.textContent='Заполните ник, работу и дату.'; res.style.color='var(--color-error)'; } return; }
+    if(!link && (!fileInput || !fileInput.files || !fileInput.files.length)){ if(res){ res.textContent='Прикрепите ссылку или скриншот/файл.'; res.style.color='var(--color-error)'; } return; }
+    if(res){ res.textContent='Отправка отчёта...'; res.style.color='var(--color-text-muted)'; }
+    let finalLink = link;
+    if(!finalLink && fileInput?.files?.length){ finalLink = await fileToDataURL(fileInput.files[0]); }
+    const combined = `Ник: ${nick} | Дата: ${date} | Работа: ${work} | Тип сдачи: ${quality}`;
+    const r = await client.from('reports').insert([{id:'rep_'+Date.now()+'_'+Math.random().toString(16).slice(2), email:user()?.email || '', link:finalLink, date:combined, status:'На проверке', xp:0}]);
+    if(r.error){ if(res){ res.textContent='Ошибка: '+r.error.message; res.style.color='var(--color-error)'; } return; }
+    if(res){ res.textContent='✅ Отчёт отправлен. Вы выбрали: '+quality+'. Руководство увидит это при проверке.'; res.style.color='var(--color-success)'; }
+    ['reportWorkInput','reportLinkInput'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
+    if($('reportQualityInput')) $('reportQualityInput').value='Норма';
+    if(fileInput) fileInput.value='';
+    if($('mode-reports_table') && getComputedStyle($('mode-reports_table')).display !== 'none') setTimeout(loadReportsTableV94, 350);
+  }
+
+  function bindSubmitReport(){
+    ensureQualityInput();
+    const btn=$('submitReportBtn') || $('submitReportBtnV16');
+    if(btn && btn.dataset.t73v94Submit !== '1'){
+      btn.dataset.t73v94Submit='1';
+      btn.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); submitReportV94(); return false; }, true);
+    }
+  }
+
+  async function showReportsReview(){
+    if(!isModLeader()){ alert('Проверка отчётов доступна только руководству и создателю.'); return; }
+    const area=$('reportsListArea'); if(!area) return;
+    if(area.dataset.t73v94Open === '1'){ area.dataset.t73v94Open='0'; area.style.display='none'; return; }
+    area.dataset.t73v94Open='1'; area.style.display='grid'; area.style.gap='1rem'; area.innerHTML='<div class="message-text">⏳ Загружаю отчёты...</div>';
+    const client=supaClient(); if(!client){ area.innerHTML='<div class="t73-v94-review-card">Supabase ещё не загрузился.</div>'; return; }
+    try{
+      const q = client.from('reports').select('*').not('email','in','("ACCESS_KEY","ADMIN_ROLE","SHOP_MOD","SHOP_AP","ROULETTE_MOD","ROULETTE_AP","CUSTOM_MOD_MSG","CUSTOM_AP_MSG","HIDDEN_CHECK","USER_ROLE","INACTIVE_REQ","SHOP_OVERRIDE","GAME_XP","MANUAL_XP","AP_POINTS","FSB_POINTS","FSB_SPEND","SHOP_FSB","ROULETTE_FSB","GOSS_USER_REPORT","GOSS_REPORT_CHECK","GOSS_PROFILE","GOSS_REPORT_TABLE","GOSS_REPORT_TABLE_V13","GOSS_REPORT_TABLE_V15","GOSS_REPORT_TABLE_V16","GOSS_REPORT_TABLE_V19","GOSS_REPORT_MEMBER_V19","GOSS_REPORT_PROOF_V19","GOSS_POINTS_V19","GOSS_ORG_LOG","GOSS_ORG_LOG_V19","GOSS_ORG_LOG_V24","GOSS_SHOP_ITEMS_V13","GOSS_SHOP_ITEMS_V19","GOSS_SHOP_ITEMS_V24","GOSS_SHOP_ITEMS_V26","GOSS_SHOP_PURCHASE","FSB_SHOP_LOG")').order('id',{ascending:false}).limit(80);
+      const {data,error}=await withTimeout(q, 12000, 'Не удалось загрузить отчёты'); if(error) throw error;
+      const rows=(data||[]).filter(r=>!isService(r));
+      if(!rows.length){ area.innerHTML='<div class="t73-v94-review-card">Отчётов пока нет.</div>'; return; }
+      area.innerHTML = rows.map(r => {
+        const p=parseDatePayload(r), quality=rowQuality(r)||'не выбрано', status=normalizeStatus(r.status||'На проверке'), waiting=status==='На проверке'||status.indexOf('Ожидает')===0;
+        const proof = r.link ? (String(r.link).startsWith('data:image') ? `<img src="${r.link}" style="max-width:100%;max-height:170px;border-radius:12px;cursor:zoom-in;border:1px solid rgba(255,255,255,.16);" onclick="document.getElementById('imageModal').style.display='flex';document.getElementById('imageModalSrc').src='${r.link}'">` : `<a class="btn btn-secondary" href="${esc(r.link)}" target="_blank" rel="noreferrer">📎 Открыть доказательство</a>`) : '<span class="t73-v94-chip">Без вложения</span>';
+        return `<article class="t73-v94-review-card"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><div><strong>${esc(p.nick||rowNick(r)||r.email||'Модератор')}</strong><div style="color:var(--color-text-faint);font-size:.82rem;">${esc(p.day||p.date||rowDay(r)||'дата не указана')}</div></div><span class="t73-v94-chip">Выбрал: ${esc(quality)}</span></div><div style="color:var(--color-text-muted);">${esc(p.work||rowText(r))}</div>${proof}<div><span class="t73-v94-chip ${clsFor(status)}">${esc(displayStatus(status))} · ${Number(r.xp||0)} XP</span></div>${waiting?`<div class="t73-v94-review-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b" onclick="processReport('${esc(r.id)}','Норма',15)">Норма</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c" onclick="processReport('${esc(r.id)}','Перенорма',30)">Перенорма</button><button class="btn btn-secondary" style="border-color:#a855f7;color:#c084fc" onclick="processReport('${esc(r.id)}','Натяг',7)">Натяг</button><button class="btn btn-secondary" style="border-color:#3b82f6;color:#60a5fa" onclick="processReport('${esc(r.id)}','Герой дня',60)">Герой дня</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" onclick="processReport('${esc(r.id)}','Не засчитано',0)">Отказ</button></div>`:''}</article>`;
+      }).join('');
+    } catch(e){ area.innerHTML=`<div class="t73-v94-review-card" style="color:var(--color-error);">Ошибка: ${esc(e && e.message || e)}</div>`; }
+  }
+  async function processReportV94(id, status, xpAmount){
+    if(!isModLeader()){ alert('Проверять отчёты может только руководство.'); return; }
+    const client=supaClient(); if(!client){ alert('Supabase ещё не загрузился.'); return; }
+    const st=normalizeStatus(status); const r=await client.from('reports').update({status:st, xp:Number(xpAmount ?? xpFor(st))}).eq('id', id);
+    if(r.error){ alert('Ошибка: '+r.error.message); return; }
+    const area=$('reportsListArea'); if(area){ area.dataset.t73v94Open='0'; }
+    setTimeout(showReportsReview, 80);
+    if($('mode-reports_table') && getComputedStyle($('mode-reports_table')).display !== 'none') setTimeout(loadReportsTableV94, 250);
+  }
+
+  async function submitInactiveV94(){
+    const res=$('inactiveResultText');
+    if(!hasModAccess()){ if(res){ res.textContent='Неактив доступен только модераторам, руководству и создателю.'; res.style.color='var(--color-error)'; } return; }
+    const client=supaClient(); if(!client){ if(res) res.textContent='База ещё не загрузилась.'; return; }
+    const nick=String($('inactiveNickInput')?.value || (typeof currentNickname !== 'undefined' ? currentNickname : '') || '').trim();
+    const from=String($('inactiveDateFrom')?.value || '').trim();
+    const to=String($('inactiveDateTo')?.value || '').trim();
+    const reason=String($('inactiveReasonInput')?.value || '').trim();
+    if(!nick || !from || !to || !reason){ if(res){ res.textContent='Заполните ник, даты и причину.'; res.style.color='var(--color-error)'; } return; }
+    const payload=`Ник: ${nick} | С: ${from} | По: ${to} | Причина: ${reason}`;
+    const r=await client.from('reports').insert([{id:'ina_'+Date.now()+'_'+Math.random().toString(16).slice(2), email:'INACTIVE_REQ', link:user()?.email||'', date:payload, status:'Ожидает одобрения', xp:0}]);
+    if(r.error){ if(res){ res.textContent='Ошибка: '+r.error.message; res.style.color='var(--color-error)'; } return; }
+    if(res){ res.textContent='✅ Заявка на неактив отправлена.'; res.style.color='var(--color-success)'; }
+    ['inactiveNickInput','inactiveDateFrom','inactiveDateTo','inactiveReasonInput'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
+  }
+  async function showInactivesReview(){
+    if(!isModLeader()){ alert('Проверка неактивов доступна только руководству и создателю.'); return; }
+    const area=$('inactivesListArea'); if(!area) return;
+    if(area.dataset.t73v94Open === '1'){ area.dataset.t73v94Open='0'; area.style.display='none'; return; }
+    area.dataset.t73v94Open='1'; area.style.display='grid'; area.style.gap='1rem'; area.innerHTML='<div class="message-text">⏳ Загружаю неактивы...</div>';
+    const client=supaClient(); if(!client){ area.innerHTML='<div class="t73-v94-inactive-card">Supabase ещё не загрузился.</div>'; return; }
+    try{
+      const {data,error}=await withTimeout(client.from('reports').select('*').eq('email','INACTIVE_REQ').order('id',{ascending:false}).limit(100), 12000, 'Не удалось загрузить неактивы'); if(error) throw error;
+      const rows=data||[];
+      if(!rows.length){ area.innerHTML='<div class="t73-v94-inactive-card">Заявок на неактив пока нет.</div>'; return; }
+      area.innerHTML = rows.map(r => { const x=inactiveRange(r), waiting=String(r.status||'')==='Ожидает одобрения'; return `<article class="t73-v94-inactive-card"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><strong>${esc(x.nick||'Без ника')}</strong><span class="t73-v94-chip ${clsFor(r.status)}">${esc(r.status||'Без статуса')}</span></div><div style="color:var(--color-text-muted);"><b>С:</b> ${esc(x.from||'—')} &nbsp; <b>По:</b> ${esc(x.to||'—')}</div><div style="color:var(--color-text-muted);"><b>Причина:</b> ${esc(x.reason||'—')}</div>${waiting?`<div class="t73-v94-inactive-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b" onclick="processInactive('${esc(r.id)}','Одобрено')">Одобрить</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" onclick="processInactive('${esc(r.id)}','Отказано')">Отказать</button></div>`:''}</article>`; }).join('');
+    } catch(e){ area.innerHTML=`<div class="t73-v94-inactive-card" style="color:var(--color-error);">Ошибка: ${esc(e && e.message || e)}</div>`; }
+  }
+  async function processInactiveV94(id, statusText){
+    if(!isModLeader()){ alert('Проверять неактивы может только руководство.'); return; }
+    const client=supaClient(); if(!client){ alert('Supabase ещё не загрузился.'); return; }
+    const r=await client.from('reports').update({status:statusText}).eq('id', id);
+    if(r.error){ alert('Ошибка: '+r.error.message); return; }
+    const area=$('inactivesListArea'); if(area) area.dataset.t73v94Open='0';
+    setTimeout(showInactivesReview, 80);
+    if($('mode-reports_table') && getComputedStyle($('mode-reports_table')).display !== 'none') setTimeout(loadReportsTableV94, 250);
+  }
+
+  function bindReviewButtons(){
+    const vr=$('viewReportsBtn');
+    if(vr && vr.dataset.t73v94Review !== '1'){
+      vr.dataset.t73v94Review='1'; vr.textContent='✅ Проверить отчеты';
+      vr.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); showReportsReview(); return false; }, true);
+    }
+    const vi=$('viewInactivesBtn');
+    if(vi && vi.dataset.t73v94Review !== '1'){
+      vi.dataset.t73v94Review='1'; vi.textContent='✅ Проверить неактивы';
+      vi.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); showInactivesReview(); return false; }, true);
+    }
+    const si=$('submitInactiveBtn');
+    if(si && si.dataset.t73v94Submit !== '1'){
+      si.dataset.t73v94Submit='1'; si.addEventListener('click', e => { e.preventDefault(); e.stopImmediatePropagation(); submitInactiveV94(); return false; }, true);
+    }
+  }
+
+  function enhanceSupport(){
+    if(window.__T73_V94_SUPPORT_DONE__) return;
+    try{
+      if(typeof baseSupQuestions !== 'undefined' && Array.isArray(baseSupQuestions)){
+        const extra = [
+          {title:'АП · Восстановление доступа',text:'Игрок пишет: «Забыл пароль от аккаунта, как вернуть доступ?»',keywords:['тех','поддерж','восстанов','форум','заявк']},
+          {title:'АП · Донат не пришёл',text:'Игрок оплатил донат, но валюта не появилась через 15 минут.',keywords:['чек','тех','поддерж','ожид','заявк']},
+          {title:'АП · Баг с имуществом',text:'Игрок говорит, что после рестарта пропала машина/дом.',keywords:['форум','тех','доказ','скрин','заявк']},
+          {title:'АП · Жалоба на администратора',text:'Игрок уверен, что администратор выдал наказание неверно.',keywords:['форум','жалоб','доказ','раздел']},
+          {title:'АП · Возврат денег',text:'Игрок просит вернуть вирты после обмана другим игроком.',keywords:['жалоб','форум','доказ','администратор']},
+          {title:'АП · Застрял транспорт',text:'Игрок застрял машиной в текстуре и не может выбраться.',keywords:['репорт','/report','админ','перезаход']},
+          {title:'АП · Нарушитель рядом',text:'Игрок пишет, что рядом массово ДМят и мешают игре.',keywords:['/report','репорт','доказ','админ']},
+          {title:'АП · Как вступить в организацию',text:'Игрок спрашивает, где пройти собеседование в УМВД.',keywords:['новости','гос','организац','собесед','форум']},
+          {title:'АП · Где форум',text:'Игрок не знает, где искать раздел жалоб и справочников.',keywords:['forum','форум','blackrussia','раздел']},
+          {title:'АП · Промокод',text:'Игрок спрашивает, куда вводить промокод и что делать, если не работает.',keywords:['промо','донат','тех','поддерж']},
+          {title:'АП · Ошибка лаунчера',text:'Игрок не может зайти в игру из-за ошибки лаунчера.',keywords:['перезапуст','кэш','обнов','тех','поддерж']},
+          {title:'АП · Передача аккаунта',text:'Игрок спрашивает, можно ли дать другу аккаунт на время.',keywords:['нельзя','запрещ','аккаунт','правил']},
+          {title:'АП · Реклама сервера',text:'Игрок зовёт людей на другой проект в чате.',keywords:['репорт','жалоб','доказ','админ']},
+          {title:'АП · Оскорбления',text:'Игрока оскорбляют в семейном/общем чате.',keywords:['скрин','доказ','жалоб','репорт']},
+          {title:'АП · НонРП коп',text:'Игрок жалуется на сотрудника госорганизации за NonRP действия.',keywords:['форум','жалоб','доказ','организац']},
+          {title:'АП · Потерялся новичок',text:'Новичок спрашивает, как начать зарабатывать первые деньги.',keywords:['gps','гпс','работ','шахт','начальн']},
+          {title:'АП · Не работает команда',text:'Игрок спрашивает, почему не открывается инвентарь/паспорт.',keywords:['команд','/inv','/pass','переза']},
+          {title:'АП · Апелляция мута',text:'Игрок хочет обжаловать мут, но доказательств нет.',keywords:['форум','жалоб','доказ','ожид']},
+          {title:'АП · Обман при обмене',text:'Игрок просит наказать за обман при обмене имуществом.',keywords:['доказ','форум','жалоб','админ']},
+          {title:'АП · Куда писать баг',text:'Игрок нашёл баг и хочет получить награду за сообщение.',keywords:['форум','тех','поддерж','баг','доказ']},
+          {title:'АП · Смена ника',text:'Игрок хочет сменить ник и спрашивает, куда обращаться.',keywords:['донат','магазин','правил','ник']},
+          {title:'АП · Норма ответа',text:'Как правильно отвечать игроку, если вопрос не относится к АП?',keywords:['вежл','направ','раздел','форум','админ']},
+          {title:'АП · Семья',text:'Игрок спрашивает, сколько стоит создать семью и где это сделать.',keywords:['3кк','семь','создат','gps']},
+          {title:'АП · Бизнес',text:'Игрок интересуется, где купить бизнес и как узнать цену.',keywords:['аукцион','форум','гос','цена']},
+          {title:'АП · Безопасность',text:'Игрок пишет, что ему предлагают скачать файл для бонуса.',keywords:['не скач','опасн','репорт','админ','безопас']}
+        ];
+        const have = new Set(baseSupQuestions.map(q=>q.title+'|'+q.text));
+        extra.forEach(q=>{ if(!have.has(q.title+'|'+q.text)) baseSupQuestions.push(q); });
+        try { supQueue = []; } catch(e) {}
+      }
+    } catch(e) {}
+    const root=$('mode-support'); if(!root) return;
+    if(!$('t73V94SupportTraining')){
+      const stats=root.querySelector('.stats-grid');
+      const panel=document.createElement('div');
+      panel.id='t73V94SupportTraining';
+      panel.className='t73-v94-ap-grid';
+      panel.innerHTML='<article class="t73-v94-ap-card"><h3>🎓 Тренировка АП</h3><div class="t73-v94-drill-box" id="t73V94DrillBox">Нажми «Новый кейс», чтобы получить ситуацию и эталон ответа.</div><div style="display:flex;gap:.55rem;flex-wrap:wrap;"><button class="btn btn-secondary" type="button" id="t73V94NewDrill">Новый кейс</button><button class="btn btn-secondary" type="button" id="t73V94ShowAnswer">Показать эталон</button></div></article><article class="t73-v94-ap-card"><h3>📌 Шаблон ответа</h3><ul><li>Поздоровайся и говори спокойно.</li><li>Дай короткое решение или команду.</li><li>Если нужны доказательства — отправь на форум/жалобу.</li><li>Если техническая проблема — направь в техподдержку с чеком/скринами.</li></ul></article>';
+      if(stats) stats.insertAdjacentElement('afterend', panel); else root.insertBefore(panel, root.firstChild);
+      const drills=[
+        {q:'Игрок потерял донат после оплаты.',a:'Попросите чек оплаты, время платежа и направьте в техническую поддержку/соответствующий раздел форума.'},
+        {q:'Игрок застрял в текстуре.',a:'Попросите написать /report, при возможности перезайти, и ожидать администратора.'},
+        {q:'Игрок хочет обжаловать наказание.',a:'Направьте на форум в раздел жалоб/апелляций и попросите приложить доказательства.'},
+        {q:'Новичок не знает, где заработать.',a:'Подскажите открыть GPS и выбрать начальные работы, например шахту/доступные работы по уровню.'},
+        {q:'Игроку предлагают скачать файл за бонус.',a:'Предупредите ничего не скачивать, сделать скрин и отправить жалобу/репорт администрации.'}
+      ];
+      let current=drills[0], shown=false;
+      const render=()=>{ const box=$('t73V94DrillBox'); if(box) box.innerHTML='<b>Кейс:</b> '+esc(current.q)+(shown?'<br><br><b>Эталон:</b> '+esc(current.a):'<br><br><span style="color:var(--color-text-faint);">Попробуй ответить сам, затем открой эталон.</span>'); };
+      $('t73V94NewDrill')?.addEventListener('click',()=>{ current=drills[Math.floor(Math.random()*drills.length)]; shown=false; render(); });
+      $('t73V94ShowAnswer')?.addEventListener('click',()=>{ shown=true; render(); });
+      render();
+    }
+    window.__T73_V94_SUPPORT_DONE__ = true;
+  }
+
+  const oldSwitch = window.switchMode;
+  window.switchMode = function(mode, btn){
+    if(mode === 'reports_table'){ openReportsTable(btn || $('reportsTableBtn')); return; }
+    if(['report','inactives','shop'].includes(mode) && !hasModAccess()){ alert('Этот раздел доступен только модераторам, руководству и создателю.'); return; }
+    if(['guide'].includes(mode) && !anyLeader()){ alert('Раздел «Руководство» доступен только пользователям с выданным доступом.'); return; }
+    if(['leadership','admin_log'].includes(mode) && !isModLeader()){ alert('Раздел доступен только руководству модерации.'); return; }
+    if(['ap_admin','ap_admin_log'].includes(mode) && !isApLeader()){ alert('Раздел доступен только руководству АП.'); return; }
+    if(['fsb_admin','fsb_admin_log'].includes(mode) && !isFsbLeader()){ alert('Раздел доступен только руководству ФСБ.'); return; }
+    const out = typeof oldSwitch === 'function' ? oldSwitch.apply(this, arguments) : undefined;
+    setTimeout(run, 80);
+    return out;
+  };
+
+  window.loadReportsTable = loadReportsTableV94;
+  try { loadReportsTable = loadReportsTableV94; } catch(e) {}
+  window.updateReportStatusDirectly = function(sel,nick,date,id){ if(sel){ if(nick) sel.dataset.nick=nick; if(date) sel.dataset.date=date; if(id) sel.dataset.id=id; } return updateStatusV94(sel); };
+  window.processReport = processReportV94;
+  window.processInactive = processInactiveV94;
+  window.T73_V94_REPORTS = { open:openReportsTable, load:loadReportsTableV94, access:applyAccess, support:enhanceSupport };
+
+  document.addEventListener('click', function(e){
+    const tableBtn = e.target && e.target.closest && e.target.closest('#reportsTableBtn,[data-mode="reports_table"]');
+    if(tableBtn){ e.preventDefault(); e.stopImmediatePropagation(); openReportsTable(tableBtn); return false; }
+  }, true);
+
+  function run(){ ensureReportTableButton(); bindSubmitReport(); bindReviewButtons(); enhanceSupport(); applyAccess(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  [80,250,700,1500,3000].forEach(ms=>setTimeout(run,ms));
+  setInterval(run, 1800);
+  let moTimer;
+  new MutationObserver(()=>{ clearTimeout(moTimer); moTimer=setTimeout(run,120); }).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<!-- === /T73 V94 === -->
+
 </body>
 </html>
