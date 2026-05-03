@@ -19985,5 +19985,314 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 /* === /T73 V105 === */
 </script>
 <!-- === /T73 V105 === -->
+
+<!-- === T73 V106: game result close + weekly movie quizzes === -->
+<script>
+(function(){
+  'use strict';
+  var VERSION = 'T73_V106_GAMES_WEEKLY_QUIZ';
+  var QUIZ_START_ISO = '2026-05-04';
+  var QUIZZES = [{"id": "john_wick_2026_w1", "title": "Джон Уик", "icon": "🔫", "reward": 3000, "desc": "Обновлённая викторина по вселенной Джона Уика.", "questions": [{"q": "Как звали щенка, которого Джону подарила покойная жена?", "opts": ["Дейзи", "Бадди", "Макс", "Луна"], "ans": "Дейзи"}, {"q": "Какую машину Иосиф Тарасов угнал у Джона в первом фильме?", "opts": ["Ford Mustang Boss 429", "Dodge Charger R/T", "Chevrolet Camaro SS", "Pontiac GTO"], "ans": "Ford Mustang Boss 429"}, {"q": "Как в криминальном мире прозвали Джона Уика?", "opts": ["Баба Яга", "Призрак", "Судья", "Серый Волк"], "ans": "Баба Яга"}, {"q": "Как называется отель-убежище для убийц в Нью-Йорке?", "opts": ["Континенталь", "Адъюдикатор", "Красный круг", "Высокий стол"], "ans": "Континенталь"}, {"q": "Какое правило запрещено нарушать на территории Континенталя?", "opts": ["Вести дела / убивать на территории отеля", "Платить обычными деньгами", "Носить оружие", "Разговаривать с консьержем"], "ans": "Вести дела / убивать на территории отеля"}, {"q": "Какой предмет Джон, по слухам, использовал, чтобы убить троих?", "opts": ["Карандаш", "Книгу", "Игральную карту", "Монету"], "ans": "Карандаш"}, {"q": "Кто управляет нью-йоркским Континенталем?", "opts": ["Уинстон", "Харон", "Маркиз", "Кассиан"], "ans": "Уинстон"}, {"q": "Как зовут консьержа нью-йоркского Континенталя?", "opts": ["Харон", "Маркус", "Зеро", "Боулер"], "ans": "Харон"}, {"q": "Какой долг заставил Джона вернуться во второй части?", "opts": ["Маркер", "Золотая монета", "Кровный контракт", "Печать Совета"], "ans": "Маркер"}, {"q": "Кого Джон убивает на территории Континенталя в конце второй части?", "opts": ["Сантино Д’Антонио", "Вигго Тарасова", "Кассиана", "Зеро"], "ans": "Сантино Д’Антонио"}, {"q": "Куда Джон отправляется в третьей части за помощью к Софии?", "opts": ["Касабланка", "Рим", "Берлин", "Осака"], "ans": "Касабланка"}, {"q": "Какая организация стоит над миром убийц?", "opts": ["Высокий стол", "Красный круг", "Бауэри", "Суд присяжных"], "ans": "Высокий стол"}]}, {"id": "matrix_2026_w2", "title": "Матрица", "icon": "🕶️", "reward": 3000, "desc": "Вопросы по первой Матрице и основным персонажам.", "questions": [{"q": "Какое настоящее имя Нео?", "opts": ["Томас Андерсон", "Джон Андерсон", "Дэвид Миллер", "Морфеус Смит"], "ans": "Томас Андерсон"}, {"q": "Какую таблетку Нео выбирает, чтобы узнать правду?", "opts": ["Красную", "Синюю", "Белую", "Чёрную"], "ans": "Красную"}, {"q": "Кто командует кораблём Навуходоносор?", "opts": ["Морфеус", "Сайфер", "Танк", "Агент Смит"], "ans": "Морфеус"}, {"q": "Как зовут главного агента в первом фильме?", "opts": ["Смит", "Джонс", "Браун", "Томпсон"], "ans": "Смит"}, {"q": "Как называется последний свободный город людей?", "opts": ["Зион", "Эдем", "Оракул", "Небо"], "ans": "Зион"}, {"q": "Кто говорит Нео, что он не Избранный, но у него есть дар?", "opts": ["Пифия", "Тринити", "Ниоба", "Персефона"], "ans": "Пифия"}, {"q": "Кто предаёт команду Морфеуса в первом фильме?", "opts": ["Сайфер", "Танк", "Маус", "Апок"], "ans": "Сайфер"}, {"q": "Во что влюбляется Тринити согласно пророчеству?", "opts": ["В Избранного", "В капитана", "В программиста", "В агента"], "ans": "В Избранного"}, {"q": "Что видит Нео в конце первого фильма вместо обычного мира?", "opts": ["Код Матрицы", "Сон", "Пламя", "Пустоту"], "ans": "Код Матрицы"}, {"q": "Какой навык Нео загружает перед тренировкой с Морфеусом?", "opts": ["Кунг-фу", "Стрельбу из лука", "Пилотирование", "Фехтование"], "ans": "Кунг-фу"}]}, {"id": "interstellar_2026_w3", "title": "Интерстеллар", "icon": "🪐", "reward": 3000, "desc": "Космическая викторина по фильму Интерстеллар.", "questions": [{"q": "Как зовут главного героя, бывшего пилота NASA?", "opts": ["Купер", "Бранд", "Манн", "Ромилли"], "ans": "Купер"}, {"q": "Как зовут дочь Купера?", "opts": ["Мёрф", "Амелия", "Лоис", "Джессика"], "ans": "Мёрф"}, {"q": "Через что команда отправляется к другой галактике?", "opts": ["Червоточину", "Чёрную дыру", "Солнечный парус", "Варп-двигатель"], "ans": "Червоточину"}, {"q": "Как называется чёрная дыра в фильме?", "opts": ["Гаргантюа", "Эребус", "Пандора", "Орион"], "ans": "Гаргантюа"}, {"q": "На какой планете время идёт намного медленнее?", "opts": ["Планета Миллер", "Планета Манна", "Планета Эдмундса", "Земля"], "ans": "Планета Миллер"}, {"q": "Как зовут робота с прямоугольной формой?", "opts": ["TARS", "HAL", "CASEY", "BAYMAX"], "ans": "TARS"}, {"q": "Кто из учёных оказывается живым на ледяной планете?", "opts": ["Доктор Манн", "Доктор Эдмундс", "Профессор Бранд", "Ромилли"], "ans": "Доктор Манн"}, {"q": "Что Купер передаёт Мёрф через часы?", "opts": ["Квантовые данные", "Координаты Марса", "Имя пилота", "Код запуска"], "ans": "Квантовые данные"}, {"q": "Как называется корабль экспедиции?", "opts": ["Endurance", "Discovery", "Nostromo", "Serenity"], "ans": "Endurance"}, {"q": "Что в фильме называют силой, способной преодолеть время и пространство?", "opts": ["Любовь", "Гравитация", "Радиация", "Память"], "ans": "Любовь"}]}, {"id": "lotr_2026_w4", "title": "Властелин колец", "icon": "💍", "reward": 3000, "desc": "Средиземье: кольцо, Братство и главные герои.", "questions": [{"q": "Кому изначально принадлежало Кольцо перед Бильбо?", "opts": ["Голлуму", "Саурону", "Гэндальфу", "Арагорну"], "ans": "Голлуму"}, {"q": "Кто несёт Кольцо в Мордор?", "opts": ["Фродо", "Сэм", "Арагорн", "Леголас"], "ans": "Фродо"}, {"q": "Как зовут верного спутника Фродо?", "opts": ["Сэм", "Пиппин", "Мерри", "Боромир"], "ans": "Сэм"}, {"q": "Как называется родина хоббитов?", "opts": ["Шир", "Ривенделл", "Гондор", "Рохан"], "ans": "Шир"}, {"q": "Кто говорит: «Ты не пройдёшь!»?", "opts": ["Гэндальф", "Саруман", "Арагорн", "Гимли"], "ans": "Гэндальф"}, {"q": "Как называется крепость Саурона?", "opts": ["Барад-дур", "Хельмова Падь", "Минас Тирит", "Изенгард"], "ans": "Барад-дур"}, {"q": "Кто является наследником трона Гондора?", "opts": ["Арагорн", "Боромир", "Фарамир", "Элронд"], "ans": "Арагорн"}, {"q": "Какой расе принадлежит Леголас?", "opts": ["Эльф", "Гном", "Человек", "Хоббит"], "ans": "Эльф"}, {"q": "Как зовут гнома из Братства Кольца?", "opts": ["Гимли", "Торин", "Балин", "Двалин"], "ans": "Гимли"}, {"q": "Где должно быть уничтожено Кольцо?", "opts": ["В Роковой горе", "В Ривенделле", "В Шире", "В Мории"], "ans": "В Роковой горе"}]}, {"id": "pirates_2026_w5", "title": "Пираты Карибского моря", "icon": "🏴‍☠️", "reward": 3000, "desc": "Капитан Джек Воробей и морские приключения.", "questions": [{"q": "Как полностью зовут главного пирата серии?", "opts": ["Джек Воробей", "Джек Скеллингтон", "Джек Тернер", "Джек Барбосса"], "ans": "Джек Воробей"}, {"q": "Как называется корабль Джека?", "opts": ["Чёрная жемчужина", "Летучий голландец", "Морская ведьма", "Королевский флот"], "ans": "Чёрная жемчужина"}, {"q": "Кто был капитаном Чёрной жемчужины после мятежа?", "opts": ["Барбосса", "Уилл Тёрнер", "Норрингтон", "Дэйви Джонс"], "ans": "Барбосса"}, {"q": "Как зовут кузнеца, ставшего пиратом?", "opts": ["Уилл Тёрнер", "Джеймс Норрингтон", "Джошами Гиббс", "Билл Тернер"], "ans": "Уилл Тёрнер"}, {"q": "Как зовут героиню Киры Найтли?", "opts": ["Элизабет Суонн", "Анжелика", "Тиа Дальма", "Карина Смит"], "ans": "Элизабет Суонн"}, {"q": "Кто командует Летучим голландцем?", "opts": ["Дэйви Джонс", "Барбосса", "Джек Воробей", "Черная Борода"], "ans": "Дэйви Джонс"}, {"q": "Что Дэйви Джонс хранит в сундуке?", "opts": ["Сердце", "Карту", "Компас", "Корону"], "ans": "Сердце"}, {"q": "Что показывает особый компас Джека?", "opts": ["То, чего владелец желает больше всего", "Север", "Ближайший клад", "Опасность"], "ans": "То, чего владелец желает больше всего"}, {"q": "Как зовут помощника Джека, часто рассказывающего истории?", "opts": ["Гиббс", "Пинтел", "Рагетти", "Коттон"], "ans": "Гиббс"}, {"q": "Какой проклятый предмет важен в первом фильме?", "opts": ["Ацтекское золото", "Серебряный клинок", "Чёрная карта", "Кольцо капитана"], "ans": "Ацтекское золото"}]}, {"id": "hp_2026_w6", "title": "Гарри Поттер", "icon": "⚡", "reward": 3000, "desc": "Хогвартс, герои и важные детали первых фильмов.", "questions": [{"q": "На какой факультет попадает Гарри?", "opts": ["Гриффиндор", "Слизерин", "Когтевран", "Пуффендуй"], "ans": "Гриффиндор"}, {"q": "Как зовут лучшего друга Гарри?", "opts": ["Рон Уизли", "Драко Малфой", "Невилл Долгопупс", "Седрик Диггори"], "ans": "Рон Уизли"}, {"q": "Как зовут подругу Гарри и Рона?", "opts": ["Гермиона Грейнджер", "Луна Лавгуд", "Джинни Уизли", "Чжоу Чанг"], "ans": "Гермиона Грейнджер"}, {"q": "Кто директор Хогвартса в первых фильмах?", "opts": ["Альбус Дамблдор", "Северус Снейп", "Минерва Макгонагалл", "Рубеус Хагрид"], "ans": "Альбус Дамблдор"}, {"q": "Какой предмет позволяет летать в квиддиче?", "opts": ["Метла", "Плащ", "Кубок", "Палочка"], "ans": "Метла"}, {"q": "Как называется волшебный банк?", "opts": ["Гринготтс", "Азкабан", "Хогсмид", "Нора"], "ans": "Гринготтс"}, {"q": "Как зовут сову Гарри?", "opts": ["Букля", "Нагайна", "Фоукс", "Пигвиджон"], "ans": "Букля"}, {"q": "Какой платформой пользуются ученики, чтобы попасть на поезд в Хогвартс?", "opts": ["9¾", "7½", "13", "10¼"], "ans": "9¾"}, {"q": "Кто преподавал зельеварение в первых фильмах?", "opts": ["Северус Снейп", "Квиррелл", "Люпин", "Флитвик"], "ans": "Северус Снейп"}, {"q": "Как называется тюрьма волшебников?", "opts": ["Азкабан", "Нурменгард", "Гринготтс", "Министерство"], "ans": "Азкабан"}]}];
+  var DEFAULT_SCHEDULE = QUIZZES.map(function(q){ return q.id; });
+  var currentQuiz = null, currentQuestions = [], currentIndex = 0, correctCount = 0, finishBusy = false;
+  var scheduleCache = null, scheduleLoaded = false;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){
+    if (typeof window.escapeHtmlFix === 'function') return window.escapeHtmlFix(String(s == null ? '' : s));
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
+
+  function user(){
+    try { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser : (window.currentUser || null); }
+    catch(e){ return window.currentUser || null; }
+  }
+  function creator(){
+    try { return (typeof creatorEmail !== 'undefined' && creatorEmail) ? creatorEmail : (window.creatorEmail || 'daniiltimosin72@gmail.com'); }
+    catch(e){ return window.creatorEmail || 'daniiltimosin72@gmail.com'; }
+  }
+  function shopList(){
+    try { return (typeof shopItems !== 'undefined' && Array.isArray(shopItems)) ? shopItems : (Array.isArray(window.shopItems) ? window.shopItems : []); }
+    catch(e){ return Array.isArray(window.shopItems) ? window.shopItems : []; }
+  }
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function quizById(id){ return QUIZZES.find(function(q){ return q.id === id; }) || QUIZZES[0]; }
+  function getWeekIndex(){
+    var start = new Date(QUIZ_START_ISO + 'T00:00:00');
+    var now = new Date();
+    var diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 604800000);
+    if (!isFinite(diff) || diff < 0) diff = 0;
+    if (diff > 5) diff = 5;
+    return diff;
+  }
+  function weekLabel(i){
+    var d = new Date(QUIZ_START_ISO + 'T00:00:00');
+    d.setDate(d.getDate() + i * 7);
+    var e = new Date(d); e.setDate(e.getDate() + 6);
+    return 'Неделя ' + (i + 1) + ' · ' + d.toLocaleDateString('ru-RU') + ' — ' + e.toLocaleDateString('ru-RU');
+  }
+  function normalizeSchedule(raw){
+    var arr = Array.isArray(raw) ? raw.slice(0, 6) : [];
+    while (arr.length < 6) arr.push(DEFAULT_SCHEDULE[arr.length] || QUIZZES[0].id);
+    return arr.map(function(id, idx){ return quizById(id || DEFAULT_SCHEDULE[idx]).id; });
+  }
+  function localSchedule(){
+    try { return normalizeSchedule(JSON.parse(localStorage.getItem('t73_weekly_quiz_schedule_v106') || 'null')); }
+    catch(e){ return normalizeSchedule(DEFAULT_SCHEDULE); }
+  }
+  function setLocalSchedule(arr){ try { localStorage.setItem('t73_weekly_quiz_schedule_v106', JSON.stringify(normalizeSchedule(arr))); } catch(e){} }
+  async function loadSchedule(force){
+    if (scheduleLoaded && !force) return scheduleCache || localSchedule();
+    scheduleCache = localSchedule(); scheduleLoaded = true;
+    try {
+      if (window.supa) {
+        var res = await supa.from('reports').select('*').eq('email','SITE_SETTING').eq('link','weekly_quiz_schedule_v106').order('id',{ascending:false}).limit(1);
+        var row = res && res.data && res.data[0];
+        if (row) {
+          var p = JSON.parse(row.date || '[]');
+          scheduleCache = normalizeSchedule(Array.isArray(p) ? p : p.schedule);
+          setLocalSchedule(scheduleCache);
+        }
+      }
+    } catch(e) {}
+    return scheduleCache;
+  }
+  async function saveSchedule(arr){
+    scheduleCache = normalizeSchedule(arr); scheduleLoaded = true; setLocalSchedule(scheduleCache);
+    try {
+      if (window.supa) {
+        await supa.from('reports').delete().eq('email','SITE_SETTING').eq('link','weekly_quiz_schedule_v106');
+        await supa.from('reports').insert([{ id:'weekly_quiz_schedule_v106_' + Date.now(), email:'SITE_SETTING', link:'weekly_quiz_schedule_v106', status:'active', date:JSON.stringify({schedule:scheduleCache, updatedAt:new Date().toISOString(), by:(user() && user().email) || ''}), xp:0 }]);
+      }
+    } catch(e) { alert('Расписание сохранено локально, но не смогло записаться в базу: ' + (e && e.message ? e.message : e)); }
+    updateQuizShopItem(); renderQuizAdminPanel();
+    try { if (typeof window.renderShopItems === 'function') window.renderShopItems(); } catch(e){}
+  }
+  async function activeQuiz(){
+    var arr = await loadSchedule(false);
+    return quizById(arr[getWeekIndex()] || arr[0]);
+  }
+  function playedKey(id){ return 't73_weekly_quiz_played_' + ((user() && (user().email || user().id)) || 'guest') + '_' + id; }
+  async function isPlayed(id){
+    if (!user()) return false;
+    try { if (localStorage.getItem(playedKey(id)) === '1') return true; } catch(e){}
+    try {
+      if (window.supa) {
+        var u = user();
+        var who = u.email || u.id;
+        var res = await supa.from('reports').select('id').eq('email','WEEKLY_QUIZ_DONE').eq('link', who).eq('status', id).limit(1);
+        if (res && res.data && res.data.length) { try { localStorage.setItem(playedKey(id), '1'); } catch(e){} return true; }
+      }
+    } catch(e) {}
+    return false;
+  }
+  async function markPlayed(id, result){
+    try { localStorage.setItem(playedKey(id), '1'); } catch(e){}
+    try {
+      if (window.supa && user()) {
+        var u = user();
+        var who = u.email || u.id;
+        await supa.from('reports').insert([{ id:'weekly_quiz_done_' + Date.now() + '_' + Math.random().toString(36).slice(2), email:'WEEKLY_QUIZ_DONE', link:who, status:id, date:JSON.stringify(result || {}), xp:Number(result && result.reward || 0) }]);
+      }
+    } catch(e) {}
+  }
+  function updateQuizShopItem(){
+    try {
+      var arr = scheduleCache || localSchedule();
+      var q = quizById(arr[getWeekIndex()] || arr[0]);
+      var list = shopList();
+      if (list.length) {
+        var item = list.find(function(x){ return x && (x.id === 'jw_quiz' || x.action === 'mod_jw'); });
+        if (item) {
+          item.title = 'Викторина недели: ' + q.title;
+          item.icon = q.icon || '🎬';
+          item.desc = (q.desc || 'Киновикторина недели.') + ' 5 вопросов, награда ' + (q.reward || 3000) + ' XP. Каждую викторину можно пройти 1 раз.';
+        }
+      }
+    } catch(e) {}
+  }
+
+  var oldRenderShop = window.renderShopItems;
+  window.renderShopItems = function(){ updateQuizShopItem(); return oldRenderShop && oldRenderShop.apply(this, arguments); };
+
+  function closeModal(id){ var m = $(id); if (m) m.style.display = 'none'; }
+  function resetGenericGameModal(){
+    try { if (typeof rocketInt !== 'undefined') clearInterval(rocketInt); } catch(e){}
+    closeModal('genericGameModal');
+    ['ggRps','ggSlots','ggTiming','ggRocket','ggCases','ggDice','ggMines','ggHiLo','ggWheelX','ggShells'].forEach(function(id){ var el = $(id); if (el) el.style.display = 'none'; });
+    var overlay = $('ggStartOverlay'); if (overlay) overlay.style.display = 'none';
+  }
+  function bindStaticGameButtons(){
+    var map = {
+      closeGgBtn: resetGenericGameModal,
+      closeCoinBtn: function(){ closeModal('coinModal'); },
+      closeSafesBtn: function(){ closeModal('safesModal'); },
+      closeFortuneBtn: function(){ closeModal('fortuneModal'); },
+      closeJwBtn: function(){ closeModal('jwModal'); }
+    };
+    Object.keys(map).forEach(function(id){ var b = $(id); if (b) b.onclick = map[id]; });
+    var h = $('btnHeads'), t = $('btnTails');
+    if (h && typeof window.playCoin === 'function') h.onclick = function(){ window.playCoin('heads'); };
+    if (t && typeof window.playCoin === 'function') t.onclick = function(){ window.playCoin('tails'); };
+  }
+  document.addEventListener('click', function(e){
+    var target = e.target && e.target.closest && e.target.closest('#closeGgBtn,#closeCoinBtn,#closeSafesBtn,#closeFortuneBtn,#closeJwBtn,.safe-btn');
+    if (!target) return;
+    if (target.id === 'closeGgBtn') { e.preventDefault(); resetGenericGameModal(); return; }
+    if (target.id === 'closeCoinBtn') { e.preventDefault(); closeModal('coinModal'); return; }
+    if (target.id === 'closeSafesBtn') { e.preventDefault(); closeModal('safesModal'); return; }
+    if (target.id === 'closeFortuneBtn') { e.preventDefault(); closeModal('fortuneModal'); return; }
+    if (target.id === 'closeJwBtn') { e.preventDefault(); closeModal('jwModal'); return; }
+    if (target.classList && target.classList.contains('safe-btn')) { e.preventDefault(); playSafeButton(target); return; }
+  }, true);
+
+  var oldOpenSafes = window.openSafesGame;
+  window.openSafesGame = function(){
+    if (oldOpenSafes) oldOpenSafes.apply(this, arguments);
+    window.__t73SafeWinIndex = Math.floor(Math.random() * 3);
+    bindStaticGameButtons();
+  };
+  async function playSafeButton(btn){
+    if (btn.disabled || btn.dataset.done === '1') return;
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('.safe-btn'));
+    buttons.forEach(function(b){ b.disabled = true; b.dataset.done = '1'; });
+    var chosen = Number(btn.getAttribute('data-index'));
+    var win = Number.isFinite(window.__t73SafeWinIndex) ? window.__t73SafeWinIndex : Math.floor(Math.random() * 3);
+    buttons.forEach(function(b, idx){ b.textContent = idx === win ? '💎' : '💨'; });
+    var res = $('safesResult'), close = $('closeSafesBtn');
+    if (chosen === win) {
+      if (window.currentGameCurrency === 'real') shopState.spent -= 1200; else await addGameXp(1200);
+      if (res) { res.textContent = 'Победа! В сейфе был куш. +1200 XP'; res.style.color = 'var(--color-success)'; }
+      try { playSound('win'); } catch(e){}
+      try { await logPurchase('Три сейфа: Победа (1200 XP)', true, 'mod_shop', 0, window.currentGameCurrency === 'real' ? 'Реальный XP' : 'Игровой XP'); } catch(e){}
+    } else {
+      if (res) { res.textContent = 'Пусто. Куш был в другом сейфе.'; res.style.color = 'var(--color-error)'; }
+      try { playSound('fail'); } catch(e){}
+    }
+    try { updateShopStats(); updateModStats(); await saveProgress(); } catch(e){}
+    if (close) close.style.display = 'inline-block';
+  }
+
+  async function buyWeeklyQuiz(price){
+    if (!user()) { alert('Войдите в аккаунт, чтобы пройти викторину.'); return; }
+    var q = await activeQuiz();
+    if (await isPlayed(q.id)) { alert('Вы уже проходили эту викторину. Каждая киновикторина доступна только 1 раз.'); return; }
+    var currencyType = await chooseCurrencyForOperation(price, 'Викторина недели: ' + q.title);
+    if (!currencyType) return;
+    var balance = currencyType === 'game' ? Math.max(0, getTrainingBalance() + getGameNetBalance()) : getRealSpendableBalance();
+    if (balance < price) { try { playSound('fail'); } catch(e){} alert('Не хватает выбранной валюты.'); return; }
+    if (currencyType === 'game') await addGameXp(-Math.abs(Number(price))); else shopState.spent += Math.abs(Number(price));
+    window.currentGameCurrency = currencyType;
+    try { playSound('ok'); updateShopStats(); await saveProgress(); } catch(e){}
+    openWeeklyQuiz(q);
+  }
+  var oldBuyItem = window.buyItem;
+  window.buyItem = async function(id, price, action){
+    if (action === 'mod_jw' || id === 'jw_quiz') return buyWeeklyQuiz(Number(price || 1500));
+    return oldBuyItem && oldBuyItem.apply(this, arguments);
+  };
+
+  window.openJwQuiz = async function(){
+    if (!user()) { alert('Войдите в аккаунт, чтобы пройти викторину.'); return; }
+    var q = await activeQuiz();
+    if (await isPlayed(q.id)) { alert('Вы уже проходили эту викторину. Каждая киновикторина доступна только 1 раз.'); return; }
+    openWeeklyQuiz(q);
+  };
+  function openWeeklyQuiz(q){
+    currentQuiz = q; currentQuestions = shuffle(q.questions).slice(0, 5); currentIndex = 0; correctCount = 0; finishBusy = false;
+    var modal = $('jwModal'), title = modal && modal.querySelector('h2');
+    if (title) title.textContent = (q.icon || '🎬') + ' Викторина недели: ' + q.title;
+    var result = $('jwResult'); if (result) { result.style.display = 'none'; result.textContent = ''; }
+    var close = $('closeJwBtn'); if (close) { close.style.display = 'none'; close.textContent = 'Закрыть'; }
+    if (modal) modal.style.display = 'flex';
+    renderWeeklyQuestion();
+  }
+  function renderWeeklyQuestion(){
+    if (currentIndex >= currentQuestions.length) { finishWeeklyQuiz(); return; }
+    var qObj = currentQuestions[currentIndex];
+    var qText = $('jwQuestionText'), opts = $('jwOptions');
+    if (!qText || !opts) return;
+    qText.innerHTML = '<span style="color:#ff6b88;">' + esc(currentQuiz.title) + ' · вопрос ' + (currentIndex + 1) + ' из ' + currentQuestions.length + ':</span><br>' + esc(qObj.q);
+    opts.innerHTML = '';
+    shuffle(qObj.opts).forEach(function(opt){
+      var btn = document.createElement('button'); btn.className = 'jw-option-btn'; btn.textContent = opt;
+      btn.onclick = function(){
+        Array.prototype.slice.call(document.querySelectorAll('.jw-option-btn')).forEach(function(b){ b.disabled = true; if (b.textContent === qObj.ans) b.classList.add('correct'); else if (b === btn) b.classList.add('wrong'); });
+        if (opt === qObj.ans) { correctCount++; try { playSound('ok'); } catch(e){} } else { try { playSound('fail'); } catch(e){} }
+        setTimeout(function(){ currentIndex++; renderWeeklyQuestion(); }, 1200);
+      };
+      opts.appendChild(btn);
+    });
+  }
+  async function finishWeeklyQuiz(){
+    if (finishBusy) return; finishBusy = true;
+    var reward = Number(currentQuiz.reward || 3000), passed = correctCount >= 4;
+    var res = $('jwResult'), qText = $('jwQuestionText'), opts = $('jwOptions'), close = $('closeJwBtn');
+    if (qText) qText.innerHTML = 'Викторина завершена!<br>Результат: ' + correctCount + ' из 5.';
+    if (opts) opts.innerHTML = '';
+    if (passed) {
+      if (window.currentGameCurrency === 'real') shopState.spent -= reward; else await addGameXp(reward);
+      if (res) { res.textContent = 'Победа! +' + reward + ' XP за викторину «' + currentQuiz.title + '».'; res.style.color = 'var(--color-success)'; res.style.display = 'block'; }
+      try { playSound('win'); } catch(e){}
+      try { await logPurchase('Викторина недели: ' + currentQuiz.title + ' — победа (' + reward + ' XP)', true, 'mod_shop', 0, window.currentGameCurrency === 'real' ? 'Реальный XP' : 'Игровой XP'); } catch(e){}
+    } else {
+      if (res) { res.textContent = 'Награда не выдана: нужно минимум 4 правильных ответа. Повторно эту викторину пройти нельзя.'; res.style.color = 'var(--color-error)'; res.style.display = 'block'; }
+      try { playSound('fail'); } catch(e){}
+    }
+    await markPlayed(currentQuiz.id, {title:currentQuiz.title, correct:correctCount, total:5, passed:passed, reward:passed ? reward : 0, at:new Date().toISOString()});
+    try { updateShopStats(); updateModStats(); await saveProgress(); } catch(e){}
+    if (close) { close.textContent = 'Закрыть'; close.style.display = 'inline-block'; }
+  }
+
+  function selectHtml(value){
+    return '<select class="support-input t73-v106-quiz-select">' + QUIZZES.map(function(q){ return '<option value="' + esc(q.id) + '"' + (q.id === value ? ' selected' : '') + '>' + esc((q.icon || '🎬') + ' ' + q.title) + '</option>'; }).join('') + '</select>';
+  }
+  function ensureAdminPanel(){
+    var root = $('mode-creator'); if (!root || $('t73V106QuizAdmin')) return;
+    var html = '<div id="t73V106QuizAdmin" style="background:rgba(13,16,32,.6);padding:1.5rem;border-radius:16px;border:1px solid rgba(255,191,71,.45);margin-bottom:1.5rem;">' +
+      '<h3 style="margin:0 0 .5rem;color:#ffbf47;">🎬 Викторина недели</h3>' +
+      '<p style="margin:0 0 1rem;color:var(--color-text-muted);font-size:.9rem;">6 недель вперёд. Выбираешь фильм для каждой недели, пользователи проходят каждую викторину только 1 раз.</p>' +
+      '<div id="t73V106QuizRows" style="display:grid;gap:.75rem;"></div>' +
+      '<button id="t73V106SaveQuizSchedule" class="btn btn-primary" style="width:100%;margin-top:1rem;">💾 Сохранить расписание викторин</button>' +
+      '<div id="t73V106QuizStatus" style="margin-top:.75rem;color:var(--color-text-muted);font-size:.9rem;"></div>' +
+      '</div>';
+    var anchor = $('requireReportsToggle');
+    var card = anchor && anchor.closest ? anchor.closest('div[style*="background"]') : null;
+    if (card && card.parentNode) card.parentNode.insertBefore(document.createRange().createContextualFragment(html), card.nextSibling);
+    else root.insertAdjacentHTML('afterbegin', html);
+  }
+  function renderQuizAdminPanel(){
+    ensureAdminPanel();
+    var rows = $('t73V106QuizRows'); if (!rows) return;
+    var arr = scheduleCache || localSchedule(); var activeIdx = getWeekIndex();
+    rows.innerHTML = arr.map(function(id, i){ return '<div style="display:grid;grid-template-columns:minmax(150px,.8fr) minmax(180px,1.2fr);gap:.75rem;align-items:center;">' +
+      '<div style="color:' + (i === activeIdx ? '#52c77b' : 'var(--color-text-muted)') + ';font-weight:800;">' + esc(weekLabel(i)) + (i === activeIdx ? ' · сейчас' : '') + '</div>' + selectHtml(id) + '</div>'; }).join('');
+    var btn = $('t73V106SaveQuizSchedule');
+    if (btn) btn.onclick = async function(){
+      var u = user(); if (!u || u.email !== creator()) { alert('Расписание может менять только Создатель.'); return; }
+      var vals = Array.prototype.slice.call(document.querySelectorAll('#t73V106QuizRows select')).map(function(s){ return s.value; });
+      btn.disabled = true; var old = btn.textContent; btn.textContent = 'Сохраняю...';
+      await saveSchedule(vals);
+      btn.disabled = false; btn.textContent = old;
+      var st = $('t73V106QuizStatus'); if (st) st.textContent = 'Сохранено. Активная викторина: ' + activeQuizTitleSync() + '.';
+    };
+    var st = $('t73V106QuizStatus'); if (st) st.textContent = 'Сейчас в магазине: ' + activeQuizTitleSync() + '.';
+  }
+  function activeQuizTitleSync(){
+    var arr = scheduleCache || localSchedule(); var q = quizById(arr[getWeekIndex()] || arr[0]); return (q.icon || '🎬') + ' ' + q.title;
+  }
+  setInterval(function(){ if ($('mode-creator') && $('mode-creator').style.display !== 'none') renderQuizAdminPanel(); }, 1200);
+
+  document.addEventListener('DOMContentLoaded', function(){ bindStaticGameButtons(); loadSchedule(false).then(function(){ updateQuizShopItem(); renderQuizAdminPanel(); try { if (typeof window.renderShopItems === 'function') window.renderShopItems(); } catch(e){} }); });
+  setTimeout(function(){ bindStaticGameButtons(); loadSchedule(false).then(function(){ updateQuizShopItem(); renderQuizAdminPanel(); }); }, 800);
+  window.T73_V106_GAMES_WEEKLY_QUIZ = { version: VERSION, quizzes: QUIZZES, loadSchedule: loadSchedule, saveSchedule: saveSchedule, activeQuiz: activeQuiz, renderAdmin: renderQuizAdminPanel, bindButtons: bindStaticGameButtons };
+})();
+</script>
+<!-- === /T73 V106 === -->
+
 </body>
 </html>
