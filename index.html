@@ -20126,5 +20126,288 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V94 === -->
 
+
+
+<!-- === T73 V101: ГОСС без пользовательской системы режимов, единое рабочее пространство организаций === -->
+<style id="t73-v101-goss-org-workspace-style">
+  body.t73-v101-org-workspace #heroBadge2{
+    background:linear-gradient(135deg,rgba(255,107,136,.22),rgba(108,140,255,.16));
+    border-color:rgba(255,107,136,.38);
+  }
+  body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker,
+  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker{
+    position:relative;
+    display:flex!important;
+    align-items:center!important;
+    gap:.62rem!important;
+    padding:.72rem!important;
+    border-radius:22px!important;
+    border:1px solid rgba(255,255,255,.13)!important;
+    background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,107,136,.055))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 16px 38px rgba(0,0,0,.20);
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x proximity;
+  }
+  body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker::before,
+  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{
+    flex:0 0 auto;
+    content:'Организация';
+    min-height:40px;
+    display:inline-flex;
+    align-items:center;
+    padding:0 .78rem;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.13);
+    background:rgba(0,0,0,.24);
+    color:var(--color-text-muted);
+    font-size:.72rem;
+    font-weight:950;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+  }
+  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{content:'Раздел';}
+  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4,
+  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4{
+    flex:0 0 auto!important;
+    min-height:44px!important;
+    border-radius:16px!important;
+    border:1px solid rgba(255,255,255,.14)!important;
+    background:rgba(12,16,31,.72)!important;
+    color:#fff!important;
+    box-shadow:none!important;
+    scroll-snap-align:start;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease!important;
+  }
+  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4:hover,
+  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4:hover{
+    transform:translateY(-1px)!important;
+    border-color:rgba(255,107,136,.42)!important;
+    background:rgba(255,107,136,.11)!important;
+  }
+  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4.active,
+  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4.active{
+    border-color:rgba(255,107,136,.68)!important;
+    background:linear-gradient(135deg,rgba(255,107,136,.28),rgba(108,140,255,.16))!important;
+    box-shadow:0 12px 28px rgba(255,107,136,.16)!important;
+  }
+  body.t73-v101-org-workspace #gossOrgActionNav,
+  body.t73-v101-org-workspace #gossOrgActionNavV3{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace{
+    overflow:visible!important;
+    background:radial-gradient(circle at 0 0,rgba(255,107,136,.14),transparent 42%),radial-gradient(circle at 100% 0,rgba(108,140,255,.12),transparent 38%),linear-gradient(145deg,rgba(10,14,28,.96),rgba(5,7,14,.99))!important;
+    border-color:rgba(255,107,136,.25)!important;
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .section-head{
+    padding-bottom:.75rem;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace #gossV4Title{
+    color:#fff!important;
+    letter-spacing:-.02em;
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace #gossV4Lead{
+    max-width:860px;
+    color:var(--color-text-muted)!important;
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stats-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stat{
+    border-color:rgba(255,255,255,.11)!important;
+    background:rgba(255,255,255,.045)!important;
+  }
+  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-soft-loading #gossV4Content{
+    opacity:.82;
+  }
+  body.t73-v101-org-workspace #gossV4Content{
+    transition:opacity .12s ease!important;
+    min-height:0!important;
+  }
+  body.t73-v101-org-workspace #gossV4Content.t73-v93-enter > *{
+    animation:none!important;
+    transform:none!important;
+  }
+  @media(max-width:820px){
+    body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker,
+    body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker{
+      width:100%!important;
+      max-width:100%!important;
+      padding:.52rem!important;
+      border-radius:18px!important;
+    }
+    body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker::before,
+    body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{
+      min-height:38px;
+      padding:0 .66rem;
+      font-size:.68rem;
+    }
+    body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stats-grid{grid-template-columns:1fr;}
+  }
+</style>
+<script id="t73-v101-goss-org-workspace-script">
+(function(){
+  'use strict';
+  if (window.__T73_V101_GOSS_ORG_WORKSPACE__) return;
+  window.__T73_V101_GOSS_ORG_WORKSPACE__ = true;
+
+  var ORG_MODE = 'goss_center_v4';
+  var lastHandled = 0;
+  var softTimers = [];
+
+  function $(id){ return document.getElementById(id); }
+  function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function activeCat(){ return (document.querySelector('.main-cat-btn.active') || {}).dataset?.cat || ''; }
+  function isOrgCat(){ return activeCat() === 'organizations' || document.body.classList.contains('t73-v44-cat-organizations'); }
+  function orgBtnSelector(){ return '#subNavOrganizations .gov-org-switch-v4,#subNavOrganizations [data-org-id][data-mode="goss_center_v4"]'; }
+  function actionBtnSelector(){ return '#gossOrgActionNavV4 .gov-action-switch-v4,#gossOrgActionNavV4 [data-view]'; }
+  function anyGossButtonSelector(){ return orgBtnSelector() + ',' + actionBtnSelector(); }
+
+  function setActiveButton(btn){
+    if (!btn || !btn.dataset) return;
+    if (btn.dataset.orgId) {
+      qsa('#subNavOrganizations [data-org-id]').forEach(function(b){ b.classList.toggle('active', b === btn || b.dataset.orgId === btn.dataset.orgId); });
+      window.__T73_V101_LAST_GOSS_ORG__ = btn.dataset.orgId;
+    }
+    if (btn.dataset.view) {
+      qsa('#gossOrgActionNavV4 [data-view]').forEach(function(b){ b.classList.toggle('active', b === btn || b.dataset.view === btn.dataset.view); });
+      window.__T73_V101_LAST_GOSS_VIEW__ = btn.dataset.view;
+    }
+  }
+
+  function selectOrganizationsCategory(){
+    qsa('.main-cat-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.cat === 'organizations'); });
+    var map = ['subNavModeration','subNavSupport','subNavGeneral','subNavOrganizations'];
+    map.forEach(function(id){ var nav = $(id); if (!nav) return; nav.style.display = id === 'subNavOrganizations' ? 'flex' : 'none'; nav.classList.toggle('t73-v44-active-subnav', id === 'subNavOrganizations'); });
+    document.body.classList.remove('t73-v44-cat-moderation','t73-v44-cat-support','t73-v44-cat-general');
+    document.body.classList.add('t73-v44-cat-organizations','t73-v101-org-workspace');
+    var g4 = $('gossOrgActionNavV4');
+    if (g4) g4.classList.add('t73-v44-goss-actions','t73-v101-action-picker');
+  }
+
+  function decorateWorkspace(){
+    var orgNav = $('subNavOrganizations');
+    if (orgNav) orgNav.classList.add('t73-v101-org-picker');
+    var actionNav = $('gossOrgActionNavV4');
+    if (actionNav) actionNav.classList.add('t73-v101-action-picker','t73-v44-goss-actions');
+    ['gossOrgActionNav','gossOrgActionNavV3'].forEach(function(id){ var el = $(id); if (el) el.style.display = 'none'; });
+    var panel = $('mode-goss_center_v4');
+    if (panel) panel.classList.add('t73-v101-workspace');
+  }
+
+  function freezeUserFacingText(){
+    if (!isOrgCat()) return;
+    var brand = $('brandSubtitle'), title = $('heroTitle'), text = $('heroText'), badge = $('heroBadge2');
+    if (brand) brand.textContent = 'Организации Tambov 73';
+    if (title) title.innerHTML = 'Рабочее пространство <span>организаций</span>.';
+    if (text) text.textContent = 'Выберите организацию и нужный раздел внутри неё: тренажёры, отчётность, таблицы, магазин, логи и управление остаются в одном месте.';
+    if (badge) badge.textContent = '🏢 Организации';
+    var rt = $('rightTitle'), rl = $('rightLead'), rc = $('rightCards');
+    if (rt) rt.textContent = 'ГОСС без режимов';
+    if (rl) rl.textContent = 'Переключение происходит внутри раздела «Организации», без смены названия страницы.';
+    if (rc) rc.innerHTML = '<div class="rule-item"><div class="rule-icon ok">1</div><div class="rule-copy"><strong>Организация</strong><span>Выберите структуру в верхнем переключателе.</span></div></div><div class="rule-item"><div class="rule-icon warn">2</div><div class="rule-copy"><strong>Раздел</strong><span>Откройте тренажёр, данные, отчёты, таблицу, магазин, логи или управление.</span></div></div><div class="rule-item"><div class="rule-icon ban">✓</div><div class="rule-copy"><strong>Доступы сохранены</strong><span>СС и руководство видят свои функции по правам.</span></div></div>';
+    var pTitle = $('gossV4Title'), pLead = $('gossV4Lead');
+    if (pTitle) pTitle.textContent = '🏢 Организации';
+    if (pLead) pLead.textContent = 'Единое рабочее пространство ГОСС: переключайте организацию и раздел здесь, без отдельной системы режимов.';
+    try { document.title = 'Организации — Tambov 73'; } catch(e) {}
+  }
+
+  function afterRender(){
+    decorateWorkspace();
+    freezeUserFacingText();
+    var panel = $('mode-goss_center_v4');
+    if (panel) panel.classList.remove('t73-v101-soft-loading');
+    var activeOrg = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active,#subNavOrganizations [data-org-id].active');
+    if (!activeOrg && window.__T73_V101_LAST_GOSS_ORG__) {
+      activeOrg = document.querySelector('#subNavOrganizations [data-org-id="' + window.__T73_V101_LAST_GOSS_ORG__ + '"]');
+      if (activeOrg) activeOrg.classList.add('active');
+    }
+  }
+
+  function scheduleAfter(){
+    softTimers.forEach(clearTimeout);
+    softTimers = [0, 60, 160, 360, 760, 1350].map(function(ms){ return setTimeout(afterRender, ms); });
+  }
+
+  function softOpen(btn){
+    selectOrganizationsCategory();
+    decorateWorkspace();
+    setActiveButton(btn);
+    var panel = $('mode-goss_center_v4');
+    if (panel) panel.classList.add('t73-v101-soft-loading');
+    if (typeof window.switchMode === 'function') window.switchMode(ORG_MODE, btn || document.querySelector(orgBtnSelector()) || null);
+    scheduleAfter();
+  }
+
+  function openOrganizationsLanding(){
+    var btn = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active,#subNavOrganizations [data-org-id].active') ||
+              (window.__T73_V101_LAST_GOSS_ORG__ ? document.querySelector('#subNavOrganizations [data-org-id="' + window.__T73_V101_LAST_GOSS_ORG__ + '"]') : null) ||
+              document.querySelector(orgBtnSelector());
+    softOpen(btn);
+  }
+
+  function interceptGossButton(e){
+    var t = e.target && e.target.closest && e.target.closest(anyGossButtonSelector());
+    if (!t || !isOrgCat()) return;
+    var now = Date.now();
+    if (e.type === 'click' && now - lastHandled < 420) { e.preventDefault(); e.stopImmediatePropagation(); return false; }
+    lastHandled = now;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    softOpen(t);
+    return false;
+  }
+
+  document.addEventListener('click', function(e){
+    var cat = e.target && e.target.closest && e.target.closest('.main-cat-btn[data-cat="organizations"]');
+    if (!cat) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openOrganizationsLanding();
+    return false;
+  }, true);
+
+  ['pointerup','click'].forEach(function(type){
+    document.addEventListener(type, interceptGossButton, true);
+  });
+
+  var oldRenderRight = window.renderRight;
+  if (typeof oldRenderRight === 'function' && !oldRenderRight.__t73v101OrgWorkspace) {
+    var wrappedRenderRight = function(mode){
+      var out = oldRenderRight.apply(this, arguments);
+      if (mode === ORG_MODE || isOrgCat()) setTimeout(function(){ decorateWorkspace(); freezeUserFacingText(); }, 0);
+      return out;
+    };
+    wrappedRenderRight.__t73v101OrgWorkspace = true;
+    window.renderRight = wrappedRenderRight;
+  }
+
+  var oldSwitchMode = window.switchMode;
+  if (typeof oldSwitchMode === 'function' && !oldSwitchMode.__t73v101OrgWorkspace) {
+    var wrappedSwitchMode = function(mode, btn){
+      var out = oldSwitchMode.apply(this, arguments);
+      if (mode === ORG_MODE || (btn && btn.closest && btn.closest(anyGossButtonSelector()))) scheduleAfter();
+      else if (!isOrgCat()) document.body.classList.remove('t73-v101-org-workspace');
+      return out;
+    };
+    wrappedSwitchMode.__t73v101OrgWorkspace = true;
+    window.switchMode = wrappedSwitchMode;
+  }
+
+  function boot(){
+    decorateWorkspace();
+    if (isOrgCat()) freezeUserFacingText();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [120, 450, 1000, 2200, 4200].forEach(function(ms){ setTimeout(boot, ms); });
+  new MutationObserver(function(){ clearTimeout(window.__t73V101OrgTimer); window.__t73V101OrgTimer = setTimeout(boot, 90); }).observe(document.documentElement,{childList:true,subtree:true});
+
+  window.T73_V101_GOSS_ORG_WORKSPACE = { open: openOrganizationsLanding, refresh: afterRender };
+})();
+</script>
+<!-- === /T73 V101 === -->
+
+
 </body>
 </html>
