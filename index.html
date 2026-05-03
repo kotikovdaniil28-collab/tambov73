@@ -3610,7 +3610,7 @@
             fsb_admin: { icon: "🏛️", tone: "Штаб ФСБ", chips: ["Состав", "Баллы", "Роли"], tip: "Руководство ФСБ может управлять составом, правами и начислениями." },
             fsb_admin_log: { icon: "🗂️", tone: "Журнал ФСБ", chips: ["Покупки", "Выдачи", "История"], tip: "Отдельный лог магазина и выдач ФСБ, чтобы ничего не потерялось." },
             goss_center_v3: { icon: "🏛️", tone: "ГОСС центр", chips: ["Организации", "Состав", "Права"], tip: "Единый центр для старшего состава государственных организаций." },
-            goss_center_v4: { icon: "🏛️", tone: "ГОСС тренажёр", chips: ["Тренировка", "Отчёты", "Состав"], tip: "Актуальный раздел ГОСС: тренажёры доступны всем, управление — по правам." }
+            goss_center_v4: { icon: "🏢", tone: "Организации", chips: ["Организация", "Разделы", "Доступы"], tip: "Единое рабочее пространство ГОСС: тренажёры, отчёты, таблицы, магазин, логи и управление — по правам." }
         };
 
         function getDynamicModeHeader(mode) {
@@ -3708,7 +3708,7 @@
                 fsb_admin: ["Штаб руководства ФСБ", 'Управляй <span>составом ФСБ</span>.', "Выдавай статусы, начисляй баллы и контролируй внутреннюю структуру ФСБ.", "🏛️ Режим: штаб ФСБ"],
                 fsb_admin_log: ["Журнал выдач ФСБ", 'Отслеживай <span>операции ФСБ</span>.', "Смотри историю покупок и выдач магазина ФСБ, чтобы ничего не потерялось.", "🗂️ Режим: логи ФСБ"],
                 goss_center_v3: ["ГОСС центр организаций", 'Координируй <span>госструктуры</span>.', "Выбирай организацию, работай с составом и открывай разделы по правам.", "🏛️ Режим: ГОСС"],
-                goss_center_v4: ["ГОСС тренажёр", 'Тренируй <span>госслужбы</span>.', "Актуальный центр ГОСС: тренировки доступны всем, управление открывается по статусу.", "🏛️ Режим: ГОСС v4"]
+                goss_center_v4: ["Организации", 'Рабочее пространство <span>организаций</span>.', "Выберите организацию и нужный раздел внутри неё: тренажёры, отчётность, таблицы, магазин, логи и управление остаются на месте.", "🏢 Организации"]
             };
             const activeHeader = headers[mode] || getDynamicModeHeader(mode);
             if(activeHeader) {
@@ -9056,8 +9056,9 @@
                     orgNav.dataset.govV4 = '1';
                     orgNav.innerHTML = GOSS_ORGS.map(org => '<button class="mode-btn gov-org-switch-v4" data-mode="' + GOV_V4_MODE + '" data-org-id="' + org.id + '" type="button">' + org.icon + ' ' + org.short + '</button>').join('');
                     orgNav.querySelectorAll('.gov-org-switch-v4').forEach(btn => v4Bind(btn, () => {
+                        const keepView = govV4SelectedView || 'trainer';
                         govV4SelectedOrg = btn.dataset.orgId || 'fsb';
-                        govV4SelectedView = 'trainer';
+                        govV4SelectedView = keepView;
                         switchMode(GOV_V4_MODE, btn);
                     }));
                 }
@@ -9066,7 +9067,7 @@
                 if (orgNav && !document.getElementById('gossOrgActionNavV4')) orgNav.insertAdjacentHTML('afterend','<div class="sub-nav" id="gossOrgActionNavV4" style="display:none;"></div>');
                 const wrap = document.getElementById('game');
                 if (wrap && !document.getElementById('mode-' + GOV_V4_MODE)) {
-                    const html = '<section class="panel game-card fade-in" id="mode-' + GOV_V4_MODE + '" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#ff6b88;">ГОСС тренажёр</h2><p id="gossV4Lead">Тренажёры ГОСС доступны всем. Специальные разделы открываются по правам старшего состава или руководства.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>';
+                    const html = '<section class="panel game-card fade-in" id="mode-' + GOV_V4_MODE + '" style="display:none;"><div class="section-head"><h2 id="gossV4Title" style="color:#ff6b88;">Организации</h2><p id="gossV4Lead">Выберите организацию и раздел внутри неё. Тренажёры, отчёты, таблицы, магазин, логи и управление остаются на месте по правам.</p></div><div class="stats-grid"><div class="stat"><span class="stat-label">Организация</span><div class="stat-value" id="gossV4Org" style="font-size:1.35rem;color:#ff6b88;">—</div></div><div class="stat"><span class="stat-label">Ваш статус</span><div class="stat-value" id="gossV4Access" style="font-size:1.05rem;">—</div></div></div><div id="gossV4Content" class="gov-v4-shell"></div></section>';
                     const profile = document.getElementById('mode-profile');
                     if (profile) profile.insertAdjacentHTML('beforebegin', html); else wrap.insertAdjacentHTML('afterbegin', html);
                 }
@@ -9441,8 +9442,8 @@
                 await v4LoadAccess();
                 const org = v4Org();
                 v4NormalizeView(org.id);
-                v4SetText('gossV4Title', org.icon + ' ' + org.name);
-                v4SetText('gossV4Lead', v4HasSpecial(org.id) ? 'Тренажёр, отчётность и специальные разделы организации.' : 'Обычным пользователям доступен тренажёр. Спец-разделы появятся после выдачи прав.');
+                v4SetText('gossV4Title', '🏢 Организации');
+                v4SetText('gossV4Lead', 'Выберите организацию сверху и работайте в нужном разделе: тренажёр, отчёты, таблицы, магазин, логи или управление по правам.');
                 v4SetText('gossV4Org', org.short);
                 v4SetText('gossV4Access', v4AccessLabel(org.id));
                 v4RenderOrgNav();
@@ -9515,8 +9516,8 @@
             renderRight = function(mode){
                 if (mode === GOV_V4_MODE) {
                     const org = v4Org(), rt = document.getElementById('rightTitle'), rl = document.getElementById('rightLead'), rc = document.getElementById('rightCards');
-                    if (rt) rt.innerHTML = org.icon + ' ' + org.short;
-                    if (rl) rl.innerHTML = 'Тренажёр доступен всем. Старший состав получает данные, отчётность и магазин. Руководство получает таблицу, проверку отчётов и управление СС.';
+                    if (rt) rt.innerHTML = '🏢 Организации ГОСС';
+                    if (rl) rl.innerHTML = 'Рабочее пространство организаций: сначала выберите структуру, затем раздел внутри неё. Права и доступы не меняются.';
                     if (rc) rc.innerHTML = '<div class="rule-item"><div class="rule-icon ok">✓</div><div class="rule-copy"><strong>Обычный доступ</strong><span>Видны все тренажёры ГОСС организаций.</span></div></div><div class="rule-item"><div class="rule-icon warn">СС</div><div class="rule-copy"><strong>Старший состав</strong><span>Мои данные, сдача отчётности и магазин выбранной организации.</span></div></div><div class="rule-item"><div class="rule-icon ban">Р</div><div class="rule-copy"><strong>Руководство</strong><span>Таблица состава, проверка отчётов и выдача прав СС только в рамках разрешённых организаций.</span></div></div>';
                     return;
                 }
@@ -9557,7 +9558,7 @@
             fsb_admin_log: ["Логи ФСБ", 'Контроль <span>выдач ФСБ</span>.', "Проверяйте покупки магазина ФСБ и отмечайте, что уже выдано сотрудникам.", "Режим: логи ФСБ"],
             goss_dashboard: ["ГОСС Центр", 'Выбери <span>организацию</span>.', "Открывай тренажёры, составы и разделы государственных организаций.", "Режим: ГОСС"],
             goss_center_v3: ["ГОСС Центр", 'Разделы <span>госструктур</span>.', "Работа со старшим составом, правами и таблицами организаций.", "Режим: ГОСС"],
-            goss_center_v4: ["ГОСС Тренажёр", 'Тренируй <span>госструктуры</span>.', "Выбирай организацию и проходи ситуации старшего состава без подсказки по длине ответа.", "Режим: ГОСС тренажёр"]
+            goss_center_v4: ["Организации", 'Рабочее пространство <span>организаций</span>.', "Выберите организацию и раздел внутри неё. Все тренажёры и рабочие разделы остаются доступными по правам.", "🏢 Организации"]
         };
 
         function applyTambovModeHeaderV7(mode) {
@@ -20128,286 +20129,242 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
 
 
-<!-- === T73 V101: ГОСС без пользовательской системы режимов, единое рабочее пространство организаций === -->
-<style id="t73-v101-goss-org-workspace-style">
-  body.t73-v101-org-workspace #heroBadge2{
-    background:linear-gradient(135deg,rgba(255,107,136,.22),rgba(108,140,255,.16));
-    border-color:rgba(255,107,136,.38);
-  }
-  body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker,
-  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker{
-    position:relative;
+<!-- === T73 V102: аккуратные организации без перехвата режимов; V101 отменён === -->
+<style id="t73-v102-goss-org-clean-style">
+  body.t73-v102-org-open #subNavOrganizations.t73-v102-org-nav,
+  body.t73-v102-org-open #gossOrgActionNavV4.t73-v102-action-nav{
+    position:static!important;
+    inset:auto!important;
+    z-index:auto!important;
+    width:100%!important;
+    max-width:100%!important;
     display:flex!important;
     align-items:center!important;
-    gap:.62rem!important;
-    padding:.72rem!important;
-    border-radius:22px!important;
-    border:1px solid rgba(255,255,255,.13)!important;
-    background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,107,136,.055))!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 16px 38px rgba(0,0,0,.20);
+    justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    gap:.6rem!important;
     overflow-x:auto!important;
     overflow-y:hidden!important;
-    -webkit-overflow-scrolling:touch;
-    scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch!important;
+    touch-action:pan-x!important;
+    padding:.52rem!important;
+    margin:0!important;
+    border-radius:18px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,107,136,.045))!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07)!important;
   }
-  body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker::before,
-  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{
-    flex:0 0 auto;
+  body:not(.t73-v102-org-open) #gossOrgActionNavV4.t73-v102-action-nav{display:none!important;}
+  body.t73-v102-org-open #subNavOrganizations.t73-v102-org-nav::before,
+  body.t73-v102-org-open #gossOrgActionNavV4.t73-v102-action-nav::before{
     content:'Организация';
-    min-height:40px;
+    flex:0 0 auto;
+    min-height:38px;
     display:inline-flex;
     align-items:center;
-    padding:0 .78rem;
+    padding:0 .72rem;
     border-radius:999px;
-    border:1px solid rgba(255,255,255,.13);
-    background:rgba(0,0,0,.24);
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(0,0,0,.20);
     color:var(--color-text-muted);
-    font-size:.72rem;
+    font-size:.70rem;
     font-weight:950;
-    letter-spacing:.09em;
+    letter-spacing:.08em;
     text-transform:uppercase;
+    white-space:nowrap;
   }
-  body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{content:'Раздел';}
-  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4,
-  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4{
+  body.t73-v102-org-open #gossOrgActionNavV4.t73-v102-action-nav::before{content:'Раздел';}
+  body.t73-v102-org-open #subNavOrganizations .gov-org-switch-v4,
+  body.t73-v102-org-open #gossOrgActionNavV4 .gov-action-switch-v4,
+  body.t73-v102-org-open #gossOrgActionNavV4 .t73-v102-fallback-action{
     flex:0 0 auto!important;
-    min-height:44px!important;
-    border-radius:16px!important;
+    min-width:max-content!important;
+    min-height:42px!important;
+    white-space:nowrap!important;
+    border-radius:15px!important;
     border:1px solid rgba(255,255,255,.14)!important;
     background:rgba(12,16,31,.72)!important;
     color:#fff!important;
     box-shadow:none!important;
-    scroll-snap-align:start;
-    transition:background .16s ease,border-color .16s ease,transform .16s ease,box-shadow .16s ease!important;
-  }
-  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4:hover,
-  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4:hover{
-    transform:translateY(-1px)!important;
-    border-color:rgba(255,107,136,.42)!important;
-    background:rgba(255,107,136,.11)!important;
-  }
-  body.t73-v101-org-workspace #subNavOrganizations .gov-org-switch-v4.active,
-  body.t73-v101-org-workspace #gossOrgActionNavV4 .gov-action-switch-v4.active{
-    border-color:rgba(255,107,136,.68)!important;
-    background:linear-gradient(135deg,rgba(255,107,136,.28),rgba(108,140,255,.16))!important;
-    box-shadow:0 12px 28px rgba(255,107,136,.16)!important;
-  }
-  body.t73-v101-org-workspace #gossOrgActionNav,
-  body.t73-v101-org-workspace #gossOrgActionNavV3{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace{
-    overflow:visible!important;
-    background:radial-gradient(circle at 0 0,rgba(255,107,136,.14),transparent 42%),radial-gradient(circle at 100% 0,rgba(108,140,255,.12),transparent 38%),linear-gradient(145deg,rgba(10,14,28,.96),rgba(5,7,14,.99))!important;
-    border-color:rgba(255,107,136,.25)!important;
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .section-head{
-    padding-bottom:.75rem;
-    border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace #gossV4Title{
-    color:#fff!important;
-    letter-spacing:-.02em;
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace #gossV4Lead{
-    max-width:860px;
-    color:var(--color-text-muted)!important;
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stats-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stat{
-    border-color:rgba(255,255,255,.11)!important;
-    background:rgba(255,255,255,.045)!important;
-  }
-  body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-soft-loading #gossV4Content{
-    opacity:.82;
-  }
-  body.t73-v101-org-workspace #gossV4Content{
-    transition:opacity .12s ease!important;
-    min-height:0!important;
-  }
-  body.t73-v101-org-workspace #gossV4Content.t73-v93-enter > *{
-    animation:none!important;
     transform:none!important;
   }
+  body.t73-v102-org-open #subNavOrganizations .gov-org-switch-v4:hover,
+  body.t73-v102-org-open #gossOrgActionNavV4 .gov-action-switch-v4:hover,
+  body.t73-v102-org-open #gossOrgActionNavV4 .t73-v102-fallback-action:hover{
+    border-color:rgba(255,107,136,.42)!important;
+    background:rgba(255,107,136,.12)!important;
+  }
+  body.t73-v102-org-open #subNavOrganizations .gov-org-switch-v4.active,
+  body.t73-v102-org-open #gossOrgActionNavV4 .gov-action-switch-v4.active,
+  body.t73-v102-org-open #gossOrgActionNavV4 .t73-v102-fallback-action.active{
+    border-color:rgba(255,107,136,.62)!important;
+    background:linear-gradient(135deg,rgba(255,107,136,.24),rgba(108,140,255,.14))!important;
+  }
+  body.t73-v102-org-open #gossOrgActionNav,
+  body.t73-v102-org-open #gossOrgActionNavV3{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  body.t73-v102-org-open #mode-goss_center_v4 #gossV4Title{color:#fff!important;}
+  body.t73-v102-org-open #mode-goss_center_v4 #gossV4Lead{max-width:880px;color:var(--color-text-muted)!important;}
+  body.t73-v102-org-open #mode-goss_center_v4{overflow:visible!important;}
   @media(max-width:820px){
-    body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker,
-    body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker{
-      width:100%!important;
-      max-width:100%!important;
-      padding:.52rem!important;
-      border-radius:18px!important;
-    }
-    body.t73-v101-org-workspace #subNavOrganizations.t73-v101-org-picker::before,
-    body.t73-v101-org-workspace #gossOrgActionNavV4.t73-v101-action-picker::before{
-      min-height:38px;
-      padding:0 .66rem;
-      font-size:.68rem;
-    }
-    body.t73-v101-org-workspace #mode-goss_center_v4.t73-v101-workspace .stats-grid{grid-template-columns:1fr;}
+    body.t73-v102-org-open #subNavOrganizations.t73-v102-org-nav,
+    body.t73-v102-org-open #gossOrgActionNavV4.t73-v102-action-nav{padding:.42rem!important;border-radius:16px!important;}
+    body.t73-v102-org-open #subNavOrganizations.t73-v102-org-nav::before,
+    body.t73-v102-org-open #gossOrgActionNavV4.t73-v102-action-nav::before{min-height:36px;font-size:.66rem;padding:0 .62rem;}
   }
 </style>
-<script id="t73-v101-goss-org-workspace-script">
+<script id="t73-v102-goss-org-clean-script">
 (function(){
   'use strict';
-  if (window.__T73_V101_GOSS_ORG_WORKSPACE__) return;
-  window.__T73_V101_GOSS_ORG_WORKSPACE__ = true;
+  if (window.__T73_V102_GOSS_ORG_CLEAN__) return;
+  window.__T73_V102_GOSS_ORG_CLEAN__ = true;
 
-  var ORG_MODE = 'goss_center_v4';
-  var lastHandled = 0;
-  var softTimers = [];
+  var GOV_MODE = 'goss_center_v4';
+  var timers = [];
+  var keepViewAfterOrgSwitch = null;
 
   function $(id){ return document.getElementById(id); }
   function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function activeCat(){ return (document.querySelector('.main-cat-btn.active') || {}).dataset?.cat || ''; }
-  function isOrgCat(){ return activeCat() === 'organizations' || document.body.classList.contains('t73-v44-cat-organizations'); }
-  function orgBtnSelector(){ return '#subNavOrganizations .gov-org-switch-v4,#subNavOrganizations [data-org-id][data-mode="goss_center_v4"]'; }
-  function actionBtnSelector(){ return '#gossOrgActionNavV4 .gov-action-switch-v4,#gossOrgActionNavV4 [data-view]'; }
-  function anyGossButtonSelector(){ return orgBtnSelector() + ',' + actionBtnSelector(); }
+  function activeCat(){ var b = document.querySelector('.main-cat-btn.active'); return b && b.dataset ? b.dataset.cat : ''; }
+  function visible(el){ return !!(el && getComputedStyle(el).display !== 'none'); }
+  function orgPanelVisible(){ return visible($('mode-goss_center_v4')); }
+  function orgOpen(){ return activeCat() === 'organizations' || document.body.classList.contains('t73-v44-cat-organizations') || orgPanelVisible(); }
+  function orgNavVisible(){ return visible($('subNavOrganizations')); }
 
-  function setActiveButton(btn){
-    if (!btn || !btn.dataset) return;
-    if (btn.dataset.orgId) {
-      qsa('#subNavOrganizations [data-org-id]').forEach(function(b){ b.classList.toggle('active', b === btn || b.dataset.orgId === btn.dataset.orgId); });
-      window.__T73_V101_LAST_GOSS_ORG__ = btn.dataset.orgId;
-    }
-    if (btn.dataset.view) {
-      qsa('#gossOrgActionNavV4 [data-view]').forEach(function(b){ b.classList.toggle('active', b === btn || b.dataset.view === btn.dataset.view); });
-      window.__T73_V101_LAST_GOSS_VIEW__ = btn.dataset.view;
-    }
-  }
-
-  function selectOrganizationsCategory(){
-    qsa('.main-cat-btn').forEach(function(b){ b.classList.toggle('active', b.dataset && b.dataset.cat === 'organizations'); });
-    var map = ['subNavModeration','subNavSupport','subNavGeneral','subNavOrganizations'];
-    map.forEach(function(id){ var nav = $(id); if (!nav) return; nav.style.display = id === 'subNavOrganizations' ? 'flex' : 'none'; nav.classList.toggle('t73-v44-active-subnav', id === 'subNavOrganizations'); });
-    document.body.classList.remove('t73-v44-cat-moderation','t73-v44-cat-support','t73-v44-cat-general');
-    document.body.classList.add('t73-v44-cat-organizations','t73-v101-org-workspace');
-    var g4 = $('gossOrgActionNavV4');
-    if (g4) g4.classList.add('t73-v44-goss-actions','t73-v101-action-picker');
-  }
-
-  function decorateWorkspace(){
-    var orgNav = $('subNavOrganizations');
-    if (orgNav) orgNav.classList.add('t73-v101-org-picker');
-    var actionNav = $('gossOrgActionNavV4');
-    if (actionNav) actionNav.classList.add('t73-v101-action-picker','t73-v44-goss-actions');
-    ['gossOrgActionNav','gossOrgActionNavV3'].forEach(function(id){ var el = $(id); if (el) el.style.display = 'none'; });
-    var panel = $('mode-goss_center_v4');
-    if (panel) panel.classList.add('t73-v101-workspace');
-  }
-
-  function freezeUserFacingText(){
-    if (!isOrgCat()) return;
+  function stableHeader(){
+    if (!orgOpen()) return;
     var brand = $('brandSubtitle'), title = $('heroTitle'), text = $('heroText'), badge = $('heroBadge2');
     if (brand) brand.textContent = 'Организации Tambov 73';
     if (title) title.innerHTML = 'Рабочее пространство <span>организаций</span>.';
-    if (text) text.textContent = 'Выберите организацию и нужный раздел внутри неё: тренажёры, отчётность, таблицы, магазин, логи и управление остаются в одном месте.';
+    if (text) text.textContent = 'Выберите организацию и раздел внутри неё. Тренажёры, отчёты, таблицы, магазин, логи и управление остаются в одном месте.';
     if (badge) badge.textContent = '🏢 Организации';
     var rt = $('rightTitle'), rl = $('rightLead'), rc = $('rightCards');
-    if (rt) rt.textContent = 'ГОСС без режимов';
-    if (rl) rl.textContent = 'Переключение происходит внутри раздела «Организации», без смены названия страницы.';
-    if (rc) rc.innerHTML = '<div class="rule-item"><div class="rule-icon ok">1</div><div class="rule-copy"><strong>Организация</strong><span>Выберите структуру в верхнем переключателе.</span></div></div><div class="rule-item"><div class="rule-icon warn">2</div><div class="rule-copy"><strong>Раздел</strong><span>Откройте тренажёр, данные, отчёты, таблицу, магазин, логи или управление.</span></div></div><div class="rule-item"><div class="rule-icon ban">✓</div><div class="rule-copy"><strong>Доступы сохранены</strong><span>СС и руководство видят свои функции по правам.</span></div></div>';
-    var pTitle = $('gossV4Title'), pLead = $('gossV4Lead');
-    if (pTitle) pTitle.textContent = '🏢 Организации';
-    if (pLead) pLead.textContent = 'Единое рабочее пространство ГОСС: переключайте организацию и раздел здесь, без отдельной системы режимов.';
+    if (rt) rt.textContent = 'Организации ГОСС';
+    if (rl) rl.textContent = 'Переключение теперь внутри раздела: организация сверху, рабочие разделы ниже. Доступы сохранены.';
+    if (rc && !rc.dataset.t73v102OrgInfo) {
+      rc.dataset.t73v102OrgInfo = '1';
+      rc.innerHTML = '<div class="rule-item"><div class="rule-icon ok">1</div><div class="rule-copy"><strong>Организация</strong><span>Выберите нужную структуру в верхней строке.</span></div></div><div class="rule-item"><div class="rule-icon warn">2</div><div class="rule-copy"><strong>Раздел</strong><span>Откройте тренажёр, данные, отчёты, таблицу, магазин, логи или управление.</span></div></div><div class="rule-item"><div class="rule-icon ban">✓</div><div class="rule-copy"><strong>Права сохранены</strong><span>СС и руководство видят свои функции по тем же ролям.</span></div></div>';
+    }
+    var gt = $('gossV4Title'), gl = $('gossV4Lead');
+    if (gt) gt.textContent = '🏢 Организации';
+    if (gl) gl.textContent = 'Выберите организацию сверху и работайте в нужном разделе: тренажёр, отчёты, таблицы, магазин, логи или управление по правам.';
     try { document.title = 'Организации — Tambov 73'; } catch(e) {}
   }
 
-  function afterRender(){
-    decorateWorkspace();
-    freezeUserFacingText();
-    var panel = $('mode-goss_center_v4');
-    if (panel) panel.classList.remove('t73-v101-soft-loading');
-    var activeOrg = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active,#subNavOrganizations [data-org-id].active');
-    if (!activeOrg && window.__T73_V101_LAST_GOSS_ORG__) {
-      activeOrg = document.querySelector('#subNavOrganizations [data-org-id="' + window.__T73_V101_LAST_GOSS_ORG__ + '"]');
-      if (activeOrg) activeOrg.classList.add('active');
+  function bindFallbackButton(btn){
+    if (!btn || btn.dataset.t73v102Bound === '1') return;
+    btn.dataset.t73v102Bound = '1';
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      qsa('#gossOrgActionNavV4 [data-view]').forEach(function(x){ x.classList.toggle('active', x === btn); });
+      if (typeof window.switchMode === 'function') window.switchMode(GOV_MODE, btn);
+    }, { passive:false });
+  }
+
+  function rebuildActions(nav, full){
+    var tabs = [
+      ['trainer','🎮 Тренажёр'],
+      ['profile','📝 Мои данные'],
+      ['submit','📎 Сдать ГОСС отчёт'],
+      ['shop','🛒 Магазин'],
+      ['staff','📋 Таблица состава'],
+      ['reports','✅ Проверить отчётность'],
+      ['shop_logs','🧾 Логи магазина'],
+      ['manage','👑 Панель руководства']
+    ];
+    if (!full) tabs = [tabs[0]];
+    var active = (nav.querySelector('[data-view].active') || {}).dataset?.view || 'trainer';
+    nav.innerHTML = tabs.map(function(t){ return '<button class="mode-btn gov-action-switch-v4 t73-v102-fallback-action ' + (active === t[0] ? 'active' : '') + '" data-view="' + t[0] + '" type="button">' + t[1] + '</button>'; }).join('');
+    qsa('[data-view]', nav).forEach(bindFallbackButton);
+  }
+
+  function sanitizeActions(){
+    var nav = $('gossOrgActionNavV4');
+    if (!nav) return;
+    nav.classList.toggle('t73-v102-action-nav', orgOpen() && orgNavVisible());
+    if (!orgOpen() || !orgNavVisible()) return;
+
+    var native = qsa('.gov-action-switch-v4[data-view]', nav).filter(function(b){ return getComputedStyle(b).display !== 'none'; });
+    var orphanLeadership = qsa('button:not([data-view])', nav).some(function(b){ return /руководств/i.test(b.textContent || '') && getComputedStyle(b).display !== 'none'; });
+
+    if (native.length > 0) {
+      qsa('button:not(.gov-action-switch-v4):not([data-view])', nav).forEach(function(b){
+        b.style.setProperty('display','none','important');
+        b.style.setProperty('visibility','hidden','important');
+        b.style.setProperty('pointer-events','none','important');
+      });
     }
+    if (!native.length) rebuildActions(nav, orphanLeadership);
+    if (native.length === 1 && native[0].dataset.view === 'manage') rebuildActions(nav, true);
+
+    qsa('[data-view]', nav).forEach(function(b){
+      b.classList.add('gov-action-switch-v4');
+      if (b.dataset.view === 'submit') b.textContent = '📎 Сдать ГОСС отчёт';
+      if (b.dataset.view === 'reports') b.textContent = '✅ Проверить отчётность';
+      bindFallbackButton(b);
+    });
   }
 
-  function scheduleAfter(){
-    softTimers.forEach(clearTimeout);
-    softTimers = [0, 60, 160, 360, 760, 1350].map(function(ms){ return setTimeout(afterRender, ms); });
+  function apply(){
+    var open = orgOpen();
+    document.body.classList.toggle('t73-v102-org-open', open);
+    var orgNav = $('subNavOrganizations');
+    if (orgNav) orgNav.classList.toggle('t73-v102-org-nav', open);
+    ['gossOrgActionNav','gossOrgActionNavV3'].forEach(function(id){ var el = $(id); if (el && open) el.style.setProperty('display','none','important'); });
+    sanitizeActions();
+    stableHeader();
   }
 
-  function softOpen(btn){
-    selectOrganizationsCategory();
-    decorateWorkspace();
-    setActiveButton(btn);
-    var panel = $('mode-goss_center_v4');
-    if (panel) panel.classList.add('t73-v101-soft-loading');
-    if (typeof window.switchMode === 'function') window.switchMode(ORG_MODE, btn || document.querySelector(orgBtnSelector()) || null);
-    scheduleAfter();
-  }
-
-  function openOrganizationsLanding(){
-    var btn = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active,#subNavOrganizations [data-org-id].active') ||
-              (window.__T73_V101_LAST_GOSS_ORG__ ? document.querySelector('#subNavOrganizations [data-org-id="' + window.__T73_V101_LAST_GOSS_ORG__ + '"]') : null) ||
-              document.querySelector(orgBtnSelector());
-    softOpen(btn);
-  }
-
-  function interceptGossButton(e){
-    var t = e.target && e.target.closest && e.target.closest(anyGossButtonSelector());
-    if (!t || !isOrgCat()) return;
-    var now = Date.now();
-    if (e.type === 'click' && now - lastHandled < 420) { e.preventDefault(); e.stopImmediatePropagation(); return false; }
-    lastHandled = now;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    softOpen(t);
-    return false;
+  function schedule(){
+    timers.forEach(clearTimeout);
+    timers = [0, 60, 180, 420, 900, 1600].map(function(ms){ return setTimeout(apply, ms); });
   }
 
   document.addEventListener('click', function(e){
-    var cat = e.target && e.target.closest && e.target.closest('.main-cat-btn[data-cat="organizations"]');
-    if (!cat) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    openOrganizationsLanding();
-    return false;
+    var orgBtn = e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4[data-org-id]');
+    if (orgBtn) {
+      var active = document.querySelector('#gossOrgActionNavV4 [data-view].active');
+      keepViewAfterOrgSwitch = active && active.dataset ? active.dataset.view : null;
+      if (keepViewAfterOrgSwitch && keepViewAfterOrgSwitch !== 'trainer') {
+        setTimeout(function(){
+          var wanted = document.querySelector('#gossOrgActionNavV4 [data-view="' + keepViewAfterOrgSwitch + '"]');
+          if (wanted && !wanted.classList.contains('active')) wanted.click();
+          keepViewAfterOrgSwitch = null;
+        }, 280);
+      }
+    }
+    if (e.target && e.target.closest && e.target.closest('.main-cat-btn,#subNavOrganizations,#gossOrgActionNavV4')) schedule();
   }, true);
 
-  ['pointerup','click'].forEach(function(type){
-    document.addEventListener(type, interceptGossButton, true);
-  });
-
-  var oldRenderRight = window.renderRight;
-  if (typeof oldRenderRight === 'function' && !oldRenderRight.__t73v101OrgWorkspace) {
-    var wrappedRenderRight = function(mode){
-      var out = oldRenderRight.apply(this, arguments);
-      if (mode === ORG_MODE || isOrgCat()) setTimeout(function(){ decorateWorkspace(); freezeUserFacingText(); }, 0);
+  if (typeof window.switchMode === 'function' && !window.switchMode.__t73v102OrgClean) {
+    var prevSwitch = window.switchMode;
+    var nextSwitch = function(mode, btn){
+      var out = prevSwitch.apply(this, arguments);
+      if (mode === GOV_MODE || (btn && btn.closest && btn.closest('#subNavOrganizations,#gossOrgActionNavV4'))) schedule();
+      else setTimeout(apply, 0);
       return out;
     };
-    wrappedRenderRight.__t73v101OrgWorkspace = true;
-    window.renderRight = wrappedRenderRight;
+    nextSwitch.__t73v102OrgClean = true;
+    window.switchMode = nextSwitch;
   }
 
-  var oldSwitchMode = window.switchMode;
-  if (typeof oldSwitchMode === 'function' && !oldSwitchMode.__t73v101OrgWorkspace) {
-    var wrappedSwitchMode = function(mode, btn){
-      var out = oldSwitchMode.apply(this, arguments);
-      if (mode === ORG_MODE || (btn && btn.closest && btn.closest(anyGossButtonSelector()))) scheduleAfter();
-      else if (!isOrgCat()) document.body.classList.remove('t73-v101-org-workspace');
+  if (typeof window.renderRight === 'function' && !window.renderRight.__t73v102OrgClean) {
+    var prevRight = window.renderRight;
+    var nextRight = function(mode){
+      var out = prevRight.apply(this, arguments);
+      if (mode === GOV_MODE || orgOpen()) schedule();
       return out;
     };
-    wrappedSwitchMode.__t73v101OrgWorkspace = true;
-    window.switchMode = wrappedSwitchMode;
+    nextRight.__t73v102OrgClean = true;
+    window.renderRight = nextRight;
   }
 
-  function boot(){
-    decorateWorkspace();
-    if (isOrgCat()) freezeUserFacingText();
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-  [120, 450, 1000, 2200, 4200].forEach(function(ms){ setTimeout(boot, ms); });
-  new MutationObserver(function(){ clearTimeout(window.__t73V101OrgTimer); window.__t73V101OrgTimer = setTimeout(boot, 90); }).observe(document.documentElement,{childList:true,subtree:true});
-
-  window.T73_V101_GOSS_ORG_WORKSPACE = { open: openOrganizationsLanding, refresh: afterRender };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule); else schedule();
+  [160, 500, 1100, 2400, 4200].forEach(function(ms){ setTimeout(schedule, ms); });
+  new MutationObserver(function(){ clearTimeout(window.__t73V102OrgCleanTimer); window.__t73V102OrgCleanTimer = setTimeout(apply, 120); }).observe(document.body || document.documentElement,{childList:true,subtree:true});
+  window.T73_V102_GOSS_ORG_CLEAN = { refresh: apply };
 })();
 </script>
-<!-- === /T73 V101 === -->
-
+<!-- === /T73 V102 === -->
 
 </body>
 </html>
