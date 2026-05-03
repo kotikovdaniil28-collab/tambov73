@@ -19843,118 +19843,147 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
 
 
-<!-- === T73 V104: исправление реального/игрового XP === -->
-<script id="t73-v104-xp-fix">
-/* === T73 V104: FIX REAL/GAME XP IN CREATOR + MODERATION PANELS === */
+<!-- === T73 V105: рабочая кнопка изменения XP + сохранение реального/игрового XP === -->
+<script id="t73-v105-xp-buttons-fix">
+/* === T73 V105: XP BUTTONS RELIABLE FIX === */
 (function(){
   'use strict';
-  if (window.__T73_V104_XP_FIX__) return;
-  window.__T73_V104_XP_FIX__ = true;
+  if (window.__T73_V105_XP_BUTTONS_FIX__) return;
+  window.__T73_V105_XP_BUTTONS_FIX__ = true;
 
   function $(id){ return document.getElementById(id); }
   function num(v){ var n = Number(v); return Number.isFinite(n) ? n : 0; }
   function makeId(prefix){ return String(prefix || 'id') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9); }
-  function getUserById(userId){
-    var lists = [];
-    try { if (Array.isArray(window.creatorUsersList)) lists.push(window.creatorUsersList); } catch(e) {}
+  function creatorMail(){ try { return (typeof creatorEmail !== 'undefined') ? creatorEmail : 'daniiltimosin72@gmail.com'; } catch(e) { return 'daniiltimosin72@gmail.com'; } }
+  function loggedUser(){ try { return (typeof currentUser !== 'undefined') ? currentUser : null; } catch(e) { return null; } }
+  function isCreatorLogged(){ var u = loggedUser(); return !!(u && u.email === creatorMail()); }
+  function validUserId(v){ return !!(v && !/^\s*(загрузка|выберите)/i.test(String(v))); }
+  function normalizeType(v){ v = String(v || '').toLowerCase(); return (v === 'game' || v === 'игровой') ? 'game' : 'real'; }
+  function getList(name){ try { return Array.isArray(window[name]) ? window[name] : (typeof globalThis[name] !== 'undefined' && Array.isArray(globalThis[name]) ? globalThis[name] : []); } catch(e) { return []; } }
+  function getCachedUser(userId){
+    var lists = [getList('creatorUsersList'), getList('adminUsersList')];
     try { if (Array.isArray(creatorUsersList)) lists.push(creatorUsersList); } catch(e) {}
-    try { if (Array.isArray(window.adminUsersList)) lists.push(window.adminUsersList); } catch(e) {}
     try { if (Array.isArray(adminUsersList)) lists.push(adminUsersList); } catch(e) {}
     for (var i = 0; i < lists.length; i++) {
-      var found = lists[i].find(function(u){ return String(u && u.user_id) === String(userId); });
-      if (found) return found;
+      var hit = lists[i].find(function(u){ return String(u && u.user_id) === String(userId); });
+      if (hit) return hit;
     }
     return null;
   }
   async function fetchUser(userId){
-    var cached = getUserById(userId);
+    var cached = getCachedUser(userId);
     if (!window.supa || !userId) return cached;
     var res = await supa.from('user_stats').select('user_id,nickname,email,shop_spent,mod_correct,sup_correct,ap_spent').eq('user_id', userId).maybeSingle();
-    return res && res.data ? res.data : cached;
+    if (res && res.error) throw res.error;
+    return (res && res.data) ? res.data : cached;
   }
   async function writeGameXp(userId, amount, reason){
     amount = num(amount);
-    if (!window.supa || !userId || !amount) return;
-    await supa.from('reports').insert([{ id: makeId('gxp'), email: 'GAME_XP', link: userId, date: reason || 'Ручная выдача игрового XP', status: 'mod_game', xp: amount }]);
-    try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) manualXpMod = num(manualXpMod) + amount; } catch(e) {}
+    if (!window.supa) throw new Error('База данных не подключена.');
+    if (!validUserId(userId) || !amount) throw new Error('Выберите пользователя и укажите XP не равный 0.');
+    var payload = { id: makeId('game_xp'), email: 'GAME_XP', link: userId, date: reason || 'Ручная корректировка игрового XP', status: 'mod_game', xp: amount };
+    var res = await supa.from('reports').insert([payload]);
+    if (res && res.error) throw res.error;
+    try { if (loggedUser() && String(loggedUser().id) === String(userId)) manualXpMod = num(manualXpMod) + amount; } catch(e) {}
   }
   async function writeRealXp(userId, amount, reason){
     amount = num(amount);
-    if (!window.supa || !userId || !amount) return;
+    if (!window.supa) throw new Error('База данных не подключена.');
+    if (!validUserId(userId) || !amount) throw new Error('Выберите пользователя и укажите XP не равный 0.');
     var user = await fetchUser(userId);
-    if (!user || !user.email) throw new Error('Пользователь не найден в user_stats');
+    if (!user || !user.email) throw new Error('Пользователь не найден в user_stats. Откройте базу пользователей и попробуйте снова.');
 
     if (amount > 0) {
-      await supa.from('reports').insert([{ id: makeId('rep_manual'), email: user.email, link: userId, date: reason || 'Ручная выдача реального XP', status: 'Норма', xp: amount }]);
-      try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) state.reportXp = num(state.reportXp) + amount; } catch(e) {}
+      var ins = await supa.from('reports').insert([{ id: makeId('real_xp'), email: user.email, link: userId, date: reason || 'Ручная корректировка реального XP', status: 'Норма', xp: amount }]);
+      if (ins && ins.error) throw ins.error;
+      try { if (loggedUser() && String(loggedUser().id) === String(userId)) state.reportXp = num(state.reportXp) + amount; } catch(e) {}
     } else {
       var nextSpent = Math.max(0, num(user.shop_spent) + Math.abs(amount));
-      await supa.from('user_stats').update({ shop_spent: nextSpent }).eq('user_id', userId);
-      try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) shopState.spent = nextSpent; } catch(e) {}
+      var upd = await supa.from('user_stats').update({ shop_spent: nextSpent }).eq('user_id', userId);
+      if (upd && upd.error) throw upd.error;
+      try { if (loggedUser() && String(loggedUser().id) === String(userId)) shopState.spent = nextSpent; } catch(e) {}
     }
   }
-  async function refreshPanels(){
+  async function refreshXpPanels(){
     try { if (typeof loadGlobalShopAndRoulette === 'function') await loadGlobalShopAndRoulette(); } catch(e) {}
-    try { if (typeof loadCreatorPanelData === 'function' && typeof currentUser !== 'undefined' && currentUser && currentUser.email === creatorEmail) await loadCreatorPanelData(); } catch(e) {}
+    try { if (typeof loadCreatorPanelData === 'function' && isCreatorLogged()) await loadCreatorPanelData(); } catch(e) {}
     try { if (typeof loadUsersForAdmin === 'function') await loadUsersForAdmin(); } catch(e) {}
     try { if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
     try { if (typeof updateModStats === 'function') updateModStats(); } catch(e) {}
     try { if (typeof renderProfileData === 'function') renderProfileData(); } catch(e) {}
+    try { if (typeof loadLeaderboard === 'function') await loadLeaderboard(); } catch(e) {}
   }
-  async function applyXpChange(opts){
-    var userId = opts.userId, amount = num(opts.amount), type = opts.type, reason = opts.reason;
-    if (!userId || !amount) return alert('Выберите пользователя и укажите количество XP.');
-    if (type === 'game') await writeGameXp(userId, amount, reason || 'Ручная выдача игрового XP');
-    else await writeRealXp(userId, amount, reason || 'Ручная выдача реального XP');
-    await refreshPanels();
-    alert((type === 'game' ? 'Игровой' : 'Реальный') + ' XP изменён и сохранён в базе.');
+  async function applyXpChange(userId, amount, type, reason){
+    type = normalizeType(type);
+    amount = num(amount);
+    if (!validUserId(userId)) throw new Error('Выберите пользователя.');
+    if (!amount) throw new Error('Введите количество XP. Для списания укажите минус, например -50.');
+    if (type === 'game') await writeGameXp(userId, amount, reason || 'Ручная корректировка игрового XP');
+    else await writeRealXp(userId, amount, reason || 'Ручная корректировка реального XP');
+    await refreshXpPanels();
+    return type;
   }
-  function cloneBind(id, handler){
-    var el = $(id);
-    if (!el) return false;
-    var clone = el.cloneNode(true);
-    el.parentNode.replaceChild(clone, el);
-    clone.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); handler(e); }, true);
-    return true;
+  async function handleCreatorXpButton(btn){
+    if (!isCreatorLogged()) throw new Error('Доступно только создателю.');
+    var userId = $('creatorUserSelect') && $('creatorUserSelect').value;
+    var amount = $('creatorXpAmount') && $('creatorXpAmount').value;
+    var type = normalizeType($('creatorGiveType') && $('creatorGiveType').value);
+    await applyXpChange(userId, amount, type, type === 'game' ? 'Выдача/списание игрового XP создателем' : 'Выдача/списание реального XP создателем');
+    alert((type === 'game' ? 'Игровой' : 'Реальный') + ' XP изменён и сохранён.');
   }
-  function bindButtons(){
-    cloneBind('creatorXpBtn', function(){
-      if (typeof currentUser === 'undefined' || !currentUser || currentUser.email !== creatorEmail) return alert('Доступно только создателю.');
-      var userId = $('creatorUserSelect') && $('creatorUserSelect').value;
-      var amount = $('creatorXpAmount') && $('creatorXpAmount').value;
-      var type = ($('creatorGiveType') && $('creatorGiveType').value) || 'game';
-      applyXpChange({ userId: userId, amount: amount, type: type, reason: type === 'game' ? 'Выдача/списание игрового XP создателем' : 'Выдача/списание реального XP создателем' });
-    });
-    cloneBind('leadershipXpBtn', function(){
-      var userId = $('leadershipUserSelect') && $('leadershipUserSelect').value;
-      var amount = $('leadershipXpAmount') && $('leadershipXpAmount').value;
-      var type = ($('leadershipGiveType') && $('leadershipGiveType').value) || 'game';
-      var target = getUserById(userId);
-      if (target && target.email === creatorEmail && (typeof currentUser === 'undefined' || !currentUser || currentUser.email !== creatorEmail)) return alert('Создателю XP может менять только он сам.');
-      applyXpChange({ userId: userId, amount: amount, type: type, reason: type === 'game' ? 'Выдача/списание игрового XP руководством модерации' : 'Выдача/списание реального XP руководством модерации' });
-    });
-    window.saveUserDb = async function(userId, oldGame, oldReal){
-      var target = await fetchUser(userId);
-      if (!target) return alert('Пользователь не найден.');
-      var newGame = num($('db_game_' + userId) && $('db_game_' + userId).value);
-      var newReal = num($('db_real_' + userId) && $('db_real_' + userId).value);
-      var diffGame = newGame - num(oldGame);
-      var diffReal = newReal - num(oldReal);
-      if (diffGame) await writeGameXp(userId, diffGame, 'Корректировка игрового XP создателем');
-      if (diffReal) await writeRealXp(userId, diffReal, 'Корректировка реального XP создателем');
-      await refreshPanels();
+  async function handleLeadershipXpButton(btn){
+    var userId = $('leadershipUserSelect') && $('leadershipUserSelect').value;
+    var amount = $('leadershipXpAmount') && $('leadershipXpAmount').value;
+    var type = normalizeType($('leadershipGiveType') && $('leadershipGiveType').value);
+    var target = await fetchUser(userId);
+    if (target && target.email === creatorMail() && !isCreatorLogged()) throw new Error('Создателю XP может менять только он сам.');
+    await applyXpChange(userId, amount, type, type === 'game' ? 'Выдача/списание игрового XP руководством модерации' : 'Выдача/списание реального XP руководством модерации');
+    alert((type === 'game' ? 'Игровой' : 'Реальный') + ' XP изменён и сохранён.');
+  }
+  async function saveUserDbV105(userId, oldGame, oldReal){
+    if (!isCreatorLogged()) return alert('Доступно только создателю.');
+    var target = await fetchUser(userId);
+    if (!target) return alert('Пользователь не найден.');
+    var newGame = num($('db_game_' + userId) && $('db_game_' + userId).value);
+    var newReal = num($('db_real_' + userId) && $('db_real_' + userId).value);
+    var diffGame = newGame - num(oldGame);
+    var diffReal = newReal - num(oldReal);
+    if (!diffGame && !diffReal) return alert('XP не изменился.');
+    try {
+      if (diffGame) await writeGameXp(userId, diffGame, 'Корректировка игрового XP создателем через базу');
+      if (diffReal) await writeRealXp(userId, diffReal, 'Корректировка реального XP создателем через базу');
+      await refreshXpPanels();
       alert('XP успешно сохранён в базе.');
-    };
+    } catch(err) {
+      alert('Ошибка изменения XP: ' + (err && err.message ? err.message : err));
+    }
   }
-  function run(){ bindButtons(); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
-  [150, 600, 1500, 3000].forEach(function(ms){ setTimeout(run, ms); });
-  window.T73_V104_XP_FIX = { applyXpChange: applyXpChange, writeGameXp: writeGameXp, writeRealXp: writeRealXp, refresh: refreshPanels };
+
+  var busy = false;
+  document.addEventListener('click', function(e){
+    var creatorBtn = e.target && e.target.closest && e.target.closest('#creatorXpBtn');
+    var leadershipBtn = e.target && e.target.closest && e.target.closest('#leadershipXpBtn');
+    if (!creatorBtn && !leadershipBtn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    if (busy) return;
+    busy = true;
+    var btn = creatorBtn || leadershipBtn;
+    var oldText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Сохраняю XP...';
+    (creatorBtn ? handleCreatorXpButton(btn) : handleLeadershipXpButton(btn))
+      .catch(function(err){ alert('Ошибка изменения XP: ' + (err && err.message ? err.message : err)); })
+      .finally(function(){ busy = false; btn.disabled = false; btn.textContent = oldText; });
+    return false;
+  }, true);
+
+  window.saveUserDb = saveUserDbV105;
+  window.T73_V105_XP_FIX = { apply: applyXpChange, writeGame: writeGameXp, writeReal: writeRealXp, refresh: refreshXpPanels, saveUserDb: saveUserDbV105 };
 })();
-/* === /T73 V104 === */
-
+/* === /T73 V105 === */
 </script>
-<!-- === /T73 V104 === -->
-
+<!-- === /T73 V105 === -->
 </body>
 </html>
