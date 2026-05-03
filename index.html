@@ -19841,5 +19841,120 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V103 === -->
 
+
+
+<!-- === T73 V104: исправление реального/игрового XP === -->
+<script id="t73-v104-xp-fix">
+/* === T73 V104: FIX REAL/GAME XP IN CREATOR + MODERATION PANELS === */
+(function(){
+  'use strict';
+  if (window.__T73_V104_XP_FIX__) return;
+  window.__T73_V104_XP_FIX__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function num(v){ var n = Number(v); return Number.isFinite(n) ? n : 0; }
+  function makeId(prefix){ return String(prefix || 'id') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9); }
+  function getUserById(userId){
+    var lists = [];
+    try { if (Array.isArray(window.creatorUsersList)) lists.push(window.creatorUsersList); } catch(e) {}
+    try { if (Array.isArray(creatorUsersList)) lists.push(creatorUsersList); } catch(e) {}
+    try { if (Array.isArray(window.adminUsersList)) lists.push(window.adminUsersList); } catch(e) {}
+    try { if (Array.isArray(adminUsersList)) lists.push(adminUsersList); } catch(e) {}
+    for (var i = 0; i < lists.length; i++) {
+      var found = lists[i].find(function(u){ return String(u && u.user_id) === String(userId); });
+      if (found) return found;
+    }
+    return null;
+  }
+  async function fetchUser(userId){
+    var cached = getUserById(userId);
+    if (!window.supa || !userId) return cached;
+    var res = await supa.from('user_stats').select('user_id,nickname,email,shop_spent,mod_correct,sup_correct,ap_spent').eq('user_id', userId).maybeSingle();
+    return res && res.data ? res.data : cached;
+  }
+  async function writeGameXp(userId, amount, reason){
+    amount = num(amount);
+    if (!window.supa || !userId || !amount) return;
+    await supa.from('reports').insert([{ id: makeId('gxp'), email: 'GAME_XP', link: userId, date: reason || 'Ручная выдача игрового XP', status: 'mod_game', xp: amount }]);
+    try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) manualXpMod = num(manualXpMod) + amount; } catch(e) {}
+  }
+  async function writeRealXp(userId, amount, reason){
+    amount = num(amount);
+    if (!window.supa || !userId || !amount) return;
+    var user = await fetchUser(userId);
+    if (!user || !user.email) throw new Error('Пользователь не найден в user_stats');
+
+    if (amount > 0) {
+      await supa.from('reports').insert([{ id: makeId('rep_manual'), email: user.email, link: userId, date: reason || 'Ручная выдача реального XP', status: 'Норма', xp: amount }]);
+      try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) state.reportXp = num(state.reportXp) + amount; } catch(e) {}
+    } else {
+      var nextSpent = Math.max(0, num(user.shop_spent) + Math.abs(amount));
+      await supa.from('user_stats').update({ shop_spent: nextSpent }).eq('user_id', userId);
+      try { if (typeof currentUser !== 'undefined' && currentUser && String(currentUser.id) === String(userId)) shopState.spent = nextSpent; } catch(e) {}
+    }
+  }
+  async function refreshPanels(){
+    try { if (typeof loadGlobalShopAndRoulette === 'function') await loadGlobalShopAndRoulette(); } catch(e) {}
+    try { if (typeof loadCreatorPanelData === 'function' && typeof currentUser !== 'undefined' && currentUser && currentUser.email === creatorEmail) await loadCreatorPanelData(); } catch(e) {}
+    try { if (typeof loadUsersForAdmin === 'function') await loadUsersForAdmin(); } catch(e) {}
+    try { if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
+    try { if (typeof updateModStats === 'function') updateModStats(); } catch(e) {}
+    try { if (typeof renderProfileData === 'function') renderProfileData(); } catch(e) {}
+  }
+  async function applyXpChange(opts){
+    var userId = opts.userId, amount = num(opts.amount), type = opts.type, reason = opts.reason;
+    if (!userId || !amount) return alert('Выберите пользователя и укажите количество XP.');
+    if (type === 'game') await writeGameXp(userId, amount, reason || 'Ручная выдача игрового XP');
+    else await writeRealXp(userId, amount, reason || 'Ручная выдача реального XP');
+    await refreshPanels();
+    alert((type === 'game' ? 'Игровой' : 'Реальный') + ' XP изменён и сохранён в базе.');
+  }
+  function cloneBind(id, handler){
+    var el = $(id);
+    if (!el) return false;
+    var clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+    clone.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); handler(e); }, true);
+    return true;
+  }
+  function bindButtons(){
+    cloneBind('creatorXpBtn', function(){
+      if (typeof currentUser === 'undefined' || !currentUser || currentUser.email !== creatorEmail) return alert('Доступно только создателю.');
+      var userId = $('creatorUserSelect') && $('creatorUserSelect').value;
+      var amount = $('creatorXpAmount') && $('creatorXpAmount').value;
+      var type = ($('creatorGiveType') && $('creatorGiveType').value) || 'game';
+      applyXpChange({ userId: userId, amount: amount, type: type, reason: type === 'game' ? 'Выдача/списание игрового XP создателем' : 'Выдача/списание реального XP создателем' });
+    });
+    cloneBind('leadershipXpBtn', function(){
+      var userId = $('leadershipUserSelect') && $('leadershipUserSelect').value;
+      var amount = $('leadershipXpAmount') && $('leadershipXpAmount').value;
+      var type = ($('leadershipGiveType') && $('leadershipGiveType').value) || 'game';
+      var target = getUserById(userId);
+      if (target && target.email === creatorEmail && (typeof currentUser === 'undefined' || !currentUser || currentUser.email !== creatorEmail)) return alert('Создателю XP может менять только он сам.');
+      applyXpChange({ userId: userId, amount: amount, type: type, reason: type === 'game' ? 'Выдача/списание игрового XP руководством модерации' : 'Выдача/списание реального XP руководством модерации' });
+    });
+    window.saveUserDb = async function(userId, oldGame, oldReal){
+      var target = await fetchUser(userId);
+      if (!target) return alert('Пользователь не найден.');
+      var newGame = num($('db_game_' + userId) && $('db_game_' + userId).value);
+      var newReal = num($('db_real_' + userId) && $('db_real_' + userId).value);
+      var diffGame = newGame - num(oldGame);
+      var diffReal = newReal - num(oldReal);
+      if (diffGame) await writeGameXp(userId, diffGame, 'Корректировка игрового XP создателем');
+      if (diffReal) await writeRealXp(userId, diffReal, 'Корректировка реального XP создателем');
+      await refreshPanels();
+      alert('XP успешно сохранён в базе.');
+    };
+  }
+  function run(){ bindButtons(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  [150, 600, 1500, 3000].forEach(function(ms){ setTimeout(run, ms); });
+  window.T73_V104_XP_FIX = { applyXpChange: applyXpChange, writeGameXp: writeGameXp, writeRealXp: writeRealXp, refresh: refreshPanels };
+})();
+/* === /T73 V104 === */
+
+</script>
+<!-- === /T73 V104 === -->
+
 </body>
 </html>
