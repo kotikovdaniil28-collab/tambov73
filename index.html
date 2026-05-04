@@ -1917,7 +1917,7 @@
             osc.connect(gainNode); gainNode.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.04);
         }
-        const bgMusic = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); bgMusic.loop = true; bgMusic.volume = 0.22;
+        const bgMusic = new Audio('https://videotourl.com/audio/1777912929877-37c2fb49-b545-428b-a68a-9bfa2a8d64c5.mp3'); bgMusic.loop = true; bgMusic.volume = 0.35;
         const sndOk = new Audio('https://actions.google.com/sounds/v1/ui/pop.ogg'); sndOk.volume = 0.4;
         const sndFail = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg'); sndFail.volume = 0.2;
         const sndWin = new Audio('https://actions.google.com/sounds/v1/cartoon/clown_horn.ogg'); sndWin.volume = 0.3;
@@ -18658,6 +18658,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   window.__T73_V74_MUSIC_STUDIO__ = true;
 
   var TRACKS = [
+    { name:'🎵 Мусорок', src:'https://videotourl.com/audio/1777912929877-37c2fb49-b545-428b-a68a-9bfa2a8d64c5.mp3', external:true, volume:.35 },
     { name:'🌙 Relax Classic — как раньше', mood:'relax', bpm:66, root:57, scale:[0,2,3,5,7,8,10,12], melody:[0,2,4,2,5,4,2,0,3,5,7,5,4,2,0,-1], melodyEvery:4, wave:'sine', noteDur:.88, noteVol:.055, pad:true, padVol:.032, padWave:'sine', beat:'none', delay:.36, feedback:.24, filter:1800 },
     { name:'🧘 Deep Relax Pad', mood:'ambient', bpm:58, root:55, scale:[0,2,3,5,7,10,12], melody:[0,-1,2,-1,3,-1,5,-1,7,-1,5,-1,3,2,0,-1], melodyEvery:8, wave:'sine', noteDur:1.3, noteVol:.045, pad:true, padVol:.05, padWave:'triangle', beat:'none', delay:.48, feedback:.34, filter:1300 },
     { name:'🌧️ Rain Calm', mood:'ambient', bpm:62, root:60, scale:[0,2,4,7,9,12], melody:[0,2,-1,4,2,0,-1,7,9,7,4,2,0,-1,-1,-1], melodyEvery:4, wave:'triangle', noteDur:.95, noteVol:.048, pad:true, padVol:.036, rain:true, beat:'none', delay:.42, feedback:.28, filter:1600 },
@@ -18679,7 +18680,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   var enabled = false;
   var currentIndex = savedTrack();
   var ctx = null, master = null, delayNode = null, feedbackNode = null, delayGain = null, noiseBuffer = null;
-  var scheduler = null, nextStepTime = 0, step = 0, noiseBed = null;
+  var scheduler = null, nextStepTime = 0, step = 0, noiseBed = null, externalAudio = null;
 
   function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
   function clampTrack(v){
@@ -18976,9 +18977,35 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     }
   }
 
+  function stopExternalAudio(){
+    if (!externalAudio) return;
+    try { externalAudio.pause(); } catch(e){}
+    externalAudio = null;
+  }
+
+  function startExternalAudio(t){
+    clearInterval(scheduler);
+    scheduler = null;
+    stopNoiseBed();
+    if (ctx && master) {
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setTargetAtTime(0.0001, ctx.currentTime, .05);
+    }
+    if (!externalAudio || externalAudio.src !== t.src) {
+      stopExternalAudio();
+      externalAudio = new Audio(t.src);
+      externalAudio.loop = true;
+      externalAudio.preload = 'auto';
+    }
+    externalAudio.volume = clamp(t.volume == null ? .35 : t.volume, 0, 1);
+    return externalAudio.play();
+  }
+
   function startEngine(){
-    if (!getCtx()) return Promise.reject(new Error('AudioContext is not supported'));
     var t = track();
+    if (t.src) return startExternalAudio(t);
+    stopExternalAudio();
+    if (!getCtx()) return Promise.reject(new Error('AudioContext is not supported'));
     setupFx(t);
     if (ctx.state === 'suspended') {
       return ctx.resume().then(startEngine);
@@ -18995,6 +19022,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
 
   function stopEngine(){
+    stopExternalAudio();
     if (!ctx || !master) return;
     clearInterval(scheduler);
     scheduler = null;
@@ -19019,7 +19047,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     saveTrack(currentIndex);
     var select = document.getElementById('musicTrackSelect');
     if (select) select.value = String(currentIndex);
-    if (ctx) setupFx(track());
+    if (ctx && !track().src) setupFx(track());
     if (enabled && autoplay) startEngine();
     setBtn(document.getElementById('musicToggleBtn'));
   }
