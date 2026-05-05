@@ -20624,6 +20624,256 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 
+
+<script>
+/* === T73 V116 HOTFIX: ГОСС/СС проверка таблицей + фото без переходов, zoom по клику === */
+(() => {
+  if (window.__T73_V116_GOSS_TABLE_ZOOM_FIX__) return;
+  window.__T73_V116_GOSS_TABLE_ZOOM_FIX__ = true;
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const parse = (v, fb={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch { return fb; } };
+  const nowRu = () => new Date().toLocaleString('ru-RU');
+  let clientCache = null;
+
+  function client116() {
+    if (clientCache && typeof clientCache.from === 'function') return clientCache;
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') { clientCache = supa; return clientCache; } } catch(_e) {}
+    for (const k of ['supa','supabaseClient','t73Supa']) {
+      if (window[k] && typeof window[k].from === 'function') { clientCache = window[k]; return clientCache; }
+    }
+    return null;
+  }
+
+  function orgId116() {
+    return document.querySelector('.gov-org-switch-v4.active')?.dataset.orgId
+        || document.querySelector('.gov-org-switch-v3.active')?.dataset.orgId
+        || document.querySelector('.gov-org-switch.active')?.dataset.orgId
+        || 'fsb';
+  }
+  function orgLabel116() {
+    const b = document.querySelector('.gov-org-switch-v4.active, .gov-org-switch-v3.active, .gov-org-switch.active');
+    return b ? b.textContent.trim() : orgId116().toUpperCase();
+  }
+  function root116() {
+    return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || $('mode-fsb');
+  }
+
+  function addProof116(out, seen, proof, idx) {
+    if (!proof) return;
+    let url = '', name = 'Скриншот ' + (idx + 1), kind = '', type = '';
+    if (typeof proof === 'string') url = proof;
+    else {
+      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || '';
+      name = proof.name || proof.title || proof.filename || proof.fileName || name;
+      kind = proof.kind || proof.type || '';
+      type = proof.mime || proof.mimeType || proof.contentType || proof.type || '';
+    }
+    url = String(url || '').trim();
+    if (!url || seen.has(url)) return;
+    seen.add(url);
+    out.push({ url, name, kind, type });
+  }
+
+  function collectProofs116(row, p) {
+    const out = [], seen = new Set();
+    (Array.isArray(p.files) ? p.files : []).forEach((x, i) => addProof116(out, seen, x, i));
+    (Array.isArray(p.proofs) ? p.proofs : []).forEach((x, i) => addProof116(out, seen, x, i + out.length));
+    if (p.file) addProof116(out, seen, p.file, out.length);
+    if (p.screenshot) addProof116(out, seen, p.screenshot, out.length);
+    if (p.image) addProof116(out, seen, p.image, out.length);
+    if (p.link) addProof116(out, seen, { url:p.link, name:'Ссылка на доказательства', kind:'link' }, out.length);
+    if (row && row.link) addProof116(out, seen, { url:row.link, name:'Доказательство', kind:'link' }, out.length);
+    return out;
+  }
+
+  function decodeUrl116(url) {
+    try { return decodeURIComponent(String(url)); } catch { return String(url || ''); }
+  }
+  function isImageProof116(proof) {
+    const url = String(proof.url || '');
+    const dec = decodeUrl116(url);
+    const name = String(proof.name || '');
+    const kind = String(proof.kind || '').toLowerCase();
+    const type = String(proof.type || '').toLowerCase();
+    if (/^data:image\//i.test(url)) return true;
+    if (kind === 'image' || type.startsWith('image/')) return true;
+    if (/\.(png|jpe?g|jpeg|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|jpeg|webp|gif|bmp|avif)$/i.test(name)) return true;
+    if (/\/storage\/v1\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(dec)) return true;
+    return false;
+  }
+
+  function addCss116() {
+    if ($('t73V116GossTableZoomCss')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="t73V116GossTableZoomCss">
+      .t73-v116-panel{background:linear-gradient(135deg,rgba(255,107,136,.12),rgba(0,0,0,.42));border:1px solid rgba(255,107,136,.28);border-radius:18px;padding:1rem;box-shadow:0 18px 38px rgba(0,0,0,.34);margin-bottom:1rem}
+      .t73-v116-title{display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap}.t73-v116-title h3{color:#ff6b88;margin:0}.t73-v116-muted{color:var(--color-text-muted);font-size:.9rem}.t73-v116-table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.24);box-shadow:0 14px 30px rgba(0,0,0,.26)}
+      .t73-v116-table{width:100%;border-collapse:separate;border-spacing:0;min-width:1040px}.t73-v116-table th{position:sticky;top:0;z-index:1;background:rgba(18,18,24,.96);color:#ffd2dc;text-align:left;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;padding:.85rem .75rem;border-bottom:1px solid rgba(255,107,136,.24)}.t73-v116-table td{padding:.85rem .75rem;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}.t73-v116-table tr:hover td{background:rgba(255,255,255,.035)}
+      .t73-v116-user{font-weight:900;color:#fff}.t73-v116-comment{max-width:260px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--color-text-muted)}.t73-v116-pill{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.28rem .62rem;font-size:.78rem;font-weight:900;border:1px solid rgba(255,255,255,.18);white-space:nowrap}.t73-v116-wait{color:#ffd166;background:rgba(255,209,102,.12);border-color:rgba(255,209,102,.35)}.t73-v116-ok{color:#52c77b;background:rgba(82,199,123,.12);border-color:rgba(82,199,123,.34)}.t73-v116-bad{color:var(--color-error);background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.35)}
+      .t73-v116-photos{display:grid;grid-template-columns:repeat(3,86px);gap:.5rem;align-items:start}.t73-v116-thumb{width:86px;height:70px;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(0,0,0,.42);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.25);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}.t73-v116-thumb:hover{transform:translateY(-2px) scale(1.03);border-color:#ff6b88;box-shadow:0 10px 24px rgba(255,107,136,.22)}.t73-v116-thumb img{width:100%;height:100%;object-fit:cover;display:block}.t73-v116-thumb::after{content:'🔍';position:absolute;right:.25rem;bottom:.18rem;background:rgba(0,0,0,.62);border-radius:999px;padding:.08rem .24rem;font-size:.76rem}.t73-v116-no-photo,.t73-v116-file-chip{display:inline-flex;align-items:center;gap:.35rem;border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:.48rem .6rem;color:var(--color-text-muted);font-size:.82rem;background:rgba(255,255,255,.035)}.t73-v116-file-chip{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v116-actions{display:grid;grid-template-columns:1fr;gap:.36rem;min-width:130px}.t73-v116-actions .btn{padding:.42rem .54rem;font-size:.78rem;white-space:nowrap}.t73-v116-reviewed{font-size:.82rem;color:var(--color-text-muted);line-height:1.35}
+      #t73V116ZoomModal{display:none;position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}.t73-v116-zoom-box{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default}.t73-v116-zoom-head{display:flex;justify-content:space-between;gap:.8rem;align-items:center;color:#fff}.t73-v116-zoom-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v116-zoom-close{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem}.t73-v116-zoom-img{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111}
+      @media(max-width:760px){.t73-v116-panel{padding:.85rem}.t73-v116-table{min-width:860px}.t73-v116-photos{grid-template-columns:repeat(2,78px)}.t73-v116-thumb{width:78px;height:64px}.t73-v116-comment{max-width:210px}#t73V116ZoomModal{padding:12px}.t73-v116-zoom-img{max-height:78vh}}
+    </style>`);
+  }
+
+  function ensureZoom116() {
+    addCss116();
+    if ($('t73V116ZoomModal')) return;
+    document.body.insertAdjacentHTML('beforeend', `<div id="t73V116ZoomModal" aria-hidden="true">
+      <div class="t73-v116-zoom-box" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+        <div class="t73-v116-zoom-head"><div id="t73V116ZoomName" class="t73-v116-zoom-name">Скриншот</div><button id="t73V116ZoomClose" class="t73-v116-zoom-close" type="button" aria-label="Закрыть">✕</button></div>
+        <img id="t73V116ZoomImg" class="t73-v116-zoom-img" alt="Скриншот">
+      </div>
+    </div>`);
+    const modal = $('t73V116ZoomModal');
+    const close = () => { modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); const img = $('t73V116ZoomImg'); if (img) img.src = ''; document.body.style.overflow = ''; };
+    modal.addEventListener('click', close);
+    $('t73V116ZoomClose')?.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'flex') close(); });
+  }
+
+  function openZoom116(url, name) {
+    ensureZoom116();
+    const modal = $('t73V116ZoomModal'), img = $('t73V116ZoomImg'), label = $('t73V116ZoomName');
+    if (!modal || !img) return;
+    img.src = url;
+    img.alt = name || 'Скриншот';
+    if (label) label.textContent = name || 'Скриншот';
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function photosHtml116(proofs) {
+    const imgs = proofs.filter(isImageProof116);
+    const other = proofs.filter(p => !isImageProof116(p));
+    if (!imgs.length && !other.length) return '<span class="t73-v116-no-photo">— фото не прикреплены</span>';
+    return `<div class="t73-v116-photos">${imgs.map((proof, i) => {
+      const safe = esc(proof.url);
+      const name = esc(proof.name || ('Скриншот ' + (i + 1)));
+      return `<button class="t73-v116-thumb" type="button" data-v116-zoom="${safe}" data-v116-name="${name}" title="Нажмите, чтобы приблизить"><img src="${safe}" alt="${name}" loading="lazy"></button>`;
+    }).join('')}${other.map((proof, i) => `<span class="t73-v116-file-chip" title="${esc(proof.name || 'Не фото')}">📎 ${esc(proof.name || ('Файл ' + (i + 1)))} — не фото</span>`).join('')}</div>`;
+  }
+
+  function statusClass116(status, reviewed) {
+    if (!reviewed) return 't73-v116-wait';
+    return String(status).toLowerCase().includes('отказ') || String(status).toLowerCase().includes('не засчит') ? 't73-v116-bad' : 't73-v116-ok';
+  }
+
+  window.processGossReportV115 = window.processGossReportV116 = async function(id, result, points) {
+    const db = client116();
+    if (!db) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
+    const { data, error } = await db.from('reports').select('*').eq('id', id).limit(1);
+    if (error) return alert('Не удалось открыть отчёт: ' + error.message);
+    const row = data && data[0];
+    if (!row) return alert('Отчёт не найден');
+    const p = parse(row.date, {});
+    p.result = result;
+    p.reviewStatus = result;
+    p.xp = Number(points) || 0;
+    p.reviewPoints = Number(points) || 0;
+    p.checkedAt = p.reviewedAt = nowRu();
+    p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
+    await db.from('reports').update({ date: JSON.stringify(p), status: result, xp: Number(points) || 0 }).eq('id', id);
+    await window.renderGossReportsCardsV115();
+  };
+
+  function bindTable116(scope) {
+    if (!scope || scope.__t73v116Bound) return;
+    scope.__t73v116Bound = true;
+    scope.addEventListener('click', (e) => {
+      const zoom = e.target.closest?.('[data-v116-zoom]');
+      if (zoom) {
+        e.preventDefault();
+        e.stopPropagation();
+        openZoom116(zoom.getAttribute('data-v116-zoom') || '', zoom.getAttribute('data-v116-name') || 'Скриншот');
+        return;
+      }
+      const act = e.target.closest?.('[data-v116-action]');
+      if (act) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.processGossReportV116(act.dataset.id, act.dataset.result, Number(act.dataset.points || 0));
+        return;
+      }
+      const refresh = e.target.closest?.('#gossV116RefreshReports');
+      if (refresh) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.renderGossReportsCardsV115();
+      }
+    }, true);
+    scope.addEventListener('error', (e) => {
+      const img = e.target;
+      if (!img || !img.closest || !img.closest('.t73-v116-thumb')) return;
+      const btn = img.closest('.t73-v116-thumb');
+      const name = btn?.getAttribute('data-v116-name') || 'Фото';
+      if (btn) btn.outerHTML = `<span class="t73-v116-no-photo">⚠️ ${esc(name)} не загрузилось</span>`;
+    }, true);
+  }
+
+  window.renderGossReportsCardsV115 = window.renderGossReportsCardsV116 = async function() {
+    addCss116();
+    ensureZoom116();
+    const root = root116();
+    const db = client116();
+    if (!root || !db) return;
+    bindTable116(root);
+    const orgId = orgId116(), orgLabel = orgLabel116();
+    root.innerHTML = `<div class="t73-v116-panel"><div class="t73-v116-title"><div><h3>Проверка ГОСС/СС отчётов — ${esc(orgLabel)}</h3><div class="t73-v116-muted">Загрузка отчётов...</div></div></div></div>`;
+    try {
+      const { data, error } = await db.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', orgId).order('id', { ascending:false }).limit(160);
+      if (error) throw error;
+      const reports = data || [];
+      const rowsHtml = reports.map((row, idx) => {
+        const p = parse(row.date, {});
+        const proofs = collectProofs116(row, p);
+        const status = p.reviewStatus || p.result || row.status || 'На проверке';
+        const reviewed = !!(p.reviewStatus || ['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(p.result) || p.checkedAt || p.reviewedAt);
+        const points = Number(p.reviewPoints || p.xp || row.xp || 0);
+        const created = p.day || p.created || p.createdIso || row.created_at || '';
+        return `<tr>
+          <td>${idx + 1}</td>
+          <td><div class="t73-v116-user">${esc(p.nick || p.nickname || row.status || 'Сотрудник')}</div><div class="t73-v116-muted">${esc(row.email === 'GOSS_USER_REPORT' ? orgLabel : row.email || '')}</div></td>
+          <td><strong>${esc(p.type || 'ГОСС отчёт')}</strong><div class="t73-v116-muted">${esc(created)}</div></td>
+          <td><div class="t73-v116-comment">${esc(p.comment || p.work || 'Без комментария')}</div></td>
+          <td>${photosHtml116(proofs)}</td>
+          <td><span class="t73-v116-pill ${statusClass116(status, reviewed)}">${esc(status)}${points ? ' · ' + points + ' б.' : ''}</span></td>
+          <td>${!reviewed ? `<div class="t73-v116-actions">
+              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Натяг" data-points="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
+              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
+              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
+              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
+            </div>` : `<div class="t73-v116-reviewed">Проверил:<br><strong>${esc(p.reviewedBy || p.checkedBy || '—')}</strong><br>${esc(p.reviewedAt || p.checkedAt || '')}</div>`}</td>
+        </tr>`;
+      }).join('');
+
+      root.innerHTML = `<div class="t73-v116-panel"><div class="t73-v116-title"><div><h3>Проверка ГОСС/СС отчётов — ${esc(orgLabel)}</h3><div class="t73-v116-muted">Скриншоты открываются увеличенно прямо на сайте. Никаких переходов по ссылкам.</div></div><button id="gossV116RefreshReports" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>` +
+        (reports.length ? `<div class="t73-v116-table-wrap"><table class="t73-v116-table"><thead><tr><th>#</th><th>Сотрудник</th><th>Отчёт / дата</th><th>Комментарий</th><th>Фото</th><th>Статус</th><th>Проверка</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>` : '<div class="t73-v116-panel">Отправленных ГОСС/СС отчётов пока нет.</div>');
+      bindTable116(root);
+    } catch (err) {
+      root.innerHTML = `<div class="t73-v116-panel" style="color:var(--color-error);">Ошибка загрузки ГОСС/СС отчётов: ${esc(err.message || err)}</div>`;
+    }
+  };
+
+  function intercept116(e) {
+    const btn = e.target?.closest?.('button, .btn, .gov-action-switch-v3, .gov-action-switch-v4');
+    if (!btn) return;
+    const txt = String(btn.textContent || '').toLowerCase();
+    const view = btn.dataset?.view;
+    const isReports = view === 'reports' || (txt.includes('провер') && txt.includes('отч'));
+    if (isReports) setTimeout(window.renderGossReportsCardsV115, 220);
+  }
+
+  document.addEventListener('click', intercept116, true);
+  if (document.querySelector('.gov-action-switch-v3.active[data-view="reports"], .gov-action-switch-v4.active[data-view="reports"]')) setTimeout(window.renderGossReportsCardsV115, 300);
+  addCss116();
+  ensureZoom116();
+  window.T73_V116_GOSS_TABLE_ZOOM_FIX = { render: window.renderGossReportsCardsV116, zoom: openZoom116 };
+})();
+</script>
+
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"39e87a2afe7c46788f2fe28e3346cf27","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
