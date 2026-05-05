@@ -20437,713 +20437,293 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V113 === -->
 
-
-
 <script>
-/* === T73 V115 HOTFIX: прямые скриншоты в проверке ГОСС/СС === */
-(() => {
-  if (window.__T73_V115_GOSS_SCREENSHOT_FIX__) return;
-  window.__T73_V115_GOSS_SCREENSHOT_FIX__ = true;
+/* === T73 V118 FIX: ОРГАНИЗАЦИИ — Проверить отчётность плитками, без старой таблицы, фото zoom без переходов === */
+(function(){
+  if (window.__T73_V118_ORG_REPORT_CELLS__) return;
+  window.__T73_V118_ORG_REPORT_CELLS__ = true;
 
   const $ = (id) => document.getElementById(id);
-  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  const parse = (v, fb={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch { return fb; } };
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const parse = (v, fb = {}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch(e) { return fb; } };
   const nowRu = () => new Date().toLocaleString('ru-RU');
-  let clientCache = null;
+  let dbCache = null;
 
-  function client115() {
-    if (clientCache && typeof clientCache.from === 'function') return clientCache;
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') { clientCache = supa; return clientCache; } } catch(_e) {}
-    for (const k of ['supa','supabaseClient','t73Supa']) {
-      if (window[k] && typeof window[k].from === 'function') { clientCache = window[k]; return clientCache; }
+  function db(){
+    if (dbCache && typeof dbCache.from === 'function') return dbCache;
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return (dbCache = supa); } catch(e) {}
+    for (const k of ['supa','supabaseClient','t73Supa','client']) {
+      try { if (window[k] && typeof window[k].from === 'function') return (dbCache = window[k]); } catch(e) {}
     }
     return null;
   }
 
-  function orgId115() {
-    return document.querySelector('.gov-org-switch-v4.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch-v3.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch.active')?.dataset.orgId
-        || 'fsb';
+  function activeOrgButton(){
+    return document.querySelector('#subNavOrganizations .gov-org-switch-v4.active')
+        || document.querySelector('#subNavOrganizations .gov-org-switch-v3.active')
+        || document.querySelector('#subNavOrganizations .gov-org-switch.active')
+        || document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active')
+        || document.querySelector('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch');
   }
-  function orgLabel115() {
-    const b = document.querySelector('.gov-org-switch-v4.active, .gov-org-switch-v3.active, .gov-org-switch.active');
-    return b ? b.textContent.trim() : orgId115().toUpperCase();
+  function orgId(){
+    const b = activeOrgButton();
+    return (b && b.dataset && b.dataset.orgId) || window.fixSelectedOrgId || 'fsb';
   }
-  function root115() {
-    return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || $('mode-fsb');
+  function orgLabel(){
+    const b = activeOrgButton();
+    return b ? b.textContent.trim() : String(orgId()).toUpperCase();
+  }
+  function gossRoot(){
+    const roots = ['gossV4Content','gossV3Content','gossDashView'].map($).filter(Boolean);
+    const visible = roots.find(r => {
+      const sec = r.closest('section,.panel') || r;
+      return getComputedStyle(sec).display !== 'none' && sec.offsetParent !== null;
+    });
+    return visible || roots[0] || null;
+  }
+  function isOrgAreaOpen(){
+    const v4 = $('mode-goss_center_v4'), dash = $('mode-goss_dashboard');
+    const sub = $('subNavOrganizations');
+    if ((v4 && getComputedStyle(v4).display !== 'none') || (dash && getComputedStyle(dash).display !== 'none')) return true;
+    return !!(sub && getComputedStyle(sub).display !== 'none');
   }
 
-  function addProof115(out, seen, proof, idx) {
+  function addCss(){
+    if ($('t73V118OrgReportCss')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="t73V118OrgReportCss">
+      .t73-v118-wrap{display:grid;gap:1rem;}
+      .t73-v118-head{padding:1rem;border-radius:22px;border:1px solid rgba(255,107,136,.32);background:radial-gradient(circle at 0 0,rgba(255,107,136,.18),transparent 42%),linear-gradient(145deg,rgba(13,16,32,.96),rgba(7,9,18,.99));box-shadow:0 16px 42px rgba(0,0,0,.38);display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
+      .t73-v118-head h3{margin:0;color:#ff6b88;font-size:1.18rem;}.t73-v118-sub{color:var(--color-text-muted);font-size:.92rem;line-height:1.35;margin-top:.28rem;}.t73-v118-tools{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.t73-v118-chip{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;border-radius:999px;padding:.43rem .72rem;font-weight:900;font-size:.84rem;white-space:nowrap;}
+      .t73-v118-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:.85rem;align-items:stretch;}
+      .t73-v118-cell{position:relative;min-height:270px;overflow:hidden;border-radius:22px;padding:.9rem;border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028));box-shadow:0 14px 34px rgba(0,0,0,.30);display:flex;flex-direction:column;gap:.72rem;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
+      .t73-v118-cell:hover{transform:translateY(-2px);border-color:rgba(255,107,136,.55);box-shadow:0 18px 46px rgba(255,107,136,.13),0 14px 34px rgba(0,0,0,.36)}
+      .t73-v118-cell::before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:#ffd166}.t73-v118-cell.ok::before{background:#52c77b}.t73-v118-cell.super::before{background:#3dd68c}.t73-v118-cell.stretch::before{background:#ffbf47}.t73-v118-cell.bad::before{background:var(--color-error)}
+      .t73-v118-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.65rem}.t73-v118-user{display:flex;gap:.62rem;align-items:flex-start;min-width:0}.t73-v118-avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(135deg,rgba(255,107,136,.30),rgba(162,108,255,.16));border:1px solid rgba(255,107,136,.28);font-weight:1000;color:#fff}.t73-v118-name{font-weight:1000;color:#fff;line-height:1.12;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.t73-v118-meta{margin-top:.23rem;color:var(--color-text-muted);font-size:.82rem;line-height:1.25;overflow-wrap:anywhere}.t73-v118-status{display:inline-flex;border-radius:999px;padding:.34rem .62rem;font-size:.78rem;font-weight:1000;border:1px solid rgba(255,255,255,.18);white-space:nowrap;color:#ffd166;background:rgba(255,209,102,.10)}.t73-v118-status.ok{color:#52c77b;background:rgba(82,199,123,.12);border-color:rgba(82,199,123,.36)}.t73-v118-status.super{color:#3dd68c;background:rgba(61,214,140,.12);border-color:rgba(61,214,140,.36)}.t73-v118-status.stretch{color:#ffbf47;background:rgba(255,191,71,.12);border-color:rgba(255,191,71,.36)}.t73-v118-status.bad{color:var(--color-error);background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.36)}
+      .t73-v118-comment{background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:.68rem .72rem;color:var(--color-text-muted);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;line-height:1.38;max-height:110px;overflow:auto;}
+      .t73-v118-photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}.t73-v118-photo{height:72px;width:100%;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(0,0,0,.44);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.24);transition:transform .15s ease,border-color .15s ease}.t73-v118-photo:hover{transform:scale(1.035);border-color:#ff6b88}.t73-v118-photo img{display:block;width:100%;height:100%;object-fit:cover}.t73-v118-photo::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.68);border-radius:999px;padding:.05rem .24rem;font-size:.72rem}.t73-v118-empty-photo,.t73-v118-file{display:flex;align-items:center;gap:.36rem;min-height:40px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:.52rem .62rem;color:var(--color-text-muted);font-size:.83rem;background:rgba(255,255,255,.035);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v118-file{min-height:34px;margin-top:.4rem;}
+      .t73-v118-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin-top:auto}.t73-v118-actions .btn{padding:.5rem .45rem;font-size:.78rem;font-weight:1000;white-space:nowrap}.t73-v118-reviewed{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem;color:var(--color-text-muted);font-size:.83rem;line-height:1.35}.t73-v118-empty{padding:1rem;border:1px dashed rgba(255,255,255,.18);border-radius:18px;color:var(--color-text-muted);background:rgba(255,255,255,.035)}
+      #t73V118Zoom{display:none;position:fixed;inset:0;z-index:1000005;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}#t73V118ZoomBox{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default}#t73V118ZoomHead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:#fff}#t73V118ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#t73V118ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem}#t73V118ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}
+      @media(max-width:720px){.t73-v118-board{grid-template-columns:1fr}.t73-v118-head{padding:.85rem}.t73-v118-photo-grid{grid-template-columns:repeat(3,1fr)}.t73-v118-photo{height:78px}.t73-v118-actions{grid-template-columns:1fr 1fr}#t73V118Zoom{padding:12px}#t73V118ZoomImg{max-height:78vh}.t73-v118-tools .btn{width:100%;}}
+    </style>`);
+  }
+  function ensureZoom(){
+    addCss();
+    if ($('t73V118Zoom')) return;
+    document.body.insertAdjacentHTML('beforeend', `<div id="t73V118Zoom" aria-hidden="true"><div id="t73V118ZoomBox" role="dialog" aria-modal="true" onclick="event.stopPropagation()"><div id="t73V118ZoomHead"><div id="t73V118ZoomTitle">Скриншот</div><button id="t73V118ZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V118ZoomImg" alt="Скриншот"></div></div>`);
+    const close = () => { const m = $('t73V118Zoom'), img = $('t73V118ZoomImg'); if (m) { m.style.display = 'none'; m.setAttribute('aria-hidden','true'); } if (img) img.src = ''; document.body.style.overflow = ''; };
+    $('t73V118Zoom').addEventListener('click', close);
+    $('t73V118ZoomClose').addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('t73V118Zoom')?.style.display === 'flex') close(); });
+  }
+  function openZoom(url, name){
+    ensureZoom();
+    const m = $('t73V118Zoom'), img = $('t73V118ZoomImg'), title = $('t73V118ZoomTitle');
+    if (!m || !img) return;
+    img.src = url; img.alt = name || 'Скриншот'; if (title) title.textContent = name || 'Скриншот';
+    m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden';
+  }
+
+  function addProof(out, seen, proof, idx){
     if (!proof) return;
     let url = '', name = 'Скриншот ' + (idx + 1), kind = '', type = '';
-    if (typeof proof === 'string') url = proof;
+    if (typeof proof === 'string') { url = proof; }
     else {
-      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || '';
-      name = proof.name || proof.title || proof.filename || proof.fileName || name;
+      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || proof.data || proof.path || '';
+      name = proof.name || proof.title || proof.filename || proof.fileName || proof.originalName || name;
       kind = proof.kind || proof.type || '';
       type = proof.mime || proof.mimeType || proof.contentType || proof.type || '';
     }
     url = String(url || '').trim();
     if (!url || seen.has(url)) return;
     seen.add(url);
-    out.push({ url, name, kind, type });
+    out.push({ url, name:String(name || 'Файл'), kind:String(kind || ''), type:String(type || '') });
   }
-
-  function collectProofs115(row, p) {
+  function collectProofs(row, p){
     const out = [], seen = new Set();
-    (Array.isArray(p.files) ? p.files : []).forEach((x, i) => addProof115(out, seen, x, i));
-    (Array.isArray(p.proofs) ? p.proofs : []).forEach((x, i) => addProof115(out, seen, x, i + out.length));
-    if (p.file) addProof115(out, seen, p.file, out.length);
-    if (p.screenshot) addProof115(out, seen, p.screenshot, out.length);
-    if (p.image) addProof115(out, seen, p.image, out.length);
-    if (p.link) addProof115(out, seen, { url:p.link, name:'Ссылка на доказательства', kind:'link' }, out.length);
+    ['proofs','files','screenshots','images','attachments'].forEach(k => {
+      const arr = Array.isArray(p[k]) ? p[k] : [];
+      arr.forEach((x, i) => addProof(out, seen, x, out.length));
+    });
+    ['file','screenshot','image','photo','attachment'].forEach(k => { if (p[k]) addProof(out, seen, p[k], out.length); });
+    if (p.link) addProof(out, seen, { url:p.link, name:'Ссылка на доказательства', kind:'link' }, out.length);
+    if (row && row.link && row.email === 'GOSS_USER_REPORT') addProof(out, seen, { url:row.link, name:'Доказательство', kind:'link' }, out.length);
     return out;
   }
-
-  function decodeUrl115(url) {
-    try { return decodeURIComponent(String(url)); } catch { return String(url || ''); }
-  }
-  function isImageProof115(proof) {
+  function decodeUrl(url){ try { return decodeURIComponent(String(url)); } catch(e) { return String(url || ''); } }
+  function isImage(proof){
     const url = String(proof.url || '');
-    const dec = decodeUrl115(url);
-    const name = String(proof.name || '');
-    const kind = String(proof.kind || '').toLowerCase();
+    const dec = decodeUrl(url);
     const type = String(proof.type || '').toLowerCase();
-    if (/^data:image\//i.test(url)) return true;
-    if (kind === 'image' || type.startsWith('image/')) return true;
-    if (/\.(png|jpe?g|jpeg|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|jpeg|webp|gif|bmp|avif)$/i.test(name)) return true;
+    const kind = String(proof.kind || '').toLowerCase();
+    const name = String(proof.name || '');
+    if (/^data:image\//i.test(url) || /^blob:/i.test(url)) return true;
+    if (type.startsWith('image/') || kind === 'image' || kind.includes('image')) return true;
+    if (/\.(png|jpe?g|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(name)) return true;
     if (/\/storage\/v1\/object\/public\/(report-screenshots|screenshots)\//i.test(dec)) return true;
     return false;
   }
-
-  function proofsHtml115(proofs) {
-    if (!proofs.length) return '<div style="color:var(--color-text-muted);">Скриншоты не прикреплены.</div>';
-    return '<div class="t73-v115-proofs">' + proofs.map((proof, i) => {
-      const url = String(proof.url || '');
-      const safe = esc(url);
-      const name = esc(proof.name || ('Доказательство ' + (i + 1)));
-      if (isImageProof115(proof)) {
-        return `<button class="t73-v115-thumb" type="button" data-v115-open="${safe}" data-v115-name="${name}" title="Открыть скриншот"><img src="${safe}" alt="${name}" data-v115-img="${safe}" data-v115-name="${name}"></button>`;
-      }
-      return `<a class="btn btn-secondary" href="${safe}" target="_blank" rel="noreferrer" style="width:max-content;max-width:100%;padding:.55rem .8rem;font-size:.85rem;">📎 ${name}</a>`;
-    }).join('') + '</div>';
+  function photoHtml(proofs){
+    const imgs = proofs.filter(isImage);
+    const rest = proofs.filter(p => !isImage(p));
+    let html = imgs.length ? '<div class="t73-v118-photo-grid">' + imgs.map((p, i) => `<button class="t73-v118-photo" type="button" data-v118-zoom="${esc(p.url)}" data-v118-name="${esc(p.name || ('Скриншот ' + (i + 1)))}" title="Нажмите, чтобы приблизить"><img src="${esc(p.url)}" alt="${esc(p.name || 'Скриншот')}" loading="lazy"></button>`).join('') + '</div>' : '<div class="t73-v118-empty-photo">— фото не прикреплены</div>';
+    if (rest.length) html += rest.map((p, i) => `<div class="t73-v118-file" title="${esc(p.name || 'Не фото')}">📎 ${esc(p.name || ('Файл ' + (i + 1)))} — не фото</div>`).join('');
+    return html;
+  }
+  function statusInfo(row, p){
+    const raw = String(p.reviewStatus || p.result || row.status || '').trim();
+    const reviewed = !!(p.checkedAt || p.reviewedAt || p.checkedBy || p.reviewedBy || ['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(raw));
+    const label = reviewed ? (raw || 'Проверено') : 'На проверке';
+    const low = label.toLowerCase();
+    let cls = '';
+    if (low.includes('отказ') || low.includes('не засчит')) cls = 'bad';
+    else if (low.includes('перенорм')) cls = 'super';
+    else if (low.includes('натяг') || low.includes('герой')) cls = 'stretch';
+    else if (reviewed) cls = 'ok';
+    return { label, reviewed, cls };
+  }
+  function reportPerson(row, p){
+    const rawStatus = String(row.status || '');
+    const userId = p.userId || p.user_id || (!['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(rawStatus) ? rawStatus : '') || '';
+    return { userId, name: p.nick || p.nickname || p.name || p.email || userId || 'Сотрудник' };
   }
 
-  function bindProofs115(scope) {
-    (scope || document).querySelectorAll('[data-v115-open]').forEach(btn => {
-      if (btn.dataset.v115Bound === '1') return;
-      btn.dataset.v115Bound = '1';
-      btn.addEventListener('click', () => {
-        const url = btn.getAttribute('data-v115-open') || '';
-        const modal = $('imageModal'), img = $('imageModalSrc');
-        if (modal && img) { modal.style.display = 'flex'; img.src = url; }
-        else window.open(url, '_blank', 'noopener,noreferrer');
-      });
-    });
-    (scope || document).querySelectorAll('img[data-v115-img]').forEach(img => {
-      if (img.dataset.v115ErrBound === '1') return;
-      img.dataset.v115ErrBound = '1';
-      img.addEventListener('error', () => {
-        const url = img.getAttribute('data-v115-img') || '';
-        const name = img.getAttribute('data-v115-name') || 'Файл';
-        const wrap = img.closest('.t73-v115-thumb');
-        if (wrap) wrap.outerHTML = `<a class="btn btn-secondary" href="${esc(url)}" target="_blank" rel="noreferrer" style="width:max-content;max-width:100%;padding:.55rem .8rem;font-size:.85rem;">📎 ${esc(name)}</a>`;
-      }, { once:true });
-    });
-  }
-
-  function addCss115() {
-    if ($('t73V115GossProofCss')) return;
-    document.head.insertAdjacentHTML('beforeend', `<style id="t73V115GossProofCss">
-      .t73-v115-card{background:rgba(0,0,0,.48);border:1px solid rgba(255,107,136,.24);border-radius:14px;padding:1rem;display:grid;gap:.72rem;box-shadow:0 10px 24px rgba(0,0,0,.28)}
-      .t73-v115-proofs{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:.6rem;margin:.45rem 0}.t73-v115-thumb{padding:0;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(0,0,0,.38);height:92px;overflow:hidden;cursor:zoom-in}.t73-v115-thumb img{width:100%;height:100%;object-fit:cover;display:block}.t73-v115-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem}.t73-v115-actions .btn{padding:.45rem;font-size:.78rem}
-      @media(max-width:760px){.t73-v115-actions{grid-template-columns:1fr 1fr}.t73-v115-proofs{grid-template-columns:repeat(2,minmax(0,1fr))}.t73-v115-thumb{height:86px}}
-    </style>`);
-  }
-
-  window.processGossReportV115 = async function(id, result, points) {
-    const db = client115();
-    if (!db) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
-    const { data, error } = await db.from('reports').select('*').eq('id', id).limit(1);
-    if (error) return alert('Не удалось открыть отчёт: ' + error.message);
-    const row = data && data[0];
-    if (!row) return alert('Отчёт не найден');
-    const p = parse(row.date, {});
-    p.result = result;
-    p.reviewStatus = result;
-    p.xp = Number(points) || 0;
-    p.reviewPoints = Number(points) || 0;
-    p.checkedAt = p.reviewedAt = nowRu();
-    p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
-    await db.from('reports').update({ date: JSON.stringify(p), status: result, xp: Number(points) || 0 }).eq('id', id);
-    await window.renderGossReportsCardsV115();
-  };
-
-  window.renderGossReportsCardsV115 = async function() {
-    addCss115();
-    const root = root115();
-    const db = client115();
-    if (!root || !db) return;
-    const orgId = orgId115(), orgLabel = orgLabel115();
-    root.innerHTML = `<div class="t73-v115-card"><h3 style="color:#ff6b88;margin:0;">Проверка ГОСС-отчётов — ${esc(orgLabel)}</h3><div class="message-text">Загрузка отчётов...</div></div>`;
+  async function markReport(id, statusText, points){
+    const client = db();
+    if (!client) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
     try {
-      const { data, error } = await db.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', orgId).order('id', { ascending:false }).limit(120);
+      const { data, error } = await client.from('reports').select('*').eq('id', id).limit(1);
       if (error) throw error;
-      const reports = data || [];
-      root.innerHTML = `<div class="t73-v115-card"><div style="display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap;"><div><h3 style="color:#ff6b88;margin:0;">Проверка ГОСС-отчётов — ${esc(orgLabel)}</h3><div style="color:var(--color-text-muted);margin-top:.25rem;">Прямые скриншоты теперь показываются превью-картинками, а не теряются как файлы.</div></div><button id="gossV115RefreshReports" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>` +
-        (reports.length ? `<div style="display:grid;gap:1rem;">${reports.map(row => {
-          const p = parse(row.date, {});
-          const proofs = collectProofs115(row, p);
-          const status = p.reviewStatus || p.result || row.status || 'На проверке';
-          const reviewed = !!(p.reviewStatus || ['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(p.result) || p.checkedAt || p.reviewedAt);
-          const points = Number(p.reviewPoints || p.xp || row.xp || 0);
-          const color = reviewed ? (status === 'Отказ' ? 'var(--color-error)' : 'var(--color-success)') : 'var(--color-warning)';
-          return `<div class="t73-v115-card"><div style="display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;flex-wrap:wrap;"><div><strong>${esc(p.nick || p.nickname || row.status || 'Сотрудник')}</strong><div style="color:var(--color-text-muted);font-size:.9rem;">${esc(p.type || 'ГОСС отчёт')} · ${esc(p.day || p.created || p.createdIso || '')}</div></div><span style="font-weight:900;color:${color};">${esc(status)}${points ? ' · ' + points + ' баллов' : ''}</span></div><div style="color:var(--color-text-muted);white-space:pre-wrap;overflow-wrap:anywhere;">${esc(p.comment || p.work || 'Без комментария')}</div>${proofsHtml115(proofs)}${p.reviewedBy || p.checkedBy ? `<div style="color:var(--color-text-faint);font-size:.85rem;">Проверил: ${esc(p.reviewedBy || p.checkedBy)} · ${esc(p.reviewedAt || p.checkedAt || '')}</div>` : ''}${!reviewed ? `<div class="t73-v115-actions"><button class="btn btn-secondary" style="border-color:#ffbf47;color:#ffbf47;" onclick="processGossReportV115('${esc(row.id)}','Натяг',5)">Натяг</button><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b;" onclick="processGossReportV115('${esc(row.id)}','Норма',15)">Норма</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c;" onclick="processGossReportV115('${esc(row.id)}','Перенорма',30)">Перенорма</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error);" onclick="processGossReportV115('${esc(row.id)}','Отказ',0)">Отказ</button></div>` : ''}</div>`;
-        }).join('')}</div>` : '<div class="t73-v115-card">Отправленных ГОСС-отчётов пока нет.</div>');
-      $('gossV115RefreshReports')?.addEventListener('click', window.renderGossReportsCardsV115);
-      bindProofs115(root);
-    } catch (err) {
-      root.innerHTML = `<div class="t73-v115-card" style="color:var(--color-error);">Ошибка загрузки ГОСС-отчётов: ${esc(err.message || err)}</div>`;
+      const row = data && data[0];
+      if (!row) return alert('Отчёт не найден. Обновите список.');
+      const p = parse(row.date, {});
+      p.reviewStatus = statusText;
+      p.result = statusText;
+      p.reviewPoints = Number(points) || 0;
+      p.xp = Number(points) || 0;
+      p.checkedAt = p.reviewedAt = nowRu();
+      p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
+      p.checkedById = window.currentUser?.id || '';
+      const upd = await client.from('reports').update({ date:JSON.stringify(p), status:statusText, xp:Number(points) || 0 }).eq('id', id);
+      if (upd.error) throw upd.error;
+      try { if (typeof playSound === 'function') playSound(statusText === 'Отказ' ? 'fail' : 'ok'); } catch(e) {}
+      await renderOrgReports();
+    } catch(err) {
+      alert('Не удалось проверить отчёт: ' + (err && err.message ? err.message : err));
     }
-  };
-
-  function intercept115(e) {
-    const btn = e.target?.closest?.('button, .btn, .gov-action-switch-v3');
-    if (!btn) return;
-    const txt = String(btn.textContent || '').toLowerCase();
-    const view = btn.dataset?.view;
-    const isGossReports = view === 'reports' || (txt.includes('провер') && txt.includes('госс') && txt.includes('отчет'));
-    if (isGossReports) setTimeout(window.renderGossReportsCardsV115, 220);
   }
 
-  document.addEventListener('click', intercept115, true);
-  if (document.querySelector('.gov-action-switch-v3.active[data-view="reports"]')) setTimeout(window.renderGossReportsCardsV115, 300);
-  addCss115();
-  window.T73_V115_GOSS_SCREENSHOT_FIX = { render: window.renderGossReportsCardsV115, bind: bindProofs115 };
-})();
-</script>
-
-
-<script>
-/* === T73 V116 HOTFIX: ГОСС/СС проверка таблицей + фото без переходов, zoom по клику === */
-(() => {
-  if (window.__T73_V116_GOSS_TABLE_ZOOM_FIX__) return;
-  window.__T73_V116_GOSS_TABLE_ZOOM_FIX__ = true;
-
-  const $ = (id) => document.getElementById(id);
-  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  const parse = (v, fb={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch { return fb; } };
-  const nowRu = () => new Date().toLocaleString('ru-RU');
-  let clientCache = null;
-
-  function client116() {
-    if (clientCache && typeof clientCache.from === 'function') return clientCache;
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') { clientCache = supa; return clientCache; } } catch(_e) {}
-    for (const k of ['supa','supabaseClient','t73Supa']) {
-      if (window[k] && typeof window[k].from === 'function') { clientCache = window[k]; return clientCache; }
-    }
-    return null;
-  }
-
-  function orgId116() {
-    return document.querySelector('.gov-org-switch-v4.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch-v3.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch.active')?.dataset.orgId
-        || 'fsb';
-  }
-  function orgLabel116() {
-    const b = document.querySelector('.gov-org-switch-v4.active, .gov-org-switch-v3.active, .gov-org-switch.active');
-    return b ? b.textContent.trim() : orgId116().toUpperCase();
-  }
-  function root116() {
-    return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || $('mode-fsb');
-  }
-
-  function addProof116(out, seen, proof, idx) {
-    if (!proof) return;
-    let url = '', name = 'Скриншот ' + (idx + 1), kind = '', type = '';
-    if (typeof proof === 'string') url = proof;
-    else {
-      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || '';
-      name = proof.name || proof.title || proof.filename || proof.fileName || name;
-      kind = proof.kind || proof.type || '';
-      type = proof.mime || proof.mimeType || proof.contentType || proof.type || '';
-    }
-    url = String(url || '').trim();
-    if (!url || seen.has(url)) return;
-    seen.add(url);
-    out.push({ url, name, kind, type });
-  }
-
-  function collectProofs116(row, p) {
-    const out = [], seen = new Set();
-    (Array.isArray(p.files) ? p.files : []).forEach((x, i) => addProof116(out, seen, x, i));
-    (Array.isArray(p.proofs) ? p.proofs : []).forEach((x, i) => addProof116(out, seen, x, i + out.length));
-    if (p.file) addProof116(out, seen, p.file, out.length);
-    if (p.screenshot) addProof116(out, seen, p.screenshot, out.length);
-    if (p.image) addProof116(out, seen, p.image, out.length);
-    if (p.link) addProof116(out, seen, { url:p.link, name:'Ссылка на доказательства', kind:'link' }, out.length);
-    if (row && row.link) addProof116(out, seen, { url:row.link, name:'Доказательство', kind:'link' }, out.length);
-    return out;
-  }
-
-  function decodeUrl116(url) {
-    try { return decodeURIComponent(String(url)); } catch { return String(url || ''); }
-  }
-  function isImageProof116(proof) {
-    const url = String(proof.url || '');
-    const dec = decodeUrl116(url);
-    const name = String(proof.name || '');
-    const kind = String(proof.kind || '').toLowerCase();
-    const type = String(proof.type || '').toLowerCase();
-    if (/^data:image\//i.test(url)) return true;
-    if (kind === 'image' || type.startsWith('image/')) return true;
-    if (/\.(png|jpe?g|jpeg|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|jpeg|webp|gif|bmp|avif)$/i.test(name)) return true;
-    if (/\/storage\/v1\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(dec)) return true;
-    return false;
-  }
-
-  function addCss116() {
-    if ($('t73V116GossTableZoomCss')) return;
-    document.head.insertAdjacentHTML('beforeend', `<style id="t73V116GossTableZoomCss">
-      .t73-v116-panel{background:linear-gradient(135deg,rgba(255,107,136,.12),rgba(0,0,0,.42));border:1px solid rgba(255,107,136,.28);border-radius:18px;padding:1rem;box-shadow:0 18px 38px rgba(0,0,0,.34);margin-bottom:1rem}
-      .t73-v116-title{display:flex;justify-content:space-between;gap:.8rem;align-items:center;flex-wrap:wrap}.t73-v116-title h3{color:#ff6b88;margin:0}.t73-v116-muted{color:var(--color-text-muted);font-size:.9rem}.t73-v116-table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.24);box-shadow:0 14px 30px rgba(0,0,0,.26)}
-      .t73-v116-table{width:100%;border-collapse:separate;border-spacing:0;min-width:1040px}.t73-v116-table th{position:sticky;top:0;z-index:1;background:rgba(18,18,24,.96);color:#ffd2dc;text-align:left;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;padding:.85rem .75rem;border-bottom:1px solid rgba(255,107,136,.24)}.t73-v116-table td{padding:.85rem .75rem;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:top}.t73-v116-table tr:hover td{background:rgba(255,255,255,.035)}
-      .t73-v116-user{font-weight:900;color:#fff}.t73-v116-comment{max-width:260px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--color-text-muted)}.t73-v116-pill{display:inline-flex;align-items:center;gap:.3rem;border-radius:999px;padding:.28rem .62rem;font-size:.78rem;font-weight:900;border:1px solid rgba(255,255,255,.18);white-space:nowrap}.t73-v116-wait{color:#ffd166;background:rgba(255,209,102,.12);border-color:rgba(255,209,102,.35)}.t73-v116-ok{color:#52c77b;background:rgba(82,199,123,.12);border-color:rgba(82,199,123,.34)}.t73-v116-bad{color:var(--color-error);background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.35)}
-      .t73-v116-photos{display:grid;grid-template-columns:repeat(3,86px);gap:.5rem;align-items:start}.t73-v116-thumb{width:86px;height:70px;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(0,0,0,.42);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.25);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}.t73-v116-thumb:hover{transform:translateY(-2px) scale(1.03);border-color:#ff6b88;box-shadow:0 10px 24px rgba(255,107,136,.22)}.t73-v116-thumb img{width:100%;height:100%;object-fit:cover;display:block}.t73-v116-thumb::after{content:'🔍';position:absolute;right:.25rem;bottom:.18rem;background:rgba(0,0,0,.62);border-radius:999px;padding:.08rem .24rem;font-size:.76rem}.t73-v116-no-photo,.t73-v116-file-chip{display:inline-flex;align-items:center;gap:.35rem;border:1px dashed rgba(255,255,255,.18);border-radius:12px;padding:.48rem .6rem;color:var(--color-text-muted);font-size:.82rem;background:rgba(255,255,255,.035)}.t73-v116-file-chip{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v116-actions{display:grid;grid-template-columns:1fr;gap:.36rem;min-width:130px}.t73-v116-actions .btn{padding:.42rem .54rem;font-size:.78rem;white-space:nowrap}.t73-v116-reviewed{font-size:.82rem;color:var(--color-text-muted);line-height:1.35}
-      #t73V116ZoomModal{display:none;position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}.t73-v116-zoom-box{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default}.t73-v116-zoom-head{display:flex;justify-content:space-between;gap:.8rem;align-items:center;color:#fff}.t73-v116-zoom-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v116-zoom-close{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem}.t73-v116-zoom-img{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111}
-      @media(max-width:760px){.t73-v116-panel{padding:.85rem}.t73-v116-table{min-width:860px}.t73-v116-photos{grid-template-columns:repeat(2,78px)}.t73-v116-thumb{width:78px;height:64px}.t73-v116-comment{max-width:210px}#t73V116ZoomModal{padding:12px}.t73-v116-zoom-img{max-height:78vh}}
-    </style>`);
-  }
-
-  function ensureZoom116() {
-    addCss116();
-    if ($('t73V116ZoomModal')) return;
-    document.body.insertAdjacentHTML('beforeend', `<div id="t73V116ZoomModal" aria-hidden="true">
-      <div class="t73-v116-zoom-box" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
-        <div class="t73-v116-zoom-head"><div id="t73V116ZoomName" class="t73-v116-zoom-name">Скриншот</div><button id="t73V116ZoomClose" class="t73-v116-zoom-close" type="button" aria-label="Закрыть">✕</button></div>
-        <img id="t73V116ZoomImg" class="t73-v116-zoom-img" alt="Скриншот">
-      </div>
-    </div>`);
-    const modal = $('t73V116ZoomModal');
-    const close = () => { modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); const img = $('t73V116ZoomImg'); if (img) img.src = ''; document.body.style.overflow = ''; };
-    modal.addEventListener('click', close);
-    $('t73V116ZoomClose')?.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'flex') close(); });
-  }
-
-  function openZoom116(url, name) {
-    ensureZoom116();
-    const modal = $('t73V116ZoomModal'), img = $('t73V116ZoomImg'), label = $('t73V116ZoomName');
-    if (!modal || !img) return;
-    img.src = url;
-    img.alt = name || 'Скриншот';
-    if (label) label.textContent = name || 'Скриншот';
-    modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function photosHtml116(proofs) {
-    const imgs = proofs.filter(isImageProof116);
-    const other = proofs.filter(p => !isImageProof116(p));
-    if (!imgs.length && !other.length) return '<span class="t73-v116-no-photo">— фото не прикреплены</span>';
-    return `<div class="t73-v116-photos">${imgs.map((proof, i) => {
-      const safe = esc(proof.url);
-      const name = esc(proof.name || ('Скриншот ' + (i + 1)));
-      return `<button class="t73-v116-thumb" type="button" data-v116-zoom="${safe}" data-v116-name="${name}" title="Нажмите, чтобы приблизить"><img src="${safe}" alt="${name}" loading="lazy"></button>`;
-    }).join('')}${other.map((proof, i) => `<span class="t73-v116-file-chip" title="${esc(proof.name || 'Не фото')}">📎 ${esc(proof.name || ('Файл ' + (i + 1)))} — не фото</span>`).join('')}</div>`;
-  }
-
-  function statusClass116(status, reviewed) {
-    if (!reviewed) return 't73-v116-wait';
-    return String(status).toLowerCase().includes('отказ') || String(status).toLowerCase().includes('не засчит') ? 't73-v116-bad' : 't73-v116-ok';
-  }
-
-  window.processGossReportV115 = window.processGossReportV116 = async function(id, result, points) {
-    const db = client116();
-    if (!db) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
-    const { data, error } = await db.from('reports').select('*').eq('id', id).limit(1);
-    if (error) return alert('Не удалось открыть отчёт: ' + error.message);
-    const row = data && data[0];
-    if (!row) return alert('Отчёт не найден');
-    const p = parse(row.date, {});
-    p.result = result;
-    p.reviewStatus = result;
-    p.xp = Number(points) || 0;
-    p.reviewPoints = Number(points) || 0;
-    p.checkedAt = p.reviewedAt = nowRu();
-    p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
-    await db.from('reports').update({ date: JSON.stringify(p), status: result, xp: Number(points) || 0 }).eq('id', id);
-    await window.renderGossReportsCardsV115();
-  };
-
-  function bindTable116(scope) {
-    if (!scope || scope.__t73v116Bound) return;
-    scope.__t73v116Bound = true;
-    scope.addEventListener('click', (e) => {
-      const zoom = e.target.closest?.('[data-v116-zoom]');
-      if (zoom) {
-        e.preventDefault();
-        e.stopPropagation();
-        openZoom116(zoom.getAttribute('data-v116-zoom') || '', zoom.getAttribute('data-v116-name') || 'Скриншот');
-        return;
-      }
-      const act = e.target.closest?.('[data-v116-action]');
-      if (act) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.processGossReportV116(act.dataset.id, act.dataset.result, Number(act.dataset.points || 0));
-        return;
-      }
-      const refresh = e.target.closest?.('#gossV116RefreshReports');
-      if (refresh) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.renderGossReportsCardsV115();
-      }
-    }, true);
-    scope.addEventListener('error', (e) => {
-      const img = e.target;
-      if (!img || !img.closest || !img.closest('.t73-v116-thumb')) return;
-      const btn = img.closest('.t73-v116-thumb');
-      const name = btn?.getAttribute('data-v116-name') || 'Фото';
-      if (btn) btn.outerHTML = `<span class="t73-v116-no-photo">⚠️ ${esc(name)} не загрузилось</span>`;
-    }, true);
-  }
-
-  window.renderGossReportsCardsV115 = window.renderGossReportsCardsV116 = async function() {
-    addCss116();
-    ensureZoom116();
-    const root = root116();
-    const db = client116();
-    if (!root || !db) return;
-    bindTable116(root);
-    const orgId = orgId116(), orgLabel = orgLabel116();
-    root.innerHTML = `<div class="t73-v116-panel"><div class="t73-v116-title"><div><h3>Проверка ГОСС/СС отчётов — ${esc(orgLabel)}</h3><div class="t73-v116-muted">Загрузка отчётов...</div></div></div></div>`;
+  async function renderOrgReports(){
+    addCss(); ensureZoom();
+    const root = gossRoot();
+    const client = db();
+    if (!root) return;
+    root.innerHTML = `<div class="t73-v118-wrap"><div class="t73-v118-head"><div><h3>✅ Проверить отчётность — ${esc(orgLabel())}</h3><div class="t73-v118-sub">Загружаю отчёты организации...</div></div></div></div>`;
+    if (!client) { root.innerHTML = '<div class="t73-v118-empty">Supabase ещё не подключен. Подождите пару секунд и нажмите «Проверить отчётность» ещё раз.</div>'; return; }
     try {
-      const { data, error } = await db.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', orgId).order('id', { ascending:false }).limit(160);
+      const oid = orgId();
+      const { data, error } = await client.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', oid).order('id', { ascending:false }).limit(220);
       if (error) throw error;
-      const reports = data || [];
-      const rowsHtml = reports.map((row, idx) => {
+      const rows = data || [];
+      const items = rows.map(row => {
         const p = parse(row.date, {});
-        const proofs = collectProofs116(row, p);
-        const status = p.reviewStatus || p.result || row.status || 'На проверке';
-        const reviewed = !!(p.reviewStatus || ['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(p.result) || p.checkedAt || p.reviewedAt);
+        const st = statusInfo(row, p);
+        const person = reportPerson(row, p);
+        const proofs = collectProofs(row, p);
+        return { row, p, st, person, proofs };
+      }).sort((a,b) => Number(a.st.reviewed) - Number(b.st.reviewed));
+      const pending = items.filter(x => !x.st.reviewed).length;
+      const checked = items.length - pending;
+      const cards = items.map(x => {
+        const { row, p, st, person, proofs } = x;
         const points = Number(p.reviewPoints || p.xp || row.xp || 0);
-        const created = p.day || p.created || p.createdIso || row.created_at || '';
-        return `<tr>
-          <td>${idx + 1}</td>
-          <td><div class="t73-v116-user">${esc(p.nick || p.nickname || row.status || 'Сотрудник')}</div><div class="t73-v116-muted">${esc(row.email === 'GOSS_USER_REPORT' ? orgLabel : row.email || '')}</div></td>
-          <td><strong>${esc(p.type || 'ГОСС отчёт')}</strong><div class="t73-v116-muted">${esc(created)}</div></td>
-          <td><div class="t73-v116-comment">${esc(p.comment || p.work || 'Без комментария')}</div></td>
-          <td>${photosHtml116(proofs)}</td>
-          <td><span class="t73-v116-pill ${statusClass116(status, reviewed)}">${esc(status)}${points ? ' · ' + points + ' б.' : ''}</span></td>
-          <td>${!reviewed ? `<div class="t73-v116-actions">
-              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Натяг" data-points="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
-              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
-              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
-              <button class="btn btn-secondary" type="button" data-v116-action="1" data-id="${esc(row.id)}" data-result="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
-            </div>` : `<div class="t73-v116-reviewed">Проверил:<br><strong>${esc(p.reviewedBy || p.checkedBy || '—')}</strong><br>${esc(p.reviewedAt || p.checkedAt || '')}</div>`}</td>
-        </tr>`;
-      }).join('');
-
-      root.innerHTML = `<div class="t73-v116-panel"><div class="t73-v116-title"><div><h3>Проверка ГОСС/СС отчётов — ${esc(orgLabel)}</h3><div class="t73-v116-muted">Скриншоты открываются увеличенно прямо на сайте. Никаких переходов по ссылкам.</div></div><button id="gossV116RefreshReports" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>` +
-        (reports.length ? `<div class="t73-v116-table-wrap"><table class="t73-v116-table"><thead><tr><th>#</th><th>Сотрудник</th><th>Отчёт / дата</th><th>Комментарий</th><th>Фото</th><th>Статус</th><th>Проверка</th></tr></thead><tbody>${rowsHtml}</tbody></table></div>` : '<div class="t73-v116-panel">Отправленных ГОСС/СС отчётов пока нет.</div>');
-      bindTable116(root);
-    } catch (err) {
-      root.innerHTML = `<div class="t73-v116-panel" style="color:var(--color-error);">Ошибка загрузки ГОСС/СС отчётов: ${esc(err.message || err)}</div>`;
-    }
-  };
-
-  function intercept116(e) {
-    const btn = e.target?.closest?.('button, .btn, .gov-action-switch-v3, .gov-action-switch-v4');
-    if (!btn) return;
-    const txt = String(btn.textContent || '').toLowerCase();
-    const view = btn.dataset?.view;
-    const isReports = view === 'reports' || (txt.includes('провер') && txt.includes('отч'));
-    if (isReports) setTimeout(window.renderGossReportsCardsV115, 220);
-  }
-
-  document.addEventListener('click', intercept116, true);
-  if (document.querySelector('.gov-action-switch-v3.active[data-view="reports"], .gov-action-switch-v4.active[data-view="reports"]')) setTimeout(window.renderGossReportsCardsV115, 300);
-  addCss116();
-  ensureZoom116();
-  window.T73_V116_GOSS_TABLE_ZOOM_FIX = { render: window.renderGossReportsCardsV116, zoom: openZoom116 };
-})();
-</script>
-
-
-<script>
-/* === T73 V117 HOTFIX: ГОСС/СС проверка плитками-клетками, как у модеров + zoom фото === */
-(() => {
-  if (window.__T73_V117_GOSS_CELLS_ZOOM_FIX__) return;
-  window.__T73_V117_GOSS_CELLS_ZOOM_FIX__ = true;
-
-  const $ = (id) => document.getElementById(id);
-  const esc = (v) => String(v ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-  const parse = (v, fb={}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch { return fb; } };
-  const nowRu = () => new Date().toLocaleString('ru-RU');
-  let clientCache = null;
-
-  function db117() {
-    if (clientCache && typeof clientCache.from === 'function') return clientCache;
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') { clientCache = supa; return clientCache; } } catch(_e) {}
-    for (const k of ['supa','supabaseClient','t73Supa']) {
-      if (window[k] && typeof window[k].from === 'function') { clientCache = window[k]; return clientCache; }
-    }
-    return null;
-  }
-
-  function orgId117() {
-    return document.querySelector('.gov-org-switch-v4.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch-v3.active')?.dataset.orgId
-        || document.querySelector('.gov-org-switch.active')?.dataset.orgId
-        || 'fsb';
-  }
-  function orgLabel117() {
-    const b = document.querySelector('.gov-org-switch-v4.active, .gov-org-switch-v3.active, .gov-org-switch.active');
-    return b ? b.textContent.trim() : orgId117().toUpperCase();
-  }
-  function root117() {
-    return $('gossV4Content') || $('gossV3Content') || $('gossDashView') || $('mode-fsb');
-  }
-
-  function addProof117(out, seen, proof, idx) {
-    if (!proof) return;
-    let url = '', name = 'Скриншот ' + (idx + 1), kind = '', type = '';
-    if (typeof proof === 'string') url = proof;
-    else {
-      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || '';
-      name = proof.name || proof.title || proof.filename || proof.fileName || name;
-      kind = proof.kind || proof.type || '';
-      type = proof.mime || proof.mimeType || proof.contentType || proof.type || '';
-    }
-    url = String(url || '').trim();
-    if (!url || seen.has(url)) return;
-    seen.add(url);
-    out.push({ url, name, kind, type });
-  }
-
-  function collectProofs117(row, p) {
-    const out = [], seen = new Set();
-    (Array.isArray(p.files) ? p.files : []).forEach((x, i) => addProof117(out, seen, x, i));
-    (Array.isArray(p.proofs) ? p.proofs : []).forEach((x, i) => addProof117(out, seen, x, i + out.length));
-    if (p.file) addProof117(out, seen, p.file, out.length);
-    if (p.screenshot) addProof117(out, seen, p.screenshot, out.length);
-    if (p.image) addProof117(out, seen, p.image, out.length);
-    if (p.link) addProof117(out, seen, { url:p.link, name:'Доказательство', kind:'link' }, out.length);
-    if (row && row.link) addProof117(out, seen, { url:row.link, name:'Доказательство', kind:'link' }, out.length);
-    return out;
-  }
-
-  function decodeUrl117(url) { try { return decodeURIComponent(String(url)); } catch { return String(url || ''); } }
-  function isImage117(proof) {
-    const url = String(proof.url || '');
-    const dec = decodeUrl117(url);
-    const name = String(proof.name || '');
-    const kind = String(proof.kind || '').toLowerCase();
-    const type = String(proof.type || '').toLowerCase();
-    if (/^data:image\//i.test(url)) return true;
-    if (kind === 'image' || type.startsWith('image/')) return true;
-    if (/\.(png|jpe?g|jpeg|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|jpeg|webp|gif|bmp|avif)$/i.test(name)) return true;
-    if (/\/storage\/v1\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(dec)) return true;
-    return false;
-  }
-
-  function normalizeStatus117(status, reviewed) {
-    const s = String(status || '').trim();
-    if (!reviewed && (!s || s === 'none')) return 'На проверке';
-    return s || 'На проверке';
-  }
-  function reviewed117(p, status) {
-    const s = String(status || '').toLowerCase();
-    return !!(p.reviewStatus || p.checkedAt || p.reviewedAt || ['натяг','норма','перенорма','отказ','не засчитано','отказано'].includes(s));
-  }
-  function statusClass117(status, reviewed) {
-    const s = String(status || '').toLowerCase();
-    if (!reviewed || s.includes('провер')) return 't73-v117-pending';
-    if (s.includes('отказ') || s.includes('не засчит')) return 't73-v117-bad';
-    if (s.includes('перенорм')) return 't73-v117-super';
-    if (s.includes('натяг') || s.includes('герой')) return 't73-v117-stretch';
-    return 't73-v117-good';
-  }
-
-  function addCss117() {
-    if ($('t73V117GossCellsCss')) return;
-    document.head.insertAdjacentHTML('beforeend', `<style id="t73V117GossCellsCss">
-      .t73-v117-panel{background:linear-gradient(135deg,rgba(255,107,136,.13),rgba(0,0,0,.46));border:1px solid rgba(255,107,136,.26);border-radius:20px;padding:1rem;box-shadow:0 18px 42px rgba(0,0,0,.34);margin-bottom:1rem}
-      .t73-v117-top{display:flex;align-items:center;justify-content:space-between;gap:.9rem;flex-wrap:wrap}.t73-v117-top h3{margin:0;color:#ff6b88;letter-spacing:.01em}.t73-v117-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.35}.t73-v117-tools{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}.t73-v117-stat{display:inline-flex;align-items:center;gap:.34rem;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.045);border-radius:999px;padding:.4rem .68rem;font-size:.84rem;font-weight:900;color:#fff}.t73-v117-refresh{white-space:nowrap}
-      .t73-v117-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:.85rem;align-items:stretch}.t73-v117-cell{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.026));box-shadow:0 14px 30px rgba(0,0,0,.28);padding:.85rem;display:flex;flex-direction:column;gap:.72rem;min-height:265px;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}.t73-v117-cell:hover{transform:translateY(-2px);border-color:rgba(255,107,136,.5);box-shadow:0 18px 42px rgba(255,107,136,.14)}.t73-v117-cell::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:rgba(255,255,255,.18)}.t73-v117-cell.t73-v117-pending::before{background:#ffd166}.t73-v117-cell.t73-v117-good::before{background:#52c77b}.t73-v117-cell.t73-v117-super::before{background:#3dd68c}.t73-v117-cell.t73-v117-stretch::before{background:#ffbf47}.t73-v117-cell.t73-v117-bad::before{background:var(--color-error)}
-      .t73-v117-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.65rem}.t73-v117-userline{display:flex;gap:.62rem;align-items:flex-start;min-width:0}.t73-v117-avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(135deg,rgba(255,107,136,.28),rgba(255,255,255,.07));border:1px solid rgba(255,107,136,.24);font-weight:1000;color:#fff}.t73-v117-name{font-weight:1000;color:#fff;line-height:1.15;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.t73-v117-meta{margin-top:.2rem;color:var(--color-text-muted);font-size:.82rem;line-height:1.25;overflow-wrap:anywhere}.t73-v117-pill{display:inline-flex;align-items:center;gap:.26rem;border-radius:999px;padding:.34rem .62rem;font-size:.78rem;font-weight:1000;border:1px solid rgba(255,255,255,.18);white-space:nowrap}.t73-v117-pill.t73-v117-pending{color:#ffd166;background:rgba(255,209,102,.12);border-color:rgba(255,209,102,.35)}.t73-v117-pill.t73-v117-good{color:#52c77b;background:rgba(82,199,123,.12);border-color:rgba(82,199,123,.35)}.t73-v117-pill.t73-v117-super{color:#3dd68c;background:rgba(61,214,140,.12);border-color:rgba(61,214,140,.35)}.t73-v117-pill.t73-v117-stretch{color:#ffbf47;background:rgba(255,191,71,.12);border-color:rgba(255,191,71,.36)}.t73-v117-pill.t73-v117-bad{color:var(--color-error);background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.35)}
-      .t73-v117-comment{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:.68rem .72rem;color:var(--color-text-muted);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;line-height:1.38;max-height:110px;overflow:auto}.t73-v117-photos{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}.t73-v117-thumb{height:68px;width:100%;padding:0;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:rgba(0,0,0,.42);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.22);transition:transform .16s ease,border-color .16s ease}.t73-v117-thumb:hover{transform:scale(1.035);border-color:#ff6b88}.t73-v117-thumb img{width:100%;height:100%;object-fit:cover;display:block}.t73-v117-thumb::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.66);border-radius:999px;padding:.05rem .22rem;font-size:.72rem}.t73-v117-no-photo,.t73-v117-file{display:flex;align-items:center;gap:.35rem;min-height:42px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:.52rem .62rem;color:var(--color-text-muted);font-size:.83rem;background:rgba(255,255,255,.035);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v117-file{min-height:34px}
-      .t73-v117-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin-top:auto}.t73-v117-actions .btn{padding:.48rem .45rem;font-size:.78rem;font-weight:1000;white-space:nowrap}.t73-v117-reviewed{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:.62rem;color:var(--color-text-muted);font-size:.83rem;line-height:1.35}.t73-v117-empty{border:1px dashed rgba(255,255,255,.16);border-radius:18px;padding:1rem;color:var(--color-text-muted);background:rgba(255,255,255,.035)}
-      #t73V117ZoomModal{display:none;position:fixed;inset:0;z-index:1000002;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}.t73-v117-zoom-box{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default}.t73-v117-zoom-head{display:flex;justify-content:space-between;gap:.8rem;align-items:center;color:#fff}.t73-v117-zoom-name{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v117-zoom-close{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem}.t73-v117-zoom-img{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111}
-      @media(max-width:720px){.t73-v117-panel{padding:.82rem}.t73-v117-board{grid-template-columns:1fr}.t73-v117-photos{grid-template-columns:repeat(3,1fr)}.t73-v117-thumb{height:74px}.t73-v117-actions{grid-template-columns:1fr 1fr}#t73V117ZoomModal{padding:12px}.t73-v117-zoom-img{max-height:78vh}}
-    </style>`);
-  }
-
-  function ensureZoom117() {
-    addCss117();
-    if ($('t73V117ZoomModal')) return;
-    document.body.insertAdjacentHTML('beforeend', `<div id="t73V117ZoomModal" aria-hidden="true">
-      <div class="t73-v117-zoom-box" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
-        <div class="t73-v117-zoom-head"><div id="t73V117ZoomName" class="t73-v117-zoom-name">Скриншот</div><button id="t73V117ZoomClose" class="t73-v117-zoom-close" type="button" aria-label="Закрыть">✕</button></div>
-        <img id="t73V117ZoomImg" class="t73-v117-zoom-img" alt="Скриншот">
-      </div>
-    </div>`);
-    const modal = $('t73V117ZoomModal');
-    const close = () => { modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); const img = $('t73V117ZoomImg'); if (img) img.src = ''; document.body.style.overflow = ''; };
-    modal.addEventListener('click', close);
-    $('t73V117ZoomClose')?.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.style.display === 'flex') close(); });
-  }
-
-  function openZoom117(url, name) {
-    ensureZoom117();
-    const modal = $('t73V117ZoomModal'), img = $('t73V117ZoomImg'), label = $('t73V117ZoomName');
-    if (!modal || !img) return;
-    img.src = url;
-    img.alt = name || 'Скриншот';
-    if (label) label.textContent = name || 'Скриншот';
-    modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function photosHtml117(proofs) {
-    const imgs = proofs.filter(isImage117);
-    const other = proofs.filter(p => !isImage117(p));
-    if (!imgs.length && !other.length) return '<div class="t73-v117-no-photo">— фото не прикреплены</div>';
-    const imgHtml = imgs.map((proof, i) => {
-      const safe = esc(proof.url);
-      const name = esc(proof.name || ('Скриншот ' + (i + 1)));
-      return `<button class="t73-v117-thumb" type="button" data-v117-zoom="${safe}" data-v117-name="${name}" title="Нажмите, чтобы приблизить"><img src="${safe}" alt="${name}" loading="lazy"></button>`;
-    }).join('');
-    const filesHtml = other.map((proof, i) => `<div class="t73-v117-file" title="${esc(proof.name || 'Не фото')}">📎 ${esc(proof.name || ('Файл ' + (i + 1)))} — не фото</div>`).join('');
-    return `<div class="t73-v117-photos">${imgHtml}</div>${filesHtml}`;
-  }
-
-  async function process117(id, result, points) {
-    const db = db117();
-    if (!db) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
-    const { data, error } = await db.from('reports').select('*').eq('id', id).limit(1);
-    if (error) return alert('Не удалось открыть отчёт: ' + error.message);
-    const row = data && data[0];
-    if (!row) return alert('Отчёт не найден');
-    const p = parse(row.date, {});
-    p.result = result;
-    p.reviewStatus = result;
-    p.xp = Number(points) || 0;
-    p.reviewPoints = Number(points) || 0;
-    p.checkedAt = p.reviewedAt = nowRu();
-    p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
-    await db.from('reports').update({ date: JSON.stringify(p), status: result, xp: Number(points) || 0 }).eq('id', id);
-    await render117();
-  }
-
-  function bind117(scope) {
-    if (!scope || scope.__t73v117Bound) return;
-    scope.__t73v117Bound = true;
-    scope.addEventListener('click', (e) => {
-      const zoom = e.target.closest?.('[data-v117-zoom]');
-      if (zoom) {
-        e.preventDefault(); e.stopPropagation();
-        openZoom117(zoom.getAttribute('data-v117-zoom') || '', zoom.getAttribute('data-v117-name') || 'Скриншот');
-        return;
-      }
-      const act = e.target.closest?.('[data-v117-action]');
-      if (act) {
-        e.preventDefault(); e.stopPropagation();
-        process117(act.dataset.id, act.dataset.result, Number(act.dataset.points || 0));
-        return;
-      }
-      const refresh = e.target.closest?.('#gossV117RefreshReports');
-      if (refresh) {
-        e.preventDefault(); e.stopPropagation();
-        render117();
-      }
-    }, true);
-    scope.addEventListener('error', (e) => {
-      const img = e.target;
-      if (!img || !img.closest || !img.closest('.t73-v117-thumb')) return;
-      const btn = img.closest('.t73-v117-thumb');
-      const name = btn?.getAttribute('data-v117-name') || 'Фото';
-      if (btn) btn.outerHTML = `<div class="t73-v117-no-photo">⚠️ ${esc(name)} не загрузилось</div>`;
-    }, true);
-  }
-
-  async function render117() {
-    addCss117(); ensureZoom117();
-    const root = root117();
-    const db = db117();
-    if (!root || !db) return;
-    bind117(root);
-    const orgId = orgId117(), orgLabel = orgLabel117();
-    root.innerHTML = `<div class="t73-v117-panel"><div class="t73-v117-top"><div><h3>Проверка ГОСС/СС отчётности — ${esc(orgLabel)}</h3><div class="t73-v117-muted">Загрузка отчётов...</div></div></div></div>`;
-    try {
-      const { data, error } = await db.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', orgId).order('id', { ascending:false }).limit(180);
-      if (error) throw error;
-      const raw = data || [];
-      const reports = raw.map((row, idx) => {
-        const p = parse(row.date, {});
-        const statusRaw = p.reviewStatus || p.result || row.status || 'На проверке';
-        const checked = reviewed117(p, statusRaw);
-        const status = normalizeStatus117(statusRaw, checked);
-        return { row, p, idx, checked, status, cls: statusClass117(status, checked) };
-      }).sort((a,b) => Number(a.checked) - Number(b.checked));
-
-      const pending = reports.filter(x => !x.checked).length;
-      const checked = reports.length - pending;
-      const cards = reports.map((item, idx) => {
-        const { row, p, status, checked, cls } = item;
-        const proofs = collectProofs117(row, p);
-        const points = Number(p.reviewPoints || p.xp || row.xp || 0);
-        const created = p.day || p.created || p.createdIso || row.created_at || '';
-        const nick = p.nick || p.nickname || row.status || 'Сотрудник';
-        const initials = String(nick).trim().slice(0, 1).toUpperCase() || '#';
-        return `<article class="t73-v117-cell ${cls}">
-          <div class="t73-v117-head">
-            <div class="t73-v117-userline"><div class="t73-v117-avatar">${esc(initials)}</div><div><div class="t73-v117-name">${esc(nick)}</div><div class="t73-v117-meta">${esc(p.type || 'ГОСС отчёт')}<br>${esc(created || 'Дата не указана')}</div></div></div>
-            <span class="t73-v117-pill ${cls}">${esc(status)}${points ? ' · ' + points + ' б.' : ''}</span>
+        const name = String(person.name || 'Сотрудник');
+        const initial = name.trim().slice(0,1).toUpperCase() || '#';
+        const when = p.day || p.created || p.createdIso || 'Дата не указана';
+        return `<article class="t73-v118-cell ${st.cls}">
+          <div class="t73-v118-card-top">
+            <div class="t73-v118-user"><div class="t73-v118-avatar">${esc(initial)}</div><div><div class="t73-v118-name">${esc(name)}</div><div class="t73-v118-meta">${esc(p.type || 'ГОСС отчёт')}<br>${esc(when)}</div></div></div>
+            <span class="t73-v118-status ${st.cls}">${esc(st.label)}${points ? ' · ' + points + ' б.' : ''}</span>
           </div>
-          <div class="t73-v117-comment">${esc(p.comment || p.work || 'Без комментария')}</div>
-          <div>${photosHtml117(proofs)}</div>
-          ${!checked ? `<div class="t73-v117-actions">
-              <button class="btn btn-secondary" type="button" data-v117-action="1" data-id="${esc(row.id)}" data-result="Натяг" data-points="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
-              <button class="btn btn-secondary" type="button" data-v117-action="1" data-id="${esc(row.id)}" data-result="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
-              <button class="btn btn-secondary" type="button" data-v117-action="1" data-id="${esc(row.id)}" data-result="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
-              <button class="btn btn-secondary" type="button" data-v117-action="1" data-id="${esc(row.id)}" data-result="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
-            </div>` : `<div class="t73-v117-reviewed">Проверил: <strong>${esc(p.reviewedBy || p.checkedBy || '—')}</strong><br>${esc(p.reviewedAt || p.checkedAt || '')}</div>`}
+          <div class="t73-v118-comment">${esc(p.comment || p.work || 'Без комментария')}</div>
+          <div>${photoHtml(proofs)}</div>
+          <div class="t73-v118-actions">
+            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Натяг" data-points="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
+            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
+            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
+            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
+          </div>
+          ${st.reviewed ? `<div class="t73-v118-reviewed">Проверил: <strong>${esc(p.reviewedBy || p.checkedBy || '—')}</strong><br>${esc(p.reviewedAt || p.checkedAt || '')}</div>` : ''}
         </article>`;
       }).join('');
-
-      root.innerHTML = `<div class="t73-v117-panel"><div class="t73-v117-top"><div><h3>Проверка ГОСС/СС отчётности — ${esc(orgLabel)}</h3><div class="t73-v117-muted">Отчёты теперь не таблицей, а клетками-карточками: фото открываются увеличенно прямо на сайте.</div></div><div class="t73-v117-tools"><span class="t73-v117-stat">🟡 На проверке: ${pending}</span><span class="t73-v117-stat">✅ Проверено: ${checked}</span><button id="gossV117RefreshReports" class="btn btn-secondary t73-v117-refresh" type="button">🔄 Обновить</button></div></div></div>` +
-        (reports.length ? `<div class="t73-v117-board">${cards}</div>` : '<div class="t73-v117-empty">Отправленных ГОСС/СС отчётов пока нет.</div>');
-      bind117(root);
-    } catch (err) {
-      root.innerHTML = `<div class="t73-v117-panel" style="color:var(--color-error);">Ошибка загрузки ГОСС/СС отчётности: ${esc(err.message || err)}</div>`;
+      root.innerHTML = `<div class="t73-v118-wrap"><div class="t73-v118-head"><div><h3>✅ Проверить отчётность — ${esc(orgLabel())}</h3><div class="t73-v118-sub">Старая таблица здесь удалена: отчёты организации показываются клетками-карточками, фото увеличиваются прямо на сайте и никуда не перекидывают.</div></div><div class="t73-v118-tools"><span class="t73-v118-chip">🟡 На проверке: ${pending}</span><span class="t73-v118-chip">✅ Проверено: ${checked}</span><button id="t73V118Refresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>${items.length ? `<div class="t73-v118-board">${cards}</div>` : '<div class="t73-v118-empty">Отправленных отчётов по этой организации пока нет.</div>'}</div>`;
+    } catch(err) {
+      root.innerHTML = `<div class="t73-v118-empty" style="color:var(--color-error);">Ошибка загрузки отчётности организации: ${esc(err && err.message ? err.message : err)}</div>`;
     }
   }
 
-  window.processGossReportV115 = window.processGossReportV116 = window.processGossReportV117 = process117;
-  window.renderGossReportsCardsV115 = window.renderGossReportsCardsV116 = window.renderGossReportsCardsV117 = render117;
-
-  function intercept117(e) {
-    const btn = e.target?.closest?.('button, .btn, .gov-action-switch-v3, .gov-action-switch-v4');
-    if (!btn) return;
-    const txt = String(btn.textContent || '').toLowerCase();
-    const view = btn.dataset?.view;
-    const isReports = view === 'reports' || (txt.includes('провер') && txt.includes('отчет')) || (txt.includes('провер') && txt.includes('отчёт'));
-    if (isReports) setTimeout(render117, 220);
+  function patchOrgNav(){
+    // Убираем отдельную старую "Таблицу отчётов" из организаций, чтобы никто не попадал в конфликтующий табличный рендер.
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"], #gossOrgActionNav .gov-action-switch[data-view="reports"] .old-table').forEach(el => el.remove());
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #gossOrgActionNav .gov-action-switch[data-view="reports"], #govV4CheckReportsBtn').forEach(btn => {
+      if (btn.dataset.t73v118Text === '1') return;
+      btn.dataset.t73v118Text = '1';
+      btn.textContent = '✅ Проверить отчётность';
+    });
+  }
+  function activateReportsButton(){
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4, #gossOrgActionNav .gov-action-switch').forEach(b => b.classList.toggle('active', b.dataset.view === 'reports'));
   }
 
-  document.addEventListener('click', intercept117, true);
-  if (document.querySelector('.gov-action-switch-v3.active[data-view="reports"], .gov-action-switch-v4.active[data-view="reports"]')) setTimeout(render117, 300);
-  addCss117();
-  ensureZoom117();
-  window.T73_V117_GOSS_CELLS_ZOOM_FIX = { render: render117, zoom: openZoom117 };
+  document.addEventListener('click', function(e){
+    const zoom = e.target.closest && e.target.closest('[data-v118-zoom]');
+    if (zoom) {
+      e.preventDefault(); e.stopPropagation();
+      openZoom(zoom.getAttribute('data-v118-zoom') || '', zoom.getAttribute('data-v118-name') || 'Скриншот');
+      return;
+    }
+    const act = e.target.closest && e.target.closest('[data-v118-act]');
+    if (act) {
+      e.preventDefault(); e.stopPropagation();
+      markReport(act.dataset.id, act.dataset.status, Number(act.dataset.points || 0));
+      return;
+    }
+    const refresh = e.target.closest && e.target.closest('#t73V118Refresh');
+    if (refresh) { e.preventDefault(); e.stopPropagation(); renderOrgReports(); return; }
+
+    const btn = e.target.closest && e.target.closest('button,.btn');
+    if (!btn || !isOrgAreaOpen()) return;
+    const txt = String(btn.textContent || '').toLowerCase();
+    const view = btn.dataset && btn.dataset.view;
+    const id = btn.id || '';
+    const orgReportsClick = id === 'govV4CheckReportsBtn'
+      || id === 'govV4RefreshReportsBtn'
+      || id === 'v27GossViewReportsBtn'
+      || id === 'v25GossViewReportsBtn'
+      || id === 'v30GossReviewBtn'
+      || view === 'reports'
+      || view === 'report_table'
+      || ((txt.includes('провер') || txt.includes('таблиц')) && (txt.includes('отчет') || txt.includes('отчёт')) && !txt.includes('модер'));
+    if (orgReportsClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      activateReportsButton();
+      setTimeout(renderOrgReports, 0);
+    }
+  }, true);
+
+  document.addEventListener('error', function(e){
+    const img = e.target;
+    if (!img || !img.closest || !img.closest('.t73-v118-photo')) return;
+    const btn = img.closest('.t73-v118-photo');
+    const name = btn.getAttribute('data-v118-name') || 'Фото';
+    btn.outerHTML = `<div class="t73-v118-empty-photo">⚠️ ${esc(name)} не загрузилось</div>`;
+  }, true);
+
+  const mo = new MutationObserver(() => patchOrgNav());
+  mo.observe(document.documentElement, { childList:true, subtree:true });
+  addCss(); ensureZoom(); patchOrgNav();
+  window.T73_V118_ORG_REPORT_CELLS = { render: renderOrgReports, zoom: openZoom, patch: patchOrgNav };
 })();
 </script>
 
