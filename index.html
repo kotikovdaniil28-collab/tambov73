@@ -9211,7 +9211,7 @@
                     tabs.push({ view:'profile', label:'📝 Мои данные' }, { view:'submit', label:'📎 Сдать ГОСС отчёт' }, { view:'shop', label:'🛒 Магазин' });
                 }
                 if (v4IsLeader(orgId)) {
-                    tabs.push({ view:'staff', label:'📋 Таблица состава' }, { view:'report_table', label:'📊 Таблица отчётов' }, { view:'reports', label:'✅ Проверить отчётность' }, { view:'shop_logs', label:'🧾 Логи магазина' }, { view:'manage', label:'👑 Панель руководства' });
+                    tabs.push({ view:'staff', label:'📋 Таблица состава' }, { view:'reports', label:'✅ Проверить отчётность' }, { view:'shop_logs', label:'🧾 Логи магазина' }, { view:'manage', label:'👑 Панель руководства' });
                 }
                 return tabs;
             }
@@ -9555,12 +9555,20 @@
             function v4ReportProofsHtml(p){
                 const proofs = v4ReportProofs(p);
                 if (!proofs.length) return '<span class="gov-v4-muted">—</span>';
-                return '<div class="gov-v4-report-proof">' + proofs.map((proof, i) => {
-                    const url = proof.url || '';
-                    const isImg = /^data:image\//i.test(url) || /\.(png|jpe?g|webp|gif)(\?|#|$)/i.test(url);
-                    const icon = proof.kind === 'link' ? '🔗' : (isImg ? '🖼' : '📎');
-                    const name = proof.kind === 'link' ? 'Ссылка' : (proof.name || ('Файл ' + (i + 1)));
-                    return '<a class="btn btn-secondary" target="_blank" rel="noreferrer" href="' + v4Esc(url) + '">' + icon + ' ' + v4Esc(name) + '</a>';
+                return '<div class="gov-v4-report-proof gov-v4-report-proof-cells">' + proofs.map((proof, i) => {
+                    const url = String(proof.url || '').trim();
+                    const name = proof.kind === 'link' ? 'Ссылка' : (proof.name || proof.title || ('Файл ' + (i + 1)));
+                    const kind = String(proof.kind || proof.type || '').toLowerCase();
+                    const isImg = /^data:image\//i.test(url)
+                        || /^blob:/i.test(url)
+                        || /\.(png|jpe?g|webp|gif|avif|bmp|svg)(\?|#|$)/i.test(url)
+                        || kind.indexOf('image/') === 0
+                        || /\/(report-screenshots|screenshots)\//i.test(url)
+                        || /\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(url);
+                    if (isImg) {
+                        return '<button class="gov-v4-proof-photo t73-v119-zoom-btn" type="button" data-v119-img="' + v4Esc(url) + '" data-v119-title="' + v4Esc(name) + '" title="Нажмите, чтобы приблизить"><img src="' + v4Esc(url) + '" alt="' + v4Esc(name) + '" loading="lazy"></button>';
+                    }
+                    return '<div class="gov-v4-proof-file" title="' + v4Esc(name) + '">📎 ' + v4Esc(name) + '<span>не фото</span></div>';
                 }).join('') + '</div>';
             }
             function v4ReportActionsHtml(row, p){
@@ -9688,7 +9696,7 @@
                     }
                     try { await supa.from('reports').insert([{ id:makeFixId('goss_report_check'), email:'GOSS_REPORT_CHECK', link:reportOrg, status:(currentUser && currentUser.id) || 'leader', date:payload.checkedBy + ' выставил ' + statusText + ' для ' + (payload.nick || userId || 'сотрудника') + ' · ' + payload.checkedAt, xp:newPoints }]); } catch(e) {}
                     try { playSound(statusText === 'Отказ' ? 'fail' : 'ok'); } catch(e) {}
-                    if (govV4SelectedView === 'report_table') await v4RenderReportsTable(); else await v4RenderReportsReview();
+                    await v4RenderReportsReview();
                 } catch(err) {
                     alert('Не удалось проверить отчёт: ' + (err && err.message ? err.message : err));
                 }
@@ -9705,7 +9713,7 @@
                     const rows = data || [];
                     const waiting = rows.filter(r => !v4IsReportReviewed(v4ReportPayload(r)));
                     const checked = rows.filter(r => v4IsReportReviewed(v4ReportPayload(r)));
-                    const header = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">✅ Проверить отчётность — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Не таблица: каждый отчёт отдельной карточкой, как у модеров. Кнопки: Натяг / Норма / Перенорма / Отказ.</p></div><button id="govV4RefreshReportsBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>';
+                    const header = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">✅ Проверить отчётность — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Не общая таблица: это отдельная сетка выбранной организации. Каждый отчёт — карточка-клетка, как у модеров; фото увеличиваются прямо здесь.</p></div><button id="govV4RefreshReportsBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>';
                     if (!rows.length) { root.innerHTML = header + '<div class="gov-v4-denied">Отправленных ГОСС отчётов пока нет.</div>'; v4Bind(document.getElementById('govV4RefreshReportsBtn'), v4RenderReportsReview); return; }
                     root.innerHTML = header
                         + '<div class="gov-v4-card"><div class="gov-v4-report-stats"><div class="gov-v4-mini"><strong>На проверке</strong><div class="stat-value" style="font-size:1.5rem;color:#ffbf47;">' + waiting.length + '</div></div><div class="gov-v4-mini"><strong>Всего загружено</strong><div class="stat-value" style="font-size:1.5rem;">' + rows.length + '</div></div><div class="gov-v4-mini"><strong>Организация</strong><div class="gov-v4-muted">' + v4Esc(org.short) + '</div></div></div></div>'
@@ -9721,36 +9729,9 @@
                 }
             }
             async function v4RenderReportsTable(){
-                const org = v4Org(), root = document.getElementById('gossV4Content');
-                if (!root) return;
-                if (!v4IsLeader(org.id)) { root.innerHTML = '<div class="gov-v4-denied">Таблица отчётов доступна только руководству этой организации.</div>'; return; }
-                root.innerHTML = '<div class="gov-v4-card"><h3 style="color:#ff6b88;margin:0;">📊 Таблица отчётов — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Загружаю отчёты выбранной организации...</p></div>';
-                try {
-                    const users = await v4LoadUsersForLeadership();
-                    const { data, error } = await supa.from('reports').select('*').eq('email', GOV_V4_REPORT_EMAIL).eq('link', org.id).order('id', { ascending:false }).limit(350);
-                    if (error) throw error;
-                    const rows = data || [];
-                    const counts = { total:rows.length, wait:0, nat:0, norm:0, over:0, fail:0 };
-                    rows.forEach(r => { const st = v4ReportStatusLabel(r, v4ReportPayload(r)); if (st === 'На проверке') counts.wait++; if (st === 'Натяг') counts.nat++; if (st === 'Норма') counts.norm++; if (st === 'Перенорма') counts.over++; if (st === 'Отказ') counts.fail++; });
-                    const header = '<div class="gov-v4-card"><div class="gov-v4-head"><div><h3 style="color:#ff6b88;margin:0;">📊 Таблица отчётов — ' + v4Esc(org.short) + '</h3><p class="gov-v4-sub">Отдельная сводка именно этой организации. Проверять отчёты удобнее во вкладке «Проверить отчётность».</p></div><button id="govV4RefreshReportTableBtn" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>';
-                    if (!rows.length) { root.innerHTML = header + '<div class="gov-v4-denied">В этой организации ещё нет отправленных отчётов.</div>'; v4Bind(document.getElementById('govV4RefreshReportTableBtn'), v4RenderReportsTable); return; }
-                    const stats = '<div class="gov-v4-card"><div class="gov-v4-report-stats">'
-                        + '<div class="gov-v4-mini"><strong>Всего</strong><div class="stat-value" style="font-size:1.45rem;">' + counts.total + '</div></div>'
-                        + '<div class="gov-v4-mini"><strong>На проверке</strong><div class="stat-value" style="font-size:1.45rem;color:#ffbf47;">' + counts.wait + '</div></div>'
-                        + '<div class="gov-v4-mini"><strong>Норма</strong><div class="stat-value" style="font-size:1.45rem;color:#52c77b;">' + counts.norm + '</div></div>'
-                        + '<div class="gov-v4-mini"><strong>Перенорма</strong><div class="stat-value" style="font-size:1.45rem;color:#3dd68c;">' + counts.over + '</div></div>'
-                        + '<div class="gov-v4-mini"><strong>Натяг</strong><div class="stat-value" style="font-size:1.45rem;color:#ffbf47;">' + counts.nat + '</div></div>'
-                        + '<div class="gov-v4-mini"><strong>Отказ</strong><div class="stat-value" style="font-size:1.45rem;color:var(--color-error);">' + counts.fail + '</div></div>'
-                        + '</div></div>';
-                    const table = '<div class="gov-v4-table-wrap"><table class="gov-v4-table"><thead><tr><th>Сотрудник</th><th>Дата</th><th>Тип</th><th>Статус</th><th>Баллы</th><th>Доказательства</th><th>Комментарий</th></tr></thead><tbody>' + rows.map(row => {
-                        const p = v4ReportPayload(row), status = v4ReportStatusLabel(row, p), cfg = v4ReportStatusConfig(status), person = v4ReportUserName(row, p, users);
-                        return '<tr><td><strong>' + v4Esc(person.name) + '</strong><div class="gov-v4-muted">' + v4Esc(person.userId || p.email || '') + '</div></td><td>' + v4Esc(p.day || p.created || '—') + '</td><td>' + v4Esc(p.type || 'ГОСС отчёт') + '</td><td><span class="gov-v4-pill" style="border-color:' + cfg.color + ';color:' + cfg.color + ';">' + v4Esc(status) + '</span></td><td>' + Number(p.reviewPoints || row.xp || 0) + '</td><td>' + v4ReportProofsHtml(p) + '</td><td style="text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;max-width:320px;">' + v4Esc(p.comment || p.work || '—') + '</td></tr>';
-                    }).join('') + '</tbody></table></div>';
-                    root.innerHTML = header + stats + table;
-                    v4Bind(document.getElementById('govV4RefreshReportTableBtn'), v4RenderReportsTable);
-                } catch(err) {
-                    root.innerHTML = '<div class="gov-v4-denied" style="border-color:var(--color-error);color:var(--color-error);">Ошибка загрузки таблицы отчётов: ' + v4Esc(err && err.message ? err.message : err) + '</div>';
-                }
+                // V119: старая табличная проверка отключена. Даже если где-то осталась старая ссылка,
+                // она ведёт в нормальную проверку отчётности выбранной организации.
+                return v4RenderReportsReview();
             }
             async function v4RenderManage(){
                 const org = v4Org(), root = document.getElementById('gossV4Content');
@@ -9831,8 +9812,7 @@
                 else if (govV4SelectedView === 'submit') await v4RenderSubmit();
                 else if (govV4SelectedView === 'shop') await v4RenderShop();
                 else if (govV4SelectedView === 'staff') await v4RenderStaff();
-                else if (govV4SelectedView === 'report_table') await v4RenderReportsTable();
-                else if (govV4SelectedView === 'reports') await v4RenderReportsReview();
+                else if (govV4SelectedView === 'report_table' || govV4SelectedView === 'reports') await v4RenderReportsReview();
                 else if (govV4SelectedView === 'shop_logs') await v4RenderShopLogs();
                 else if (govV4SelectedView === 'manage') await v4RenderManage();
                 else v4RenderTrainer();
@@ -12304,7 +12284,7 @@
             .g19-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.32);-webkit-overflow-scrolling:touch}.g19-table{width:100%;min-width:1180px;border-collapse:separate;border-spacing:0}.g19-table th,.g19-table td{padding:.7rem;border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.06);text-align:center;vertical-align:top}.g19-table th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,rgba(255,107,136,.30),rgba(108,140,255,.16))}.g19-table th:first-child,.g19-table td:first-child{position:sticky;left:0;z-index:3;text-align:left;background:rgba(13,16,32,.98);min-width:190px}.g19-cell{display:grid;gap:.4rem;min-width:150px}.g19-input,.g19-select,.g19-area{width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(4,6,12,.9);color:#fff;padding:.55rem;font-weight:800}.g19-area{min-height:44px;resize:vertical}.g19-pill{display:inline-flex;gap:.25rem;padding:.25rem .55rem;border-radius:999px;border:1px solid rgba(82,199,123,.35);background:rgba(82,199,123,.12);color:#b8ffd0;font-size:.75rem;font-weight:900;margin:.1rem}.g19-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.g19-form .full{grid-column:1/-1}.g19-drop{border:2px dashed rgba(255,107,136,.48);border-radius:18px;padding:1rem;background:rgba(255,107,136,.08)}.g19-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:.65rem;margin-top:.7rem}.g19-proof{position:relative;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.34);padding:.4rem}.g19-proof img{width:100%;height:84px;object-fit:cover;border-radius:10px}.g19-proof button{position:absolute;right:6px;top:6px;width:28px;height:28px;border-radius:50%;background:#ff4b69;color:#fff;font-weight:900}.g19-shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}.g19-item{padding:1rem;border-radius:16px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.30);display:grid;gap:.5rem}@media(max-width:760px){.g19-form{grid-template-columns:1fr}.g19-actions .btn{width:100%}.g19-table{min-width:980px}.g19-preview{grid-template-columns:repeat(2,1fr)}#gossOrgActionNavV4 .mode-btn{flex:1 1 100%}}
           </style>`)}
           function hideBad(){['reportsTableBtnModStatic','v16ReportTableBtnMod','v16ReportBtnMod','v16OpenBar','v16OpenTableTop','v16OpenReportTop','v16ReportTableBtnGen'].forEach(id=>{const e=$(id);if(e)e.style.display='none'});document.querySelectorAll('#subNavModeration [data-mode="reports_table"]').forEach(e=>e.style.display='none')}
-          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Table','📊 Таблица отчётов ГОСС',lead,renderTable],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🛒 Логи магазина',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
+          async function nav(){style();hideBad();const n=$('gossOrgActionNavV4')||$('gossOrgActionNavV3')||$('gossOrgActionNav');if(!n)return;const o=org(),lead=await orgLead(o.id),glob=await globalLead();const list=[['g19Submit','📎 Сдать ГОСС отчёт',true,renderSubmit],['g19Shop','🛒 Магазин ГОСС',true,renderShop],['g19Logs','🛒 Логи магазина',lead,renderLogs],['g19Global','👑 Руководство всех ГОСС',glob,renderGlobal]];list.forEach(([id,t,show,fn])=>{let b=$(id);if(!b&&show){n.insertAdjacentHTML('beforeend',`<button class="mode-btn" id="${id}" type="button">${t}</button>`);b=$(id)}if(b){b.style.display=show?'inline-flex':'none';b.onclick=e=>{e.preventDefault();fn()}}})}
           async function profiles(oid){const m=new Map();try{const d=(await supa.from('reports').select('*').eq('email','GOSS_PROFILE').eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||k,post:p.post||'—'})})}catch(e){}try{const d=(await supa.from('reports').select('*').eq('email',E.member).eq('link',oid).limit(1000)).data||[];d.forEach(r=>{const p=parse(r.date,{}),k=String(r.status||r.id);m.set(k,{key:k,nick:p.nick||p.name||k,post:p.post||'—'})})}catch(e){}return[...m.values()].sort((a,b)=>a.nick.localeCompare(b.nick,'ru'))}
           async function tableLoad(oid,wk){try{const d=(await supa.from('reports').select('*').eq('email',E.table).eq('link',oid).eq('status',wk).order('id',{ascending:false}).limit(1)).data||[];return d[0]?{id:d[0].id,data:parse(d[0].date,{})}:{id:null,data:{}}}catch(e){return{id:null,data:{}}}}
           async function renderTable(){const o=org(),r=root();active('g19Table');if(!r)return;if(!(await orgLead(o.id))){r.innerHTML='<div class="g19-denied">Таблицу отчётов ГОСС видит и меняет только руководство этой организации или руководство всех ГОСС.</div>';return}r.innerHTML='<div class="g19-card">Загружаю таблицу ГОСС...</div>';const ds=days(),wk=weekKey(),[staff,saved,reps]=await Promise.all([profiles(o.id),tableLoad(o.id,wk),supa.from('reports').select('*').eq('email',E.report).eq('link',o.id).order('id',{ascending:false}).limit(150)]);const marks=(saved.data&&saved.data.marks)||saved.data||{},proof={};(reps.data||[]).forEach(x=>{const p=parse(x.date,{}),d=String(p.day||p.createdIso||'').slice(0,10),k=String(p.userId||x.status||'');if(ds.includes(d)&&k)(proof[k+'|'+d] ||= []).push(p)});const ro=['Нет отчета','Норма','Перенорма','Натяг','Отказ','На проверке'],do_=['Проверить','Сдано','Неактив','Нет отчета','Освобождён','Отказ'];r.innerHTML=`<div class="g19-card"><div class="g19-head"><div><h3 style="color:#ff6b88;margin:0">📊 Таблица отчётов ГОСС — ${esc(o.short)}</h3><p class="g19-muted">Неделя ${ru(ds[0])} — ${ru(ds[6])}. Лидер меняет два блока: отчётность и отметку дня.</p></div><div class="g19-actions"><button class="btn btn-secondary" id="g19Prev">⬅️ Прошлая</button><button class="btn btn-secondary" id="g19This">Текущая</button><button class="btn btn-secondary" id="g19Next">Следующая ➡️</button></div></div><div class="g19-actions" style="margin-top:1rem"><input class="g19-input" id="g19Nick" style="max-width:250px" placeholder="Nick_Name"><input class="g19-input" id="g19Post" style="max-width:220px" placeholder="Должность"><button class="btn btn-secondary" id="g19Add">➕ Добавить строку</button><button class="btn btn-primary" id="g19Save">💾 Сохранить таблицу</button></div></div>`+(staff.length?`<div class="g19-wrap"><table class="g19-table"><thead><tr><th>Сотрудник</th>${ds.map(d=>`<th>${ru(d)}</th>`).join('')}</tr></thead><tbody>${staff.map(u=>`<tr data-key="${esc(u.key)}"><td><b>${esc(u.nick)}</b><div class="g19-muted">${esc(u.post)}</div></td>${ds.map(d=>{const c=(marks[u.key]&&marks[u.key][d])||{},pf=proof[u.key+'|'+d]||[];return`<td><div class="g19-cell"><select class="g19-select report">${ro.map(x=>`<option ${String(c.report||'Нет отчета')===x?'selected':''}>${x}</option>`).join('')}</select><select class="g19-select day">${do_.map(x=>`<option ${String(c.day||'Проверить')===x?'selected':''}>${x}</option>`).join('')}</select><textarea class="g19-area note" placeholder="Комментарий">${esc(c.note||'')}</textarea><div>${pf.length?pf.map(p=>`<span class="g19-pill">📎 ${esc(p.type||'Отчёт')} · ${(p.proofs||[]).length}</span>`).join(''):'<span class="g19-muted">Файлов нет</span>'}</div></div></td>`}).join('')}</tr>`).join('')}</tbody></table></div>`:'<div class="g19-denied">Строк нет. Добавь сотрудника вручную или пусть СС заполнит данные.</div>')+`<div class="g19-card"><h3 style="margin:0 0 .7rem;color:#fff">Последние файловые отчёты</h3><div class="g19-grid">${(reps.data||[]).slice(0,24).map(x=>{const p=parse(x.date,{}),pr=p.proofs||[];return`<div class="g19-mini"><b>${esc(p.nick||x.status)} · ${esc(p.type||'Отчёт')}</b><div class="g19-muted">${esc(p.comment||'Без комментария')}</div><div>${pr.map(a=>`<a class="g19-pill" target="_blank" rel="noreferrer" href="${esc(a.url)}">📎 ${esc(a.name||'Файл')}</a>`).join('')}</div><div class="g19-muted">${esc(p.created||'')}</div></div>`}).join('')||'<div class="g19-denied">Файловых отчётов пока нет.</div>'}</div></div>`;$('g19Prev').onclick=()=>{weekOffset--;renderTable()};$('g19This').onclick=()=>{weekOffset=0;renderTable()};$('g19Next').onclick=()=>{weekOffset++;renderTable()};$('g19Add').onclick=async()=>{const nick=String($('g19Nick').value||'').trim();if(!nick)return;const key='manual_'+o.id+'_'+nick.toLowerCase().replace(/[^a-zа-я0-9_]+/gi,'_');await supa.from('reports').insert([{id:rid('gmem'),email:E.member,link:o.id,status:key,date:JSON.stringify({nick,post:$('g19Post').value||'',at:now(),by:currentUser?.email||''}),xp:0}]);renderTable()};$('g19Save').onclick=async()=>{const out={};r.querySelectorAll('tbody tr[data-key]').forEach(tr=>{const k=tr.dataset.key;out[k]={};tr.querySelectorAll('.g19-cell').forEach((cell,i)=>out[k][ds[i]]={report:cell.querySelector('.report').value,day:cell.querySelector('.day').value,note:cell.querySelector('.note').value})});const old=await tableLoad(o.id,wk);const payload={org:o.id,week:wk,marks:out,by:currentUser?.email||'',at:now()};let q=old.id?await supa.from('reports').update({date:JSON.stringify(payload)}).eq('id',old.id):await supa.from('reports').insert([{id:rid('gtab'),email:E.table,link:o.id,status:wk,date:JSON.stringify(payload),xp:0}]);if(q.error)return alert('Ошибка: '+q.error.message);await supa.from('reports').insert([{id:rid('glog'),email:E.log,link:o.id,status:'table_save',date:'Сохранена таблица отчетов '+o.short+' '+wk+' · '+(currentUser?.email||'')+' · '+now(),xp:0}]);alert('Таблица ГОСС сохранена')}}
@@ -20437,297 +20417,114 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V113 === -->
 
+
 <script>
-/* === T73 V118 FIX: ОРГАНИЗАЦИИ — Проверить отчётность плитками, без старой таблицы, фото zoom без переходов === */
+/* === T73 V119: Организации — отдельная проверка по каждой организации, без старой таблицы, фото zoom на месте === */
 (function(){
-  if (window.__T73_V118_ORG_REPORT_CELLS__) return;
-  window.__T73_V118_ORG_REPORT_CELLS__ = true;
-
+  if (window.__T73_V119_ORG_REPORTS_PER_ORG__) return;
+  window.__T73_V119_ORG_REPORTS_PER_ORG__ = true;
   const $ = (id) => document.getElementById(id);
-  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const parse = (v, fb = {}) => { try { return typeof v === 'string' ? JSON.parse(v) : (v || fb); } catch(e) { return fb; } };
-  const nowRu = () => new Date().toLocaleString('ru-RU');
-  let dbCache = null;
-
-  function db(){
-    if (dbCache && typeof dbCache.from === 'function') return dbCache;
-    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return (dbCache = supa); } catch(e) {}
-    for (const k of ['supa','supabaseClient','t73Supa','client']) {
-      try { if (window[k] && typeof window[k].from === 'function') return (dbCache = window[k]); } catch(e) {}
-    }
-    return null;
-  }
-
-  function activeOrgButton(){
-    return document.querySelector('#subNavOrganizations .gov-org-switch-v4.active')
-        || document.querySelector('#subNavOrganizations .gov-org-switch-v3.active')
-        || document.querySelector('#subNavOrganizations .gov-org-switch.active')
-        || document.querySelector('.gov-org-switch-v4.active,.gov-org-switch-v3.active,.gov-org-switch.active')
-        || document.querySelector('.gov-org-switch-v4,.gov-org-switch-v3,.gov-org-switch');
-  }
-  function orgId(){
-    const b = activeOrgButton();
-    return (b && b.dataset && b.dataset.orgId) || window.fixSelectedOrgId || 'fsb';
-  }
-  function orgLabel(){
-    const b = activeOrgButton();
-    return b ? b.textContent.trim() : String(orgId()).toUpperCase();
-  }
-  function gossRoot(){
-    const roots = ['gossV4Content','gossV3Content','gossDashView'].map($).filter(Boolean);
-    const visible = roots.find(r => {
-      const sec = r.closest('section,.panel') || r;
-      return getComputedStyle(sec).display !== 'none' && sec.offsetParent !== null;
-    });
-    return visible || roots[0] || null;
-  }
-  function isOrgAreaOpen(){
-    const v4 = $('mode-goss_center_v4'), dash = $('mode-goss_dashboard');
-    const sub = $('subNavOrganizations');
-    if ((v4 && getComputedStyle(v4).display !== 'none') || (dash && getComputedStyle(dash).display !== 'none')) return true;
-    return !!(sub && getComputedStyle(sub).display !== 'none');
-  }
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   function addCss(){
-    if ($('t73V118OrgReportCss')) return;
-    document.head.insertAdjacentHTML('beforeend', `<style id="t73V118OrgReportCss">
-      .t73-v118-wrap{display:grid;gap:1rem;}
-      .t73-v118-head{padding:1rem;border-radius:22px;border:1px solid rgba(255,107,136,.32);background:radial-gradient(circle at 0 0,rgba(255,107,136,.18),transparent 42%),linear-gradient(145deg,rgba(13,16,32,.96),rgba(7,9,18,.99));box-shadow:0 16px 42px rgba(0,0,0,.38);display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;}
-      .t73-v118-head h3{margin:0;color:#ff6b88;font-size:1.18rem;}.t73-v118-sub{color:var(--color-text-muted);font-size:.92rem;line-height:1.35;margin-top:.28rem;}.t73-v118-tools{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.t73-v118-chip{display:inline-flex;align-items:center;gap:.35rem;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.055);color:#fff;border-radius:999px;padding:.43rem .72rem;font-weight:900;font-size:.84rem;white-space:nowrap;}
-      .t73-v118-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:.85rem;align-items:stretch;}
-      .t73-v118-cell{position:relative;min-height:270px;overflow:hidden;border-radius:22px;padding:.9rem;border:1px solid rgba(255,255,255,.13);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028));box-shadow:0 14px 34px rgba(0,0,0,.30);display:flex;flex-direction:column;gap:.72rem;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
-      .t73-v118-cell:hover{transform:translateY(-2px);border-color:rgba(255,107,136,.55);box-shadow:0 18px 46px rgba(255,107,136,.13),0 14px 34px rgba(0,0,0,.36)}
-      .t73-v118-cell::before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:#ffd166}.t73-v118-cell.ok::before{background:#52c77b}.t73-v118-cell.super::before{background:#3dd68c}.t73-v118-cell.stretch::before{background:#ffbf47}.t73-v118-cell.bad::before{background:var(--color-error)}
-      .t73-v118-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:.65rem}.t73-v118-user{display:flex;gap:.62rem;align-items:flex-start;min-width:0}.t73-v118-avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(135deg,rgba(255,107,136,.30),rgba(162,108,255,.16));border:1px solid rgba(255,107,136,.28);font-weight:1000;color:#fff}.t73-v118-name{font-weight:1000;color:#fff;line-height:1.12;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.t73-v118-meta{margin-top:.23rem;color:var(--color-text-muted);font-size:.82rem;line-height:1.25;overflow-wrap:anywhere}.t73-v118-status{display:inline-flex;border-radius:999px;padding:.34rem .62rem;font-size:.78rem;font-weight:1000;border:1px solid rgba(255,255,255,.18);white-space:nowrap;color:#ffd166;background:rgba(255,209,102,.10)}.t73-v118-status.ok{color:#52c77b;background:rgba(82,199,123,.12);border-color:rgba(82,199,123,.36)}.t73-v118-status.super{color:#3dd68c;background:rgba(61,214,140,.12);border-color:rgba(61,214,140,.36)}.t73-v118-status.stretch{color:#ffbf47;background:rgba(255,191,71,.12);border-color:rgba(255,191,71,.36)}.t73-v118-status.bad{color:var(--color-error);background:rgba(255,85,85,.12);border-color:rgba(255,85,85,.36)}
-      .t73-v118-comment{background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:.68rem .72rem;color:var(--color-text-muted);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.9rem;line-height:1.38;max-height:110px;overflow:auto;}
-      .t73-v118-photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}.t73-v118-photo{height:72px;width:100%;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(0,0,0,.44);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.24);transition:transform .15s ease,border-color .15s ease}.t73-v118-photo:hover{transform:scale(1.035);border-color:#ff6b88}.t73-v118-photo img{display:block;width:100%;height:100%;object-fit:cover}.t73-v118-photo::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.68);border-radius:999px;padding:.05rem .24rem;font-size:.72rem}.t73-v118-empty-photo,.t73-v118-file{display:flex;align-items:center;gap:.36rem;min-height:40px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:.52rem .62rem;color:var(--color-text-muted);font-size:.83rem;background:rgba(255,255,255,.035);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.t73-v118-file{min-height:34px;margin-top:.4rem;}
-      .t73-v118-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem;margin-top:auto}.t73-v118-actions .btn{padding:.5rem .45rem;font-size:.78rem;font-weight:1000;white-space:nowrap}.t73-v118-reviewed{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:.6rem;color:var(--color-text-muted);font-size:.83rem;line-height:1.35}.t73-v118-empty{padding:1rem;border:1px dashed rgba(255,255,255,.18);border-radius:18px;color:var(--color-text-muted);background:rgba(255,255,255,.035)}
-      #t73V118Zoom{display:none;position:fixed;inset:0;z-index:1000005;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}#t73V118ZoomBox{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default}#t73V118ZoomHead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:#fff}#t73V118ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#t73V118ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem}#t73V118ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}
-      @media(max-width:720px){.t73-v118-board{grid-template-columns:1fr}.t73-v118-head{padding:.85rem}.t73-v118-photo-grid{grid-template-columns:repeat(3,1fr)}.t73-v118-photo{height:78px}.t73-v118-actions{grid-template-columns:1fr 1fr}#t73V118Zoom{padding:12px}#t73V118ZoomImg{max-height:78vh}.t73-v118-tools .btn{width:100%;}}
+    if ($('t73V119OrgReportsCss')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="t73V119OrgReportsCss">
+      #gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"],
+      #gossOrgActionNav .gov-action-switch[data-view="report_table"],
+      #gossOrgActionNavV3 .gov-action-switch-v3[data-view="report_table"],
+      #g19Table{display:none!important;}
+      #gossV4Content .gov-v4-report-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(292px,1fr))!important;gap:.85rem!important;align-items:stretch!important;}
+      #gossV4Content .gov-v4-report-card{min-height:310px;border-radius:22px!important;border:1px solid rgba(255,255,255,.14)!important;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028))!important;box-shadow:0 14px 34px rgba(0,0,0,.30)!important;}
+      #gossV4Content .gov-v4-report-main{grid-template-columns:1fr!important;gap:.75rem!important;}
+      #gossV4Content .gov-v4-report-proof-cells{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(76px,1fr))!important;gap:.45rem!important;justify-content:stretch!important;align-items:stretch!important;}
+      #gossV4Content .gov-v4-proof-photo{height:78px;width:100%;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(0,0,0,.44);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.24);transition:transform .15s ease,border-color .15s ease;}
+      #gossV4Content .gov-v4-proof-photo:hover{transform:scale(1.035);border-color:#ff6b88;}
+      #gossV4Content .gov-v4-proof-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+      #gossV4Content .gov-v4-proof-photo::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.68);border-radius:999px;padding:.05rem .24rem;font-size:.72rem;}
+      #gossV4Content .gov-v4-proof-file{display:flex;flex-direction:column;justify-content:center;gap:.1rem;min-height:52px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:.48rem .55rem;color:var(--color-text-muted);font-size:.78rem;background:rgba(255,255,255,.035);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      #gossV4Content .gov-v4-proof-file span{font-size:.68rem;opacity:.8;}
+      #t73V119Zoom{display:none;position:fixed;inset:0;z-index:1000007;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
+      #t73V119ZoomBox{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default;}
+      #t73V119ZoomHead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:#fff;}
+      #t73V119ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      #t73V119ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem;}
+      #t73V119ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}
+      @media(max-width:720px){#gossV4Content .gov-v4-report-list{grid-template-columns:1fr!important;}#gossV4Content .gov-v4-report-proof-cells{grid-template-columns:repeat(3,1fr)!important;}#gossV4Content .gov-v4-proof-photo{height:80px;}#t73V119Zoom{padding:12px;}#t73V119ZoomImg{max-height:78vh;}}
     </style>`);
   }
+
   function ensureZoom(){
     addCss();
-    if ($('t73V118Zoom')) return;
-    document.body.insertAdjacentHTML('beforeend', `<div id="t73V118Zoom" aria-hidden="true"><div id="t73V118ZoomBox" role="dialog" aria-modal="true" onclick="event.stopPropagation()"><div id="t73V118ZoomHead"><div id="t73V118ZoomTitle">Скриншот</div><button id="t73V118ZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V118ZoomImg" alt="Скриншот"></div></div>`);
-    const close = () => { const m = $('t73V118Zoom'), img = $('t73V118ZoomImg'); if (m) { m.style.display = 'none'; m.setAttribute('aria-hidden','true'); } if (img) img.src = ''; document.body.style.overflow = ''; };
-    $('t73V118Zoom').addEventListener('click', close);
-    $('t73V118ZoomClose').addEventListener('click', close);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('t73V118Zoom')?.style.display === 'flex') close(); });
+    if ($('t73V119Zoom')) return;
+    document.body.insertAdjacentHTML('beforeend', `<div id="t73V119Zoom" aria-hidden="true"><div id="t73V119ZoomBox" role="dialog" aria-modal="true"><div id="t73V119ZoomHead"><div id="t73V119ZoomTitle">Скриншот</div><button id="t73V119ZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V119ZoomImg" alt="Скриншот"></div></div>`);
+    const close = () => { const m=$('t73V119Zoom'), img=$('t73V119ZoomImg'); if(m){m.style.display='none';m.setAttribute('aria-hidden','true');} if(img) img.src=''; document.body.style.overflow=''; };
+    $('t73V119Zoom').addEventListener('click', close);
+    $('t73V119ZoomBox').addEventListener('click', e => e.stopPropagation());
+    $('t73V119ZoomClose').addEventListener('click', close);
+    document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('t73V119Zoom')?.style.display === 'flex') close(); });
   }
-  function openZoom(url, name){
+
+  function openZoom(url, title){
     ensureZoom();
-    const m = $('t73V118Zoom'), img = $('t73V118ZoomImg'), title = $('t73V118ZoomTitle');
-    if (!m || !img) return;
-    img.src = url; img.alt = name || 'Скриншот'; if (title) title.textContent = name || 'Скриншот';
-    m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden';
+    if (!url) return;
+    const m=$('t73V119Zoom'), img=$('t73V119ZoomImg'), t=$('t73V119ZoomTitle');
+    if(t) t.textContent = title || 'Скриншот';
+    if(img) img.src = url;
+    if(m){m.style.display='flex';m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
   }
 
-  function addProof(out, seen, proof, idx){
-    if (!proof) return;
-    let url = '', name = 'Скриншот ' + (idx + 1), kind = '', type = '';
-    if (typeof proof === 'string') { url = proof; }
-    else {
-      url = proof.url || proof.publicUrl || proof.src || proof.href || proof.link || proof.dataUrl || proof.data || proof.path || '';
-      name = proof.name || proof.title || proof.filename || proof.fileName || proof.originalName || name;
-      kind = proof.kind || proof.type || '';
-      type = proof.mime || proof.mimeType || proof.contentType || proof.type || '';
-    }
-    url = String(url || '').trim();
-    if (!url || seen.has(url)) return;
-    seen.add(url);
-    out.push({ url, name:String(name || 'Файл'), kind:String(kind || ''), type:String(type || '') });
-  }
-  function collectProofs(row, p){
-    const out = [], seen = new Set();
-    ['proofs','files','screenshots','images','attachments'].forEach(k => {
-      const arr = Array.isArray(p[k]) ? p[k] : [];
-      arr.forEach((x, i) => addProof(out, seen, x, out.length));
-    });
-    ['file','screenshot','image','photo','attachment'].forEach(k => { if (p[k]) addProof(out, seen, p[k], out.length); });
-    if (p.link) addProof(out, seen, { url:p.link, name:'Ссылка на доказательства', kind:'link' }, out.length);
-    if (row && row.link && row.email === 'GOSS_USER_REPORT') addProof(out, seen, { url:row.link, name:'Доказательство', kind:'link' }, out.length);
-    return out;
-  }
-  function decodeUrl(url){ try { return decodeURIComponent(String(url)); } catch(e) { return String(url || ''); } }
-  function isImage(proof){
-    const url = String(proof.url || '');
-    const dec = decodeUrl(url);
-    const type = String(proof.type || '').toLowerCase();
-    const kind = String(proof.kind || '').toLowerCase();
-    const name = String(proof.name || '');
-    if (/^data:image\//i.test(url) || /^blob:/i.test(url)) return true;
-    if (type.startsWith('image/') || kind === 'image' || kind.includes('image')) return true;
-    if (/\.(png|jpe?g|webp|gif|bmp|avif)(\?|#|$)/i.test(dec) || /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(name)) return true;
-    if (/\/storage\/v1\/object\/public\/(report-screenshots|screenshots)\//i.test(dec)) return true;
-    return false;
-  }
-  function photoHtml(proofs){
-    const imgs = proofs.filter(isImage);
-    const rest = proofs.filter(p => !isImage(p));
-    let html = imgs.length ? '<div class="t73-v118-photo-grid">' + imgs.map((p, i) => `<button class="t73-v118-photo" type="button" data-v118-zoom="${esc(p.url)}" data-v118-name="${esc(p.name || ('Скриншот ' + (i + 1)))}" title="Нажмите, чтобы приблизить"><img src="${esc(p.url)}" alt="${esc(p.name || 'Скриншот')}" loading="lazy"></button>`).join('') + '</div>' : '<div class="t73-v118-empty-photo">— фото не прикреплены</div>';
-    if (rest.length) html += rest.map((p, i) => `<div class="t73-v118-file" title="${esc(p.name || 'Не фото')}">📎 ${esc(p.name || ('Файл ' + (i + 1)))} — не фото</div>`).join('');
-    return html;
-  }
-  function statusInfo(row, p){
-    const raw = String(p.reviewStatus || p.result || row.status || '').trim();
-    const reviewed = !!(p.checkedAt || p.reviewedAt || p.checkedBy || p.reviewedBy || ['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(raw));
-    const label = reviewed ? (raw || 'Проверено') : 'На проверке';
-    const low = label.toLowerCase();
-    let cls = '';
-    if (low.includes('отказ') || low.includes('не засчит')) cls = 'bad';
-    else if (low.includes('перенорм')) cls = 'super';
-    else if (low.includes('натяг') || low.includes('герой')) cls = 'stretch';
-    else if (reviewed) cls = 'ok';
-    return { label, reviewed, cls };
-  }
-  function reportPerson(row, p){
-    const rawStatus = String(row.status || '');
-    const userId = p.userId || p.user_id || (!['Натяг','Норма','Перенорма','Отказ','Не засчитано'].includes(rawStatus) ? rawStatus : '') || '';
-    return { userId, name: p.nick || p.nickname || p.name || p.email || userId || 'Сотрудник' };
-  }
 
-  async function markReport(id, statusText, points){
-    const client = db();
-    if (!client) return alert('Supabase ещё не подключен. Подождите пару секунд и попробуйте снова.');
+  function disableLegacyTables(){
     try {
-      const { data, error } = await client.from('reports').select('*').eq('id', id).limit(1);
-      if (error) throw error;
-      const row = data && data[0];
-      if (!row) return alert('Отчёт не найден. Обновите список.');
-      const p = parse(row.date, {});
-      p.reviewStatus = statusText;
-      p.result = statusText;
-      p.reviewPoints = Number(points) || 0;
-      p.xp = Number(points) || 0;
-      p.checkedAt = p.reviewedAt = nowRu();
-      p.checkedBy = p.reviewedBy = window.currentNickname || window.currentUser?.email || 'Руководство';
-      p.checkedById = window.currentUser?.id || '';
-      const upd = await client.from('reports').update({ date:JSON.stringify(p), status:statusText, xp:Number(points) || 0 }).eq('id', id);
-      if (upd.error) throw upd.error;
-      try { if (typeof playSound === 'function') playSound(statusText === 'Отказ' ? 'fail' : 'ok'); } catch(e) {}
-      await renderOrgReports();
-    } catch(err) {
-      alert('Не удалось проверить отчёт: ' + (err && err.message ? err.message : err));
-    }
+      if (window.T73_GOSS_V19) {
+        window.T73_GOSS_V19.renderTable = function(){
+          const reports = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #govV4CheckReportsBtn');
+          if (reports) reports.click();
+        };
+      }
+    } catch(e) {}
   }
 
-  async function renderOrgReports(){
-    addCss(); ensureZoom();
-    const root = gossRoot();
-    const client = db();
-    if (!root) return;
-    root.innerHTML = `<div class="t73-v118-wrap"><div class="t73-v118-head"><div><h3>✅ Проверить отчётность — ${esc(orgLabel())}</h3><div class="t73-v118-sub">Загружаю отчёты организации...</div></div></div></div>`;
-    if (!client) { root.innerHTML = '<div class="t73-v118-empty">Supabase ещё не подключен. Подождите пару секунд и нажмите «Проверить отчётность» ещё раз.</div>'; return; }
-    try {
-      const oid = orgId();
-      const { data, error } = await client.from('reports').select('*').eq('email','GOSS_USER_REPORT').eq('link', oid).order('id', { ascending:false }).limit(220);
-      if (error) throw error;
-      const rows = data || [];
-      const items = rows.map(row => {
-        const p = parse(row.date, {});
-        const st = statusInfo(row, p);
-        const person = reportPerson(row, p);
-        const proofs = collectProofs(row, p);
-        return { row, p, st, person, proofs };
-      }).sort((a,b) => Number(a.st.reviewed) - Number(b.st.reviewed));
-      const pending = items.filter(x => !x.st.reviewed).length;
-      const checked = items.length - pending;
-      const cards = items.map(x => {
-        const { row, p, st, person, proofs } = x;
-        const points = Number(p.reviewPoints || p.xp || row.xp || 0);
-        const name = String(person.name || 'Сотрудник');
-        const initial = name.trim().slice(0,1).toUpperCase() || '#';
-        const when = p.day || p.created || p.createdIso || 'Дата не указана';
-        return `<article class="t73-v118-cell ${st.cls}">
-          <div class="t73-v118-card-top">
-            <div class="t73-v118-user"><div class="t73-v118-avatar">${esc(initial)}</div><div><div class="t73-v118-name">${esc(name)}</div><div class="t73-v118-meta">${esc(p.type || 'ГОСС отчёт')}<br>${esc(when)}</div></div></div>
-            <span class="t73-v118-status ${st.cls}">${esc(st.label)}${points ? ' · ' + points + ' б.' : ''}</span>
-          </div>
-          <div class="t73-v118-comment">${esc(p.comment || p.work || 'Без комментария')}</div>
-          <div>${photoHtml(proofs)}</div>
-          <div class="t73-v118-actions">
-            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Натяг" data-points="5" style="border-color:#ffbf47;color:#ffbf47;">Натяг</button>
-            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;">Норма</button>
-            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;">Перенорма</button>
-            <button class="btn btn-secondary" type="button" data-v118-act="1" data-id="${esc(row.id)}" data-status="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);">Отказ</button>
-          </div>
-          ${st.reviewed ? `<div class="t73-v118-reviewed">Проверил: <strong>${esc(p.reviewedBy || p.checkedBy || '—')}</strong><br>${esc(p.reviewedAt || p.checkedAt || '')}</div>` : ''}
-        </article>`;
-      }).join('');
-      root.innerHTML = `<div class="t73-v118-wrap"><div class="t73-v118-head"><div><h3>✅ Проверить отчётность — ${esc(orgLabel())}</h3><div class="t73-v118-sub">Старая таблица здесь удалена: отчёты организации показываются клетками-карточками, фото увеличиваются прямо на сайте и никуда не перекидывают.</div></div><div class="t73-v118-tools"><span class="t73-v118-chip">🟡 На проверке: ${pending}</span><span class="t73-v118-chip">✅ Проверено: ${checked}</span><button id="t73V118Refresh" class="btn btn-secondary" type="button">🔄 Обновить</button></div></div>${items.length ? `<div class="t73-v118-board">${cards}</div>` : '<div class="t73-v118-empty">Отправленных отчётов по этой организации пока нет.</div>'}</div>`;
-    } catch(err) {
-      root.innerHTML = `<div class="t73-v118-empty" style="color:var(--color-error);">Ошибка загрузки отчётности организации: ${esc(err && err.message ? err.message : err)}</div>`;
-    }
-  }
-
-  function patchOrgNav(){
-    // Убираем отдельную старую "Таблицу отчётов" из организаций, чтобы никто не попадал в конфликтующий табличный рендер.
-    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"], #gossOrgActionNav .gov-action-switch[data-view="reports"] .old-table').forEach(el => el.remove());
-    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #gossOrgActionNav .gov-action-switch[data-view="reports"], #govV4CheckReportsBtn').forEach(btn => {
-      if (btn.dataset.t73v118Text === '1') return;
-      btn.dataset.t73v118Text = '1';
-      btn.textContent = '✅ Проверить отчётность';
+  function patchNav(){
+    addCss();
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"],#gossOrgActionNav .gov-action-switch[data-view="report_table"],#gossOrgActionNavV3 .gov-action-switch-v3[data-view="report_table"],#g19Table').forEach(el => el.remove());
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"],#govV4CheckReportsBtn').forEach(btn => {
+      if (btn && btn.textContent !== '✅ Проверить отчётность') btn.textContent = '✅ Проверить отчётность';
     });
-  }
-  function activateReportsButton(){
-    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4, #gossOrgActionNav .gov-action-switch').forEach(b => b.classList.toggle('active', b.dataset.view === 'reports'));
   }
 
   document.addEventListener('click', function(e){
-    const zoom = e.target.closest && e.target.closest('[data-v118-zoom]');
+    const zoom = e.target.closest && e.target.closest('[data-v119-img]');
     if (zoom) {
-      e.preventDefault(); e.stopPropagation();
-      openZoom(zoom.getAttribute('data-v118-zoom') || '', zoom.getAttribute('data-v118-name') || 'Скриншот');
-      return;
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      openZoom(zoom.getAttribute('data-v119-img') || '', zoom.getAttribute('data-v119-title') || 'Скриншот');
+      return false;
     }
-    const act = e.target.closest && e.target.closest('[data-v118-act]');
-    if (act) {
-      e.preventDefault(); e.stopPropagation();
-      markReport(act.dataset.id, act.dataset.status, Number(act.dataset.points || 0));
-      return;
-    }
-    const refresh = e.target.closest && e.target.closest('#t73V118Refresh');
-    if (refresh) { e.preventDefault(); e.stopPropagation(); renderOrgReports(); return; }
-
-    const btn = e.target.closest && e.target.closest('button,.btn');
-    if (!btn || !isOrgAreaOpen()) return;
-    const txt = String(btn.textContent || '').toLowerCase();
-    const view = btn.dataset && btn.dataset.view;
-    const id = btn.id || '';
-    const orgReportsClick = id === 'govV4CheckReportsBtn'
-      || id === 'govV4RefreshReportsBtn'
-      || id === 'v27GossViewReportsBtn'
-      || id === 'v25GossViewReportsBtn'
-      || id === 'v30GossReviewBtn'
-      || view === 'reports'
-      || view === 'report_table'
-      || ((txt.includes('провер') || txt.includes('таблиц')) && (txt.includes('отчет') || txt.includes('отчёт')) && !txt.includes('модер'));
-    if (orgReportsClick) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      activateReportsButton();
-      setTimeout(renderOrgReports, 0);
+    const rawBtn = e.target.closest && e.target.closest('button,.mode-btn,.btn');
+    const oldTable = (e.target.closest && e.target.closest('[data-view="report_table"],#g19Table')) || (rawBtn && /таблиц[аы]? отч[её]тов/i.test(String(rawBtn.textContent||'')));
+    if (oldTable) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      const reports = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #govV4CheckReportsBtn');
+      if (reports) reports.click();
+      patchNav();
+      return false;
     }
   }, true);
 
   document.addEventListener('error', function(e){
     const img = e.target;
-    if (!img || !img.closest || !img.closest('.t73-v118-photo')) return;
-    const btn = img.closest('.t73-v118-photo');
-    const name = btn.getAttribute('data-v118-name') || 'Фото';
-    btn.outerHTML = `<div class="t73-v118-empty-photo">⚠️ ${esc(name)} не загрузилось</div>`;
+    if (!img || !img.closest || !img.closest('.gov-v4-proof-photo')) return;
+    const btn = img.closest('.gov-v4-proof-photo');
+    const name = btn.getAttribute('data-v119-title') || 'Фото';
+    btn.outerHTML = '<div class="gov-v4-proof-file">⚠️ ' + esc(name) + '<span>не загрузилось</span></div>';
   }, true);
 
-  const mo = new MutationObserver(() => patchOrgNav());
-  mo.observe(document.documentElement, { childList:true, subtree:true });
-  addCss(); ensureZoom(); patchOrgNav();
-  window.T73_V118_ORG_REPORT_CELLS = { render: renderOrgReports, zoom: openZoom, patch: patchOrgNav };
+  addCss(); ensureZoom(); disableLegacyTables(); patchNav();
+  new MutationObserver(() => { disableLegacyTables(); patchNav(); }).observe(document.documentElement, { childList:true, subtree:true });
+  setTimeout(patchNav, 0); setTimeout(patchNav, 500); setTimeout(patchNav, 1500);
+  window.T73_V119_ORG_REPORTS_PER_ORG = { patch:patchNav, zoom:openZoom };
 })();
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"39e87a2afe7c46788f2fe28e3346cf27","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
