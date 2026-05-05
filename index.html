@@ -20418,111 +20418,429 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V113 === -->
 
 
-<script>
-/* === T73 V119: Организации — отдельная проверка по каждой организации, без старой таблицы, фото zoom на месте === */
+
+<script id="t73-v120-org-report-table-review-zoom">
+/* === T73 V120: Организации — вернуть таблицу отчётов по каждой организации + фото 1:1/zoom без переходов === */
 (function(){
-  if (window.__T73_V119_ORG_REPORTS_PER_ORG__) return;
-  window.__T73_V119_ORG_REPORTS_PER_ORG__ = true;
+  'use strict';
+  if (window.__T73_V120_ORG_TABLES_PHOTOS__) return;
+  window.__T73_V120_ORG_TABLES_PHOTOS__ = true;
+
+  const EMAIL = {
+    report: 'GOSS_USER_REPORT',
+    profile: 'GOSS_PROFILE',
+    access: 'ADMIN_ROLE',
+    table: 'GOSS_REPORT_TABLE_V19',
+    member: 'GOSS_REPORT_MEMBER_V19',
+    points: 'GOSS_POINTS_V19',
+    log: 'GOSS_ORG_LOG_V19'
+  };
+  const state = { weekOffset: 0 };
   const $ = (id) => document.getElementById(id);
-  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const client = () => window.supa || window.__T73_SUPA || window.supabaseClient || null;
+  const user = () => {
+    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e) {}
+    return window.currentUser || null;
+  };
+  const nick = () => {
+    try { if (typeof currentNickname !== 'undefined' && currentNickname) return currentNickname; } catch(e) {}
+    return window.currentNickname || user()?.email || 'Руководство';
+  };
+  const creator = () => {
+    try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return creatorEmail; } catch(e) {}
+    return 'daniiltimosin72@gmail.com';
+  };
+  const nowRu = () => new Date().toLocaleString('ru-RU');
+  const makeId = (prefix) => prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2);
 
   function addCss(){
-    if ($('t73V119OrgReportsCss')) return;
-    document.head.insertAdjacentHTML('beforeend', `<style id="t73V119OrgReportsCss">
-      #gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"],
-      #gossOrgActionNav .gov-action-switch[data-view="report_table"],
-      #gossOrgActionNavV3 .gov-action-switch-v3[data-view="report_table"],
-      #g19Table{display:none!important;}
-      #gossV4Content .gov-v4-report-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(292px,1fr))!important;gap:.85rem!important;align-items:stretch!important;}
-      #gossV4Content .gov-v4-report-card{min-height:310px;border-radius:22px!important;border:1px solid rgba(255,255,255,.14)!important;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028))!important;box-shadow:0 14px 34px rgba(0,0,0,.30)!important;}
-      #gossV4Content .gov-v4-report-main{grid-template-columns:1fr!important;gap:.75rem!important;}
-      #gossV4Content .gov-v4-report-proof-cells{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(76px,1fr))!important;gap:.45rem!important;justify-content:stretch!important;align-items:stretch!important;}
-      #gossV4Content .gov-v4-proof-photo{height:78px;width:100%;padding:0;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(0,0,0,.44);overflow:hidden;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.24);transition:transform .15s ease,border-color .15s ease;}
-      #gossV4Content .gov-v4-proof-photo:hover{transform:scale(1.035);border-color:#ff6b88;}
-      #gossV4Content .gov-v4-proof-photo img{display:block;width:100%;height:100%;object-fit:cover;}
-      #gossV4Content .gov-v4-proof-photo::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.68);border-radius:999px;padding:.05rem .24rem;font-size:.72rem;}
-      #gossV4Content .gov-v4-proof-file{display:flex;flex-direction:column;justify-content:center;gap:.1rem;min-height:52px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;padding:.48rem .55rem;color:var(--color-text-muted);font-size:.78rem;background:rgba(255,255,255,.035);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-      #gossV4Content .gov-v4-proof-file span{font-size:.68rem;opacity:.8;}
-      #t73V119Zoom{display:none;position:fixed;inset:0;z-index:1000007;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
-      #t73V119ZoomBox{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default;}
-      #t73V119ZoomHead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:#fff;}
-      #t73V119ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-      #t73V119ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem;}
-      #t73V119ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}
-      @media(max-width:720px){#gossV4Content .gov-v4-report-list{grid-template-columns:1fr!important;}#gossV4Content .gov-v4-report-proof-cells{grid-template-columns:repeat(3,1fr)!important;}#gossV4Content .gov-v4-proof-photo{height:80px;}#t73V119Zoom{padding:12px;}#t73V119ZoomImg{max-height:78vh;}}
+    if ($('t73V120OrgTableCss')) return;
+    document.head.insertAdjacentHTML('beforeend', `<style id="t73V120OrgTableCss">
+      #gossOrgActionNavV4 .t73-v120-report-table-btn{display:inline-flex!important;}
+      #gossV4Content.t73-v120-owned{display:grid;gap:1rem;}
+      .t73-v120-card{padding:1.05rem;border-radius:20px;border:1px solid rgba(255,107,136,.26);background:linear-gradient(145deg,rgba(13,16,32,.94),rgba(7,9,18,.98));box-shadow:0 14px 34px rgba(0,0,0,.34);}
+      .t73-v120-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;}
+      .t73-v120-head h3{margin:0;color:#ff6b88;}
+      .t73-v120-muted{color:var(--color-text-muted);font-size:.9rem;line-height:1.35;}
+      .t73-v120-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+      .t73-v120-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:.85rem;}
+      .t73-v120-report-card{border-radius:20px;border:1px solid rgba(191,198,255,.18);background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.028));box-shadow:0 12px 28px rgba(0,0,0,.25);padding:.95rem;display:grid;gap:.75rem;min-height:260px;}
+      .t73-v120-row{display:flex;justify-content:space-between;gap:.75rem;align-items:flex-start;flex-wrap:wrap;}
+      .t73-v120-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.34rem .68rem;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.075);color:#fff;font-size:.78rem;font-weight:900;line-height:1.2;}
+      .t73-v120-comment{white-space:pre-wrap;overflow-wrap:anywhere;color:#fff;line-height:1.42;}
+      .t73-v120-proof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:.46rem;align-items:stretch;}
+      .t73-v120-photo{height:80px;width:100%;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(0,0,0,.45);overflow:hidden;padding:0;position:relative;cursor:zoom-in;box-shadow:0 8px 18px rgba(0,0,0,.24);transition:transform .14s ease,border-color .14s ease;}
+      .t73-v120-photo:hover{transform:scale(1.035);border-color:#ff6b88;}
+      .t73-v120-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+      .t73-v120-photo::after{content:'🔍';position:absolute;right:.22rem;bottom:.18rem;background:rgba(0,0,0,.68);border-radius:999px;padding:.05rem .24rem;font-size:.72rem;}
+      .t73-v120-file{min-height:54px;border:1px dashed rgba(255,255,255,.18);border-radius:14px;background:rgba(255,255,255,.035);padding:.5rem;color:var(--color-text-muted);font-size:.76rem;overflow:hidden;display:grid;align-content:center;gap:.1rem;}
+      .t73-v120-file b{color:#fff;font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      .t73-v120-report-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.45rem;}
+      .t73-v120-report-actions .btn{padding:.48rem .52rem;font-size:.76rem;min-height:39px;white-space:nowrap;}
+      .t73-v120-table-wrap{overflow:auto;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.36);-webkit-overflow-scrolling:touch;}
+      .t73-v120-table{width:100%;min-width:1120px;border-collapse:separate;border-spacing:0;}
+      .t73-v120-table th,.t73-v120-table td{border-bottom:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.06);padding:.7rem;vertical-align:top;text-align:center;}
+      .t73-v120-table th{position:sticky;top:0;z-index:4;background:linear-gradient(180deg,rgba(255,107,136,.32),rgba(108,140,255,.18));color:#fff;text-transform:uppercase;letter-spacing:.05em;font-size:.78rem;}
+      .t73-v120-table th:first-child,.t73-v120-table td:first-child{position:sticky;left:0;z-index:5;background:rgba(13,16,32,.98);text-align:left;min-width:210px;}
+      .t73-v120-cell{display:grid;gap:.45rem;min-width:132px;}
+      .t73-v120-select,.t73-v120-input,.t73-v120-area{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.32);color:#fff;padding:.5rem;font:inherit;font-size:.78rem;}
+      .t73-v120-area{min-height:54px;resize:vertical;}
+      .t73-v120-mini-proofs{display:grid;grid-template-columns:repeat(3,1fr);gap:.32rem;}
+      .t73-v120-mini-proofs .t73-v120-photo{height:48px;border-radius:10px;}
+      .t73-v120-mini-proofs .t73-v120-file{min-height:42px;border-radius:10px;font-size:.65rem;padding:.28rem;}
+      .t73-v120-empty{padding:1rem;border-radius:16px;border:1px dashed rgba(255,255,255,.18);background:rgba(255,255,255,.035);color:var(--color-text-muted);}
+      #t73V120Zoom{display:none;position:fixed;inset:0;z-index:1000009;background:rgba(0,0,0,.92);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
+      #t73V120ZoomBox{max-width:min(1180px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default;}
+      #t73V120ZoomHead{display:flex;justify-content:space-between;align-items:center;gap:.8rem;color:#fff;}
+      #t73V120ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      #t73V120ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem;}
+      #t73V120ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}
+      @media(max-width:760px){.t73-v120-grid{grid-template-columns:1fr}.t73-v120-report-actions{grid-template-columns:1fr 1fr}.t73-v120-proof-grid{grid-template-columns:repeat(3,1fr)}#t73V120Zoom{padding:12px}#t73V120ZoomImg{max-height:78vh}.t73-v120-card{padding:.9rem}}
     </style>`);
   }
 
   function ensureZoom(){
     addCss();
-    if ($('t73V119Zoom')) return;
-    document.body.insertAdjacentHTML('beforeend', `<div id="t73V119Zoom" aria-hidden="true"><div id="t73V119ZoomBox" role="dialog" aria-modal="true"><div id="t73V119ZoomHead"><div id="t73V119ZoomTitle">Скриншот</div><button id="t73V119ZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V119ZoomImg" alt="Скриншот"></div></div>`);
-    const close = () => { const m=$('t73V119Zoom'), img=$('t73V119ZoomImg'); if(m){m.style.display='none';m.setAttribute('aria-hidden','true');} if(img) img.src=''; document.body.style.overflow=''; };
-    $('t73V119Zoom').addEventListener('click', close);
-    $('t73V119ZoomBox').addEventListener('click', e => e.stopPropagation());
-    $('t73V119ZoomClose').addEventListener('click', close);
-    document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('t73V119Zoom')?.style.display === 'flex') close(); });
+    if ($('t73V120Zoom')) return;
+    document.body.insertAdjacentHTML('beforeend', `<div id="t73V120Zoom" aria-hidden="true"><div id="t73V120ZoomBox" role="dialog" aria-modal="true"><div id="t73V120ZoomHead"><div id="t73V120ZoomTitle">Скриншот</div><button id="t73V120ZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V120ZoomImg" alt="Скриншот"></div></div>`);
+    const close = () => { const m=$('t73V120Zoom'), img=$('t73V120ZoomImg'); if(m){m.style.display='none';m.setAttribute('aria-hidden','true');} if(img) img.src=''; document.body.style.overflow=''; };
+    $('t73V120Zoom').addEventListener('click', close);
+    $('t73V120ZoomBox').addEventListener('click', e => e.stopPropagation());
+    $('t73V120ZoomClose').addEventListener('click', close);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('t73V120Zoom')?.style.display === 'flex') close(); });
   }
 
   function openZoom(url, title){
     ensureZoom();
     if (!url) return;
-    const m=$('t73V119Zoom'), img=$('t73V119ZoomImg'), t=$('t73V119ZoomTitle');
+    const m=$('t73V120Zoom'), img=$('t73V120ZoomImg'), t=$('t73V120ZoomTitle');
     if(t) t.textContent = title || 'Скриншот';
     if(img) img.src = url;
     if(m){m.style.display='flex';m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
   }
 
+  function activeOrg(){
+    const btn = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active[data-org-id], #subNavOrganizations .gov-org-switch-v4[data-org-id].active') || document.querySelector('#subNavOrganizations .gov-org-switch-v4[data-org-id]');
+    const id = btn?.dataset?.orgId || 'fsb';
+    let label = String(btn?.textContent || id).replace(/\s+/g,' ').trim();
+    label = label || id;
+    return { id, short: label };
+  }
 
-  function disableLegacyTables(){
+  function setActiveSubtab(view){
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+  }
+
+  async function isOrgLeader(orgId){
+    const u = user();
+    if (!u) return false;
+    if (u.email && u.email === creator()) return true;
+    const c = client(); if (!c) return false;
     try {
-      if (window.T73_GOSS_V19) {
-        window.T73_GOSS_V19.renderTable = function(){
-          const reports = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #govV4CheckReportsBtn');
-          if (reports) reports.click();
-        };
-      }
-    } catch(e) {}
+      const { data } = await c.from('reports').select('status').eq('email', EMAIL.access).eq('link', u.id).limit(300);
+      return (data || []).some(r => r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId);
+    } catch(e) { return false; }
   }
 
   function patchNav(){
     addCss();
-    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="report_table"],#gossOrgActionNav .gov-action-switch[data-view="report_table"],#gossOrgActionNavV3 .gov-action-switch-v3[data-view="report_table"],#g19Table').forEach(el => el.remove());
-    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"],#govV4CheckReportsBtn').forEach(btn => {
-      if (btn && btn.textContent !== '✅ Проверить отчётность') btn.textContent = '✅ Проверить отчётность';
-    });
+    const nav = $('gossOrgActionNavV4');
+    if (!nav || nav.style.display === 'none') return;
+    const hasReports = !!nav.querySelector('[data-view="reports"],#govV4CheckReportsBtn') || /проверить\s+отч/i.test(nav.textContent || '');
+    if (!hasReports) return;
+    if (!nav.querySelector('.t73-v120-report-table-btn')) {
+      const reportsBtn = nav.querySelector('[data-view="reports"]');
+      const btn = document.createElement('button');
+      btn.className = 'mode-btn gov-action-switch-v4 t73-v120-report-table-btn';
+      btn.type = 'button';
+      btn.dataset.view = 'report_table_v120';
+      btn.textContent = '📊 Таблица отчётов';
+      if (reportsBtn && reportsBtn.nextSibling) nav.insertBefore(btn, reportsBtn.nextSibling);
+      else nav.appendChild(btn);
+    }
+  }
+
+  function parsePayload(value){
+    if (!value) return {};
+    if (typeof value === 'object') return value;
+    const s = String(value || '').trim();
+    if (!s) return {};
+    try { return JSON.parse(s); } catch(e) {}
+    const jsonIdx = s.indexOf('JSON:');
+    if (jsonIdx !== -1) {
+      const raw = s.slice(jsonIdx + 5).trim();
+      try { return JSON.parse(raw); } catch(e) {}
+    }
+    const m = s.match(/\{[\s\S]*\}/);
+    if (m) { try { return JSON.parse(m[0]); } catch(e) {} }
+    return { comment: s };
+  }
+
+  function pushEvidence(out, seen, value, fallbackName, fallbackKind){
+    if (!value) return;
+    if (Array.isArray(value)) { value.forEach((x, i) => pushEvidence(out, seen, x, fallbackName || ('Файл ' + (i + 1)), fallbackKind)); return; }
+    if (typeof value === 'object') {
+      const nested = value.file || value.image || value.screenshot || value.attachment;
+      const url = value.url || value.href || value.link || value.publicUrl || value.public_url || value.src || value.dataUrl || value.dataURL || value.base64 || value.path || value.downloadURL || value.downloadUrl || value.uri || '';
+      const name = value.name || value.title || value.filename || value.fileName || value.originalName || fallbackName || 'Файл';
+      const kind = value.kind || value.type || value.mime || value.mime_type || fallbackKind || '';
+      if (url) pushEvidence(out, seen, String(url), name, kind);
+      if (nested) pushEvidence(out, seen, nested, name, kind);
+      return;
+    }
+    const url = String(value || '').trim();
+    if (!url) return;
+    if (!/^data:image\//i.test(url) && !/^blob:/i.test(url) && !/^https?:\/\//i.test(url) && !/^file:/i.test(url)) return;
+    if (seen.has(url)) return;
+    seen.add(url);
+    out.push({ url, name: fallbackName || 'Файл', kind: fallbackKind || '' });
+  }
+
+  function proofsFrom(row, p){
+    const out = [], seen = new Set();
+    const add = (value, name, kind) => pushEvidence(out, seen, value, name, kind);
+    add(p.proofs, 'Доказательство', '');
+    add(p.files, 'Файл', '');
+    add(p.screenshots, 'Скриншот', 'image');
+    add(p.photos, 'Фото', 'image');
+    add(p.images, 'Фото', 'image');
+    add(p.attachments, 'Файл', '');
+    add(p.file, 'Файл', '');
+    add(p.screenshot, 'Скриншот', 'image');
+    add(p.image, 'Фото', 'image');
+    add(p.photo, 'Фото', 'image');
+    add(p.link, 'Ссылка', 'link');
+    // row.link у ГОСС-отчётов обычно содержит ID организации, поэтому добавляем только если это реальная ссылка/картинка.
+    if (/^(https?:|data:image|blob:)/i.test(String(row?.link || ''))) add(row.link, 'Доказательство', 'link');
+    return out;
+  }
+
+  function isImageProof(proof){
+    const url = String(proof.url || '');
+    const name = String(proof.name || '');
+    const kind = String(proof.kind || '').toLowerCase();
+    return /^data:image\//i.test(url) || /^blob:/i.test(url) || /\.(png|jpe?g|webp|gif|avif|bmp|svg)(\?|#|$)/i.test(url) || /\/(report-screenshots|screenshots|reports)\//i.test(url) || /\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(url) || kind.indexOf('image/') === 0 || kind === 'image' || /\.(png|jpe?g|webp|gif|avif|bmp|svg)$/i.test(name);
+  }
+
+  function proofsHtml(proofs, mini){
+    if (!proofs || !proofs.length) return '<span class="t73-v120-muted">Файлов нет</span>';
+    return '<div class="' + (mini ? 't73-v120-mini-proofs' : 't73-v120-proof-grid') + '">' + proofs.map((proof, i) => {
+      const url = String(proof.url || '');
+      const name = proof.name || ('Скрин ' + (i + 1));
+      if (isImageProof(proof)) return '<button class="t73-v120-photo" type="button" data-v120-img="' + esc(url) + '" data-v120-title="' + esc(name) + '" title="Нажмите, чтобы приблизить"><img src="' + esc(url) + '" alt="' + esc(name) + '" loading="lazy"></button>';
+      return '<div class="t73-v120-file" title="' + esc(name) + '"><b>📎 ' + esc(name) + '</b><span>не фото</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function reportStatus(row, p){ return p.reviewStatus || p.result || row.status || 'На проверке'; }
+  function reportChecked(row, p){ const s = reportStatus(row, p); return !!p.checkedAt || ['Натяг','Норма','Перенорма','Отказ'].includes(s); }
+  function statusCfg(status){
+    const map = {'Натяг':['#ffbf47',7], 'Норма':['#52c77b',15], 'Перенорма':['#3dd68c',30], 'Отказ':['var(--color-error)',0]};
+    const x = map[status] || ['var(--color-text-muted)', 0];
+    return { color:x[0], points:x[1] };
+  }
+  function reportDay(row, p){ return String(p.day || p.date || p.createdIso || p.created || row.created_at || '').slice(0,10); }
+  function reportUserKey(row, p){ return String(p.userId || p.user_id || p.uid || row.status || p.email || '').trim(); }
+  function reportName(row, p, staffMap){
+    const key = reportUserKey(row, p);
+    return p.nick || p.nickname || p.name || staffMap.get(key)?.nick || p.email || key || 'Сотрудник';
+  }
+
+  async function loadReports(orgId, limit){
+    const c = client(); if (!c) return [];
+    const { data, error } = await c.from('reports').select('*').eq('email', EMAIL.report).eq('link', orgId).order('id', { ascending:false }).limit(limit || 300);
+    if (error) throw error;
+    return (data || []).map(row => ({ row, p: parsePayload(row.date) }));
+  }
+
+  async function loadStaff(orgId, reports){
+    const c = client(); const map = new Map();
+    const add = (key, nickValue, postValue, source) => {
+      key = String(key || '').trim(); if (!key) return;
+      const old = map.get(key) || { key, nick:'', post:'', source:'' };
+      if (!old.nick && nickValue) old.nick = String(nickValue);
+      if (!old.post && postValue) old.post = String(postValue);
+      if (!old.source && source) old.source = source;
+      map.set(key, old);
+    };
+    if (c) {
+      try {
+        const { data } = await c.from('reports').select('*').eq('email', EMAIL.profile).eq('link', orgId).order('id', { ascending:false }).limit(1000);
+        (data || []).forEach(r => { const p = parsePayload(r.date); add(r.status || p.userId || p.user_id, p.nick || p.nickname || p.name, p.post || p.role || p.rank, 'profile'); });
+      } catch(e) {}
+      try {
+        const { data } = await c.from('reports').select('*').eq('email', EMAIL.member).eq('link', orgId).order('id', { ascending:false }).limit(1000);
+        (data || []).forEach(r => { const p = parsePayload(r.date); add(r.status || p.userId || p.user_id, p.nick || p.nickname || p.name || r.status, p.post || p.role || '', 'manual'); });
+      } catch(e) {}
+    }
+    (reports || []).forEach(({row,p}) => add(reportUserKey(row,p), p.nick || p.nickname || p.name || p.email || row.status, p.post || '', 'report'));
+    return Array.from(map.values()).map(x => ({...x, nick:x.nick || x.key, post:x.post || '—'})).sort((a,b) => a.nick.localeCompare(b.nick, 'ru'));
+  }
+
+  function weekStart(offset){
+    const d = new Date();
+    const day = (d.getDay() + 6) % 7;
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() - day + (offset || 0) * 7);
+    return d;
+  }
+  function iso(d){ return d.toISOString().slice(0,10); }
+  function weekDays(){ const s = weekStart(state.weekOffset); return Array.from({length:7}, (_,i) => { const d = new Date(s); d.setDate(s.getDate()+i); return iso(d); }); }
+  function weekKey(){ const ds = weekDays(); return ds[0] + '_' + ds[6]; }
+  function ruDate(s){ try { return new Date(s + 'T00:00:00').toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' }); } catch(e) { return s; } }
+
+  async function tableLoad(orgId, wk){
+    const c = client(); if (!c) return { id:null, marks:{} };
+    try {
+      const { data } = await c.from('reports').select('*').eq('email', EMAIL.table).eq('link', orgId).eq('status', wk).order('id', { ascending:false }).limit(1);
+      if (data && data[0]) { const p = parsePayload(data[0].date); return { id:data[0].id, marks:p.marks || p || {} }; }
+    } catch(e) {}
+    return { id:null, marks:{} };
+  }
+
+  async function renderTable(){
+    const root = $('gossV4Content'); const c = client(); const org = activeOrg();
+    if (!root) return;
+    root.classList.add('t73-v120-owned'); setActiveSubtab('report_table_v120');
+    if (!c) { root.innerHTML = '<div class="t73-v120-empty">Supabase не подключён.</div>'; return; }
+    if (!(await isOrgLeader(org.id))) { root.innerHTML = '<div class="t73-v120-empty">Таблица отчётов доступна только руководству этой организации.</div>'; return; }
+    root.innerHTML = '<div class="t73-v120-card"><h3 style="margin:0;color:#ff6b88;">📊 Таблица отчётов — ' + esc(org.short) + '</h3><div class="t73-v120-muted">Загружаю отдельную таблицу этой организации...</div></div>';
+    try {
+      const ds = weekDays(); const wk = weekKey();
+      const reports = await loadReports(org.id, 500);
+      const [staff, saved] = await Promise.all([loadStaff(org.id, reports), tableLoad(org.id, wk)]);
+      const byCell = new Map();
+      reports.forEach(({row,p}) => {
+        const d = reportDay(row,p); const k = reportUserKey(row,p);
+        if (!d || !k || !ds.includes(d)) return;
+        const key = k + '|' + d;
+        if (!byCell.has(key)) byCell.set(key, []);
+        byCell.get(key).push({row,p,proofs:proofsFrom(row,p)});
+      });
+      const reportOpts = ['Нет отчёта','На проверке','Натяг','Норма','Перенорма','Отказ'];
+      const dayOpts = ['Проверить','Сдано','Неактив','Нет отчёта','Освобождён','Отказ'];
+      const header = '<div class="t73-v120-card"><div class="t73-v120-head"><div><h3>📊 Таблица отчётов — ' + esc(org.short) + '</h3><div class="t73-v120-muted">Неделя ' + ruDate(ds[0]) + ' — ' + ruDate(ds[6]) + '. Это отдельная таблица выбранной организации, не общая на всех.</div></div><div class="t73-v120-actions"><button class="btn btn-secondary" id="t73V120PrevWeek" type="button">⬅️ Прошлая</button><button class="btn btn-secondary" id="t73V120ThisWeek" type="button">Текущая</button><button class="btn btn-secondary" id="t73V120NextWeek" type="button">Следующая ➡️</button></div></div><div class="t73-v120-actions" style="margin-top:1rem;"><input class="t73-v120-input" id="t73V120AddNick" style="max-width:250px;" placeholder="Nick_Name"><input class="t73-v120-input" id="t73V120AddPost" style="max-width:220px;" placeholder="Должность"><button class="btn btn-secondary" id="t73V120AddRow" type="button">➕ Добавить строку</button><button class="btn btn-primary" id="t73V120SaveTable" type="button">💾 Сохранить таблицу</button></div></div>';
+      if (!staff.length) {
+        root.innerHTML = header + '<div class="t73-v120-empty">Строк пока нет. Добавь сотрудника вручную или попроси СС заполнить «Мои данные» / сдать отчёт.</div>';
+      } else {
+        const body = staff.map(u => {
+          return '<tr data-key="' + esc(u.key) + '"><td><strong>' + esc(u.nick) + '</strong><div class="t73-v120-muted">' + esc(u.post || '—') + '</div></td>' + ds.map(d => {
+            const savedCell = (saved.marks[u.key] && saved.marks[u.key][d]) || {};
+            const cellReports = byCell.get(u.key + '|' + d) || [];
+            const autoStatus = cellReports.some(x => reportChecked(x.row, x.p)) ? reportStatus(cellReports[0].row, cellReports[0].p) : (cellReports.length ? 'На проверке' : 'Нет отчёта');
+            const reportValue = savedCell.report || autoStatus;
+            const dayValue = savedCell.day || (cellReports.length ? 'Проверить' : 'Нет отчёта');
+            const allProofs = cellReports.flatMap(x => x.proofs || []);
+            const countText = cellReports.length ? '<span class="t73-v120-pill">🧾 ' + cellReports.length + ' отч.</span><span class="t73-v120-pill">📎 ' + allProofs.length + ' фото/файл.</span>' : '<span class="t73-v120-muted">Отчётов нет</span>';
+            return '<td><div class="t73-v120-cell"><select class="t73-v120-select report">' + reportOpts.map(x => '<option' + (x === reportValue ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select><select class="t73-v120-select day">' + dayOpts.map(x => '<option' + (x === dayValue ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select><textarea class="t73-v120-area note" placeholder="Комментарий">' + esc(savedCell.note || '') + '</textarea><div style="display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;">' + countText + '</div>' + proofsHtml(allProofs.slice(0,6), true) + '</div></td>';
+          }).join('') + '</tr>';
+        }).join('');
+        root.innerHTML = header + '<div class="t73-v120-table-wrap"><table class="t73-v120-table"><thead><tr><th>Сотрудник</th>' + ds.map(d => '<th>' + ruDate(d) + '</th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+      }
+      $('t73V120PrevWeek')?.addEventListener('click', () => { state.weekOffset--; renderTable(); });
+      $('t73V120ThisWeek')?.addEventListener('click', () => { state.weekOffset = 0; renderTable(); });
+      $('t73V120NextWeek')?.addEventListener('click', () => { state.weekOffset++; renderTable(); });
+      $('t73V120AddRow')?.addEventListener('click', async () => {
+        const n = String($('t73V120AddNick')?.value || '').trim(); if (!n) return alert('Введите ник.');
+        const key = 'manual_' + org.id + '_' + n.toLowerCase().replace(/[^a-zа-я0-9_]+/gi, '_');
+        const res = await c.from('reports').insert([{ id:makeId('gmem'), email:EMAIL.member, link:org.id, status:key, date:JSON.stringify({ nick:n, post:$('t73V120AddPost')?.value || '', at:nowRu(), by:nick() }), xp:0 }]);
+        if (res.error) return alert('Не удалось добавить строку: ' + res.error.message);
+        renderTable();
+      });
+      $('t73V120SaveTable')?.addEventListener('click', async () => {
+        const out = {};
+        root.querySelectorAll('tbody tr[data-key]').forEach(tr => {
+          const k = tr.dataset.key; out[k] = {};
+          tr.querySelectorAll('.t73-v120-cell').forEach((cell, i) => {
+            out[k][ds[i]] = { report:cell.querySelector('.report')?.value || '', day:cell.querySelector('.day')?.value || '', note:cell.querySelector('.note')?.value || '' };
+          });
+        });
+        const payload = { org:org.id, week:wk, marks:out, by:nick(), at:nowRu() };
+        const q = saved.id ? await c.from('reports').update({ date:JSON.stringify(payload) }).eq('id', saved.id) : await c.from('reports').insert([{ id:makeId('gtab'), email:EMAIL.table, link:org.id, status:wk, date:JSON.stringify(payload), xp:0 }]);
+        if (q.error) return alert('Ошибка сохранения: ' + q.error.message);
+        try { await c.from('reports').insert([{ id:makeId('glog'), email:EMAIL.log, link:org.id, status:'table_save', date:'Сохранена таблица отчётов ' + org.short + ' ' + wk + ' · ' + nick() + ' · ' + nowRu(), xp:0 }]); } catch(e) {}
+        alert('Таблица отчётов сохранена.');
+      });
+    } catch(err) {
+      root.innerHTML = '<div class="t73-v120-empty" style="border-color:var(--color-error);color:var(--color-error);">Ошибка таблицы отчётов: ' + esc(err?.message || err) + '</div>';
+    }
+  }
+
+  function reportCardHtml(item, staffMap){
+    const row = item.row, p = item.p, proofs = item.proofs || proofsFrom(row, p);
+    const status = reportChecked(row,p) ? reportStatus(row,p) : 'На проверке';
+    const cfg = statusCfg(status);
+    const person = reportName(row, p, staffMap);
+    const userKey = reportUserKey(row,p);
+    const date = reportDay(row,p) || p.created || p.createdIso || 'дата не указана';
+    const comment = p.comment || p.work || p.text || 'Без комментария';
+    return '<article class="t73-v120-report-card"><div class="t73-v120-row"><div><strong style="color:#fff;font-size:1.02rem;">' + esc(person) + '</strong><div class="t73-v120-muted">' + esc(userKey || p.email || '') + '</div></div><span class="t73-v120-pill" style="border-color:' + cfg.color + ';color:' + cfg.color + ';">' + esc(status) + (reportChecked(row,p) ? ' · ' + Number(p.reviewPoints || row.xp || 0) : '') + '</span></div><div style="display:flex;gap:.4rem;flex-wrap:wrap;"><span class="t73-v120-pill">📅 ' + esc(date) + '</span><span class="t73-v120-pill">🧾 ' + esc(p.type || 'ГОСС отчёт') + '</span><span class="t73-v120-pill">📎 ' + proofs.length + '</span></div><div><div class="t73-v120-muted" style="margin-bottom:.25rem;">Комментарий</div><div class="t73-v120-comment">' + esc(comment) + '</div></div>' + proofsHtml(proofs, false) + (p.checkedAt ? '<div class="t73-v120-muted">Проверил: ' + esc(p.checkedBy || '—') + ' · ' + esc(p.checkedAt) + '</div>' : '') + (!reportChecked(row,p) ? '<div class="t73-v120-report-actions"><button class="btn btn-secondary t73-v120-verdict" data-id="' + esc(row.id) + '" data-status="Натяг" data-points="7" style="border-color:#ffbf47;color:#ffbf47;" type="button">Натяг</button><button class="btn btn-secondary t73-v120-verdict" data-id="' + esc(row.id) + '" data-status="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;" type="button">Норма</button><button class="btn btn-secondary t73-v120-verdict" data-id="' + esc(row.id) + '" data-status="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;" type="button">Перенорма</button><button class="btn btn-secondary t73-v120-verdict" data-id="' + esc(row.id) + '" data-status="Отказ" data-points="0" style="border-color:var(--color-error);color:var(--color-error);" type="button">Отказ</button></div>' : '') + '</article>';
+  }
+
+  async function renderReview(){
+    const root = $('gossV4Content'); const c = client(); const org = activeOrg();
+    if (!root) return;
+    root.classList.add('t73-v120-owned'); setActiveSubtab('reports');
+    if (!c) { root.innerHTML = '<div class="t73-v120-empty">Supabase не подключён.</div>'; return; }
+    if (!(await isOrgLeader(org.id))) { root.innerHTML = '<div class="t73-v120-empty">Проверка отчётности доступна только руководству этой организации.</div>'; return; }
+    root.innerHTML = '<div class="t73-v120-card"><h3 style="margin:0;color:#ff6b88;">✅ Проверить отчётность — ' + esc(org.short) + '</h3><div class="t73-v120-muted">Загружаю отчёты и фотографии...</div></div>';
+    try {
+      const reports = await loadReports(org.id, 300);
+      const staff = await loadStaff(org.id, reports);
+      const staffMap = new Map(staff.map(x => [x.key, x]));
+      const items = reports.map(x => ({...x, proofs:proofsFrom(x.row, x.p)}));
+      const waiting = items.filter(x => !reportChecked(x.row, x.p));
+      const checked = items.filter(x => reportChecked(x.row, x.p));
+      const totalProofs = items.reduce((n,x) => n + (x.proofs?.length || 0), 0);
+      const header = '<div class="t73-v120-card"><div class="t73-v120-head"><div><h3>✅ Проверить отчётность — ' + esc(org.short) + '</h3><div class="t73-v120-muted">Отчёты строго по выбранной организации. Фото открываются увеличением на этой же странице, без перехода по ссылкам.</div></div><div class="t73-v120-actions"><button class="btn btn-secondary" id="t73V120RefreshReview" type="button">🔄 Обновить</button><button class="btn btn-secondary" id="t73V120OpenTableFromReview" type="button">📊 Таблица отчётов</button></div></div></div><div class="t73-v120-card"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;"><div><strong>На проверке</strong><div class="stat-value" style="font-size:1.5rem;color:#ffbf47;">' + waiting.length + '</div></div><div><strong>Всего отчётов</strong><div class="stat-value" style="font-size:1.5rem;">' + items.length + '</div></div><div><strong>Фото/файлов</strong><div class="stat-value" style="font-size:1.5rem;color:#52c77b;">' + totalProofs + '</div></div></div></div>';
+      if (!items.length) root.innerHTML = header + '<div class="t73-v120-empty">Отправленных отчётов пока нет.</div>';
+      else root.innerHTML = header + (waiting.length ? '<div class="t73-v120-card"><h3 style="margin:0 0 .85rem;color:#fff;">Ожидают проверки</h3><div class="t73-v120-grid">' + waiting.map(x => reportCardHtml(x, staffMap)).join('') + '</div></div>' : '<div class="t73-v120-empty">Новых отчётов на проверку нет.</div>') + (checked.length ? '<div class="t73-v120-card"><h3 style="margin:0 0 .85rem;color:#fff;">Последние проверенные</h3><div class="t73-v120-grid">' + checked.slice(0,60).map(x => reportCardHtml(x, staffMap)).join('') + '</div></div>' : '');
+      $('t73V120RefreshReview')?.addEventListener('click', renderReview);
+      $('t73V120OpenTableFromReview')?.addEventListener('click', renderTable);
+      root.querySelectorAll('.t73-v120-verdict').forEach(btn => btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const id = btn.dataset.id, status = btn.dataset.status, points = Number(btn.dataset.points || 0);
+        if (typeof window.govV4ProcessGossReport === 'function') {
+          await window.govV4ProcessGossReport(id, status, points);
+          setTimeout(renderReview, 120);
+        } else {
+          alert('Функция проверки отчёта не найдена. Обнови страницу.');
+          btn.disabled = false;
+        }
+      }));
+    } catch(err) {
+      root.innerHTML = '<div class="t73-v120-empty" style="border-color:var(--color-error);color:var(--color-error);">Ошибка проверки отчётности: ' + esc(err?.message || err) + '</div>';
+    }
   }
 
   document.addEventListener('click', function(e){
-    const zoom = e.target.closest && e.target.closest('[data-v119-img]');
-    if (zoom) {
-      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      openZoom(zoom.getAttribute('data-v119-img') || '', zoom.getAttribute('data-v119-title') || 'Скриншот');
-      return false;
-    }
-    const rawBtn = e.target.closest && e.target.closest('button,.mode-btn,.btn');
-    const oldTable = (e.target.closest && e.target.closest('[data-view="report_table"],#g19Table')) || (rawBtn && /таблиц[аы]? отч[её]тов/i.test(String(rawBtn.textContent||'')));
-    if (oldTable) {
-      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
-      const reports = document.querySelector('#gossOrgActionNavV4 .gov-action-switch-v4[data-view="reports"], #govV4CheckReportsBtn');
-      if (reports) reports.click();
-      patchNav();
-      return false;
+    const img = e.target.closest?.('[data-v120-img]');
+    if (img) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation?.(); openZoom(img.getAttribute('data-v120-img') || '', img.getAttribute('data-v120-title') || 'Скриншот'); return false; }
+
+    const tableBtn = e.target.closest?.('.t73-v120-report-table-btn,[data-view="report_table_v120"]');
+    if (tableBtn) { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation?.(); renderTable(); return false; }
+
+    const btn = e.target.closest?.('button,.mode-btn,.btn');
+    const text = String(btn?.textContent || '').replace(/ё/g,'е').toLowerCase();
+    const inOrg = !!btn?.closest?.('#gossOrgActionNavV4,#gossV4Content');
+    if (inOrg && (btn?.dataset?.view === 'reports' || btn?.id === 'govV4CheckReportsBtn' || (text.includes('провер') && text.includes('отчет')))) {
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation?.(); renderReview(); return false;
     }
   }, true);
 
   document.addEventListener('error', function(e){
     const img = e.target;
-    if (!img || !img.closest || !img.closest('.gov-v4-proof-photo')) return;
-    const btn = img.closest('.gov-v4-proof-photo');
-    const name = btn.getAttribute('data-v119-title') || 'Фото';
-    btn.outerHTML = '<div class="gov-v4-proof-file">⚠️ ' + esc(name) + '<span>не загрузилось</span></div>';
+    if (!img || !img.closest || !img.closest('.t73-v120-photo')) return;
+    const btn = img.closest('.t73-v120-photo');
+    const name = btn.getAttribute('data-v120-title') || 'Фото';
+    btn.outerHTML = '<div class="t73-v120-file"><b>⚠️ ' + esc(name) + '</b><span>не загрузилось</span></div>';
   }, true);
 
-  addCss(); ensureZoom(); disableLegacyTables(); patchNav();
-  new MutationObserver(() => { disableLegacyTables(); patchNav(); }).observe(document.documentElement, { childList:true, subtree:true });
-  setTimeout(patchNav, 0); setTimeout(patchNav, 500); setTimeout(patchNav, 1500);
-  window.T73_V119_ORG_REPORTS_PER_ORG = { patch:patchNav, zoom:openZoom };
+  addCss(); ensureZoom(); patchNav();
+  new MutationObserver(() => { clearTimeout(window.__T73_V120_NAV_TIMER__); window.__T73_V120_NAV_TIMER__ = setTimeout(patchNav, 60); }).observe(document.documentElement, { childList:true, subtree:true });
+  [100, 500, 1200, 2500].forEach(ms => setTimeout(patchNav, ms));
+  window.T73_V120_ORG_REPORTS = { table: renderTable, review: renderReview, zoom: openZoom, patchNav };
 })();
 </script>
 
