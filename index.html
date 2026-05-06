@@ -21546,5 +21546,245 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V124 === -->
 
+
+<!-- === T73 V125: ГОСС неактив для СС + проверка руководством === -->
+<style id="t73-v125-goss-inactive-css">
+  #gossOrgActionNavV4 .t73-v125-inactive-tab{display:inline-flex!important;}
+  #gossV4Content .t73-v125-inactive-card{padding:1.15rem;border-radius:22px;border:1px solid rgba(196,161,255,.28);background:radial-gradient(circle at 0 0,rgba(162,108,255,.18),transparent 55%),linear-gradient(145deg,rgba(18,21,38,.96),rgba(7,8,16,.99));box-shadow:0 16px 40px rgba(0,0,0,.34);display:grid;gap:1rem;}
+  #gossV4Content .t73-v125-inactive-title{margin:0;color:#c4a1ff;font-size:1.25rem;font-weight:1000;}
+  #gossV4Content .t73-v125-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45;}
+  #gossV4Content .t73-v125-channel{display:flex;align-items:center;gap:.55rem;color:rgba(191,198,255,.72);font-weight:1000;text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;}
+  #gossV4Content .t73-v125-dot{width:.46rem;height:.46rem;border-radius:999px;background:#c4a1ff;box-shadow:0 0 16px rgba(196,161,255,.8);}
+  #gossV4Content .t73-v125-author{display:flex;align-items:center;gap:.85rem;}
+  #gossV4Content .t73-v125-avatar{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#a26cff,#c4a1ff);display:grid;place-items:center;color:#fff;font-size:1.35rem;font-weight:1000;box-shadow:0 12px 30px rgba(162,108,255,.32);}
+  #gossV4Content .t73-v125-name{color:#fff;font-weight:1000;}
+  #gossV4Content .t73-v125-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem;}
+  #gossV4Content .t73-v125-form label{display:grid;gap:.36rem;color:#fff;font-weight:900;}
+  #gossV4Content .t73-v125-form .full{grid-column:1/-1;}
+  #gossV4Content .t73-v125-input{width:100%;box-sizing:border-box;border-radius:14px;border:1px solid rgba(191,198,255,.24);background:rgba(0,0,0,.36);color:#fff;padding:.85rem .95rem;font:inherit;outline:none;}
+  #gossV4Content textarea.t73-v125-input{min-height:110px;resize:vertical;}
+  #gossV4Content .t73-v125-rules{display:grid;gap:.35rem;padding:.85rem 1rem;border-radius:16px;border:1px solid rgba(255,191,71,.26);background:rgba(255,191,71,.07);color:#ffcf74;font-weight:800;font-size:.86rem;}
+  #gossV4Content .t73-v125-actions{display:flex;gap:.65rem;flex-wrap:wrap;align-items:center;justify-content:flex-end;}
+  #gossV4Content .t73-v125-actions .btn{min-height:46px;}
+  #gossV4Content .t73-v125-review-wrap{display:none;gap:.75rem;}
+  #gossV4Content .t73-v125-list{display:grid;gap:.75rem;}
+  #gossV4Content .t73-v125-request{padding:1rem;border-radius:18px;border:1px solid rgba(191,198,255,.18);background:rgba(0,0,0,.32);display:grid;gap:.65rem;}
+  #gossV4Content .t73-v125-row{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;}
+  #gossV4Content .t73-v125-pill{display:inline-flex;align-items:center;gap:.35rem;padding:.34rem .68rem;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.075);color:#fff;font-size:.78rem;font-weight:1000;}
+  #gossV4Content .t73-v125-pending{border-color:#ffbf47!important;color:#ffbf47!important;}
+  #gossV4Content .t73-v125-ok{border-color:#52c77b!important;color:#52c77b!important;}
+  #gossV4Content .t73-v125-bad{border-color:var(--color-error)!important;color:var(--color-error)!important;}
+  #gossV4Content .t73-v125-denied{padding:1rem;border-radius:16px;border:1px dashed rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--color-text-muted);}
+  @media(max-width:760px){#gossV4Content .t73-v125-form{grid-template-columns:1fr}#gossV4Content .t73-v125-actions{justify-content:stretch}#gossV4Content .t73-v125-actions .btn{width:100%}}
+</style>
+<script id="t73-v125-goss-inactive-ss">
+(function(){
+  'use strict';
+  if (window.__T73_V125_GOSS_INACTIVE_SS__) return;
+  window.__T73_V125_GOSS_INACTIVE_SS__ = true;
+
+  var EMAIL = 'GOSS_ORG_LOG_V19';
+  var STATUSES = ['inactive_pending','inactive_approved','inactive_rejected'];
+  var MAX_DAYS = 3;
+  var COOLDOWN_DAYS = 7;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function client(){ try { return window.supa || supa; } catch(e) { return window.supa || null; } }
+  function user(){ try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e){} return window.currentUser || null; }
+  function creator(){ try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return creatorEmail; } catch(e){} return ''; }
+  function nick(){ try { if (typeof currentNickname !== 'undefined' && currentNickname) return currentNickname; } catch(e){} return (user() && (user().nickname || user().email)) || ''; }
+  function todayIso(){ var d = new Date(); d.setHours(0,0,0,0); return d.toISOString().slice(0,10); }
+  function makeId(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function parse(v, fallback){ try { return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; } }
+  function daysInclusive(from, to){ var a = new Date(from + 'T00:00:00'); var b = new Date(to + 'T00:00:00'); if (!isFinite(a) || !isFinite(b)) return 0; return Math.round((b - a) / 86400000) + 1; }
+  function statusText(st){ return st === 'inactive_approved' ? 'Одобрено' : st === 'inactive_rejected' ? 'Отказано' : 'Ожидает проверки'; }
+  function statusClass(st){ return st === 'inactive_approved' ? 't73-v125-ok' : st === 'inactive_rejected' ? 't73-v125-bad' : 't73-v125-pending'; }
+
+  function activeOrg(){
+    var btn = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active[data-org-id]') || document.querySelector('#subNavOrganizations .gov-org-switch-v4[data-org-id].active') || document.querySelector('#subNavOrganizations .gov-org-switch-v4[data-org-id]');
+    var id = (btn && btn.dataset && btn.dataset.orgId) || 'fsb';
+    var raw = btn ? String(btn.textContent || '').replace(/\s+/g,' ').trim() : id;
+    var short = raw.replace(/^[^A-Za-zА-Яа-я0-9]+\s*/,'') || id.toUpperCase();
+    return { id:id, short:short };
+  }
+
+  async function access(orgId){
+    var u = user();
+    var out = { senior:false, leader:false };
+    if (!u) return out;
+    var c = client();
+    if (!c) return out;
+    if (u.email && creator() && u.email === creator()) out.leader = true;
+    try {
+      var res = await c.from('reports').select('status,link').eq('email','ADMIN_ROLE').eq('link',u.id).limit(1000);
+      var rows = res.data || [];
+      out.senior = rows.some(function(r){ return r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId; });
+      out.leader = out.leader || rows.some(function(r){ return r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId; });
+    } catch(e) {}
+    return out;
+  }
+
+  async function loadInactiveRows(orgId, onlyMine){
+    var c = client(), u = user();
+    if (!c) return [];
+    try {
+      var q = c.from('reports').select('*').eq('email', EMAIL).in('status', STATUSES).order('id', { ascending:false }).limit(700);
+      if (!onlyMine) q = q.eq('link', orgId);
+      var res = await q;
+      var rows = res.data || [];
+      if (onlyMine && u) rows = rows.filter(function(r){ var p = parse(r.date, {}); return p.userId === u.id; });
+      return rows;
+    } catch(e) { return []; }
+  }
+
+  function renderOwnHistory(rows){
+    if (!rows.length) return '<div class="t73-v125-denied">Ваших заявок на неактив пока нет.</div>';
+    return rows.slice(0,5).map(function(r){ var p = parse(r.date, {}); return '<div class="t73-v125-request"><div class="t73-v125-row"><b>' + esc(p.dateFrom || '') + ' — ' + esc(p.dateTo || '') + '</b><span class="t73-v125-pill ' + statusClass(r.status) + '">' + statusText(r.status) + '</span></div><div class="t73-v125-muted">' + esc(p.reason || '') + '</div>' + (p.decisionComment ? '<div class="t73-v125-muted">Ответ: ' + esc(p.decisionComment) + '</div>' : '') + '</div>'; }).join('');
+  }
+
+  async function canSubmitByLimits(orgId, from, to){
+    var u = user();
+    if (!u) return { ok:false, msg:'Сначала войдите в аккаунт.' };
+    if (!from || !to) return { ok:false, msg:'Укажите обе даты.' };
+    if (from < todayIso()) return { ok:false, msg:'Нельзя оформить неактив задним числом.' };
+    var days = daysInclusive(from, to);
+    if (days < 1) return { ok:false, msg:'Дата окончания не может быть раньше даты начала.' };
+    if (days > MAX_DAYS) return { ok:false, msg:'Максимальный срок неактива для СС — ' + MAX_DAYS + ' дня.' };
+    var mine = await loadInactiveRows(orgId, true);
+    var now = Date.now();
+    var weekMs = COOLDOWN_DAYS * 86400000;
+    for (var i = 0; i < mine.length; i++) {
+      var r = mine[i], p = parse(r.date, {});
+      if (r.status === 'inactive_pending') return { ok:false, msg:'У вас уже есть заявка на проверке. Дождитесь решения руководства.' };
+      if (r.status === 'inactive_approved' && p.dateTo && p.dateTo >= todayIso()) return { ok:false, msg:'У вас уже есть активный одобренный неактив.' };
+      var created = p.createdIso ? new Date(p.createdIso).getTime() : 0;
+      if (created && now - created < weekMs) return { ok:false, msg:'Заявку на неактив можно отправлять не чаще 1 раза в ' + COOLDOWN_DAYS + ' дней.' };
+    }
+    return { ok:true, msg:'' };
+  }
+
+  async function submitInactive(orgId){
+    var c = client(), u = user();
+    var msg = $('t73V125InactiveMsg');
+    var btn = $('t73V125SubmitInactive');
+    if (!c || !u) return;
+    var from = ($('t73V125DateFrom') || {}).value || '';
+    var to = ($('t73V125DateTo') || {}).value || '';
+    var reason = (($('t73V125Reason') || {}).value || '').trim();
+    var nickVal = (($('t73V125Nick') || {}).value || '').trim() || nick() || u.email || '';
+    if (reason.length < 10) { if (msg) { msg.style.color='var(--color-error)'; msg.textContent='Причина должна быть подробнее: минимум 10 символов.'; } return; }
+    var limit = await canSubmitByLimits(orgId, from, to);
+    if (!limit.ok) { if (msg) { msg.style.color='var(--color-error)'; msg.textContent=limit.msg; } return; }
+    var org = activeOrg();
+    var payload = { version:'v125-goss-inactive-ss', org:orgId, orgName:org.short, userId:u.id, email:u.email || '', nick:nickVal, dateFrom:from, dateTo:to, days:daysInclusive(from,to), reason:reason, created:new Date().toLocaleString('ru-RU'), createdIso:new Date().toISOString(), decisionBy:'', decisionAt:'', decisionComment:'' };
+    if (btn) { btn.disabled = true; btn.textContent = 'ОТПРАВЛЯЮ...'; }
+    try {
+      var res = await c.from('reports').insert([{ id:makeId('goss_inactive'), email:EMAIL, link:orgId, status:'inactive_pending', date:JSON.stringify(payload), xp:0 }]);
+      if (res.error) throw res.error;
+      if (msg) { msg.style.color='var(--color-success)'; msg.textContent='Заявка отправлена руководству.'; }
+      ['t73V125DateFrom','t73V125DateTo','t73V125Reason'].forEach(function(id){ var el=$(id); if(el) el.value=''; });
+      try { playSound('win'); } catch(e) {}
+      await renderInactive();
+    } catch(err) {
+      if (msg) { msg.style.color='var(--color-error)'; msg.textContent='Ошибка: ' + (err && err.message || err); }
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'ОТПРАВИТЬ ЗАЯВКУ'; }
+    }
+  }
+
+  async function renderReviewList(orgId){
+    var box = $('t73V125ReviewList');
+    if (!box) return;
+    box.innerHTML = '<div class="t73-v125-denied">Загрузка заявок...</div>';
+    var rows = await loadInactiveRows(orgId, false);
+    if (!rows.length) { box.innerHTML = '<div class="t73-v125-denied">Заявок на неактив СС пока нет.</div>'; return; }
+    box.innerHTML = rows.map(function(r){
+      var p = parse(r.date, {});
+      var pending = r.status === 'inactive_pending';
+      return '<div class="t73-v125-request">'
+        + '<div class="t73-v125-row"><div><b>' + esc(p.nick || p.email || 'СС') + '</b><div class="t73-v125-muted">' + esc(p.email || p.userId || '') + '</div></div><span class="t73-v125-pill ' + statusClass(r.status) + '">' + statusText(r.status) + '</span></div>'
+        + '<div style="display:flex;gap:.4rem;flex-wrap:wrap;"><span class="t73-v125-pill">📅 ' + esc(p.dateFrom || '') + ' — ' + esc(p.dateTo || '') + '</span><span class="t73-v125-pill">⏱ ' + esc(p.days || daysInclusive(p.dateFrom,p.dateTo)) + ' дн.</span><span class="t73-v125-pill">🏢 ' + esc(p.orgName || activeOrg().short) + '</span></div>'
+        + '<div><div class="t73-v125-muted">Причина</div><div style="color:#fff;white-space:pre-wrap;overflow-wrap:anywhere;">' + esc(p.reason || '') + '</div></div>'
+        + (p.decisionComment ? '<div class="t73-v125-muted">Комментарий решения: ' + esc(p.decisionComment) + '</div>' : '')
+        + (pending ? '<textarea class="t73-v125-input t73V125DecisionComment" data-id="' + esc(r.id) + '" placeholder="Комментарий руководства, необязательно"></textarea><div class="t73-v125-actions"><button class="btn btn-secondary t73V125Decision" data-id="' + esc(r.id) + '" data-status="inactive_approved" style="border-color:#52c77b;color:#52c77b;" type="button">Одобрить</button><button class="btn btn-secondary t73V125Decision" data-id="' + esc(r.id) + '" data-status="inactive_rejected" style="border-color:var(--color-error);color:var(--color-error);" type="button">Отказать</button></div>' : '')
+        + '</div>';
+    }).join('');
+    box.querySelectorAll('.t73V125Decision').forEach(function(btn){ btn.addEventListener('click', async function(e){ e.preventDefault(); await decideInactive(btn.dataset.id, btn.dataset.status, orgId); }); });
+  }
+
+  async function decideInactive(id, status, orgId){
+    var c = client(), u = user(); if (!c || !id || !status) return;
+    var commentEl = Array.prototype.find.call(document.querySelectorAll('.t73V125DecisionComment'), function(el){ return el.dataset.id === id; });
+    var decisionComment = commentEl ? commentEl.value.trim() : '';
+    try {
+      var got = await c.from('reports').select('*').eq('id', id).limit(1);
+      var row = got.data && got.data[0];
+      if (!row) return alert('Заявка не найдена. Обновите список.');
+      var p = parse(row.date, {});
+      p.decisionBy = (u && (u.email || u.id)) || 'Руководство';
+      p.decisionAt = new Date().toLocaleString('ru-RU');
+      p.decisionComment = decisionComment;
+      var res = await c.from('reports').update({ status:status, date:JSON.stringify(p) }).eq('id', id);
+      if (res.error) throw res.error;
+      try { playSound(status === 'inactive_approved' ? 'ok' : 'fail'); } catch(e) {}
+      await renderReviewList(orgId);
+    } catch(err) { alert('Ошибка решения: ' + (err && err.message || err)); }
+  }
+
+  async function renderInactive(){
+    var root = $('gossV4Content');
+    if (!root) return;
+    var org = activeOrg();
+    var ac = await access(org.id);
+    root.classList.add('t73-v120-owned');
+    setActiveTab();
+    var canForm = ac.senior;
+    var canReview = ac.leader;
+    if (!canForm && !canReview) {
+      root.innerHTML = '<div class="t73-v125-inactive-card"><h3 class="t73-v125-inactive-title">🌙 Неактив СС — ' + esc(org.short) + '</h3><div class="t73-v125-denied">Раздел доступен только старшему составу выбранной ГОСС организации. Проверка заявок доступна руководству ГОСС.</div></div>';
+      return;
+    }
+    var myRows = canForm ? await loadInactiveRows(org.id, true) : [];
+    root.innerHTML = '<div class="t73-v125-inactive-card">'
+      + '<div><h3 class="t73-v125-inactive-title">🌙 Заявки на неактив СС — ' + esc(org.short) + '</h3><div class="t73-v125-muted">Форма работает отдельно по каждой ГОСС организации. Отправлять её может только СС, а руководство проверяет заявки снизу.</div></div>'
+      + (canForm ? '<div class="t73-v125-channel"><span class="t73-v125-dot"></span># tambov-73 / goss / inactives</div><div class="t73-v125-author"><div class="t73-v125-avatar">Z</div><div><div class="t73-v125-name">Форма заявления</div><div class="t73-v125-muted">Заполните все поля</div></div></div><div class="t73-v125-rules"><span>Ограничение: максимум ' + MAX_DAYS + ' дня подряд.</span><span>Ограничение: новая заявка не чаще 1 раза в ' + COOLDOWN_DAYS + ' дней.</span><span>Пока заявка на проверке или уже есть активный неактив — новую отправить нельзя.</span></div><div class="t73-v125-form"><label class="full">Ваш Никнейм:<input id="t73V125Nick" class="t73-v125-input" value="' + esc(nick() || (user() && user().email) || '') + '" placeholder="Введите никнейм"></label><label>С (дата):<input id="t73V125DateFrom" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label>По (дата):<input id="t73V125DateTo" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label class="full">Причина неактива:<textarea id="t73V125Reason" class="t73-v125-input" placeholder="Опишите причину подробно..."></textarea></label></div><div class="t73-v125-actions"><button id="t73V125SubmitInactive" class="btn btn-primary" type="button" style="background:linear-gradient(135deg,#a26cff,#c4a1ff);box-shadow:0 10px 30px rgba(162,108,255,.4);">ОТПРАВИТЬ ЗАЯВКУ</button></div><div id="t73V125InactiveMsg" class="t73-v125-muted"></div><div class="t73-v125-inactive-card" style="box-shadow:none;background:rgba(0,0,0,.18);"><h3 style="margin:0;color:#fff;">Мои последние заявки</h3><div class="t73-v125-list">' + renderOwnHistory(myRows) + '</div></div>' : '<div class="t73-v125-denied">Вы видите этот раздел как руководство. Форма отправки скрыта, потому что она только для СС.</div>')
+      + (canReview ? '<div class="t73-v125-actions" style="justify-content:center;margin-top:.35rem;"><button id="t73V125CheckInactive" class="btn btn-secondary" type="button" style="width:100%;border-color:#c4a1ff;color:#111;background:#c4a1ff;box-shadow:0 8px 20px rgba(162,108,255,.35);">ПРОВЕРИТЬ</button></div><div id="t73V125ReviewWrap" class="t73-v125-review-wrap"><div class="t73-v125-inactive-card" style="box-shadow:none;background:rgba(0,0,0,.18);"><div class="t73-v125-row"><h3 style="margin:0;color:#fff;">Проверка заявок СС</h3><button id="t73V125RefreshInactive" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div id="t73V125ReviewList" class="t73-v125-list"></div></div></div>' : '')
+      + '</div>';
+    var submit = $('t73V125SubmitInactive'); if (submit) submit.addEventListener('click', function(e){ e.preventDefault(); submitInactive(org.id); });
+    var check = $('t73V125CheckInactive'); if (check) check.addEventListener('click', async function(e){ e.preventDefault(); var w=$('t73V125ReviewWrap'); if(w) w.style.display = w.style.display === 'grid' ? 'none' : 'grid'; if(w && w.style.display === 'grid') await renderReviewList(org.id); });
+    var refresh = $('t73V125RefreshInactive'); if (refresh) refresh.addEventListener('click', function(e){ e.preventDefault(); renderReviewList(org.id); });
+  }
+
+  function setActiveTab(){ document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4').forEach(function(b){ b.classList.toggle('active', b.dataset.view === 'inactive_v125'); }); }
+
+  async function patchNav(){
+    var nav = $('gossOrgActionNavV4');
+    if (!nav || nav.style.display === 'none') return;
+    var org = activeOrg();
+    var ac = await access(org.id);
+    var shouldShow = ac.senior || ac.leader;
+    var btn = $('t73V125InactiveTab');
+    if (!shouldShow) { if (btn) btn.remove(); return; }
+    if (!btn) {
+      nav.insertAdjacentHTML('beforeend','<button class="mode-btn gov-action-switch-v4 t73-v125-inactive-tab" id="t73V125InactiveTab" data-view="inactive_v125" type="button">🌙 Неактив СС</button>');
+      btn = $('t73V125InactiveTab');
+      btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); renderInactive(); }, true);
+    }
+    btn.style.display = 'inline-flex';
+  }
+
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4,#gossOrgActionNavV4')) setTimeout(patchNav, 150);
+  }, true);
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V125_INACTIVE_TIMER__); window.__T73_V125_INACTIVE_TIMER__ = setTimeout(patchNav, 120); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e) {}
+  document.addEventListener('DOMContentLoaded', function(){ patchNav(); });
+  [250,700,1400,2600,4200].forEach(function(ms){ setTimeout(patchNav, ms); });
+  window.T73_V125_GOSS_INACTIVE = { render:renderInactive, patchNav:patchNav };
+})();
+</script>
+<!-- === /T73 V125 === -->
+
+
 </body>
 </html>
