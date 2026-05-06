@@ -15509,7 +15509,11 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     const gossText = String(gossTextBtn?.textContent || '').toLowerCase();
     if (gossBtn || (inGossZone && gossText.includes('провер') && gossText.includes('отчет'))) {
       event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation();
-      await renderGossReportsV55(false);
+      if (window.T73_V120_ORG_REPORTS && typeof window.T73_V120_ORG_REPORTS.review === 'function') {
+        await window.T73_V120_ORG_REPORTS.review();
+      } else {
+        await renderGossReportsV55(false);
+      }
     }
   }, true);
 
@@ -21175,9 +21179,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function openZoom(url, title){
     url = String(url || '').trim();
     if (!url) return;
-    if (window.T73_V120_ORG_REPORTS && typeof window.T73_V120_ORG_REPORTS.zoom === 'function') {
-      try { window.T73_V120_ORG_REPORTS.zoom(url, title || 'Скриншот'); return; } catch(e) {}
-    }
+    // В организациях не отдаём zoom в старый V120-модал: там не было кнопки открытия ссылки.
+    // Используем V122/V123-модал: обычный клик приближает, кнопка внутри открывает оригинальную ссылку.
     ensureModal();
     var m = $('t73V122Zoom'), img = $('t73V122ZoomImg'), t = $('t73V122ZoomTitle'), a = $('t73V122ZoomOpen');
     if (t) t.textContent = title || 'Скриншот';
@@ -21291,6 +21294,136 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V122 === -->
+
+
+
+<!-- === T73 V123: ORGANIZATIONS proof zoom + clickable links hard fix === -->
+<script id="t73-v123-org-proof-zoom-click-hardfix">
+(function(){
+  'use strict';
+  if (window.__T73_V123_ORG_PROOF_ZOOM_CLICK_HARDFIX__) return;
+  window.__T73_V123_ORG_PROOF_ZOOM_CLICK_HARDFIX__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function isImageUrl(url){
+    url = String(url || '').trim();
+    return /^data:image\//i.test(url) || /^blob:/i.test(url) || /\.(png|jpe?g|webp|gif|avif|bmp|svg)(\?|#|$)/i.test(url) || /\/(report-screenshots|screenshots|reports)\//i.test(url) || /\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(url) || /supabase\.co\/storage\/v1\/object\//i.test(url);
+  }
+  function css(){
+    if ($('t73V123OrgProofCss')) return;
+    var st = document.createElement('style');
+    st.id = 't73V123OrgProofCss';
+    st.textContent = [
+      '#gossV4Content .t73-v120-proof-grid,#gossV4Content .gov-v4-report-proof-cells,#v55GossReportsArea .t73-v55-proof-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.55rem!important;width:100%!important;max-height:none!important;overflow:visible!important;}',
+      '#gossV4Content .t73-v120-photo,#gossV4Content .gov-v4-proof-photo,#v55GossReportsArea .t73-v55-proof-list>a:has(img),#v55GossReportsArea .t73-v55-proof-list>img{display:block!important;width:100%!important;height:clamp(112px,15vw,168px)!important;min-height:112px!important;border-radius:14px!important;overflow:hidden!important;border:1px solid rgba(191,198,255,.28)!important;background:rgba(0,0,0,.38)!important;box-shadow:0 10px 24px rgba(0,0,0,.28)!important;cursor:zoom-in!important;position:relative!important;object-fit:cover!important;}',
+      '#gossV4Content .t73-v120-photo img,#gossV4Content .gov-v4-proof-photo img,#v55GossReportsArea .t73-v55-proof-list>a:has(img)>img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border:0!important;border-radius:0!important;max-width:none!important;max-height:none!important;}',
+      '#gossV4Content .t73-v120-file,#gossV4Content .gov-v4-proof-file,#v55GossReportsArea .t73-v55-proof-list>a.btn{min-height:52px!important;border-radius:14px!important;pointer-events:auto!important;}',
+      '.t73-v123-org-open-mini{position:absolute;right:.34rem;top:.34rem;z-index:4;min-width:1.45rem;height:1.45rem;display:grid;place-items:center;border-radius:999px;background:rgba(0,0,0,.78);color:#fff!important;text-decoration:none!important;font-size:.8rem;border:1px solid rgba(255,255,255,.2);}',
+      '#t73V123OrgZoom{display:none;position:fixed;inset:0;z-index:1000030;background:rgba(0,0,0,.94);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}',
+      '#t73V123OrgZoomBox{max-width:min(1220px,96vw);max-height:94vh;display:grid;gap:.72rem;cursor:default;}',
+      '#t73V123OrgZoomHead{display:flex;align-items:center;justify-content:space-between;gap:.7rem;color:#fff;}',
+      '#t73V123OrgZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '#t73V123OrgZoomOpen{color:#c4a1ff;text-decoration:none;font-weight:1000;border:1px solid rgba(196,161,255,.36);border-radius:999px;padding:.42rem .72rem;background:rgba(162,108,255,.14);}',
+      '#t73V123OrgZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem;}',
+      '#t73V123OrgZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}',
+      '@media(max-width:760px){#gossV4Content .t73-v120-proof-grid,#gossV4Content .gov-v4-report-proof-cells,#v55GossReportsArea .t73-v55-proof-list{grid-template-columns:1fr!important}#gossV4Content .t73-v120-photo,#gossV4Content .gov-v4-proof-photo,#v55GossReportsArea .t73-v55-proof-list>a:has(img),#v55GossReportsArea .t73-v55-proof-list>img{height:auto!important;aspect-ratio:16/9!important;min-height:0!important}#t73V123OrgZoom{padding:12px}#t73V123OrgZoomImg{max-height:78vh}}'
+    ].join('\n');
+    document.head.appendChild(st);
+  }
+  function ensureModal(){
+    css();
+    if ($('t73V123OrgZoom')) return;
+    document.body.insertAdjacentHTML('beforeend','<div id="t73V123OrgZoom" aria-hidden="true"><div id="t73V123OrgZoomBox" role="dialog" aria-modal="true"><div id="t73V123OrgZoomHead"><div id="t73V123OrgZoomTitle">Скриншот</div><a id="t73V123OrgZoomOpen" href="#" target="_blank" rel="noreferrer">Открыть ссылку</a><button id="t73V123OrgZoomClose" type="button" aria-label="Закрыть">✕</button></div><img id="t73V123OrgZoomImg" alt="Скриншот"></div></div>');
+    function close(){ var m=$('t73V123OrgZoom'), img=$('t73V123OrgZoomImg'); if(m){m.style.display='none';m.setAttribute('aria-hidden','true');} if(img) img.src=''; document.body.style.overflow=''; }
+    $('t73V123OrgZoom').addEventListener('click', close);
+    $('t73V123OrgZoomBox').addEventListener('click', function(e){ e.stopPropagation(); });
+    $('t73V123OrgZoomClose').addEventListener('click', close);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && $('t73V123OrgZoom') && $('t73V123OrgZoom').style.display === 'flex') close(); });
+  }
+  function openZoom(url, title){
+    url = String(url || '').trim();
+    if (!url) return;
+    ensureModal();
+    var m=$('t73V123OrgZoom'), img=$('t73V123OrgZoomImg'), t=$('t73V123OrgZoomTitle'), a=$('t73V123OrgZoomOpen');
+    if(t) t.textContent = title || 'Скриншот';
+    if(img) img.src = url;
+    if(a) a.href = url;
+    if(m){m.style.display='flex';m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+  }
+  function rootOf(el){ return el && el.closest && el.closest('#gossV4Content,#gossV3Content,#gossDashView,#mode-fsb,#v55GossReportsArea'); }
+  function normalize(scope){
+    css();
+    scope = scope || document;
+    var roots = [];
+    ['gossV4Content','gossV3Content','gossDashView','mode-fsb','v55GossReportsArea'].forEach(function(id){ var el=$(id); if(el) roots.push(el); });
+    if (scope.querySelectorAll && rootOf(scope)) roots.push(scope);
+    roots = roots.filter(function(x,i,a){ return x && a.indexOf(x) === i; });
+    roots.forEach(function(root){
+      root.querySelectorAll('button.gov-v4-proof-photo,button.t73-v119-zoom-btn,button[data-v119-img],button[data-v120-img]').forEach(function(btn){
+        var url = btn.getAttribute('data-v120-img') || btn.getAttribute('data-v119-img') || (btn.querySelector('img') && btn.querySelector('img').src) || '';
+        if (!url) return;
+        btn.setAttribute('data-v123-org-img', url);
+        btn.setAttribute('data-v123-org-title', btn.getAttribute('data-v120-title') || btn.getAttribute('data-v119-title') || (btn.querySelector('img') && btn.querySelector('img').alt) || 'Скриншот');
+      });
+      root.querySelectorAll('a.t73-v120-photo,a.gov-v4-proof-photo,a[href]').forEach(function(a){
+        var href = a.getAttribute('href') || '';
+        var img = a.querySelector('img');
+        if (img && (isImageUrl(href) || isImageUrl(img.src))) {
+          var url = href || img.src;
+          a.classList.add('t73-v123-org-photo');
+          a.setAttribute('data-v123-org-img', url);
+          a.setAttribute('data-v123-org-title', img.alt || a.title || 'Скриншот');
+          a.target = '_blank';
+          a.rel = a.rel || 'noreferrer';
+        } else if (/^(https?:|data:image|blob:)/i.test(href)) {
+          a.target = a.target || '_blank';
+          a.rel = a.rel || 'noreferrer';
+          a.style.pointerEvents = 'auto';
+        }
+      });
+      root.querySelectorAll('.t73-v55-proof-list>img').forEach(function(img){
+        if (!img.src) return;
+        img.setAttribute('data-v123-org-img', img.src);
+        img.setAttribute('data-v123-org-title', img.alt || 'Скриншот');
+      });
+      root.querySelectorAll('.gov-v4-proof-file').forEach(function(box){
+        var text = String(box.textContent || box.title || '');
+        var m = text.match(/https?:\/\/\S+/i);
+        if (m) {
+          box.innerHTML = '<a class="t73-v122-file-link" target="_blank" rel="noreferrer" href="' + esc(m[0]) + '">📎 открыть ссылку</a>';
+        }
+      });
+    });
+  }
+  function modified(e){ return e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey; }
+  window.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var openMini = t.closest('.t73-v123-org-open-mini');
+    if (openMini) return;
+    var el = t.closest('[data-v123-org-img],button.gov-v4-proof-photo,button.t73-v119-zoom-btn,.t73-v55-proof-list img,a.t73-v120-photo,a.gov-v4-proof-photo');
+    if (!el && t.closest('.t73-v55-proof-list') && t.tagName === 'IMG') el = t;
+    if (!el && t.closest('.t73-v55-proof-list a[href]') && t.closest('.t73-v55-proof-list a[href]').querySelector('img')) el = t.closest('.t73-v55-proof-list a[href]');
+    if (!el || !rootOf(el)) return;
+    var url = el.getAttribute('data-v123-org-img') || el.getAttribute('data-v120-img') || el.getAttribute('data-v119-img') || el.getAttribute('href') || (el.tagName === 'IMG' ? el.src : '') || (el.querySelector && el.querySelector('img') && el.querySelector('img').src) || '';
+    var title = el.getAttribute('data-v123-org-title') || el.getAttribute('data-v120-title') || el.getAttribute('data-v119-title') || el.title || (el.querySelector && el.querySelector('img') && el.querySelector('img').alt) || 'Скриншот';
+    if (!url || !isImageUrl(url)) return;
+    if (modified(e) && el.tagName === 'A') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    openZoom(url, title);
+  }, true);
+  document.addEventListener('DOMContentLoaded', function(){ normalize(document); });
+  document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('#gossV4Content,#gossV3Content,#gossDashView,#mode-fsb,#v55GossReportsArea')) setTimeout(function(){ normalize(document); }, 100); }, true);
+  try { new MutationObserver(function(muts){ var target=document; for(var i=0;i<muts.length;i++){ if(muts[i].target && muts[i].target.nodeType===1){ target=muts[i].target; break; } } clearTimeout(window.__T73_V123_ORG_PROOF_TIMER__); window.__T73_V123_ORG_PROOF_TIMER__=setTimeout(function(){ normalize(target); },80); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e) {}
+  normalize(document);
+  [150,450,900,1600,2800,4200].forEach(function(ms){ setTimeout(function(){ normalize(document); }, ms); });
+  window.T73_V123_ORG_PROOF_FIX = { run:normalize, zoom:openZoom };
+})();
+</script>
+<!-- === /T73 V123 === -->
 
 </body>
 </html>
