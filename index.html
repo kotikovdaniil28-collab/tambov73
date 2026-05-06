@@ -21922,5 +21922,320 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 /* === /V128 === */
 </script>
 
+
+
+<!-- === T73 V129: нормальная система XP отчётов + перерасчёт старых начислений === -->
+<style id="t73-v129-report-xp-style">
+  .t73-v129-xp-toast{position:fixed;right:16px;bottom:16px;z-index:999999;background:linear-gradient(145deg,rgba(8,14,24,.98),rgba(15,8,24,.98));border:1px solid rgba(127,232,160,.42);box-shadow:0 16px 48px rgba(0,0,0,.45),0 0 28px rgba(127,232,160,.12);border-radius:18px;padding:.9rem 1rem;color:#dfffea;font-weight:900;max-width:min(420px,calc(100vw - 32px));line-height:1.35;animation:t73-v129-pop .22s ease-out both}.t73-v129-xp-toast small{display:block;margin-top:.25rem;color:var(--color-text-muted);font-weight:700}.t73-v129-xp-toast.error{border-color:rgba(255,107,136,.5);color:#ffd6df;box-shadow:0 16px 48px rgba(0,0,0,.45),0 0 28px rgba(255,107,136,.12)}@keyframes t73-v129-pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+</style>
+<script id="t73-v129-report-xp-recalc-script">
+/* === V129 REPORT XP RECALC + GRANT 2026-05-06 ===
+   Fixes report XP rows that had status but xp=0/wrong, and moves old manual marks from checker email to the target moderator email by Nick/date payload.
+*/
+(function installT73V129ReportXpRecalc(){
+  'use strict';
+  if (window.__T73_V129_REPORT_XP_RECALC__) return;
+  window.__T73_V129_REPORT_XP_RECALC__ = true;
+
+  var XP = {
+    'Норма': 15,
+    'Перенорма': 30,
+    'Натяг': 7,
+    'Герой дня': 60,
+    'Не засчитано': 0,
+    'Отказ': 0,
+    'Нет отчета': 0,
+    'Нет отчёта': 0,
+    'Неактив': 0,
+    'На проверке': 0,
+    'Ожидает проверки': 0,
+    'none': 0,
+    '': 0
+  };
+  window.T73_REPORT_REWARD_XP = Object.assign({}, window.T73_REPORT_REWARD_XP || {}, XP);
+
+  var SERVICE = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','USER_KIND','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP','AP_POINTS','FSB_POINTS','FSB_SPEND','SHOP_FSB','ROULETTE_FSB','CUSTOM_FSB_MSG','REPORT_TABLE_MARK','REPORT_TABLE_MARK_V15','REPORT_TABLE_MEMBER_V15','SITE_SETTING','WEEKLY_QUIZ_DONE',
+    'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_REPORT_TABLE','GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG'
+  ]);
+
+  function $(id){ return document.getElementById(id); }
+  function str(v){ return String(v == null ? '' : v); }
+  function clean(v){ return str(v).trim(); }
+  function low(v){ return clean(v).toLowerCase(); }
+  function esc(v){ return str(v).replace(/[&<>"']/g,function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    return null;
+  }
+  function user(){
+    try { if (window.currentUser && window.currentUser.email) return window.currentUser; } catch(e) {}
+    return null;
+  }
+  function myEmail(){ var u=user(); return low(u && u.email); }
+  function isServiceEmail(v){ return SERVICE.has(clean(v)); }
+  function normalizeStatus(v){
+    v = clean(v).replace(/ё/g,'е');
+    if (/^норма$/i.test(v)) return 'Норма';
+    if (/^перенорма$/i.test(v)) return 'Перенорма';
+    if (/^натяг$/i.test(v)) return 'Натяг';
+    if (/^герой\s*дня$/i.test(v)) return 'Герой дня';
+    if (/^(отказ|не\s*засчитано)$/i.test(v)) return 'Не засчитано';
+    if (/^нет\s*отчет/i.test(v)) return 'Нет отчета';
+    if (/^неактив$/i.test(v)) return 'Неактив';
+    if (/^(на\s*проверке|ожидает)/i.test(v)) return 'На проверке';
+    if (/^none|-$/i.test(v)) return 'none';
+    return clean(v) || 'none';
+  }
+  function xpFor(status, fallback){
+    var st = normalizeStatus(status);
+    if (Object.prototype.hasOwnProperty.call(XP, st)) return XP[st];
+    var n = Number(fallback);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  }
+  function parseJson(value){ try { return typeof value === 'string' ? JSON.parse(value) : (value || {}); } catch(e) { return {}; } }
+  function payload(row){
+    if (!row) return {};
+    var direct = parseJson(row.date);
+    if (direct && (direct.version || direct.nick || direct.nickname || direct.email || direct.userEmail || direct.day || direct.date)) return direct;
+    var m = str(row.date).match(/JSON:\s*(\{[\s\S]*\})\s*$/i);
+    if (m) return parseJson(m[1]);
+    return direct || {};
+  }
+  function textOf(row){ return [row && row.date, row && row.status, row && row.link].map(str).join(' | '); }
+  function nickFromRow(row){
+    var p = payload(row);
+    var n = clean(p.nick || p.nickname || p.name || p.user || '');
+    if (n) return n;
+    var m = textOf(row).match(/(?:^|[|;\n])\s*(?:ник|nickname|nick|пользователь)\s*:?\s*([^|;\n]+)/i);
+    return m ? clean(m[1]) : '';
+  }
+  function dateFromRow(row){
+    var p = payload(row);
+    var d = clean(p.day || p.date || '');
+    if (d && /^\d{4}-\d{2}-\d{2}/.test(d)) return d.slice(0,10);
+    var m = textOf(row).match(/(?:дата|date)\s*:?\s*(\d{4}-\d{2}-\d{2}|\d{2}[.\/-]\d{2}[.\/-]\d{4})/i);
+    if (!m) return '';
+    var x = m[1];
+    if (/^\d{4}-/.test(x)) return x.slice(0,10);
+    var parts = x.split(/[.\/-]/);
+    return parts[2] + '-' + parts[1].padStart(2,'0') + '-' + parts[0].padStart(2,'0');
+  }
+  function buildUserMaps(users){
+    var byEmail = new Map(), byNick = new Map(), byId = new Map();
+    (users || []).forEach(function(u){
+      if (!u) return;
+      if (u.email) byEmail.set(low(u.email), u);
+      if (u.nickname) byNick.set(low(u.nickname), u);
+      if (u.user_id) byId.set(str(u.user_id), u);
+    });
+    return { byEmail: byEmail, byNick: byNick, byId: byId };
+  }
+  function resolveOwner(row, maps){
+    var p = payload(row);
+    var nick = nickFromRow(row);
+    var byNick = nick ? maps.byNick.get(low(nick)) : null;
+    if (byNick && byNick.email) return byNick;
+    var email = clean(p.email || p.userEmail || p.ownerEmail || '');
+    if (email && email.indexOf('@') > -1 && maps.byEmail.has(low(email))) return maps.byEmail.get(low(email));
+    var linkUser = maps.byId.get(str(row && row.link || ''));
+    if (linkUser && linkUser.email) return linkUser;
+    var rowMail = clean(row && row.email || '');
+    if (rowMail && rowMail.indexOf('@') > -1 && !isServiceEmail(rowMail) && maps.byEmail.has(low(rowMail))) return maps.byEmail.get(low(rowMail));
+    if (nick) {
+      var n = low(nick);
+      var best = null;
+      maps.byNick.forEach(function(u, k){ if (!best && (k.indexOf(n) !== -1 || n.indexOf(k) !== -1)) best = u; });
+      if (best && best.email) return best;
+    }
+    return null;
+  }
+  function isReportLike(row){
+    if (!row || isServiceEmail(row.email)) return false;
+    var st = normalizeStatus(row.status);
+    if (Object.prototype.hasOwnProperty.call(XP, st)) return true;
+    var t = textOf(row).toLowerCase();
+    return /ник\s*:|дата\s*:|работа\s*:|тип\s+сдачи|выставлено\s+руководством/.test(t);
+  }
+  function toast(msg, detail, error){
+    var old = document.querySelector('.t73-v129-xp-toast');
+    if (old) old.remove();
+    var box = document.createElement('div');
+    box.className = 't73-v129-xp-toast' + (error ? ' error' : '');
+    box.innerHTML = esc(msg) + (detail ? '<small>' + esc(detail) + '</small>' : '');
+    document.body.appendChild(box);
+    setTimeout(function(){ try { box.remove(); } catch(e){} }, error ? 8000 : 4800);
+  }
+  async function isLeaderAllowed(c){
+    var u = user();
+    if (!u) return false;
+    var creator = '';
+    try { creator = (typeof creatorEmail !== 'undefined') ? creatorEmail : ''; } catch(e) {}
+    if (creator && low(u.email) === low(creator)) return true;
+    try {
+      var r = await c.from('reports').select('status').eq('email','ADMIN_ROLE').eq('link',u.id).limit(1000);
+      return (r.data || []).some(function(x){ return /lead|leader|руковод|admin|creator|созд/i.test(str(x.status)); });
+    } catch(e) { return false; }
+  }
+  async function refreshAll(){
+    try { if (typeof loadReportXpForCurrentUser === 'function' && user()) window.state.reportXp = await loadReportXpForCurrentUser(); } catch(e) {}
+    try { if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
+    try { if (typeof updateModStats === 'function') updateModStats(); } catch(e) {}
+    try { if (typeof updateSupportStats === 'function') updateSupportStats(); } catch(e) {}
+    try { if (typeof renderProfileData === 'function') renderProfileData(); } catch(e) {}
+    try { if (typeof loadLeaderboard === 'function') loadLeaderboard(); } catch(e) {}
+    try { if (typeof loadCreatorPanelData === 'function') loadCreatorPanelData(); } catch(e) {}
+    try { if (window.T73_V94_REPORTS && typeof window.T73_V94_REPORTS.load === 'function') window.T73_V94_REPORTS.load(); } catch(e) {}
+    try { if (window.T73_V44_MOD_TABLE && typeof window.T73_V44_MOD_TABLE.load === 'function') window.T73_V44_MOD_TABLE.load(); } catch(e) {}
+  }
+
+  async function recalcAndGrant(options){
+    options = options || {};
+    var c = client();
+    if (!c) throw new Error('Supabase не загрузился.');
+    if (!options.force && !(await isLeaderAllowed(c))) return { skipped:true, reason:'not_allowed' };
+    var usersRes = await c.from('user_stats').select('user_id,nickname,email,shop_spent').limit(8000);
+    if (usersRes.error) throw usersRes.error;
+    var users = usersRes.data || [];
+    var maps = buildUserMaps(users);
+    var repRes = await c.from('reports').select('id,email,link,date,status,xp').order('id',{ascending:false}).limit(7000);
+    if (repRes.error) throw repRes.error;
+    var rows = (repRes.data || []).filter(isReportLike);
+    var fixedXp = 0, moved = 0, totalAwarded = 0, errors = 0;
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var st = normalizeStatus(row.status);
+      var needXp = xpFor(st, row.xp);
+      var owner = resolveOwner(row, maps);
+      var upd = {};
+      if (Object.prototype.hasOwnProperty.call(XP, st) && Number(row.xp || 0) !== needXp) { upd.xp = needXp; fixedXp++; }
+      if (owner && owner.email && low(row.email) !== low(owner.email)) { upd.email = owner.email; moved++; }
+      if (Object.keys(upd).length) {
+        try {
+          var q = await c.from('reports').update(upd).eq('id', row.id);
+          if (q.error) throw q.error;
+          if (needXp > 0) totalAwarded += needXp;
+        } catch(e) { errors++; }
+      }
+    }
+    await refreshAll();
+    return { rows: rows.length, fixedXp: fixedXp, moved: moved, errors: errors, totalAwarded: totalAwarded };
+  }
+
+  async function resolveOwnerEmailForReport(c, row, preferredEmail){
+    if (preferredEmail && preferredEmail.indexOf('@') > -1) return preferredEmail;
+    try {
+      var usersRes = await c.from('user_stats').select('user_id,nickname,email').limit(8000);
+      if (usersRes.error) return '';
+      var owner = resolveOwner(row, buildUserMaps(usersRes.data || []));
+      return owner && owner.email ? owner.email : '';
+    } catch(e) { return ''; }
+  }
+
+  async function processReportV129(id, statusText, xpAmount){
+    var c = client();
+    if (!c) { alert('Supabase не загрузился.'); return; }
+    try {
+      var got = await c.from('reports').select('*').eq('id', id).maybeSingle();
+      if (got.error) throw got.error;
+      var row = got.data;
+      if (!row) { alert('Отчёт не найден.'); return; }
+      var ownerEmail = await resolveOwnerEmailForReport(c, row, '');
+      var realOwner = ownerEmail || (!isServiceEmail(row.email) ? clean(row.email) : '');
+      if (realOwner && myEmail() && low(realOwner) === myEmail()) {
+        alert('Нельзя проверять свой собственный отчёт. Попросите другое руководство.');
+        return;
+      }
+      var st = normalizeStatus(statusText);
+      var xp = xpFor(st, xpAmount);
+      var update = { status: st, xp: xp };
+      if (realOwner && low(row.email) !== low(realOwner)) update.email = realOwner;
+      var res = await c.from('reports').update(update).eq('id', id);
+      if (res.error) throw res.error;
+      await refreshAll();
+      var area = $('reportsListArea');
+      if (area) { area.style.display = 'none'; area.dataset.t73v94Open = '0'; }
+      var btn = $('viewReportsBtn');
+      if (btn) setTimeout(function(){ try { btn.click(); } catch(e){} }, 100);
+    } catch(e) { alert('Ошибка проверки/начисления XP: ' + (e && e.message ? e.message : e)); }
+  }
+
+  async function saveTableSelectV129(sel){
+    var c = client();
+    if (!c || !sel) return;
+    var id = clean(sel.dataset && sel.dataset.id);
+    var targetEmail = clean(sel.dataset && sel.dataset.email);
+    var nick = clean(sel.dataset && sel.dataset.nick);
+    var date = clean(sel.dataset && sel.dataset.date);
+    var val = normalizeStatus(sel.value);
+    if (targetEmail && myEmail() && low(targetEmail) === myEmail() && id) {
+      alert('Нельзя проверять свой собственный отчёт. Попросите другое руководство.');
+      sel.value = sel.dataset.prevValue || 'На проверке';
+      return;
+    }
+    sel.disabled = true; sel.style.opacity = '.55';
+    try {
+      var xp = xpFor(val, 0);
+      if (id) {
+        if (val === 'none') {
+          var del = await c.from('reports').delete().eq('id', id); if (del.error) throw del.error;
+          sel.dataset.id = '';
+        } else {
+          var update = { status: val, xp: xp };
+          if (targetEmail && targetEmail.indexOf('@') > -1) update.email = targetEmail;
+          var upd = await c.from('reports').update(update).eq('id', id); if (upd.error) throw upd.error;
+        }
+      } else if (val !== 'none') {
+        var payload = { version:'v129_manual_report_xp', nick:nick, date:date, work:'Выставлено руководством в таблице', requestedStatus:val, email:targetEmail };
+        var rowDate = 'Ник: ' + nick + ' | Дата: ' + date + ' | Работа: Выставлено руководством в таблице | Тип сдачи: ' + val + ' | JSON: ' + JSON.stringify(payload);
+        var newId = 'rep_manual_v129_' + Date.now() + '_' + Math.random().toString(16).slice(2);
+        var ins = await c.from('reports').insert([{ id:newId, email:targetEmail || (user() && user().email) || '', link:'', date:rowDate, status:val, xp:xp }]);
+        if (ins.error) throw ins.error;
+        sel.dataset.id = newId;
+      }
+      await refreshAll();
+    } catch(e) { alert('Ошибка сохранения XP: ' + (e && e.message ? e.message : e)); }
+    finally { sel.disabled = false; sel.style.opacity = '1'; }
+  }
+
+  document.addEventListener('focusin', function(e){
+    var t = e.target;
+    if (t && t.matches && t.matches('select.t73-v94-select,select.t73-v44-select,select.status-select')) t.dataset.prevValue = t.value;
+  }, true);
+  document.addEventListener('change', function(e){
+    var t = e.target;
+    if (!t || !t.matches || !t.matches('select.t73-v94-select,select.t73-v44-select,select.status-select')) return;
+    if (!(t.closest('#mode-reports_table') || t.closest('#reportsTableWrapper'))) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    saveTableSelectV129(t);
+    return false;
+  }, true);
+
+  function autoRun(){
+    if (window.__T73_V129_AUTO_RAN__) return;
+    var c = client(); if (!c || !user()) return;
+    window.__T73_V129_AUTO_RAN__ = true;
+    recalcAndGrant({ force:false }).then(function(r){
+      if (!r || r.skipped) return;
+      if (r.fixedXp || r.moved || r.errors) toast('XP отчётов пересчитан', 'Исправлено XP: ' + r.fixedXp + ' · перенесено на модеров: ' + r.moved + (r.errors ? ' · ошибок: ' + r.errors : ''));
+    }).catch(function(e){ toast('Ошибка перерасчёта XP отчётов', e && e.message ? e.message : e, true); window.__T73_V129_AUTO_RAN__ = false; });
+  }
+
+  window.processReport = processReportV129;
+  window.t73RecalcReportXpV129 = recalcAndGrant;
+  window.T73_V129_REPORT_XP = { xpFor: xpFor, recalc: recalcAndGrant, process: processReportV129, saveSelect: saveTableSelectV129 };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(autoRun, 2800); });
+  else setTimeout(autoRun, 2800);
+  var iv = setInterval(autoRun, 3000); setTimeout(function(){ clearInterval(iv); }, 30000);
+})();
+/* === /V129 === */
+</script>
+<!-- === /T73 V129 === -->
+
 </body>
 </html>
