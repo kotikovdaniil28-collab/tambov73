@@ -9568,7 +9568,7 @@
                     if (isImg) {
                         return '<button class="gov-v4-proof-photo t73-v119-zoom-btn" type="button" data-v119-img="' + v4Esc(url) + '" data-v119-title="' + v4Esc(name) + '" title="Нажмите, чтобы приблизить"><img src="' + v4Esc(url) + '" alt="' + v4Esc(name) + '" loading="lazy"></button>';
                     }
-                    return '<div class="gov-v4-proof-file" title="' + v4Esc(name) + '">📎 ' + v4Esc(name) + '<span>не фото</span></div>';
+                    return '<a class="gov-v4-proof-file t73-v124-proof-link" href="' + v4Esc(url) + '" target="_blank" rel="noreferrer" title="' + v4Esc(name) + '" data-v124-proof-link="' + v4Esc(url) + '">🔗 ' + v4Esc(name) + '<span>открыть ссылку</span></a>';
                 }).join('') + '</div>';
             }
             function v4ReportActionsHtml(row, p){
@@ -21424,6 +21424,127 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V123 === -->
+
+
+<!-- === T73 V124: ORG non-photo proof links clickable === -->
+<style id="t73-v124-org-proof-link-css">
+  #gossV4Content a.gov-v4-proof-file.t73-v124-proof-link,
+  #gossV3Content a.gov-v4-proof-file.t73-v124-proof-link,
+  #gossDashView a.gov-v4-proof-file.t73-v124-proof-link,
+  #mode-fsb a.gov-v4-proof-file.t73-v124-proof-link,
+  #v55GossReportsArea a.gov-v4-proof-file.t73-v124-proof-link {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    text-decoration: none !important;
+    color: var(--color-text-muted) !important;
+    transition: border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease, box-shadow .18s ease !important;
+  }
+  #gossV4Content a.gov-v4-proof-file.t73-v124-proof-link:hover,
+  #gossV3Content a.gov-v4-proof-file.t73-v124-proof-link:hover,
+  #gossDashView a.gov-v4-proof-file.t73-v124-proof-link:hover,
+  #mode-fsb a.gov-v4-proof-file.t73-v124-proof-link:hover,
+  #v55GossReportsArea a.gov-v4-proof-file.t73-v124-proof-link:hover {
+    color: #fff !important;
+    border-color: rgba(196,161,255,.72) !important;
+    background: rgba(162,108,255,.13) !important;
+    box-shadow: 0 12px 30px rgba(162,108,255,.12), 0 10px 24px rgba(0,0,0,.28) !important;
+    transform: translateY(-1px) !important;
+  }
+  #gossV4Content a.gov-v4-proof-file.t73-v124-proof-link span,
+  #gossV3Content a.gov-v4-proof-file.t73-v124-proof-link span,
+  #gossDashView a.gov-v4-proof-file.t73-v124-proof-link span,
+  #mode-fsb a.gov-v4-proof-file.t73-v124-proof-link span,
+  #v55GossReportsArea a.gov-v4-proof-file.t73-v124-proof-link span {
+    color: #c4a1ff !important;
+    font-weight: 900 !important;
+  }
+</style>
+<script id="t73-v124-org-proof-link-click-fix">
+(function(){
+  'use strict';
+  if (window.__T73_V124_ORG_PROOF_LINK_CLICK_FIX__) return;
+  window.__T73_V124_ORG_PROOF_LINK_CLICK_FIX__ = true;
+
+  function orgRoot(el){
+    return el && el.closest && el.closest('#gossV4Content,#gossV3Content,#gossDashView,#mode-fsb,#v55GossReportsArea');
+  }
+  function normalize(scope){
+    scope = scope || document;
+    var roots = [];
+    ['gossV4Content','gossV3Content','gossDashView','mode-fsb','v55GossReportsArea'].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) roots.push(el);
+    });
+    if (scope.querySelectorAll && orgRoot(scope)) roots.push(scope);
+    roots = roots.filter(function(x,i,a){ return x && a.indexOf(x) === i; });
+
+    roots.forEach(function(root){
+      root.querySelectorAll('a.gov-v4-proof-file.t73-v124-proof-link[href],a[data-v124-proof-link][href]').forEach(function(a){
+        a.target = '_blank';
+        a.rel = a.rel || 'noreferrer noopener';
+        a.style.pointerEvents = 'auto';
+        a.setAttribute('role', 'link');
+        a.setAttribute('tabindex', '0');
+        if (!a.getAttribute('title')) a.setAttribute('title', 'Открыть ссылку');
+      });
+    });
+  }
+
+  window.addEventListener('click', function(e){
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var a = t.closest('a.gov-v4-proof-file.t73-v124-proof-link[href],a[data-v124-proof-link][href]');
+    if (!a || !orgRoot(a)) return;
+
+    var href = a.getAttribute('href') || a.getAttribute('data-v124-proof-link') || '';
+    if (!href) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+    var modified = e.button === 1 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+    try {
+      if (modified) {
+        window.open(href, '_blank', 'noopener,noreferrer');
+      } else {
+        window.open(href, '_blank', 'noopener,noreferrer');
+      }
+    } catch(err) {
+      window.location.href = href;
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var t = e.target;
+    if (!t || !t.matches || !t.matches('a.gov-v4-proof-file.t73-v124-proof-link[href],a[data-v124-proof-link][href]')) return;
+    if (!orgRoot(t)) return;
+    e.preventDefault();
+    var href = t.getAttribute('href') || t.getAttribute('data-v124-proof-link') || '';
+    if (href) window.open(href, '_blank', 'noopener,noreferrer');
+  }, true);
+
+  document.addEventListener('DOMContentLoaded', function(){ normalize(document); });
+  try {
+    new MutationObserver(function(muts){
+      clearTimeout(window.__T73_V124_ORG_PROOF_LINK_TIMER__);
+      window.__T73_V124_ORG_PROOF_LINK_TIMER__ = setTimeout(function(){
+        var target = document;
+        for (var i = 0; i < muts.length; i++) {
+          if (muts[i].target && muts[i].target.nodeType === 1) { target = muts[i].target; break; }
+        }
+        normalize(target);
+      }, 60);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  } catch(e) {}
+  normalize(document);
+  [150,450,900,1600,2800,4200].forEach(function(ms){ setTimeout(function(){ normalize(document); }, ms); });
+
+  window.T73_V124_ORG_PROOF_LINK_FIX = { run: normalize };
+})();
+</script>
+<!-- === /T73 V124 === -->
 
 </body>
 </html>
