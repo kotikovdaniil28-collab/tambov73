@@ -22215,27 +22215,162 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     return false;
   }, true);
 
-  function autoRun(){
-    if (window.__T73_V129_AUTO_RAN__) return;
-    var c = client(); if (!c || !user()) return;
-    window.__T73_V129_AUTO_RAN__ = true;
-    recalcAndGrant({ force:false }).then(function(r){
+  function isCreatorNow(){
+    var u = user();
+    if (!u || !u.email) return false;
+    var creator = '';
+    try { creator = (typeof creatorEmail !== 'undefined') ? creatorEmail : ''; } catch(e) {}
+    return !!(creator && low(u.email) === low(creator));
+  }
+  async function safeAutoRun(){
+    // V130: не грузим базу во время входа. Тяжёлый перерасчёт запускается только для создателя,
+    // когда сайт уже открылся, чтобы не ловить "Load failed" на авторизации.
+    if (window.__T73_V130_XP_AUTO_RAN__) return;
+    var c = client();
+    if (!c || !user() || !isCreatorNow()) return;
+    var modal = $('authModal');
+    if (modal && modal.style && modal.style.display && modal.style.display !== 'none') return;
+    window.__T73_V130_XP_AUTO_RAN__ = true;
+    recalcAndGrant({ force:true }).then(function(r){
       if (!r || r.skipped) return;
       if (r.fixedXp || r.moved || r.errors) toast('XP отчётов пересчитан', 'Исправлено XP: ' + r.fixedXp + ' · перенесено на модеров: ' + r.moved + (r.errors ? ' · ошибок: ' + r.errors : ''));
-    }).catch(function(e){ toast('Ошибка перерасчёта XP отчётов', e && e.message ? e.message : e, true); window.__T73_V129_AUTO_RAN__ = false; });
+    }).catch(function(e){
+      // Не ломаем вход/загрузку сайта из-за перерасчёта.
+      console.warn('T73 V130 XP recalc skipped:', e);
+      window.__T73_V130_XP_AUTO_RAN__ = false;
+    });
   }
 
   window.processReport = processReportV129;
   window.t73RecalcReportXpV129 = recalcAndGrant;
+  window.t73RecalcReportXpV130 = recalcAndGrant;
   window.T73_V129_REPORT_XP = { xpFor: xpFor, recalc: recalcAndGrant, process: processReportV129, saveSelect: saveTableSelectV129 };
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(autoRun, 2800); });
-  else setTimeout(autoRun, 2800);
-  var iv = setInterval(autoRun, 3000); setTimeout(function(){ clearInterval(iv); }, 30000);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ setTimeout(safeAutoRun, 9000); });
+  else setTimeout(safeAutoRun, 9000);
+  window.addEventListener('load', function(){ setTimeout(safeAutoRun, 6500); });
 })();
-/* === /V129 === */
+/* === /V129 patched by V130 === */
 </script>
-<!-- === /T73 V129 === -->
+<!-- === /T73 V129 patched by V130 === -->
+
+
+<!-- === T73 V130: безопасный вход + защита от Load failed === -->
+<script id="t73-v130-auth-login-safe-script">
+(function installT73V130AuthSafe(){
+  'use strict';
+  if (window.__T73_V130_AUTH_SAFE__) return;
+  window.__T73_V130_AUTH_SAFE__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function val(id){ var el=$(id); return String(el && el.value || '').trim(); }
+  function getClient(){
+    try { if (typeof supa !== 'undefined' && supa && supa.auth) return supa; } catch(e) {}
+    if (window.__T73_SUPA && window.__T73_SUPA.auth) return window.__T73_SUPA;
+    if (window.supa && window.supa.auth) return window.supa;
+    if (window.t73Supa && window.t73Supa.auth) return window.t73Supa;
+    if (window.supabaseClient && window.supabaseClient.auth) return window.supabaseClient;
+    return null;
+  }
+  function setMsg(text, color){
+    var e=$('authErrorMsg');
+    if (!e) return;
+    e.textContent = text || '';
+    e.style.display = text ? 'block' : 'none';
+    e.style.color = color || 'var(--color-error)';
+  }
+  function explainError(err){
+    var msg = String((err && (err.message || err.error_description || err.name)) || err || '');
+    if (/load failed|failed to fetch|networkerror|network request failed/i.test(msg)) {
+      return 'Не удалось подключиться к серверу авторизации. Проверь интернет/VPN/AdBlock и нажми «Войти» ещё раз. Код уже повторил запрос автоматически.';
+    }
+    if (/invalid login credentials/i.test(msg)) return 'Неверный Email или пароль.';
+    if (/email not confirmed/i.test(msg)) return 'Почта не подтверждена. Проверь письмо или восстанови пароль.';
+    return msg || 'Не удалось войти. Попробуй ещё раз.';
+  }
+  function withTimeout(promise, ms){
+    return new Promise(function(resolve, reject){
+      var done=false;
+      var t=setTimeout(function(){ if(done) return; done=true; reject(new Error('Load failed')); }, ms || 12000);
+      Promise.resolve(promise).then(function(v){ if(done) return; done=true; clearTimeout(t); resolve(v); }, function(e){ if(done) return; done=true; clearTimeout(t); reject(e); });
+    });
+  }
+  async function waitClient(){
+    for (var i=0;i<20;i++){
+      var c=getClient();
+      if (c && c.auth) return c;
+      await new Promise(function(r){ setTimeout(r, 250); });
+    }
+    return null;
+  }
+  async function signInSafe(){
+    var btn=$('authLoginSubmit');
+    if (btn && btn.dataset.busy === '1') return;
+    var email=val('authEmail').toLowerCase();
+    var password=String(($('authPassword') && $('authPassword').value) || '');
+    if (!email || !password) return setMsg('Введите Email и пароль.');
+    if (email.indexOf('@') === -1) return setMsg('В поле Email должен быть именно Email, не никнейм.');
+    var c=await waitClient();
+    if (!c) return setMsg('Supabase ещё не загрузился. Обнови страницу и попробуй снова.');
+    if (btn) { btn.dataset.busy='1'; btn.disabled=true; btn.textContent='ВХОД...'; }
+    setMsg('Вхожу...', 'var(--color-primary)');
+    try {
+      var res;
+      try {
+        res = await withTimeout(c.auth.signInWithPassword({ email: email, password: password }), 14000);
+      } catch(first) {
+        if (!/load failed|failed to fetch|network/i.test(String(first && first.message || first))) throw first;
+        await new Promise(function(r){ setTimeout(r, 900); });
+        res = await withTimeout(c.auth.signInWithPassword({ email: email, password: password }), 16000);
+      }
+      if (res && res.error) throw res.error;
+      setMsg('Успешно. Загружаю аккаунт...', 'var(--color-success)');
+      setTimeout(function(){ window.location.reload(); }, 250);
+    } catch(e) {
+      setMsg(explainError(e));
+      if (btn) { btn.dataset.busy='0'; btn.disabled=false; btn.textContent='Войти'; }
+    }
+  }
+  async function signUpSafe(){
+    var btn=$('authRegisterSubmit');
+    if (btn && btn.dataset.busy === '1') return;
+    var email=val('authEmail').toLowerCase();
+    var nick=val('authNickname');
+    var kind=val('authUserKind');
+    var password=String(($('authPassword') && $('authPassword').value) || '');
+    if (!email || !password || !nick) return setMsg('Заполните Email, никнейм и пароль.');
+    if (email.indexOf('@') === -1) return setMsg('В поле Email должен быть именно Email, не никнейм.');
+    var c=await waitClient();
+    if (!c) return setMsg('Supabase ещё не загрузился. Обнови страницу и попробуй снова.');
+    if (btn) { btn.dataset.busy='1'; btn.disabled=true; btn.textContent='СОЗДАЮ...'; }
+    setMsg('Создаю аккаунт...', 'var(--color-primary)');
+    try {
+      var res = await withTimeout(c.auth.signUp({ email:email, password:password, options:{ data:{ nickname:nick, user_kind:kind } } }), 16000);
+      if (res && res.error) throw res.error;
+      setMsg('Аккаунт создан. Теперь нажмите «Войти».', 'var(--color-success)');
+    } catch(e) {
+      setMsg(explainError(e));
+    } finally {
+      if (btn) { btn.dataset.busy='0'; btn.disabled=false; btn.textContent='Создать аккаунт'; }
+    }
+  }
+  function bind(){
+    var login=$('authLoginSubmit'), reg=$('authRegisterSubmit');
+    if (login && login.dataset.v130 !== '1') {
+      login.dataset.v130='1';
+      login.onclick=function(e){ if(e){e.preventDefault(); e.stopPropagation();} signInSafe(); return false; };
+    }
+    if (reg && reg.dataset.v130 !== '1') {
+      reg.dataset.v130='1';
+      reg.onclick=function(e){ if(e){e.preventDefault(); e.stopPropagation();} signUpSafe(); return false; };
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+  var bindTimer=setInterval(bind, 900); setTimeout(function(){ clearInterval(bindTimer); }, 25000);
+  try { new MutationObserver(function(){ setTimeout(bind, 40); }).observe(document.body, { childList:true, subtree:true }); } catch(e) {}
+})();
+</script>
+<!-- === /T73 V130 === -->
 
 </body>
 </html>
