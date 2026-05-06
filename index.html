@@ -21547,9 +21547,10 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V124 === -->
 
 
-<!-- === T73 V125: ГОСС неактив для СС + проверка руководством === -->
+<!-- === T73 V126: ГОСС неактив СС, форма для руководства, стабильные режимы === -->
 <style id="t73-v125-goss-inactive-css">
   #gossOrgActionNavV4 .t73-v125-inactive-tab{display:inline-flex!important;}
+  body.t73-v44-cat-organizations #gossOrgActionNavV4 .t73-v125-inactive-tab, #gossOrgActionNavV4.t73-v103-goss-actions .t73-v125-inactive-tab{display:inline-flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;}
   #gossV4Content .t73-v125-inactive-card{padding:1.15rem;border-radius:22px;border:1px solid rgba(196,161,255,.28);background:radial-gradient(circle at 0 0,rgba(162,108,255,.18),transparent 55%),linear-gradient(145deg,rgba(18,21,38,.96),rgba(7,8,16,.99));box-shadow:0 16px 40px rgba(0,0,0,.34);display:grid;gap:1rem;}
   #gossV4Content .t73-v125-inactive-title{margin:0;color:#c4a1ff;font-size:1.25rem;font-weight:1000;}
   #gossV4Content .t73-v125-muted{color:var(--color-text-muted);font-size:.92rem;line-height:1.45;}
@@ -21582,6 +21583,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   'use strict';
   if (window.__T73_V125_GOSS_INACTIVE_SS__) return;
   window.__T73_V125_GOSS_INACTIVE_SS__ = true;
+  window.__T73_V126_GOSS_INACTIVE_STABLE__ = true;
 
   var EMAIL = 'GOSS_ORG_LOG_V19';
   var STATUSES = ['inactive_pending','inactive_approved','inactive_rejected'];
@@ -21619,8 +21621,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     try {
       var res = await c.from('reports').select('status,link').eq('email','ADMIN_ROLE').eq('link',u.id).limit(1000);
       var rows = res.data || [];
-      out.senior = rows.some(function(r){ return r.status === 'goss_senior_all' || r.status === 'goss_senior_' + orgId; });
-      out.leader = out.leader || rows.some(function(r){ return r.status === 'goss_admin_all' || r.status === 'goss_lead_' + orgId; });
+      out.senior = rows.some(function(r){ var st=String(r.status||''); return st === 'goss_senior_all' || st === 'goss_senior_' + orgId || st === 'goss_senior_one'; });
+      out.leader = out.leader || rows.some(function(r){ var st=String(r.status||''); return st === 'goss_admin_all' || st === 'goss_lead_' + orgId || st === 'goss_admin_' + orgId || st === 'goss_leader_' + orgId || st === 'goss_lead_one'; });
     } catch(e) {}
     return out;
   }
@@ -21739,7 +21741,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     var ac = await access(org.id);
     root.classList.add('t73-v120-owned');
     setActiveTab();
-    var canForm = ac.senior;
+    var canForm = ac.senior || ac.leader;
     var canReview = ac.leader;
     if (!canForm && !canReview) {
       root.innerHTML = '<div class="t73-v125-inactive-card"><h3 class="t73-v125-inactive-title">🌙 Неактив СС — ' + esc(org.short) + '</h3><div class="t73-v125-denied">Раздел доступен только старшему составу выбранной ГОСС организации. Проверка заявок доступна руководству ГОСС.</div></div>';
@@ -21747,8 +21749,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     }
     var myRows = canForm ? await loadInactiveRows(org.id, true) : [];
     root.innerHTML = '<div class="t73-v125-inactive-card">'
-      + '<div><h3 class="t73-v125-inactive-title">🌙 Заявки на неактив СС — ' + esc(org.short) + '</h3><div class="t73-v125-muted">Форма работает отдельно по каждой ГОСС организации. Отправлять её может только СС, а руководство проверяет заявки снизу.</div></div>'
-      + (canForm ? '<div class="t73-v125-channel"><span class="t73-v125-dot"></span># tambov-73 / goss / inactives</div><div class="t73-v125-author"><div class="t73-v125-avatar">Z</div><div><div class="t73-v125-name">Форма заявления</div><div class="t73-v125-muted">Заполните все поля</div></div></div><div class="t73-v125-rules"><span>Ограничение: максимум ' + MAX_DAYS + ' дня подряд.</span><span>Ограничение: новая заявка не чаще 1 раза в ' + COOLDOWN_DAYS + ' дней.</span><span>Пока заявка на проверке или уже есть активный неактив — новую отправить нельзя.</span></div><div class="t73-v125-form"><label class="full">Ваш Никнейм:<input id="t73V125Nick" class="t73-v125-input" value="' + esc(nick() || (user() && user().email) || '') + '" placeholder="Введите никнейм"></label><label>С (дата):<input id="t73V125DateFrom" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label>По (дата):<input id="t73V125DateTo" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label class="full">Причина неактива:<textarea id="t73V125Reason" class="t73-v125-input" placeholder="Опишите причину подробно..."></textarea></label></div><div class="t73-v125-actions"><button id="t73V125SubmitInactive" class="btn btn-primary" type="button" style="background:linear-gradient(135deg,#a26cff,#c4a1ff);box-shadow:0 10px 30px rgba(162,108,255,.4);">ОТПРАВИТЬ ЗАЯВКУ</button></div><div id="t73V125InactiveMsg" class="t73-v125-muted"></div><div class="t73-v125-inactive-card" style="box-shadow:none;background:rgba(0,0,0,.18);"><h3 style="margin:0;color:#fff;">Мои последние заявки</h3><div class="t73-v125-list">' + renderOwnHistory(myRows) + '</div></div>' : '<div class="t73-v125-denied">Вы видите этот раздел как руководство. Форма отправки скрыта, потому что она только для СС.</div>')
+      + '<div><h3 class="t73-v125-inactive-title">🌙 Заявки на неактив СС — ' + esc(org.short) + '</h3><div class="t73-v125-muted">Форма работает отдельно по каждой ГОСС организации. СС отправляет заявку, руководство тоже видит форму и проверяет заявки снизу.</div></div>'
+      + (canForm ? '<div class="t73-v125-channel"><span class="t73-v125-dot"></span># tambov-73 / goss / inactives</div><div class="t73-v125-author"><div class="t73-v125-avatar">Z</div><div><div class="t73-v125-name">Форма заявления</div><div class="t73-v125-muted">Заполните все поля</div></div></div><div class="t73-v125-rules"><span>Ограничение: максимум ' + MAX_DAYS + ' дня подряд.</span><span>Ограничение: новая заявка не чаще 1 раза в ' + COOLDOWN_DAYS + ' дней.</span><span>Пока заявка на проверке или уже есть активный неактив — новую отправить нельзя.</span></div><div class="t73-v125-form"><label class="full">Ваш Никнейм:<input id="t73V125Nick" class="t73-v125-input" value="' + esc(nick() || (user() && user().email) || '') + '" placeholder="Введите никнейм"></label><label>С (дата):<input id="t73V125DateFrom" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label>По (дата):<input id="t73V125DateTo" class="t73-v125-input" type="date" min="' + todayIso() + '"></label><label class="full">Причина неактива:<textarea id="t73V125Reason" class="t73-v125-input" placeholder="Опишите причину подробно..."></textarea></label></div><div class="t73-v125-actions"><button id="t73V125SubmitInactive" class="btn btn-primary" type="button" style="background:linear-gradient(135deg,#a26cff,#c4a1ff);box-shadow:0 10px 30px rgba(162,108,255,.4);">ОТПРАВИТЬ ЗАЯВКУ</button></div><div id="t73V125InactiveMsg" class="t73-v125-muted"></div><div class="t73-v125-inactive-card" style="box-shadow:none;background:rgba(0,0,0,.18);"><h3 style="margin:0;color:#fff;">Мои последние заявки</h3><div class="t73-v125-list">' + renderOwnHistory(myRows) + '</div></div>' : '<div class="t73-v125-denied">Форма доступна СС и руководству выбранной ГОСС организации.</div>')
       + (canReview ? '<div class="t73-v125-actions" style="justify-content:center;margin-top:.35rem;"><button id="t73V125CheckInactive" class="btn btn-secondary" type="button" style="width:100%;border-color:#c4a1ff;color:#111;background:#c4a1ff;box-shadow:0 8px 20px rgba(162,108,255,.35);">ПРОВЕРИТЬ</button></div><div id="t73V125ReviewWrap" class="t73-v125-review-wrap"><div class="t73-v125-inactive-card" style="box-shadow:none;background:rgba(0,0,0,.18);"><div class="t73-v125-row"><h3 style="margin:0;color:#fff;">Проверка заявок СС</h3><button id="t73V125RefreshInactive" class="btn btn-secondary" type="button">🔄 Обновить</button></div><div id="t73V125ReviewList" class="t73-v125-list"></div></div></div>' : '')
       + '</div>';
     var submit = $('t73V125SubmitInactive'); if (submit) submit.addEventListener('click', function(e){ e.preventDefault(); submitInactive(org.id); });
@@ -21758,32 +21760,79 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 
   function setActiveTab(){ document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4').forEach(function(b){ b.classList.toggle('active', b.dataset.view === 'inactive_v125'); }); }
 
+  function stableActionLabels(){
+    var labels = {
+      trainer:'🎮 Тренажёр',
+      profile:'📝 Мои данные',
+      submit:'📎 Сдать ГОСС отчёт',
+      shop:'🛒 Магазин ГОСС',
+      staff:'📋 Таблица состава',
+      reports:'✅ Проверить отчётность',
+      shop_logs:'🧾 Логи магазина',
+      manage:'👑 Панель руководства',
+      report_table_v120:'📊 Таблица отчётности',
+      inactive_v125:'🌙 Неактив СС'
+    };
+    document.querySelectorAll('#gossOrgActionNavV4 .gov-action-switch-v4').forEach(function(b){
+      var v = b.dataset && b.dataset.view;
+      if (v && labels[v]) b.textContent = labels[v];
+      if (v && labels[v]) b.setAttribute('title', labels[v].replace(/^[^А-Яа-яA-Za-z0-9]+\s*/,'').trim());
+    });
+    var inactive = document.getElementById('t73V125InactiveTab') || document.querySelector('#gossOrgActionNavV4 [data-view="inactive_v125"]');
+    if (inactive) {
+      inactive.id = 't73V125InactiveTab';
+      inactive.classList.add('mode-btn','gov-action-switch-v4','t73-v125-inactive-tab');
+      inactive.dataset.view = 'inactive_v125';
+      inactive.textContent = labels.inactive_v125;
+      inactive.style.display = 'inline-flex';
+      inactive.style.visibility = 'visible';
+      inactive.style.opacity = '1';
+      inactive.hidden = false;
+    }
+  }
+
   async function patchNav(){
     var nav = $('gossOrgActionNavV4');
     if (!nav || nav.style.display === 'none') return;
-    var org = activeOrg();
-    var ac = await access(org.id);
-    var shouldShow = ac.senior || ac.leader;
-    var btn = $('t73V125InactiveTab');
-    if (!shouldShow) { if (btn) btn.remove(); return; }
+    stableActionLabels();
+    var btn = $('t73V125InactiveTab') || nav.querySelector('[data-view="inactive_v125"]');
     if (!btn) {
       nav.insertAdjacentHTML('beforeend','<button class="mode-btn gov-action-switch-v4 t73-v125-inactive-tab" id="t73V125InactiveTab" data-view="inactive_v125" type="button">🌙 Неактив СС</button>');
       btn = $('t73V125InactiveTab');
-      btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); renderInactive(); }, true);
     }
+    btn.id = 't73V125InactiveTab';
+    btn.classList.add('mode-btn','gov-action-switch-v4','t73-v125-inactive-tab');
+    btn.dataset.view = 'inactive_v125';
+    btn.type = 'button';
+    btn.textContent = '🌙 Неактив СС';
     btn.style.display = 'inline-flex';
+    btn.style.visibility = 'visible';
+    btn.style.opacity = '1';
+    btn.hidden = false;
+    if (!btn.dataset.t73v126Bind) {
+      btn.dataset.t73v126Bind = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+        renderInactive();
+      }, true);
+    }
+    stableActionLabels();
   }
 
+  function schedulePatchNav(){ [0,40,120,260,600,1100].forEach(function(ms){ setTimeout(patchNav, ms); }); }
   document.addEventListener('click', function(e){
-    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4,#gossOrgActionNavV4')) setTimeout(patchNav, 150);
+    if (e.target && e.target.closest && e.target.closest('#subNavOrganizations .gov-org-switch-v4,#gossOrgActionNavV4')) schedulePatchNav();
   }, true);
   try { new MutationObserver(function(){ clearTimeout(window.__T73_V125_INACTIVE_TIMER__); window.__T73_V125_INACTIVE_TIMER__ = setTimeout(patchNav, 120); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e) {}
   document.addEventListener('DOMContentLoaded', function(){ patchNav(); });
-  [250,700,1400,2600,4200].forEach(function(ms){ setTimeout(patchNav, ms); });
-  window.T73_V125_GOSS_INACTIVE = { render:renderInactive, patchNav:patchNav };
+  [50,150,350,700,1400,2600,4200,6500].forEach(function(ms){ setTimeout(patchNav, ms); });
+  window.T73_V125_GOSS_INACTIVE = { render:renderInactive, patchNav:patchNav, stableActionLabels:stableActionLabels };
+  window.T73_V126_GOSS_INACTIVE = window.T73_V125_GOSS_INACTIVE;
 })();
 </script>
-<!-- === /T73 V125 === -->
+<!-- === /T73 V126 === -->
 
 
 </body>
