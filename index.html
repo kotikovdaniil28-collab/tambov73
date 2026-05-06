@@ -20628,7 +20628,8 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     return '<div class="' + (mini ? 't73-v120-mini-proofs' : 't73-v120-proof-grid') + '">' + proofs.map((proof, i) => {
       const url = String(proof.url || '');
       const name = proof.name || ('Скрин ' + (i + 1));
-      if (isImageProof(proof)) return '<button class="t73-v120-photo" type="button" data-v120-img="' + esc(url) + '" data-v120-title="' + esc(name) + '" title="Нажмите, чтобы приблизить"><img src="' + esc(url) + '" alt="' + esc(name) + '" loading="lazy"></button>';
+      if (isImageProof(proof)) return '<a class="t73-v120-photo t73-v122-photo-link" href="' + esc(url) + '" target="_blank" rel="noreferrer" data-v122-img="' + esc(url) + '" data-v122-title="' + esc(name) + '" title="Клик — приблизить, Ctrl/колесо — открыть ссылку"><img src="' + esc(url) + '" alt="' + esc(name) + '" loading="lazy"></a>';
+      if (/^(https?:|data:image|blob:)/i.test(url)) return '<a class="t73-v120-file t73-v122-file-link" href="' + esc(url) + '" target="_blank" rel="noreferrer" title="' + esc(name) + '"><b>📎 ' + esc(name) + '</b><span>открыть ссылку</span></a>';
       return '<div class="t73-v120-file" title="' + esc(name) + '"><b>📎 ' + esc(name) + '</b><span>не фото</span></div>';
     }).join('') + '</div>';
   }
@@ -21096,6 +21097,200 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V121 === -->
 
+
+
+
+<!-- === T73 V122: photo zoom restored + proof links clickable === -->
+<script id="t73-v122-zoom-clickable-proof-links">
+(function(){
+  'use strict';
+  if (window.__T73_V122_ZOOM_CLICKABLE_PROOF_LINKS__) return;
+  window.__T73_V122_ZOOM_CLICKABLE_PROOF_LINKS__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function isImgUrl(url){
+    url = String(url || '').trim();
+    return /^data:image\//i.test(url)
+      || /^blob:/i.test(url)
+      || /\.(png|jpe?g|webp|gif|avif|bmp|svg)(\?|#|$)/i.test(url)
+      || /\/(report-screenshots|screenshots|reports)\//i.test(url)
+      || /\/object\/public\/(report-screenshots|screenshots|reports)\//i.test(url)
+      || /supabase\.co\/storage\/v1\/object\//i.test(url);
+  }
+
+  function css(){
+    if ($('t73V122ZoomClickableCss')) return;
+    var s = document.createElement('style');
+    s.id = 't73V122ZoomClickableCss';
+    s.textContent = [
+      '.t73-v122-photo-link,.t73-v122-file-link{pointer-events:auto!important;text-decoration:none!important;}',
+      '.t73-v122-photo-link{cursor:zoom-in!important;}',
+      '.t73-v122-file-link{cursor:pointer!important;color:var(--color-text-muted)!important;}',
+      '.t73-v122-file-link:hover{border-color:rgba(255,107,136,.82)!important;color:#fff!important;box-shadow:0 12px 30px rgba(255,107,136,.12)!important;}',
+      '.t73-v122-photo-link::before{content:"↗";position:absolute;right:.34rem;top:.34rem;z-index:2;min-width:1.35rem;height:1.35rem;display:grid;place-items:center;border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font-size:.78rem;line-height:1;border:1px solid rgba(255,255,255,.18);opacity:.88;}',
+      '.t73-v122-photo-link::after{content:"🔍"!important;}',
+      '#t73V122Zoom{display:none;position:fixed;inset:0;z-index:1000020;background:rgba(0,0,0,.93);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}',
+      '#t73V122ZoomBox{max-width:min(1220px,96vw);max-height:94vh;display:grid;gap:.7rem;cursor:default;}',
+      '#t73V122ZoomHead{display:flex;align-items:center;justify-content:space-between;gap:.8rem;color:#fff;}',
+      '#t73V122ZoomTitle{font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}',
+      '#t73V122ZoomOpen{color:#c4a1ff;text-decoration:none;font-weight:900;border:1px solid rgba(196,161,255,.32);border-radius:999px;padding:.42rem .72rem;background:rgba(162,108,255,.12);}',
+      '#t73V122ZoomClose{border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;width:42px;height:42px;cursor:pointer;font-size:1.1rem;}',
+      '#t73V122ZoomImg{max-width:96vw;max-height:82vh;object-fit:contain;border-radius:18px;border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 80px rgba(0,0,0,.72);background:#111;}',
+      '@media(max-width:760px){#t73V122Zoom{padding:12px}#t73V122ZoomImg{max-height:78vh}#t73V122ZoomHead{gap:.45rem}#t73V122ZoomOpen{font-size:.82rem;padding:.36rem .55rem}}'
+    ].join('\n');
+    document.head.appendChild(s);
+  }
+
+  function ensureModal(){
+    css();
+    if ($('t73V122Zoom')) return;
+    document.body.insertAdjacentHTML('beforeend',
+      '<div id="t73V122Zoom" aria-hidden="true">' +
+        '<div id="t73V122ZoomBox" role="dialog" aria-modal="true">' +
+          '<div id="t73V122ZoomHead">' +
+            '<div id="t73V122ZoomTitle">Скриншот</div>' +
+            '<a id="t73V122ZoomOpen" href="#" target="_blank" rel="noreferrer">Открыть ссылку</a>' +
+            '<button id="t73V122ZoomClose" type="button" aria-label="Закрыть">✕</button>' +
+          '</div>' +
+          '<img id="t73V122ZoomImg" alt="Скриншот">' +
+        '</div>' +
+      '</div>');
+    var close = function(){
+      var m = $('t73V122Zoom'), img = $('t73V122ZoomImg');
+      if (m) { m.style.display = 'none'; m.setAttribute('aria-hidden','true'); }
+      if (img) img.src = '';
+      document.body.style.overflow = '';
+    };
+    $('t73V122Zoom').addEventListener('click', close);
+    $('t73V122ZoomBox').addEventListener('click', function(e){ e.stopPropagation(); });
+    $('t73V122ZoomClose').addEventListener('click', close);
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && $('t73V122Zoom') && $('t73V122Zoom').style.display === 'flex') close(); });
+  }
+
+  function openZoom(url, title){
+    url = String(url || '').trim();
+    if (!url) return;
+    if (window.T73_V120_ORG_REPORTS && typeof window.T73_V120_ORG_REPORTS.zoom === 'function') {
+      try { window.T73_V120_ORG_REPORTS.zoom(url, title || 'Скриншот'); return; } catch(e) {}
+    }
+    ensureModal();
+    var m = $('t73V122Zoom'), img = $('t73V122ZoomImg'), t = $('t73V122ZoomTitle'), a = $('t73V122ZoomOpen');
+    if (t) t.textContent = title || 'Скриншот';
+    if (img) img.src = url;
+    if (a) a.href = url;
+    if (m) { m.style.display = 'flex'; m.setAttribute('aria-hidden','false'); document.body.style.overflow = 'hidden'; }
+  }
+
+  function copyAttrs(from, to){
+    if (!from || !to) return;
+    Array.prototype.slice.call(from.attributes || []).forEach(function(a){
+      if (/^(type|disabled|data-v120-img|data-v120-title|data-v119-img|data-v119-title)$/i.test(a.name)) return;
+      try { to.setAttribute(a.name, a.value); } catch(e) {}
+    });
+  }
+
+  function replaceButtonWithLink(btn, url, title){
+    if (!btn || !url || btn.tagName === 'A') return btn;
+    var a = document.createElement('a');
+    copyAttrs(btn, a);
+    a.className = String(btn.className || '') + ' t73-v122-photo-link';
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noreferrer';
+    a.dataset.v122Img = url;
+    a.dataset.v122Title = title || btn.getAttribute('title') || 'Скриншот';
+    a.title = 'Клик — приблизить, Ctrl/колесо — открыть ссылку';
+    a.innerHTML = btn.innerHTML;
+    btn.parentNode && btn.parentNode.replaceChild(a, btn);
+    return a;
+  }
+
+  function normalizeLinks(scope){
+    scope = scope || document;
+    css();
+
+    Array.prototype.forEach.call(scope.querySelectorAll('button[data-v120-img],button[data-v119-img],button.gov-v4-proof-photo,button.t73-v119-zoom-btn'), function(btn){
+      var url = btn.getAttribute('data-v120-img') || btn.getAttribute('data-v119-img') || (btn.querySelector('img') && btn.querySelector('img').src) || '';
+      var title = btn.getAttribute('data-v120-title') || btn.getAttribute('data-v119-title') || (btn.querySelector('img') && btn.querySelector('img').alt) || 'Скриншот';
+      if (url) replaceButtonWithLink(btn, url, title);
+    });
+
+    Array.prototype.forEach.call(scope.querySelectorAll('a.t73-v120-photo,a.gov-v4-proof-photo,a.t73-v119-zoom-btn,a[href] > img'), function(node){
+      var a = node.tagName === 'A' ? node : node.closest('a[href]');
+      if (!a || !a.href) return;
+      var url = a.getAttribute('href') || a.href;
+      var img = a.querySelector('img');
+      if (!isImgUrl(url) && !(img && isImgUrl(img.src))) return;
+      a.classList.add('t73-v122-photo-link');
+      a.dataset.v122Img = url || (img && img.src) || '';
+      a.dataset.v122Title = a.getAttribute('title') || (img && img.alt) || 'Скриншот';
+      a.removeAttribute('data-v120-img');
+      a.removeAttribute('data-v120-title');
+      a.removeAttribute('data-v119-img');
+      a.removeAttribute('data-v119-title');
+      if (!a.target) a.target = '_blank';
+      if (!a.rel) a.rel = 'noreferrer';
+      a.title = 'Клик — приблизить, Ctrl/колесо — открыть ссылку';
+    });
+
+    Array.prototype.forEach.call(scope.querySelectorAll('a[href]'), function(a){
+      a.style.pointerEvents = 'auto';
+      if (!a.target && /^(https?:|data:image|blob:)/i.test(a.getAttribute('href') || '')) a.target = '_blank';
+      if (!a.rel && a.target === '_blank') a.rel = 'noreferrer';
+    });
+  }
+
+  function isModifiedOpen(e){
+    return e.button === 1 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+  }
+
+  window.addEventListener('click', function(e){
+    var el = e.target && e.target.closest && e.target.closest('[data-v122-img],.t73-v122-photo-link');
+    if (!el) return;
+    var url = el.getAttribute('data-v122-img') || el.getAttribute('href') || '';
+    if (!url) return;
+    if (isModifiedOpen(e)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    openZoom(url, el.getAttribute('data-v122-title') || el.getAttribute('title') || 'Скриншот');
+  }, true);
+
+  window.addEventListener('auxclick', function(e){
+    var el = e.target && e.target.closest && e.target.closest('.t73-v122-photo-link[href]');
+    if (!el) return;
+    // Средняя кнопка должна открыть ссылку как обычная ссылка, поэтому ничего не блокируем.
+  }, true);
+
+  function run(scope){ normalizeLinks(scope || document); }
+  var timer = null;
+  function schedule(scope){ clearTimeout(timer); timer = setTimeout(function(){ run(scope || document); }, 80); }
+
+  document.addEventListener('DOMContentLoaded', function(){ run(document); });
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#gossV4Content,#mode-report,#reportsListArea,.gov-v4-list')) schedule(document);
+  }, true);
+  try {
+    new MutationObserver(function(muts){
+      var t = document;
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].target && muts[i].target.nodeType === 1) { t = muts[i].target; break; }
+      }
+      schedule(t);
+    }).observe(document.documentElement, { childList:true, subtree:true });
+  } catch(e) {}
+
+  run(document);
+  [150, 450, 900, 1600, 2800].forEach(function(ms){ setTimeout(function(){ run(document); }, ms); });
+  window.T73_V122_ZOOM_CLICKABLE_LINKS = { run:run, zoom:openZoom, normalize:normalizeLinks };
+})();
+</script>
+<!-- === /T73 V122 === -->
 
 </body>
 </html>
