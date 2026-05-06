@@ -20844,5 +20844,258 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 
+
+
+<!-- === T73 V121: one real upload button + expandable screenshot galleries === -->
+<script id="t73-v121-one-upload-gallery-fix">
+(function(){
+  'use strict';
+  if (window.__T73_V121_ONE_UPLOAD_GALLERY_FIX__) return;
+  window.__T73_V121_ONE_UPLOAD_GALLERY_FIX__ = true;
+
+  var TXT_UPLOAD = '\uD83D\uDCF8 \u0417\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c \u0444\u043e\u0442\u043e';
+  var TXT_HINT = '\u041c\u043e\u0436\u043d\u043e \u0432\u044b\u0431\u0440\u0430\u0442\u044c \u0441\u0440\u0430\u0437\u0443 \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u043e \u0441\u043a\u0440\u0438\u043d\u0448\u043e\u0442\u043e\u0432';
+  var TXT_SELECTED = '\u0444\u043e\u0442\u043e \u0432\u044b\u0431\u0440\u0430\u043d\u043e';
+  var TXT_GALLERY = '\u0421\u043a\u0440\u0438\u043d\u0448\u043e\u0442\u044b';
+  var TXT_PROOF = '\u0414\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c\u0441\u0442\u0432\u0430';
+
+  function byId(id){ return document.getElementById(id); }
+  function hasClass(el, name){ return !!(el && el.classList && el.classList.contains(name)); }
+  function esc(v){
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function injectCss(){
+    if (byId('t73V121OneUploadGalleryCss')) return;
+    var style = document.createElement('style');
+    style.id = 't73V121OneUploadGalleryCss';
+    style.textContent = [
+      '#gossV4Content.t73-v121-gallery-fixed{display:grid;gap:1rem;}',
+      '#gossV4Content .t73-v120-grid{grid-template-columns:minmax(0,1fr)!important;}',
+      '#gossV4Content .t73-v120-report-card{min-height:0!important;width:100%;box-sizing:border-box;}',
+      '#gossV4Content .gov-v4-report-card{width:100%;box-sizing:border-box;}',
+      '#gossV4Content .gov-v4-report-main{grid-template-columns:minmax(0,1fr)!important;gap:.85rem!important;}',
+      '#gossV4Content .gov-v4-report-main>div{min-width:0;}',
+      '.t73-v121-gallery-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.15rem 0 .45rem;color:#fff;font-weight:1000;letter-spacing:.01em;}',
+      '.t73-v121-gallery-head b{display:inline-flex;align-items:center;justify-content:center;min-width:1.7rem;height:1.45rem;padding:0 .42rem;border-radius:999px;background:linear-gradient(135deg,rgba(162,108,255,.58),rgba(108,140,255,.34));border:1px solid rgba(196,161,255,.42);box-shadow:0 0 18px rgba(162,108,255,.25);font-size:.78rem;}',
+      '.t73-v121-gallery-grid,.t73-v120-proof-grid,.gov-v4-report-proof-cells{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:.55rem!important;align-items:stretch!important;justify-content:stretch!important;width:100%!important;max-height:none!important;overflow:visible!important;}',
+      '.t73-v120-proof-grid:empty,.gov-v4-report-proof-cells:empty{display:none!important;}',
+      '.t73-v120-photo,.gov-v4-proof-photo,.t73-v119-zoom-btn.gov-v4-proof-photo{display:block!important;width:100%!important;height:clamp(112px,15vw,168px)!important;min-height:112px!important;max-height:none!important;padding:0!important;margin:0!important;border-radius:14px!important;overflow:hidden!important;border:1px solid rgba(191,198,255,.26)!important;background:rgba(0,0,0,.38)!important;box-shadow:0 10px 24px rgba(0,0,0,.28)!important;cursor:zoom-in!important;position:relative!important;}',
+      '.t73-v120-photo img,.gov-v4-proof-photo img,.t73-v119-zoom-btn.gov-v4-proof-photo img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;border:0!important;border-radius:0!important;background:#111!important;}',
+      '.t73-v120-photo:hover,.gov-v4-proof-photo:hover{transform:translateY(-1px) scale(1.01);border-color:rgba(255,107,136,.82)!important;box-shadow:0 12px 30px rgba(255,107,136,.16),0 10px 24px rgba(0,0,0,.32)!important;}',
+      '.t73-v120-file,.gov-v4-proof-file{min-height:112px!important;border-radius:14px!important;border:1px dashed rgba(191,198,255,.26)!important;background:rgba(255,255,255,.04)!important;color:var(--color-text-muted)!important;display:grid!important;place-content:center!important;gap:.18rem!important;padding:.65rem!important;overflow:hidden!important;text-align:center!important;}',
+      '#gossV4Content img:not(#t73V120ZoomImg):not(#imageModalSrc){max-width:100%!important;}',
+      '#reportsListArea img:not(#imageModalSrc),#mode-report .t73-v27-old-report-card img:not(#imageModalSrc){width:100%!important;height:auto!important;max-height:240px!important;object-fit:contain!important;border-radius:14px!important;}',
+      '.t73-v121-single-upload-label{font-size:0!important;display:grid!important;gap:.65rem!important;border:1px dashed rgba(196,161,255,.38)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(162,108,255,.10),rgba(0,0,0,.16))!important;padding:.9rem!important;color:var(--color-text-muted)!important;}',
+      '.t73-v121-single-upload-label>*{font-size:.9rem;}',
+      '.t73-v121-real-upload-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;}',
+      '.t73-v121-upload-button{display:flex!important;align-items:center!important;justify-content:center!important;gap:.55rem!important;min-height:46px!important;width:100%!important;box-sizing:border-box!important;padding:.78rem 1rem!important;border-radius:14px!important;border:1px solid rgba(196,161,255,.52)!important;background:linear-gradient(135deg,rgba(162,108,255,.82),rgba(108,140,255,.72))!important;color:#fff!important;font-weight:1000!important;text-transform:none!important;letter-spacing:.01em!important;box-shadow:0 12px 28px rgba(108,140,255,.23)!important;cursor:pointer!important;}',
+      '.t73-v121-upload-button:hover{filter:brightness(1.08);transform:translateY(-1px);}',
+      '.t73-v121-upload-note{font-size:.82rem!important;line-height:1.35!important;color:var(--color-text-muted)!important;}',
+      '.t73-v121-hidden-upload{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
+      '.t73-v121-hidden-upload input{display:none!important;}',
+      '@media(max-width:760px){.t73-v121-gallery-grid,.t73-v120-proof-grid,.gov-v4-report-proof-cells{grid-template-columns:1fr!important}.t73-v120-photo,.gov-v4-proof-photo,.t73-v119-zoom-btn.gov-v4-proof-photo{height:auto!important;aspect-ratio:16/9!important;min-height:0!important}}'
+    ].join('\n');
+    document.head.appendChild(style);
+  }
+
+  function inputScope(input){
+    if (!input) return null;
+    return input.closest('#gossV4Content') || input.closest('#mode-report') || input.closest('#reportFormArea') || input.closest('section') || document;
+  }
+
+  function visibleish(el){
+    if (!el) return false;
+    if (el.disabled) return false;
+    if (el.type === 'hidden') return false;
+    var node = el;
+    while (node && node !== document.documentElement) {
+      var st = window.getComputedStyle ? window.getComputedStyle(node) : null;
+      if (st && (st.display === 'none' || st.visibility === 'hidden')) return false;
+      node = node.parentElement;
+    }
+    return true;
+  }
+
+  function choosePrimary(inputs, scope){
+    var ids = ['govV4ReportFiles','g19File','reportFileInputV62','reportFileInput'];
+    for (var i=0;i<ids.length;i++) {
+      var el = scope.querySelector('#' + ids[i]);
+      if (el && inputs.indexOf(el) !== -1) return el;
+    }
+    for (var j=0;j<inputs.length;j++) if (visibleish(inputs[j])) return inputs[j];
+    return inputs[0] || null;
+  }
+
+  function uploadContainer(input){
+    if (!input) return null;
+    return input.closest('#gossV27FileBox') || input.closest('.t73-v27-goss-form-card') || input.closest('label') || input.closest('.admin-field') || input.parentElement;
+  }
+
+  function hideDuplicateInput(input){
+    if (!input) return;
+    input.disabled = true;
+    input.setAttribute('aria-hidden','true');
+    input.tabIndex = -1;
+    var box = uploadContainer(input);
+    if (box) {
+      box.classList.add('t73-v121-hidden-upload');
+      box.setAttribute('aria-hidden','true');
+    } else {
+      input.classList.add('t73-v121-hidden-upload');
+    }
+  }
+
+  function fileWord(n){
+    n = Number(n || 0);
+    if (!n) return TXT_HINT;
+    return n + ' ' + TXT_SELECTED;
+  }
+
+  function ensureUploadButton(input){
+    if (!input || input.dataset.v121UploadReady === '1') return;
+    input.dataset.v121UploadReady = '1';
+    if (!input.id) input.id = 't73V121Upload_' + Math.random().toString(16).slice(2);
+    input.accept = 'image/*,.png,.jpg,.jpeg,.webp,.gif';
+    input.classList.add('t73-v121-real-upload-input');
+
+    var box = uploadContainer(input) || input.parentElement || inputScope(input);
+    if (box) box.classList.add('t73-v121-single-upload-label');
+
+    var btn = document.createElement('label');
+    btn.className = 't73-v121-upload-button';
+    btn.setAttribute('for', input.id);
+    btn.innerHTML = '<span>' + TXT_UPLOAD + '</span>';
+
+    var note = document.createElement('div');
+    note.className = 't73-v121-upload-note';
+    note.textContent = fileWord(input.files ? input.files.length : 0);
+
+    if (input.parentElement) {
+      input.insertAdjacentElement('afterend', btn);
+      btn.insertAdjacentElement('afterend', note);
+    } else if (box) {
+      box.appendChild(btn);
+      box.appendChild(note);
+    }
+
+    var update = function(){ note.textContent = fileWord(input.files ? input.files.length : 0); };
+    input.addEventListener('change', update);
+    update();
+  }
+
+  function normalizeUploadArea(scope){
+    scope = scope || document;
+    var areas = [];
+    var a = scope.querySelector('#gossV4Content');
+    var b = scope.querySelector('#mode-report');
+    var c = scope.querySelector('#reportFormArea');
+    if (a) areas.push(a);
+    if (b) areas.push(b);
+    if (c && areas.indexOf(c) === -1) areas.push(c);
+    if (!areas.length && scope.matches && (scope.matches('#gossV4Content') || scope.matches('#mode-report') || scope.matches('#reportFormArea'))) areas.push(scope);
+
+    areas.forEach(function(area){
+      var inputs = Array.prototype.slice.call(area.querySelectorAll('input[type="file"]'));
+      if (!inputs.length) return;
+      var primary = choosePrimary(inputs, area);
+      inputs.forEach(function(input){
+        if (input === primary) ensureUploadButton(input);
+        else hideDuplicateInput(input);
+      });
+    });
+
+    ['gossV27FileBox','gossV31FileInput','gossV31Preview'].forEach(function(id){
+      var el = byId(id);
+      if (!el) return;
+      var box = id === 'gossV31FileInput' ? uploadContainer(el) : el;
+      if (box) box.classList.add('t73-v121-hidden-upload');
+      if (el.tagName === 'INPUT') el.disabled = true;
+    });
+  }
+
+  function galleryCount(grid){
+    if (!grid) return 0;
+    return Array.prototype.filter.call(grid.children, function(x){
+      return !hasClass(x, 't73-v121-gallery-head') && !hasClass(x, 't73-v121-upload-note');
+    }).length;
+  }
+
+  function addGalleryHead(grid){
+    if (!grid || grid.dataset.v121GalleryHead === '1') return;
+    var count = galleryCount(grid);
+    if (!count) return;
+    grid.dataset.v121GalleryHead = '1';
+    grid.classList.add('t73-v121-gallery-grid');
+    var head = document.createElement('div');
+    head.className = 't73-v121-gallery-head';
+    var label = TXT_GALLERY;
+    var parentText = String((grid.closest('.gov-v4-report-main,.t73-v120-report-card,.gov-v4-report-card') || {}).textContent || '');
+    if (!/\u0421\u043a\u0440\u0438\u043d|\u0424\u043e\u0442\u043e/i.test(parentText) && count === 1) label = TXT_PROOF;
+    head.innerHTML = '<span>' + esc(label) + '</span><b>' + count + '</b>';
+    grid.parentNode.insertBefore(head, grid);
+  }
+
+  function enhanceGalleries(scope){
+    scope = scope || document;
+    var grids = scope.querySelectorAll('.t73-v120-proof-grid,.gov-v4-report-proof-cells');
+    Array.prototype.forEach.call(grids, addGalleryHead);
+    var root = byId('gossV4Content');
+    if (root) root.classList.add('t73-v121-gallery-fixed');
+  }
+
+  function fixOldHugeImages(scope){
+    scope = scope || document;
+    var imgs = scope.querySelectorAll('#reportsListArea img,#gossV4Content img,.gov-v4-list img');
+    Array.prototype.forEach.call(imgs, function(img){
+      if (img.id === 't73V120ZoomImg' || img.id === 'imageModalSrc') return;
+      img.loading = img.loading || 'lazy';
+      img.decoding = img.decoding || 'async';
+      img.classList.add('t73-v121-proof-img-safe');
+    });
+  }
+
+  function runFixes(scope){
+    injectCss();
+    normalizeUploadArea(scope || document);
+    enhanceGalleries(scope || document);
+    fixOldHugeImages(scope || document);
+  }
+
+  var timer = null;
+  function schedule(scope){
+    clearTimeout(timer);
+    timer = setTimeout(function(){ runFixes(scope || document); }, 60);
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){ runFixes(document); });
+  document.addEventListener('change', function(e){
+    if (e.target && e.target.matches && e.target.matches('input[type="file"]')) schedule(inputScope(e.target));
+  }, true);
+  document.addEventListener('click', function(e){
+    var t = e.target;
+    if (t && t.closest && t.closest('#gossOrgActionNavV4,#gossV4Content,#mode-report')) schedule(document);
+  }, true);
+
+  try {
+    new MutationObserver(function(mutations){
+      var target = document;
+      for (var i=0;i<mutations.length;i++) {
+        if (mutations[i].target && mutations[i].target.nodeType === 1) { target = mutations[i].target; break; }
+      }
+      schedule(target);
+    }).observe(document.documentElement, {childList:true, subtree:true});
+  } catch(e) {}
+
+  runFixes(document);
+  [150, 450, 900, 1600, 2800].forEach(function(ms){ setTimeout(function(){ runFixes(document); }, ms); });
+  window.T73_V121_ONE_UPLOAD_GALLERY_FIX = { run: runFixes, upload: normalizeUploadArea, galleries: enhanceGalleries };
+})();
+</script>
+<!-- === /T73 V121 === -->
+
+
 </body>
 </html>
