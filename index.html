@@ -3514,7 +3514,73 @@
                 "evidence": "Скрин предложения с ценой и контактом.",
                 "type": "approve"
         }
+
 ]);
+
+        const realReportComplaintCasesV131 = [
+            {
+                reportNo: '14880',
+                sender: '@147723868534436041',
+                violator: 'ГМ леха макензи',
+                text: 'ГМ леха макензи уже почти месяц не может вынести вердикт по поводу жалобы на ЗГМ (Репорт #1492). Либо он специально закрывает глаза и покрывает ЗГМа, либо ему стоит объяснить, что не надо забивать и делать репорты просроченными. Просьба передать КГМ.',
+                evidence: 'Указан связанный репорт #13492. Требуется проверка руководством, так как жалоба затрагивает ГМ/ЗГМ и сроки рассмотрения.',
+                type: 'pass',
+                verdict: 'pass',
+                lesson: 'Жалобы на действия/бездействие ГМ, ЗГМ и возможное покрывательство не закрываются рядовым модератором — передать КГМ.'
+            },
+            {
+                reportNo: '13529',
+                sender: '@!Maks_Almazov',
+                violator: 'Обжалование',
+                text: 'Обжалование ЧСМ за неадекватное поведение: игрок пишет, что его удалили с поста ЗГМ 62 сервера, он понял ошибку и хочет ещё раз попробовать работать на пользу проекта.',
+                evidence: 'Ссылка VK: vk.ru/m_almazov000. Обжалование ЧСМ/снятия с руководящей должности должно уходить старшим.',
+                type: 'pass',
+                verdict: 'pass',
+                lesson: 'Обжалование ЧСМ и кадровых решений по ЗГМ/ГМ — компетенция старшей администрации/КГМ.'
+            },
+            {
+                reportNo: '14223',
+                sender: '@Dima_Skotov',
+                violator: '@kogim_regip',
+                text: 'Жалоба с доказательствами на агента поддержки. По разбору видно нарушение пункта 2.1.',
+                evidence: 'Imgur-доказательства: imgur.com/a/WgbwU0o. В исходном разборе жалоба одобрена, агент поддержки получает наказание.',
+                type: 'approve',
+                verdict: 'approve',
+                lesson: 'Если фрапс/скрин полностью подтверждает нарушение 2.1, жалобу нужно одобрить.'
+            },
+            {
+                reportNo: '1492',
+                sender: 'Игрок проекта',
+                violator: 'ЗГМ / руководство',
+                text: 'Игрок просит пересмотреть старую жалобу на ЗГМ, так как обычный модератор не может вынести окончательный вердикт.',
+                evidence: 'Есть номер старого обращения, но нет самостоятельного полного доказательства нарушения в текущей жалобе.',
+                type: 'pass',
+                verdict: 'pass',
+                lesson: 'Спорные жалобы на руководство и старые обращения передаются КГМ, а не закрываются на месте.'
+            },
+            {
+                reportNo: '14420',
+                sender: 'Участник Discord',
+                violator: 'Агент поддержки',
+                text: 'Игрок жалуется, что агент поддержки дал грубый ответ и отказался помочь по вопросу сервера.',
+                evidence: 'Скрин ответа есть, виден ник агента и контекст обращения.',
+                type: 'approve',
+                verdict: 'approve',
+                lesson: 'Если видны ник, контекст и нарушение общения со стороны АП — жалобу одобрить.'
+            },
+            {
+                reportNo: '14301',
+                sender: 'Игрок проекта',
+                violator: 'Модератор',
+                text: 'Игрок просит наказать модератора, но прикрепил только обрезанный скрин без ника, даты и полного контекста.',
+                evidence: 'Обрезанный скрин без идентификации нарушителя.',
+                type: 'reject',
+                verdict: 'reject',
+                lesson: 'Без полного контекста, ника и даты доказательства недостаточны — отказать.'
+            }
+        ];
+        allComplaints.unshift.apply(allComplaints, realReportComplaintCasesV131);
+        allComplaints.forEach(c => { if (!c.verdict) c.verdict = c.type; });
 
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE', 'SHOP_OVERRIDE', 'GAME_XP']);
@@ -3834,9 +3900,26 @@
         }
 
         function randomComplaint() {
+            allComplaints.forEach(c => { if (!c.verdict) c.verdict = c.type; });
             if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
-            const item = allComplaints[compQueue.pop()]; complaintState.current = item;
-            document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
+            const item = allComplaints[compQueue.pop()];
+            if (!item.verdict) item.verdict = item.type;
+            complaintState.current = item;
+            const author = document.getElementById("compAuthor"), meta = document.getElementById("compMeta"), text = document.getElementById("compText"), evidence = document.getElementById("compEvidence");
+            const reportTitle = item.reportNo ? ('Репорт #' + item.reportNo) : 'Жалоба игрока';
+            const verdictLabel = item.verdict === 'approve' ? 'Одобрить' : (item.verdict === 'reject' ? 'Отказать' : 'Передать КГМ');
+            if (author) author.textContent = reportTitle;
+            if (meta) meta.textContent = (item.sender ? ('Отправитель: ' + item.sender + ' · ') : '') + 'Ожидает вердикта';
+            if (text) text.textContent = item.text;
+            if (evidence) {
+                evidence.innerHTML = `
+                    <div style="display:grid; gap:.55rem;">
+                        <div><strong style="color:#fff;">Нарушитель:</strong> ${escapeHtmlFix(item.violator || 'не указан')}</div>
+                        <div><strong style="color:#fff;">Доказательства:</strong> ${escapeHtmlFix(item.evidence || 'отсутствуют')}</div>
+                        <div><strong style="color:#fff;">Подсказка тренажёра:</strong> ${escapeHtmlFix(item.lesson || 'Сверь доказательства и выбери вердикт по правилам.')}</div>
+                        <div><strong style="color:#ffbf47;">Правильный тип:</strong> ${escapeHtmlFix(verdictLabel)}</div>
+                    </div>`;
+            }
         }
 
         function taNextMsg() {
@@ -11997,6 +12080,7 @@
                             <label class="t73-v15-small">Отчётность<select class="t73-v15-select t73-v15-mark" data-kind="report" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${reportOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.report||'Нет отчета')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
                             <label class="t73-v15-small">Отметка дня<select class="t73-v15-select t73-v15-mark" data-kind="day" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${dayOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.day||'Проверить')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
                             <input class="t73-v15-input t73-v15-note" data-user="${esc15(m.key)}" data-date="${esc15(day)}" placeholder="Комментарий" value="${esc15(mark.note||'')}" ${canEdit?'':'disabled'}>
+                            ${mark.by ? `<div class="t73-v15-small" style="color:#8df0ae;">Проверил: <b>${esc15(mark.by)}</b>${mark.at ? ' · ' + esc15(new Date(mark.at).toLocaleString('ru-RU')) : ''}</div>` : '<div class="t73-v15-small">Проверил: —</div>'}
                             <div>${pf.length ? pf.map((p,i)=>`<span class="t73-v15-proof">📎 ${esc15(p.quality)} · ${Number(p.count)||0}</span>`).join('') : '<span class="t73-v15-small">Доказательств нет</span>'}</div>
                         </div>`; }).join('')}</div>
                 </div>`).join('');
@@ -12025,8 +12109,8 @@
                 const area=$15('reportFormArea'); const warn=$15('reportAccessWarning');
                 if(currentUser && area && warn){ area.style.display='grid'; warn.style.display='none'; }
                 const inp=$15('reportFileInput'); if(!inp) return;
-                inp.setAttribute('multiple','multiple'); inp.setAttribute('accept','image/*');
-                if(!$15('t73V15UploadTitle')) inp.insertAdjacentHTML('beforebegin','<div id="t73V15UploadTitle" class="t73-v15-card" style="margin-bottom:.75rem;"><b>📎 Прямая загрузка скриншотов</b><div class="t73-v15-small">Можно выбрать сразу много скринов. Они загрузятся в Supabase Storage; если bucket не настроен, сайт сожмёт их и отправит fallback.</div></div>');
+                inp.removeAttribute('multiple'); inp.setAttribute('accept','image/*');
+                if(!$15('t73V15UploadTitle')) inp.insertAdjacentHTML('beforebegin','<div id="t73V15UploadTitle" class="t73-v15-card" style="margin-bottom:.75rem;"><b>📎 Прямая загрузка одного фото</b><div class="t73-v15-small">Выберите ровно один скрин/фото. Он загрузится в Supabase Storage; если bucket не настроен, сайт сожмёт фото и отправит fallback.</div></div>');
                 if(!$15('reportFilePreview')) inp.insertAdjacentHTML('afterend','<div id="reportFilePreview" class="t73-v15-preview"></div>');
             }
             function renderPreview15(){
@@ -12137,7 +12221,7 @@
                 }, true);
                 document.addEventListener('change', ev=>{
                     const target=ev.target;
-                    if(target?.id==='reportFileInput'){ const fresh=Array.from(target.files||[]).filter(f=>String(f.type||'').startsWith('image/')); files15=files15.concat(fresh).slice(0,16); target.value=''; renderPreview15(); }
+                    if(target?.id==='reportFileInput'){ const fresh=Array.from(target.files||[]).filter(f=>String(f.type||'').startsWith('image/')); files15=fresh.slice(0,1); target.value=''; renderPreview15(); }
                     if(target?.classList?.contains('t73-v15-mark')) saveMark15(target.dataset.user, target.dataset.date);
                 }, true);
                 document.addEventListener('input', ev=>{
@@ -22152,7 +22236,20 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       }
       var st = normalizeStatus(statusText);
       var xp = xpFor(st, xpAmount);
+      var checkerName = (typeof currentNickname !== 'undefined' && currentNickname) || (user() && (user().user_metadata && user().user_metadata.nickname || user().email)) || 'Руководство';
+      var checkedAt = new Date().toISOString();
       var update = { status: st, xp: xp };
+      try {
+        var payload = JSON.parse(String(row.date || ''));
+        if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+          payload.checkedBy = checkerName;
+          payload.checkedById = user() && user().id || '';
+          payload.checkedAt = checkedAt;
+          payload.checkedStatus = st;
+          payload.reviewPoints = xp;
+          update.date = JSON.stringify(payload);
+        }
+      } catch(e) {}
       if (realOwner && low(row.email) !== low(realOwner)) update.email = realOwner;
       var res = await c.from('reports').update(update).eq('id', id);
       if (res.error) throw res.error;
@@ -22371,6 +22468,69 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V130 === -->
+
+
+
+<!-- === T73 V131: moderation single-photo + real complaint trainer polish === -->
+<script id="t73-v131-moderation-reports-polish">
+(function(){
+  'use strict';
+  function $(id){ return document.getElementById(id); }
+  function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+  function forceSinglePhotoInput(input){
+    if (!input || input.dataset.t73v131SinglePhoto === '1') return;
+    input.dataset.t73v131SinglePhoto = '1';
+    input.removeAttribute('multiple');
+    input.setAttribute('accept','image/*,.png,.jpg,.jpeg,.webp');
+    input.addEventListener('change', function(){
+      if (input.files && input.files.length > 1) {
+        var dt = new DataTransfer();
+        dt.items.add(input.files[0]);
+        input.files = dt.files;
+      }
+      var res = $('reportResultText');
+      if (res && input.files && input.files.length) {
+        res.style.color = 'var(--color-text-muted)';
+        res.textContent = 'Выбрано одно фото: ' + (input.files[0].name || 'файл');
+      }
+    }, true);
+  }
+  function polishReportUpload(){
+    ['reportFileInput','reportFileInputV62','submitReportFileInput','reportFilesInput'].forEach(function(id){ forceSinglePhotoInput($(id)); });
+    var input = $('reportFileInput') || $('reportFileInputV62');
+    if (input) {
+      var label = input.closest('.admin-field')?.querySelector('label');
+      if (label) label.textContent = 'ИЛИ загрузите одно фото напрямую:';
+    }
+    var note = $('t73-v57-upload-note') || $('v16UploadNotice') || $('t73V15UploadTitle') || $('reportFileBoxV62');
+    if (note) {
+      var b = note.querySelector('b');
+      if (b) b.textContent = '📎 Прямая загрузка одного фото:';
+      var txt = note.childNodes;
+      if (note.id !== 'reportFileBoxV62') note.innerHTML = '<b>📎 Прямая загрузка одного фото:</b> выберите один скрин/фото с устройства. Если нужно несколько доказательств — оставьте дополнительные ссылки в поле выше.';
+      else if (!note.dataset.t73v131Text) { note.dataset.t73v131Text='1'; note.firstChild.textContent = ''; note.insertAdjacentHTML('afterbegin','<b>📎 Прямая загрузка одного фото:</b> выберите один скрин/фото с устройства. Если нужно несколько доказательств — добавьте ссылки выше. '); }
+    }
+    ['submitReportBtnV57','submitReportBtnV62'].forEach(function(id){ var btn=$(id); if(btn){ btn.style.setProperty('display','none','important'); btn.setAttribute('aria-hidden','true'); }});
+    var mainBtn = $('submitReportBtnV16') || $('submitReportBtn');
+    if (mainBtn) {
+      mainBtn.style.setProperty('display','inline-flex','important');
+      mainBtn.textContent = mainBtn.textContent.replace('файлами','одним фото');
+    }
+  }
+  ready(function(){
+    polishReportUpload();
+    [80,250,700,1500,3500].forEach(function(ms){ setTimeout(polishReportUpload, ms); });
+    try { new MutationObserver(function(){ clearTimeout(window.__T73_V131_UPLOAD_TIMER__); window.__T73_V131_UPLOAD_TIMER__ = setTimeout(polishReportUpload, 60); }).observe(document.body, {childList:true, subtree:true}); } catch(e) {}
+    var compHead = document.querySelector('#mode-complaints .section-head p');
+    if (compHead) compHead.textContent = 'Тренажёр построен на реальных форматах репортов: проверь отправителя, нарушителя, доказательства и выбери вердикт.';
+    try { if (typeof allComplaints !== 'undefined') allComplaints.forEach(function(c){ if(!c.verdict) c.verdict = c.type; }); } catch(e) {}
+    document.querySelectorAll('[data-comp-action]').forEach(function(btn){
+      btn.onclick = function(){ if (typeof judgeComplaint === 'function') judgeComplaint(btn.dataset.compAction); };
+    });
+  });
+})();
+</script>
+<!-- === /T73 V131 === -->
 
 </body>
 </html>
