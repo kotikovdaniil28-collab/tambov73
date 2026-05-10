@@ -22578,8 +22578,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   function hasReportAccess(){
     var u = user();
     if (!u) return false;
-    try { if (typeof isModerator !== 'undefined' && isModerator) return true; } catch(e) {}
-    if (isStaticLeader()) return true;
+    try { return !!(typeof isModerator !== 'undefined' && isModerator); } catch(e) {}
     return false;
   }
   function setResult(text, ok){
@@ -22726,8 +22725,27 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       img.src = url;
     });
   }
+  function safeFileName(name){ return str(name || 'photo.jpg').replace(/[^a-zA-Zа-яА-Я0-9._-]+/g, '_').slice(-96); }
+  async function uploadFileToStorage(file, i){
+    var c = client(), u = user();
+    if (!c || !c.storage || !file) return '';
+    var buckets = ['report-screenshots','reports','screenshots'];
+    var path = (u && u.id ? u.id : 'guest') + '/' + new Date().toISOString().slice(0,10) + '/' + Date.now() + '_' + i + '_' + safeFileName(file.name);
+    for (var b=0; b<buckets.length; b++) {
+      try {
+        var up = await c.storage.from(buckets[b]).upload(path, file, { cacheControl:'3600', upsert:false, contentType:file.type || 'image/jpeg' });
+        if (!up || !up.error) {
+          var pub = c.storage.from(buckets[b]).getPublicUrl(path);
+          if (pub && pub.data && pub.data.publicUrl) return pub.data.publicUrl;
+        }
+      } catch(e) {}
+    }
+    return '';
+  }
   async function prepareFile(file, i){
     var isImg = /^image\//i.test(file.type || '') || /\.(png|jpe?g|webp|gif)$/i.test(file.name || '');
+    var stored = await uploadFileToStorage(file, i);
+    if (stored) return { url:stored, name:file.name || ('Фото ' + (i + 1)), kind:'storage', size:file.size || 0 };
     var data = await readAsDataUrl(file);
     if (isImg && data) {
       try {
@@ -22745,7 +22763,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
         data = out;
       } catch(e) {}
     }
-    return { url:data, name:file.name || ('Фото ' + (i + 1)), kind:isImg ? 'image' : 'file', size:file.size || 0 };
+    return { url:data, name:file.name || ('Фото ' + (i + 1)), kind:isImg ? 'image_base64' : 'file_base64', size:file.size || 0 };
   }
   function gatherFiles(){ return pickedFiles.slice(0, 16); }
   async function submitReport(){
@@ -22753,7 +22771,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
     if (busySubmit) return;
     var u = user(), c = client();
     if (!u) return setResult('Войдите в аккаунт, чтобы отправить отчёт.', false);
-    if (!hasReportAccess()) return setResult('Отчётность доступна только модераторам, руководству и создателю.', false);
+    if (!hasReportAccess()) return setResult('Отчётность доступна только действующим модераторам. Руководство здесь только проверяет отчёты.', false);
     if (!c) return setResult('База данных ещё не загрузилась.', false);
     var nickValue = str(($('reportNickInput') && $('reportNickInput').value) || nick() || u.email).trim();
     var work = str(($('reportWorkInput') && $('reportWorkInput').value) || '').trim();
@@ -22776,8 +22794,9 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
         var proof = await prepareFile(files[i], i);
         if (proof.url) proofs.push(proof);
       }
+      if (!proofs.length) throw new Error('Не удалось подготовить фото/доказательства. Попробуйте выбрать фото ещё раз или вставьте ссылку.');
       var payload = {
-        version:'v131-mod-report', nick:nickValue, work:work, date:day, day:day, quality:quality, requestedStatus:quality,
+        version:'v132-mod-report', nick:nickValue, work:work, date:day, day:day, quality:quality, requestedStatus:quality,
         proofs:proofs, files:proofs.map(function(p){ return p.url; }), userId:u.id, email:u.email,
         createdAt:nowRu(), checkedAt:'', checkedBy:'', checkedById:''
       };
@@ -22867,7 +22886,16 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
   }
   async function applyAccess(){
     var leader = await isLeader();
+    var reporter = hasReportAccess();
     document.body.classList.toggle('t73-v131-mod-leader', !!leader);
+    document.body.classList.toggle('t73-v132-report-sender', !!reporter);
+    var area = $('reportFormArea'), warn = $('reportAccessWarning');
+    if (area) area.style.setProperty('display', (leader || reporter) ? 'flex' : 'none', 'important');
+    if (warn) warn.style.setProperty('display', (leader || reporter) ? 'none' : 'block', 'important');
+    var submitCard = ($('submitReportBtnV131') && $('submitReportBtnV131').closest('article')) || ($('submitReportBtn') && $('submitReportBtn').closest('article'));
+    if (submitCard) submitCard.style.setProperty('display', reporter ? '' : 'none', 'important');
+    var uploadBox = $('t73V131UploadBox');
+    if (uploadBox) uploadBox.style.setProperty('display', reporter ? 'grid' : 'none', 'important');
     var panel = $('adminPanelArea');
     if (panel) panel.style.setProperty('display', leader ? 'block' : 'none', 'important');
     ['viewReportsBtn','viewReportsBtnV63'].forEach(function(id){ var b=$(id); if (b) b.style.setProperty('display', leader ? 'inline-flex' : 'none', 'important'); });
@@ -22894,6 +22922,70 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 })();
 </script>
 <!-- === /T73 V131 === -->
+
+
+
+<!-- === T73 V132: strict role split for moderation reports === -->
+<style id="t73-v132-strict-report-style">
+  body:not(.t73-v132-report-sender) #t73V131UploadBox,
+  body:not(.t73-v132-report-sender) #submitReportBtnV131 {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>
+<script id="t73-v132-strict-report-script">
+(function installT73V132StrictReports(){
+  'use strict';
+  if (window.__T73_V132_STRICT_REPORTS__) return;
+  window.__T73_V132_STRICT_REPORTS__ = true;
+  function $(id){ return document.getElementById(id); }
+  function isModeratorNow(){ try { return !!(typeof isModerator !== 'undefined' && isModerator); } catch(e){ return false; } }
+  function isLeaderNow(){
+    try {
+      var u = (typeof currentUser !== 'undefined') ? currentUser : null;
+      if (!u) return false;
+      if (typeof creatorEmail !== 'undefined' && u.email === creatorEmail) return true;
+      if (typeof adminEmails !== 'undefined' && Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1) return true;
+      if (typeof dynamicModLeaders !== 'undefined' && Array.isArray(dynamicModLeaders) && dynamicModLeaders.indexOf(u.id) !== -1) return true;
+    } catch(e) {}
+    return document.body.classList.contains('t73-v131-mod-leader');
+  }
+  function setMsg(text){ var r=$('reportResultText'); if(r){ r.textContent=text; r.style.color='var(--color-error)'; } else alert(text); }
+  function applyStrictUi(){
+    var reporter = isModeratorNow();
+    var leader = isLeaderNow();
+    document.body.classList.toggle('t73-v132-report-sender', reporter);
+    var area=$('reportFormArea'), warn=$('reportAccessWarning');
+    if(area) area.style.setProperty('display', (reporter || leader) ? 'flex' : 'none', 'important');
+    if(warn) warn.style.setProperty('display', (reporter || leader) ? 'none' : 'block', 'important');
+    var send=$('submitReportBtnV131') || $('submitReportBtn');
+    var card = send && send.closest('article');
+    if(card) card.style.setProperty('display', reporter ? '' : 'none', 'important');
+    var upload=$('t73V131UploadBox');
+    if(upload) upload.style.setProperty('display', reporter ? 'grid' : 'none', 'important');
+    var panel=$('adminPanelArea');
+    if(panel) panel.style.setProperty('display', leader ? 'block' : 'none', 'important');
+    ['viewReportsBtn','viewReportsBtnV63'].forEach(function(id){ var b=$(id); if(b) b.style.setProperty('display', leader ? 'inline-flex' : 'none', 'important'); });
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest && e.target.closest('#submitReportBtn,#submitReportBtnV16,#submitReportBtnV57,#submitReportBtnV62,#submitReportBtnV131');
+    if (!btn) return;
+    if (!isModeratorNow()) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setMsg('Отчёты отправляют только модераторы. Руководство проверяет отчёты через кнопку «Проверить отчётность».');
+      applyStrictUi();
+      return false;
+    }
+  }, true);
+  document.addEventListener('click', function(e){ if(e.target && e.target.closest && e.target.closest('#reportTabBtn,[data-mode="report"],#viewReportsBtn,#viewReportsBtnV63')) setTimeout(applyStrictUi, 60); }, true);
+  window.t73ApplyAccessV132 = applyStrictUi;
+  [50,200,700,1500,3500,7000].forEach(function(ms){ setTimeout(applyStrictUi, ms); });
+  setInterval(applyStrictUi, 1800);
+})();
+</script>
+<!-- === /T73 V132 === -->
 
 </body>
 </html>
