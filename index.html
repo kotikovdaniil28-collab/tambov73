@@ -22372,5 +22372,782 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 </script>
 <!-- === /T73 V130 === -->
 
+
+
+<!-- === T73 V131: отдельная кнопка загрузки фото + кто проверил + запрет XP между руководством === -->
+<style id="t73-v131-direct-upload-checker-xp-style">
+  #t73V131DirectUploadRow {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: .65rem !important;
+    align-items: center !important;
+    margin-top: .65rem !important;
+    margin-bottom: .35rem !important;
+  }
+  #t73V131DirectPhotoBtn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: .45rem !important;
+    min-height: 44px !important;
+    padding: .72rem 1rem !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(82, 199, 123, .55) !important;
+    background: linear-gradient(135deg, rgba(82,199,123,.92), rgba(143,224,168,.78)) !important;
+    color: #07120a !important;
+    font-weight: 1000 !important;
+    cursor: pointer !important;
+    box-shadow: 0 10px 24px rgba(82,199,123,.18) !important;
+  }
+  #t73V131DirectPhotoBtn:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  #t73V131PhotoCount {
+    color: var(--color-text-muted) !important;
+    font-size: .86rem !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+  #submitReportBtnV62,
+  #submitReportBtnV57,
+  #submitReportBtnV16,
+  #submitReportBtn {
+    text-transform: none !important;
+  }
+  .t73-v131-checked-line {
+    margin-top: .45rem !important;
+    padding: .5rem .65rem !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(191,198,255,.18) !important;
+    background: rgba(191,198,255,.06) !important;
+    color: var(--color-text-muted) !important;
+    font-size: .86rem !important;
+    overflow-wrap: anywhere !important;
+  }
+  @media (max-width: 640px) {
+    #t73V131DirectUploadRow { grid-template-columns: 1fr !important; }
+    #t73V131PhotoCount { text-align: left !important; }
+  }
+</style>
+<script id="t73-v131-direct-upload-checker-xp-script">
+(function(){
+  'use strict';
+  if (window.__T73_V131_DIRECT_UPLOAD_CHECKER_XP__) return;
+  window.__T73_V131_DIRECT_UPLOAD_CHECKER_XP__ = true;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function low(v){ return String(v || '').trim().toLowerCase(); }
+  function nowRu(){ try { return new Date().toLocaleString('ru-RU'); } catch(e) { return new Date().toISOString(); } }
+  function makeId(prefix){ return String(prefix || 'v131') + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    return null;
+  }
+
+  async function currentUserSafe(){
+    var c = client();
+    if (c && c.auth) {
+      try { var r = await c.auth.getUser(); if (r && r.data && r.data.user) { window.currentUser = r.data.user; return r.data.user; } } catch(e) {}
+      try { var s = await c.auth.getSession(); var u = s && s.data && s.data.session && s.data.session.user; if (u) { window.currentUser = u; return u; } } catch(e) {}
+    }
+    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e) {}
+    return window.currentUser || null;
+  }
+
+  function creatorMail(){ try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return String(creatorEmail); } catch(e) {} return 'daniiltimosin72@gmail.com'; }
+  function staticLeaderEmails(){
+    var out = [];
+    try { if (Array.isArray(adminEmails)) out = out.concat(adminEmails); } catch(e) {}
+    try { if (Array.isArray(apLeadershipEmails)) out = out.concat(apLeadershipEmails); } catch(e) {}
+    out.push(creatorMail());
+    return Array.from(new Set(out.map(low).filter(Boolean)));
+  }
+  function dynamicLeaderIdsFromMemory(){
+    var out = [];
+    try { if (Array.isArray(dynamicModLeaders)) out = out.concat(dynamicModLeaders); } catch(e) {}
+    try { if (Array.isArray(dynamicApLeaders)) out = out.concat(dynamicApLeaders); } catch(e) {}
+    try { if (Array.isArray(dynamicFsbLeaders)) out = out.concat(dynamicFsbLeaders); } catch(e) {}
+    return Array.from(new Set(out.map(function(x){ return String(x || '').trim(); }).filter(Boolean)));
+  }
+  async function dynamicLeaderIdSet(c){
+    var set = new Set(dynamicLeaderIdsFromMemory());
+    if (!c) return set;
+    try {
+      var r = await c.from('reports').select('link,status,email').eq('email','ADMIN_ROLE').limit(2000);
+      if (!r.error) (r.data || []).forEach(function(row){
+        var st = String(row.status || '');
+        if (st === 'leadership' || st === 'ap_admin' || st === 'fsb_admin' || st === 'goss_admin_all' || st.indexOf('goss_lead_') === 0) {
+          if (row.link) set.add(String(row.link));
+        }
+      });
+    } catch(e) {}
+    return set;
+  }
+  function targetFromLoadedUsers(userId){
+    try { if (Array.isArray(adminUsersList)) { var u = adminUsersList.find(function(x){ return String(x.user_id) === String(userId); }); if (u) return u; } } catch(e) {}
+    try { if (Array.isArray(creatorUsersList)) { var v = creatorUsersList.find(function(x){ return String(x.user_id) === String(userId); }); if (v) return v; } } catch(e) {}
+    return null;
+  }
+  async function loadTargetUser(c, userId){
+    var loaded = targetFromLoadedUsers(userId);
+    if (loaded) return loaded;
+    if (!c || !userId) return null;
+    try {
+      var r = await c.from('user_stats').select('*').eq('user_id', userId).maybeSingle();
+      if (!r.error && r.data) return r.data;
+    } catch(e) {}
+    return null;
+  }
+  async function isTargetLeadership(c, target){
+    if (!target) return false;
+    var id = String(target.user_id || target.id || '').trim();
+    var email = low(target.email);
+    if (email && staticLeaderEmails().indexOf(email) !== -1) return true;
+    var ids = await dynamicLeaderIdSet(c);
+    return !!(id && ids.has(id));
+  }
+
+  function normalizeSubmitButtonText(){
+    ['submitReportBtnV62','submitReportBtnV57','submitReportBtnV16','submitReportBtn'].forEach(function(id){
+      var b = $(id);
+      if (!b) return;
+      if (!b.disabled && String(b.textContent || '').trim() !== 'Отправить отчет') b.textContent = 'Отправить отчет';
+      b.setAttribute('data-t73-v131-submit', '1');
+    });
+  }
+  function primaryReportFileInput(){
+    return $('reportFileInputV62') || $('reportFileInput') || document.querySelector('#reportFormArea input[type="file"]') || document.querySelector('#mode-report input[type="file"]');
+  }
+  function selectedFileCount(){
+    var n = 0;
+    var inp = primaryReportFileInput();
+    if (inp && inp.files) n += inp.files.length;
+    try {
+      var preview = $('reportFilePreviewV62');
+      if (preview) n = Math.max(n, preview.querySelectorAll('.t73-v62-file-card').length);
+    } catch(e) {}
+    return n;
+  }
+  function updatePhotoCount(){
+    var c = $('t73V131PhotoCount');
+    if (!c) return;
+    var n = selectedFileCount();
+    c.textContent = n ? ('Выбрано фото: ' + n) : 'Фото не выбрано';
+  }
+  function ensureDirectUploadButton(){
+    var link = $('reportLinkInput');
+    if (!link) return;
+    if (!$('t73V131DirectUploadRow')) {
+      var row = document.createElement('div');
+      row.id = 't73V131DirectUploadRow';
+      row.innerHTML = '<button id="t73V131DirectPhotoBtn" type="button">📎 Загрузить фото напрямую</button><span id="t73V131PhotoCount">Фото не выбрано</span>';
+      var field = link.closest('.admin-field') || link.parentElement;
+      if (field) field.insertAdjacentElement('afterend', row); else link.insertAdjacentElement('afterend', row);
+    }
+    var btn = $('t73V131DirectPhotoBtn');
+    if (btn && btn.dataset.bound !== '1') {
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var input = primaryReportFileInput();
+        if (!input) { alert('Поле загрузки фото ещё не загрузилось. Откройте раздел отчётности ещё раз.'); return; }
+        input.disabled = false;
+        input.removeAttribute('aria-hidden');
+        try { input.click(); } catch(err) { alert('Не удалось открыть выбор файла: ' + (err && err.message ? err.message : err)); }
+      }, true);
+    }
+    updatePhotoCount();
+  }
+
+  function parsePayload(raw){
+    if (raw && typeof raw === 'object') return { payload: raw, wasJson: true };
+    var s = String(raw || '');
+    try { return { payload: JSON.parse(s), wasJson: true }; } catch(e) {}
+    var p = { legacyDate: s };
+    var nick = s.match(/(?:Ник|NickName|Nickname|Nick|Пользователь)\s*:?\s*([^|;\n]+)/i);
+    var work = s.match(/(?:Работа|Комментарий|Проделанная работа)\s*:?\s*([^|]+)(?:\||$)/i);
+    var dayRu = s.match(/(\d{2})\.(\d{2})\.(20\d{2})/);
+    var dayIso = s.match(/(20\d{2})[-.](\d{2})[-.](\d{2})/);
+    if (nick) p.nick = nick[1].trim();
+    if (work) p.work = work[1].trim();
+    if (dayIso) p.day = dayIso[1] + '-' + dayIso[2] + '-' + dayIso[3];
+    else if (dayRu) p.day = dayRu[3] + '-' + dayRu[2] + '-' + dayRu[1];
+    return { payload: p, wasJson: false };
+  }
+  function checkerName(user){
+    try { if (typeof currentNickname !== 'undefined' && currentNickname) return String(currentNickname); } catch(e) {}
+    if (window.currentNickname) return String(window.currentNickname);
+    if (user && user.user_metadata && (user.user_metadata.nickname || user.user_metadata.name)) return String(user.user_metadata.nickname || user.user_metadata.name);
+    return (user && user.email) || 'Руководство';
+  }
+  function checkedStatus(status){
+    return /^(Натяг|Норма|Перенорма|Герой дня|Отказ|Не засчитано)$/i.test(String(status || '').trim());
+  }
+  async function updateReportWithChecker(id, statusText, xpAmount){
+    var c = client();
+    if (!c || !id) throw new Error('Supabase не загрузился.');
+    var u = await currentUserSafe();
+    var got = await c.from('reports').select('*').eq('id', id).maybeSingle();
+    if (got.error) throw got.error;
+    var row = got.data || {};
+    var parsed = parsePayload(row.date);
+    var p = parsed.payload || {};
+    var by = checkerName(u);
+    var at = nowRu();
+    p.reviewStatus = statusText;
+    p.result = statusText;
+    p.reviewPoints = Number(xpAmount || 0);
+    p.xp = Number(xpAmount || 0);
+    p.reviewedBy = by;
+    p.reviewedById = u && u.id || '';
+    p.reviewedAt = at;
+    p.checkedBy = by;
+    p.checkedById = u && u.id || '';
+    p.checkedAt = at;
+    if (!p.work && p.legacyDate) p.work = p.legacyDate;
+    var upd = await c.from('reports').update({ status: statusText, xp: Number(xpAmount || 0), date: JSON.stringify(p) }).eq('id', id);
+    if (upd.error) throw upd.error;
+    return { by: by, at: at };
+  }
+
+  function checkedLineFromRow(row){
+    var parsed = parsePayload(row && row.date);
+    var p = parsed.payload || {};
+    var by = p.reviewedBy || p.checkedBy || p.verifiedBy || '';
+    var at = p.reviewedAt || p.checkedAt || p.verifiedAt || '';
+    var st = p.reviewStatus || p.result || row.status || '';
+    if (!by && checkedStatus(st)) by = 'не записано';
+    if (!by) return '';
+    return 'Проверил: ' + by + (at ? (' · ' + at) : '');
+  }
+  async function decorateReportCards(){
+    var area = $('reportsListArea');
+    var c = client();
+    if (!area || !c || area.dataset.v131Decorating === '1') return;
+    var cards = Array.prototype.slice.call(area.querySelectorAll('[data-v63-report-id]'));
+    var ids = Array.from(new Set(cards.map(function(card){ return card.getAttribute('data-v63-report-id'); }).filter(Boolean)));
+    if (!ids.length) return;
+    area.dataset.v131Decorating = '1';
+    try {
+      var r = await c.from('reports').select('id,date,status,xp').in('id', ids);
+      if (r.error) throw r.error;
+      var map = new Map((r.data || []).map(function(row){ return [String(row.id), row]; }));
+      cards.forEach(function(card){
+        var id = String(card.getAttribute('data-v63-report-id') || '');
+        var row = map.get(id);
+        var line = row ? checkedLineFromRow(row) : '';
+        var old = card.querySelector('.t73-v131-checked-line');
+        if (!line) { if (old) old.remove(); return; }
+        if (!old) {
+          old = document.createElement('div');
+          old.className = 't73-v131-checked-line';
+          var status = Array.prototype.find.call(card.children, function(x){ return /XP/.test(String(x.textContent || '')); });
+          if (status && status.parentElement === card) status.insertAdjacentElement('afterend', old);
+          else card.appendChild(old);
+        }
+        old.textContent = line;
+      });
+    } catch(e) {}
+    finally { area.dataset.v131Decorating = '0'; }
+  }
+
+  async function guardedLeadershipXpClick(event){
+    var btn = event.target && event.target.closest && event.target.closest('#leadershipXpBtn');
+    if (!btn) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    var c = client();
+    if (!c) return alert('Supabase не загрузился.');
+    var user = await currentUserSafe();
+    if (!user) return alert('Сначала войдите в аккаунт.');
+
+    var userId = String(($('leadershipUserSelect') && $('leadershipUserSelect').value) || '').trim();
+    var amount = Number(($('leadershipXpAmount') && $('leadershipXpAmount').value) || 0);
+    if (!userId || isNaN(amount) || amount === 0) return alert('Выберите сотрудника и укажите количество XP.');
+
+    var target = await loadTargetUser(c, userId);
+    if (!target) return alert('Пользователь не найден в базе.');
+
+    var isCreator = low(user.email) === low(creatorMail());
+    var targetIsLeader = await isTargetLeadership(c, target);
+    if (!isCreator) {
+      if (String(user.id || '') === String(userId)) return alert('Руководство не может выдавать или списывать XP самому себе.');
+      if (targetIsLeader) return alert('Руководство не может выдавать или списывать XP создателю и другому руководству. Это доступно только создателю.');
+    }
+
+    btn.disabled = true;
+    var oldText = btn.textContent;
+    btn.textContent = 'Сохраняю XP...';
+    try {
+      var type = String(($('leadershipGiveType') && $('leadershipGiveType').value) || 'report');
+      var emailType = type === 'game' ? 'GAME_XP' : 'MANUAL_XP';
+      var reason = (isCreator ? 'Выдача/списание XP создателем' : 'Выдача/списание XP руководством модерации') + ' · ' + checkerName(user);
+      var ins = await c.from('reports').insert([{ id: makeId(emailType === 'GAME_XP' ? 'gxp' : 'mxp'), email: emailType, link: userId, date: reason, status: 'mod', xp: Number(amount) }]);
+      if (ins.error) throw ins.error;
+      alert('XP изменён.');
+      try { if (typeof loadUsersForAdmin === 'function') await loadUsersForAdmin(); } catch(e) {}
+      try { if (typeof loadCreatorPanelData === 'function' && isCreator) await loadCreatorPanelData(); } catch(e) {}
+      try { if (typeof loadGlobalShopAndRoulette === 'function') await loadGlobalShopAndRoulette(); } catch(e) {}
+    } catch(err) {
+      alert('Ошибка изменения XP: ' + (err && err.message ? err.message : err));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = oldText || 'Выдать / Списать XP';
+    }
+  }
+
+  function bindReportProcessingGuards(){
+    if (!window.__T73_V131_PROCESS_REPORT_WRAPPED__) {
+      window.__T73_V131_PROCESS_REPORT_WRAPPED__ = true;
+      var old = window.processReport;
+      if (typeof old === 'function') {
+        window.processReport = async function(id, statusText, xpAmount){
+          var c = client();
+          var before = null;
+          try { if (c && id) { var b = await c.from('reports').select('status,xp,date').eq('id', id).maybeSingle(); before = b && b.data; } } catch(e) {}
+          var out = await old.apply(this, arguments);
+          try {
+            if (c && id) {
+              var a = await c.from('reports').select('status,xp,date').eq('id', id).maybeSingle();
+              var after = a && a.data;
+              var changed = after && (String(after.status || '') === String(statusText || '') || Number(after.xp || 0) === Number(xpAmount || 0));
+              var wasPending = !before || String(before.status || '').indexOf('провер') !== -1 || String(before.status || '').indexOf('На проверке') !== -1;
+              if (changed && wasPending) await updateReportWithChecker(id, statusText, xpAmount);
+            }
+          } catch(e) {}
+          setTimeout(decorateReportCards, 250);
+          setTimeout(decorateReportCards, 900);
+          return out;
+        };
+      }
+    }
+  }
+
+  document.addEventListener('click', function(event){
+    var p = event.target && event.target.closest && event.target.closest('[data-v63-process]');
+    if (!p) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    p.disabled = true;
+    updateReportWithChecker(p.dataset.id, p.dataset.status, Number(p.dataset.xp || 0)).then(function(){
+      try { if (window.T73_V63_REPORT_SYNC && typeof window.T73_V63_REPORT_SYNC.render === 'function') window.T73_V63_REPORT_SYNC.render(true); } catch(e) {}
+      try { if (typeof window.loadReportsTable === 'function') setTimeout(function(){ window.loadReportsTable(); }, 300); } catch(e) {}
+      setTimeout(decorateReportCards, 500);
+    }).catch(function(err){
+      alert('Ошибка проверки отчёта: ' + (err && err.message ? err.message : err));
+      p.disabled = false;
+    });
+    return false;
+  }, true);
+
+  document.addEventListener('click', guardedLeadershipXpClick, true);
+  document.addEventListener('change', function(e){
+    if (e.target && e.target.matches && e.target.matches('input[type="file"]')) setTimeout(updatePhotoCount, 80);
+  }, true);
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.closest && e.target.closest('#submitReportBtnV62,#submitReportBtnV57,#submitReportBtnV16,#submitReportBtn')) {
+      setTimeout(normalizeSubmitButtonText, 400);
+      setTimeout(normalizeSubmitButtonText, 1400);
+    }
+    if (e.target && e.target.closest && e.target.closest('#viewReportsBtn,#viewReportsBtnV63')) {
+      setTimeout(decorateReportCards, 700);
+      setTimeout(decorateReportCards, 1600);
+    }
+  }, true);
+
+  function boot(){
+    normalizeSubmitButtonText();
+    ensureDirectUploadButton();
+    bindReportProcessingGuards();
+    decorateReportCards();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [80,250,700,1400,2600,5200].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V131_BOOT_TIMER__); window.__T73_V131_BOOT_TIMER__ = setTimeout(boot, 90); }).observe(document.documentElement, { childList:true, subtree:true, characterData:true }); } catch(e) {}
+
+  window.T73_V131_DIRECT_UPLOAD_CHECKER_XP = { boot: boot, decorate: decorateReportCards, updateReportWithChecker: updateReportWithChecker };
+})();
+</script>
+<!-- === /T73 V131 === -->
+
+<!-- === T73 V132: скрыть проверку отчетов от обычных модераторов === -->
+<style id="t73-v132-report-review-access-style">
+  body:not(.t73-v132-mod-leader) #viewReportsBtn,
+  body:not(.t73-v132-mod-leader) #viewReportsBtnV63,
+  body:not(.t73-v132-mod-leader) #reportsTableBtn,
+  body:not(.t73-v132-mod-leader) #adminPanelArea,
+  body:not(.t73-v132-mod-leader) #adminPanelAreaInactives,
+  body:not(.t73-v132-mod-leader) #reportsListArea {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body.t73-v132-mod-leader #viewReportsBtn,
+  body.t73-v132-mod-leader #viewReportsBtnV63,
+  body.t73-v132-mod-leader #reportsTableBtn,
+  body.t73-v132-mod-leader #adminPanelArea,
+  body.t73-v132-mod-leader #adminPanelAreaInactives {
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+</style>
+<script id="t73-v132-report-review-access-script">
+(function(){
+  'use strict';
+  if (window.__T73_V132_REPORT_REVIEW_ACCESS__) return;
+  window.__T73_V132_REPORT_REVIEW_ACCESS__ = true;
+
+  var cache = { key: '', ts: 0, leader: false, loading: false };
+  var LEADER_STATUSES = [
+    'leadership', 'moderation', 'moderation_lead', 'mod_lead', 'mod_admin',
+    'руководство', 'руководство модерации'
+  ];
+
+  function $(id){ return document.getElementById(id); }
+  function low(v){ return String(v == null ? '' : v).trim().toLowerCase(); }
+  function readVar(name, fallback){
+    try { return Function('fallback', 'try { return (typeof ' + name + ' !== "undefined") ? ' + name + ' : fallback; } catch(e) { return fallback; }')(fallback); }
+    catch(e) { return fallback; }
+  }
+  function arr(name){ var v = readVar(name, []); return Array.isArray(v) ? v : []; }
+  function userSync(){ return readVar('currentUser', null) || window.currentUser || null; }
+  function creatorMail(){ return String(readVar('creatorEmail', 'daniiltimosin72@gmail.com') || 'daniiltimosin72@gmail.com'); }
+  function client(){
+    var c = readVar('supa', null) || window.supa || window.__T73_SUPA || window.t73Supa || window.supabaseClient || null;
+    return c && typeof c.from === 'function' ? c : null;
+  }
+  function keysOf(u){ return Array.from(new Set([u && u.id, u && u.user_id, u && u.email].filter(Boolean).map(String))); }
+  function leaderFromMemory(u){
+    if (!u) return false;
+    if (low(u.email) === low(creatorMail())) return true;
+    if (arr('adminEmails').map(low).indexOf(low(u.email)) !== -1) return true;
+    var ids = arr('dynamicModLeaders').map(String);
+    if (ids.indexOf(String(u.id || '')) !== -1 || ids.indexOf(String(u.user_id || '')) !== -1) return true;
+    return false;
+  }
+  function cacheKey(u){ return keysOf(u).join('|'); }
+  async function userFresh(){
+    var u = userSync();
+    var c = client();
+    if (u || !c || !c.auth) return u;
+    try { var r = await c.auth.getUser(); if (r && r.data && r.data.user) { window.currentUser = r.data.user; return r.data.user; } } catch(e) {}
+    try { var s = await c.auth.getSession(); var x = s && s.data && s.data.session && s.data.session.user; if (x) { window.currentUser = x; return x; } } catch(e) {}
+    return userSync();
+  }
+  async function leaderFromDb(u){
+    var c = client();
+    var keys = keysOf(u);
+    if (!c || !keys.length) return false;
+    try {
+      var r = await c.from('reports').select('status,link,email').eq('email','ADMIN_ROLE').in('link', keys).limit(100);
+      if (r && r.error) throw r.error;
+      return (r.data || []).some(function(row){ return LEADER_STATUSES.indexOf(low(row.status)) !== -1; });
+    } catch(e) { return false; }
+  }
+  async function isLeader(force){
+    var u = await userFresh();
+    if (!u) return false;
+    if (leaderFromMemory(u)) return true;
+    var key = cacheKey(u), now = Date.now();
+    if (!force && cache.key === key && now - cache.ts < 5000) return !!cache.leader;
+    if (cache.loading) return !!cache.leader;
+    cache.loading = true;
+    try {
+      var ok = await leaderFromDb(u);
+      cache = { key: key, ts: Date.now(), leader: !!ok, loading: false };
+      return !!ok;
+    } catch(e) {
+      cache.loading = false;
+      return !!cache.leader;
+    }
+  }
+  function isLeaderFast(){
+    var u = userSync();
+    if (!u) return false;
+    if (leaderFromMemory(u)) return true;
+    return cache.key === cacheKey(u) && !!cache.leader;
+  }
+  function setImportant(el, prop, value){ if (el) el.style.setProperty(prop, value, 'important'); }
+  function apply(leader){
+    document.body.classList.toggle('t73-v132-mod-leader', !!leader);
+
+    var reviewBtn = $('viewReportsBtn');
+    var reviewBtnV63 = $('viewReportsBtnV63');
+    var reportsTableBtn = $('reportsTableBtn');
+    var adminPanel = $('adminPanelArea');
+    var inactivePanel = $('adminPanelAreaInactives');
+    var list = $('reportsListArea');
+
+    if (leader) {
+      if (reviewBtn) { setImportant(reviewBtn, 'display', 'flex'); setImportant(reviewBtn, 'visibility', 'visible'); setImportant(reviewBtn, 'pointer-events', 'auto'); }
+      if (reviewBtnV63) { setImportant(reviewBtnV63, 'display', 'inline-flex'); setImportant(reviewBtnV63, 'visibility', 'visible'); setImportant(reviewBtnV63, 'pointer-events', 'auto'); }
+      if (reportsTableBtn) { setImportant(reportsTableBtn, 'display', 'inline-flex'); setImportant(reportsTableBtn, 'visibility', 'visible'); setImportant(reportsTableBtn, 'pointer-events', 'auto'); }
+      if (adminPanel) { setImportant(adminPanel, 'display', 'block'); setImportant(adminPanel, 'visibility', 'visible'); setImportant(adminPanel, 'pointer-events', 'auto'); }
+      if (inactivePanel) { setImportant(inactivePanel, 'display', 'block'); setImportant(inactivePanel, 'visibility', 'visible'); setImportant(inactivePanel, 'pointer-events', 'auto'); }
+    } else {
+      [reviewBtn, reviewBtnV63, reportsTableBtn, adminPanel, inactivePanel, list].forEach(function(el){
+        if (!el) return;
+        setImportant(el, 'display', 'none');
+        setImportant(el, 'visibility', 'hidden');
+        setImportant(el, 'pointer-events', 'none');
+      });
+      if (list) { list.dataset.v63Open = '0'; list.dataset.t73v94Open = '0'; list.classList.remove('t73-v63-open'); }
+    }
+  }
+  async function refresh(force){
+    var leader = await isLeader(!!force);
+    apply(leader);
+    return leader;
+  }
+  async function blockIfNotLeader(e){
+    if (isLeaderFast()) return;
+    var target = e.target && e.target.closest && e.target.closest('#viewReportsBtn,#viewReportsBtnV63,#reportsTableBtn,[data-mode="reports_table"],[data-v63-process],[data-v55-mod-process]');
+    if (!target) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    var ok = await refresh(true);
+    if (!ok) alert('Проверка отчётов доступна только руководству и создателю. Обычный модератор может только отправить свой отчёт.');
+    return false;
+  }
+
+  document.addEventListener('click', blockIfNotLeader, true);
+  function boot(){ refresh(false); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [80, 250, 700, 1500, 3000, 6000].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(boot, 1800);
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V132_ACCESS_TIMER__); window.__T73_V132_ACCESS_TIMER__ = setTimeout(boot, 80); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+
+  window.T73_V132_REPORT_REVIEW_ACCESS = { refresh: refresh, isLeader: isLeader };
+})();
+</script>
+<!-- === /T73 V132 === -->
+
+
+
+<!-- === T73 V133: игровые XP только для развлечений, модераторские товары только за реальные XP === -->
+<style id="t73-v133-shop-currency-style">
+  .t73-v133-currency-note {
+    margin-top: .45rem;
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--color-text-muted);
+  }
+  .t73-v133-currency-note.real-only { color: var(--color-warning); }
+  .t73-v133-currency-note.game-allowed { color: var(--color-success); }
+</style>
+<script id="t73-v133-shop-currency-script">
+(function(){
+  'use strict';
+  if (window.__T73_V133_SHOP_CURRENCY__) return;
+  window.__T73_V133_SHOP_CURRENCY__ = true;
+
+  function byId(id){ return document.getElementById(id); }
+  function n(v){ return Number(v || 0); }
+  function safeCall(name, fallback){
+    try {
+      var fn = window[name];
+      if (typeof fn === 'function') return fn();
+    } catch(e) {}
+    return fallback;
+  }
+  function esc(v){
+    if (typeof window.escapeHtmlFix === 'function') {
+      try { return window.escapeHtmlFix(v); } catch(e) {}
+    }
+    return String(v == null ? '' : v).replace(/[&<>'"]/g, function(ch){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]);
+    });
+  }
+  function jsStr(v){ return String(v == null ? '' : v).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+  function items(){ return Array.isArray(window.shopItems) ? window.shopItems : (typeof shopItems !== 'undefined' && Array.isArray(shopItems) ? shopItems : []); }
+  function realBalance(){
+    if (typeof window.getRealSpendableBalance === 'function') return Math.max(0, n(window.getRealSpendableBalance()));
+    if (typeof getRealSpendableBalance === 'function') return Math.max(0, n(getRealSpendableBalance()));
+    if (typeof window.getRealBalance === 'function') return Math.max(0, n(window.getRealBalance()) - n(window.shopState && window.shopState.spent));
+    try { return Math.max(0, n(getRealBalance()) - n(shopState && shopState.spent)); } catch(e) { return 0; }
+  }
+  function gameBalance(){
+    var train = 0, game = 0;
+    try { train = typeof window.getTrainingBalance === 'function' ? window.getTrainingBalance() : getTrainingBalance(); } catch(e) {}
+    try { game = typeof window.getGameNetBalance === 'function' ? window.getGameNetBalance() : getGameNetBalance(); } catch(e) {}
+    return Math.max(0, n(train) + n(game));
+  }
+  function isEntertainmentItem(item, action){
+    return !!(action || (item && item.action));
+  }
+  function isLimitedDiscount(item){
+    try {
+      if (typeof window.isLimitedRankDiscount === 'function') return !!window.isLimitedRankDiscount(item);
+      if (typeof isLimitedRankDiscount === 'function') return !!isLimitedRankDiscount(item);
+    } catch(e) {}
+    return !!(item && (item.id === 'mm_1' || item.id === 'm_1' || /^\s*(ММ|MМ|MM|М|M)\s*:\s*Скидка/i.test(String(item.title || ''))));
+  }
+  function play(name){ try { if (typeof window.playSound === 'function') window.playSound(name); else if (typeof playSound === 'function') playSound(name); } catch(e) {} }
+  async function save(){ try { if (typeof window.saveProgress === 'function') return await window.saveProgress(); if (typeof saveProgress === 'function') return await saveProgress(); } catch(e) { console.warn(e); } }
+  async function addGame(amount){ try { if (typeof window.addGameXp === 'function') return await window.addGameXp(amount); if (typeof addGameXp === 'function') return await addGameXp(amount); } catch(e) { throw e; } }
+  async function log(itemName, auto, type, cost, currency){
+    try { if (typeof window.logPurchase === 'function') return await window.logPurchase(itemName, auto, type, cost, currency); }
+    catch(e) { console.warn(e); }
+  }
+  async function countDiscount(item){
+    try { if (typeof window.countRankDiscountPurchases === 'function') return await window.countRankDiscountPurchases(item); }
+    catch(e) {}
+    try { if (typeof countRankDiscountPurchases === 'function') return await countRankDiscountPurchases(item); }
+    catch(e) {}
+    return 0;
+  }
+  function rememberDiscount(item, before){
+    try { if (typeof window.rememberRankDiscountPurchase === 'function') return window.rememberRankDiscountPurchase(item, before); }
+    catch(e) {}
+    try { if (typeof rememberRankDiscountPurchase === 'function') return rememberRankDiscountPurchase(item, before); }
+    catch(e) {}
+  }
+  async function chooseForGame(price, title){
+    if (typeof window.chooseCurrencyForOperation === 'function') return await window.chooseCurrencyForOperation(price, title);
+    if (typeof chooseCurrencyForOperation === 'function') return await chooseCurrencyForOperation(price, title);
+    var gb = gameBalance(), rb = realBalance();
+    if (gb >= price && rb >= price) return confirm('Купить игру за игровые XP?\nOK — игровые XP, Отмена — реальные XP.') ? 'game' : 'real';
+    if (gb >= price) return 'game';
+    if (rb >= price) return 'real';
+    return null;
+  }
+  function setSpent(delta){
+    try { shopState.spent = Math.max(0, n(shopState.spent) + n(delta)); }
+    catch(e) { if (window.shopState) window.shopState.spent = Math.max(0, n(window.shopState.spent) + n(delta)); }
+  }
+  function callUpdateShopStats(){ try { if (typeof window.updateShopStats === 'function') window.updateShopStats(); else if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {} }
+
+  window.isT73EntertainmentShopItem = isEntertainmentItem;
+
+  window.renderShopItems = function(){
+    var container = byId('shopItemsContainer');
+    if (!container) return;
+    var real = realBalance();
+    var game = gameBalance();
+    var list = items();
+    container.innerHTML = '';
+    list.forEach(function(item){
+      var action = item && item.action ? String(item.action) : '';
+      var entertainment = isEntertainmentItem(item, action);
+      var price = Math.abs(n(item && item.price));
+      var canAfford = entertainment ? (game >= price || real >= price) : (real >= price);
+      var limitNote = isLimitedDiscount(item) ? '<div class="t73-shop-limit-note" style="margin-top:.45rem;color:var(--color-warning);font-size:.82rem;font-weight:800;">Лимит: максимум 2 покупки на этот тип скидки.</div>' : '';
+      var currencyNote = entertainment
+        ? '<div class="t73-v133-currency-note game-allowed">Можно оплатить игровыми XP из тренажёра/игр или реальными XP.</div>'
+        : '<div class="t73-v133-currency-note real-only">Только реальные XP с отчётов. Игровые XP тут не списываются.</div>';
+      var disabledText = entertainment ? 'Не хватает XP' : 'Нужен реальный XP';
+      container.innerHTML += '<div class="shop-card">'
+        + '<div style="display:flex; justify-content:space-between; align-items:start;"><h3>' + esc(item.icon) + ' ' + esc(item.title) + '</h3><div class="shop-price">' + price + ' XP</div></div>'
+        + '<p>' + esc(item.desc) + '</p>' + currencyNote + limitNote
+        + '<button class="shop-buy-btn" ' + (!canAfford ? 'disabled' : '') + ' onclick="buyItem(\'' + jsStr(item.id) + '\', ' + price + ', \'' + jsStr(action) + '\')">' + (canAfford ? (entertainment ? 'Играть' : 'Купить') : disabledText) + '</button>'
+        + '</div>';
+    });
+  };
+
+  window.buyItem = async function(id, price, action){
+    var list = items();
+    var item = list.find(function(i){ return String(i.id) === String(id); });
+    if (!item) return;
+    price = Math.abs(n(price || item.price));
+    action = action || item.action || '';
+    var entertainment = isEntertainmentItem(item, action);
+    var currencyType = 'real';
+    var discountCountBefore = 0;
+
+    if (isLimitedDiscount(item)) {
+      discountCountBefore = await countDiscount(item);
+      if (discountCountBefore >= 2) {
+        play('fail');
+        alert('Лимит исчерпан: скидки на М и ММ можно купить максимум 2 раза.');
+        return;
+      }
+    }
+
+    if (entertainment) {
+      currencyType = await chooseForGame(price, item.title || 'Развлечение');
+      if (!currencyType) return;
+      var selectedBalance = currencyType === 'game' ? gameBalance() : realBalance();
+      if (selectedBalance < price) {
+        play('fail');
+        alert('Не хватает выбранной валюты.');
+        return;
+      }
+    } else {
+      currencyType = 'real';
+      if (realBalance() < price) {
+        play('fail');
+        alert('Этот товар относится к модераторским покупкам и покупается только за реальные XP с отчётов. Игровые XP доступны только для игр/развлечений.');
+        return;
+      }
+    }
+
+    try {
+      if (currencyType === 'game') await addGame(-price);
+      else setSpent(price);
+      window.currentGameCurrency = currencyType;
+      play('ok');
+      callUpdateShopStats();
+      await save();
+
+      if (action === 'mod_roulette') { if (typeof window.openFortune === 'function') window.openFortune(false); else openFortune(false); return; }
+      if (action === 'mod_coin') { if (typeof window.openCoinGame === 'function') window.openCoinGame(); else openCoinGame(); return; }
+      if (action === 'mod_safes') { if (typeof window.openSafesGame === 'function') window.openSafesGame(); else openSafesGame(); return; }
+      if (action === 'mod_jw') { if (typeof window.openJwQuiz === 'function') window.openJwQuiz(); else openJwQuiz(); return; }
+
+      if (entertainment) {
+        var modal = byId('genericGameModal'), overlay = byId('ggStartOverlay'), startBtn = byId('ggStartActionBtn');
+        if (byId('ggTitle')) byId('ggTitle').textContent = item.title;
+        if (byId('ggStartTitle')) byId('ggStartTitle').textContent = item.title;
+        if (byId('ggStartBetText')) byId('ggStartBetText').textContent = 'Ставка: ' + price + ' ' + (currencyType === 'real' ? 'Реальных' : 'Игровых') + ' XP';
+        if (byId('ggResult')) byId('ggResult').textContent = '';
+        if (byId('closeGgBtn')) byId('closeGgBtn').style.display = 'none';
+        ['ggRps','ggSlots','ggTiming','ggRocket','ggCases','ggDice','ggMines','ggHiLo','ggWheelX','ggShells'].forEach(function(a){ var el = byId(a); if (el) el.style.display = 'none'; });
+        if (overlay) overlay.style.display = 'flex';
+        if (modal) modal.style.display = 'flex';
+        if (startBtn) {
+          startBtn.onclick = function(){
+            if (overlay) overlay.style.display = 'none';
+            if (action === 'mod_crash') { if (typeof window.openRocketGame === 'function') window.openRocketGame(price); else openRocketGame(price); }
+            else if (action === 'mod_cases') { if (typeof window.openCasesGame === 'function') window.openCasesGame(price); else openCasesGame(price); }
+            else if (action === 'mod_dice') { if (typeof window.openDiceGame === 'function') window.openDiceGame(price); else openDiceGame(price); }
+            else if (action === 'mod_mines') { if (typeof window.openMinesGame === 'function') window.openMinesGame(price); else openMinesGame(price); }
+            else if (action === 'mod_hilo') { if (typeof window.openHiLoGame === 'function') window.openHiLoGame(price); else openHiLoGame(price); }
+            else if (action === 'mod_wheelx') { if (typeof window.openWheelXGame === 'function') window.openWheelXGame(price); else openWheelXGame(price); }
+            else if (action === 'mod_shells') { if (typeof window.openShellsGame === 'function') window.openShellsGame(price); else openShellsGame(price); }
+            else if (typeof window.playGenericGame === 'function') window.playGenericGame(id, price);
+          };
+        }
+      } else {
+        await log('Покупка: ' + item.title, false, 'mod_shop', price, 'Реальный XP');
+        if (isLimitedDiscount(item)) rememberDiscount(item, discountCountBefore);
+        alert('Куплено: ' + item.title + '. Списано: Реальный XP. Заявка отправлена руководству!');
+      }
+    } catch(err) {
+      play('fail');
+      alert('Ошибка покупки: ' + (err && err.message ? err.message : err));
+    }
+  };
+
+  function boot(){ try { window.renderShopItems(); } catch(e) {} }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [100, 400, 1000, 2500].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V133_SHOP_TIMER__); window.__T73_V133_SHOP_TIMER__ = setTimeout(boot, 120); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+
+  window.T73_V133_SHOP_CURRENCY = { render: boot, isEntertainment: isEntertainmentItem };
+})();
+</script>
+<!-- === /T73 V133 === -->
+
+
 </body>
 </html>
