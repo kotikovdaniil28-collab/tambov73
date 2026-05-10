@@ -1806,7 +1806,7 @@
                 <div class="admin-field"><label>Ссылка на доказательства (Imgur/Yapx):</label><input id="reportLinkInput" class="support-input" type="url" placeholder="https://..."></div>
                 <div class="admin-field" style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.2);">
                     <label style="color: #fff; font-weight: bold;">ИЛИ загрузите скриншот напрямую:</label>
-                    <input id="reportFileInput" class="support-input" type="file" accept="image/*" style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
+                    <input id="reportFileInput" class="support-input" type="file" multiple accept="image/*,.png,.jpg,.jpeg,.webp,.gif" style="border: none; padding: 0; margin-top: 0.8rem; background: transparent;">
                 </div>
                 <button class="support-check-btn" type="button" id="submitReportBtn" style="margin-top: 1rem; width: 100%;">Отправить Отчет</button>
               </div>
@@ -3514,73 +3514,7 @@
                 "evidence": "Скрин предложения с ценой и контактом.",
                 "type": "approve"
         }
-
 ]);
-
-        const realReportComplaintCasesV131 = [
-            {
-                reportNo: '14880',
-                sender: '@147723868534436041',
-                violator: 'ГМ леха макензи',
-                text: 'ГМ леха макензи уже почти месяц не может вынести вердикт по поводу жалобы на ЗГМ (Репорт #1492). Либо он специально закрывает глаза и покрывает ЗГМа, либо ему стоит объяснить, что не надо забивать и делать репорты просроченными. Просьба передать КГМ.',
-                evidence: 'Указан связанный репорт #13492. Требуется проверка руководством, так как жалоба затрагивает ГМ/ЗГМ и сроки рассмотрения.',
-                type: 'pass',
-                verdict: 'pass',
-                lesson: 'Жалобы на действия/бездействие ГМ, ЗГМ и возможное покрывательство не закрываются рядовым модератором — передать КГМ.'
-            },
-            {
-                reportNo: '13529',
-                sender: '@!Maks_Almazov',
-                violator: 'Обжалование',
-                text: 'Обжалование ЧСМ за неадекватное поведение: игрок пишет, что его удалили с поста ЗГМ 62 сервера, он понял ошибку и хочет ещё раз попробовать работать на пользу проекта.',
-                evidence: 'Ссылка VK: vk.ru/m_almazov000. Обжалование ЧСМ/снятия с руководящей должности должно уходить старшим.',
-                type: 'pass',
-                verdict: 'pass',
-                lesson: 'Обжалование ЧСМ и кадровых решений по ЗГМ/ГМ — компетенция старшей администрации/КГМ.'
-            },
-            {
-                reportNo: '14223',
-                sender: '@Dima_Skotov',
-                violator: '@kogim_regip',
-                text: 'Жалоба с доказательствами на агента поддержки. По разбору видно нарушение пункта 2.1.',
-                evidence: 'Imgur-доказательства: imgur.com/a/WgbwU0o. В исходном разборе жалоба одобрена, агент поддержки получает наказание.',
-                type: 'approve',
-                verdict: 'approve',
-                lesson: 'Если фрапс/скрин полностью подтверждает нарушение 2.1, жалобу нужно одобрить.'
-            },
-            {
-                reportNo: '1492',
-                sender: 'Игрок проекта',
-                violator: 'ЗГМ / руководство',
-                text: 'Игрок просит пересмотреть старую жалобу на ЗГМ, так как обычный модератор не может вынести окончательный вердикт.',
-                evidence: 'Есть номер старого обращения, но нет самостоятельного полного доказательства нарушения в текущей жалобе.',
-                type: 'pass',
-                verdict: 'pass',
-                lesson: 'Спорные жалобы на руководство и старые обращения передаются КГМ, а не закрываются на месте.'
-            },
-            {
-                reportNo: '14420',
-                sender: 'Участник Discord',
-                violator: 'Агент поддержки',
-                text: 'Игрок жалуется, что агент поддержки дал грубый ответ и отказался помочь по вопросу сервера.',
-                evidence: 'Скрин ответа есть, виден ник агента и контекст обращения.',
-                type: 'approve',
-                verdict: 'approve',
-                lesson: 'Если видны ник, контекст и нарушение общения со стороны АП — жалобу одобрить.'
-            },
-            {
-                reportNo: '14301',
-                sender: 'Игрок проекта',
-                violator: 'Модератор',
-                text: 'Игрок просит наказать модератора, но прикрепил только обрезанный скрин без ника, даты и полного контекста.',
-                evidence: 'Обрезанный скрин без идентификации нарушителя.',
-                type: 'reject',
-                verdict: 'reject',
-                lesson: 'Без полного контекста, ника и даты доказательства недостаточны — отказать.'
-            }
-        ];
-        allComplaints.unshift.apply(allComplaints, realReportComplaintCasesV131);
-        allComplaints.forEach(c => { if (!c.verdict) c.verdict = c.type; });
 
         async function loadGlobalShopAndRoulette() {
             const { data } = await supa.from('reports').select('*').in('email', ['SHOP_MOD', 'SHOP_AP', 'ROULETTE_MOD', 'ROULETTE_AP', 'CUSTOM_MOD_MSG', 'CUSTOM_AP_MSG', 'HIDDEN_CHECK', 'USER_ROLE', 'SHOP_OVERRIDE', 'GAME_XP']);
@@ -3900,26 +3834,9 @@
         }
 
         function randomComplaint() {
-            allComplaints.forEach(c => { if (!c.verdict) c.verdict = c.type; });
             if (compQueue.length === 0) { compQueue = allComplaints.map((_, i) => i); shuffleArray(compQueue); }
-            const item = allComplaints[compQueue.pop()];
-            if (!item.verdict) item.verdict = item.type;
-            complaintState.current = item;
-            const author = document.getElementById("compAuthor"), meta = document.getElementById("compMeta"), text = document.getElementById("compText"), evidence = document.getElementById("compEvidence");
-            const reportTitle = item.reportNo ? ('Репорт #' + item.reportNo) : 'Жалоба игрока';
-            const verdictLabel = item.verdict === 'approve' ? 'Одобрить' : (item.verdict === 'reject' ? 'Отказать' : 'Передать КГМ');
-            if (author) author.textContent = reportTitle;
-            if (meta) meta.textContent = (item.sender ? ('Отправитель: ' + item.sender + ' · ') : '') + 'Ожидает вердикта';
-            if (text) text.textContent = item.text;
-            if (evidence) {
-                evidence.innerHTML = `
-                    <div style="display:grid; gap:.55rem;">
-                        <div><strong style="color:#fff;">Нарушитель:</strong> ${escapeHtmlFix(item.violator || 'не указан')}</div>
-                        <div><strong style="color:#fff;">Доказательства:</strong> ${escapeHtmlFix(item.evidence || 'отсутствуют')}</div>
-                        <div><strong style="color:#fff;">Подсказка тренажёра:</strong> ${escapeHtmlFix(item.lesson || 'Сверь доказательства и выбери вердикт по правилам.')}</div>
-                        <div><strong style="color:#ffbf47;">Правильный тип:</strong> ${escapeHtmlFix(verdictLabel)}</div>
-                    </div>`;
-            }
+            const item = allComplaints[compQueue.pop()]; complaintState.current = item;
+            document.getElementById("compAuthor").textContent = randomFunnyNick(); document.getElementById("compMeta").textContent = "Ожидает вердикта"; document.getElementById("compText").textContent = item.text; document.getElementById("compEvidence").textContent = "Доказательства: " + item.evidence;
         }
 
         function taNextMsg() {
@@ -12080,7 +11997,6 @@
                             <label class="t73-v15-small">Отчётность<select class="t73-v15-select t73-v15-mark" data-kind="report" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${reportOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.report||'Нет отчета')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
                             <label class="t73-v15-small">Отметка дня<select class="t73-v15-select t73-v15-mark" data-kind="day" data-user="${esc15(m.key)}" data-date="${esc15(day)}" ${canEdit?'':'disabled'}>${dayOptions.map(o=>`<option value="${esc15(o)}" ${String(mark.day||'Проверить')===o?'selected':''}>${esc15(o)}</option>`).join('')}</select></label>
                             <input class="t73-v15-input t73-v15-note" data-user="${esc15(m.key)}" data-date="${esc15(day)}" placeholder="Комментарий" value="${esc15(mark.note||'')}" ${canEdit?'':'disabled'}>
-                            ${mark.by ? `<div class="t73-v15-small" style="color:#8df0ae;">Проверил: <b>${esc15(mark.by)}</b>${mark.at ? ' · ' + esc15(new Date(mark.at).toLocaleString('ru-RU')) : ''}</div>` : '<div class="t73-v15-small">Проверил: —</div>'}
                             <div>${pf.length ? pf.map((p,i)=>`<span class="t73-v15-proof">📎 ${esc15(p.quality)} · ${Number(p.count)||0}</span>`).join('') : '<span class="t73-v15-small">Доказательств нет</span>'}</div>
                         </div>`; }).join('')}</div>
                 </div>`).join('');
@@ -12109,8 +12025,8 @@
                 const area=$15('reportFormArea'); const warn=$15('reportAccessWarning');
                 if(currentUser && area && warn){ area.style.display='grid'; warn.style.display='none'; }
                 const inp=$15('reportFileInput'); if(!inp) return;
-                inp.removeAttribute('multiple'); inp.setAttribute('accept','image/*');
-                if(!$15('t73V15UploadTitle')) inp.insertAdjacentHTML('beforebegin','<div id="t73V15UploadTitle" class="t73-v15-card" style="margin-bottom:.75rem;"><b>📎 Прямая загрузка одного фото</b><div class="t73-v15-small">Выберите ровно один скрин/фото. Он загрузится в Supabase Storage; если bucket не настроен, сайт сожмёт фото и отправит fallback.</div></div>');
+                inp.setAttribute('multiple','multiple'); inp.setAttribute('accept','image/*');
+                if(!$15('t73V15UploadTitle')) inp.insertAdjacentHTML('beforebegin','<div id="t73V15UploadTitle" class="t73-v15-card" style="margin-bottom:.75rem;"><b>📎 Прямая загрузка скриншотов</b><div class="t73-v15-small">Можно выбрать сразу много скринов. Они загрузятся в Supabase Storage; если bucket не настроен, сайт сожмёт их и отправит fallback.</div></div>');
                 if(!$15('reportFilePreview')) inp.insertAdjacentHTML('afterend','<div id="reportFilePreview" class="t73-v15-preview"></div>');
             }
             function renderPreview15(){
@@ -12221,7 +12137,7 @@
                 }, true);
                 document.addEventListener('change', ev=>{
                     const target=ev.target;
-                    if(target?.id==='reportFileInput'){ const fresh=Array.from(target.files||[]).filter(f=>String(f.type||'').startsWith('image/')); files15=fresh.slice(0,1); target.value=''; renderPreview15(); }
+                    if(target?.id==='reportFileInput'){ const fresh=Array.from(target.files||[]).filter(f=>String(f.type||'').startsWith('image/')); files15=files15.concat(fresh).slice(0,16); target.value=''; renderPreview15(); }
                     if(target?.classList?.contains('t73-v15-mark')) saveMark15(target.dataset.user, target.dataset.date);
                 }, true);
                 document.addEventListener('input', ev=>{
@@ -22236,20 +22152,7 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
       }
       var st = normalizeStatus(statusText);
       var xp = xpFor(st, xpAmount);
-      var checkerName = (typeof currentNickname !== 'undefined' && currentNickname) || (user() && (user().user_metadata && user().user_metadata.nickname || user().email)) || 'Руководство';
-      var checkedAt = new Date().toISOString();
       var update = { status: st, xp: xp };
-      try {
-        var payload = JSON.parse(String(row.date || ''));
-        if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
-          payload.checkedBy = checkerName;
-          payload.checkedById = user() && user().id || '';
-          payload.checkedAt = checkedAt;
-          payload.checkedStatus = st;
-          payload.reviewPoints = xp;
-          update.date = JSON.stringify(payload);
-        }
-      } catch(e) {}
       if (realOwner && low(row.email) !== low(realOwner)) update.email = realOwner;
       var res = await c.from('reports').update(update).eq('id', id);
       if (res.error) throw res.error;
@@ -22470,64 +22373,524 @@ body.t73-v44-cat-organizations #gossOrgActionNavV4.t73-v44-goss-actions{display:
 <!-- === /T73 V130 === -->
 
 
-
-<!-- === T73 V131: moderation single-photo + real complaint trainer polish === -->
-<script id="t73-v131-moderation-reports-polish">
-(function(){
+<!-- === T73 V131: moderation reports photo upload + leadership-only review + checked-by marker === -->
+<style id="t73-v131-mod-report-style">
+  body:not(.t73-v131-mod-leader) #adminPanelArea,
+  body:not(.t73-v131-mod-leader) #viewReportsBtn,
+  body:not(.t73-v131-mod-leader) #viewReportsBtnV63 {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  body.t73-v131-mod-leader #adminPanelArea {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  body.t73-v131-mod-leader #viewReportsBtn,
+  body.t73-v131-mod-leader #viewReportsBtnV63 {
+    display: inline-flex !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  #reportFileInput.t73-v131-hidden-input,
+  #reportFileInputV62.t73-v131-hidden-input,
+  #submitReportBtn,
+  #submitReportBtnV16,
+  #submitReportBtnV57,
+  #submitReportBtnV62 {
+    display: none !important;
+  }
+  #t73-v57-upload-note,
+  #reportFilePreview.t73-v57-preview {
+    display: none !important;
+  }
+  #t73V131UploadBox {
+    margin-top: .8rem;
+    display: grid;
+    gap: .75rem;
+  }
+  #t73V131PickBtn,
+  #submitReportBtnV131 {
+    width: 100% !important;
+    min-height: 48px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    border-radius: 14px !important;
+    font-weight: 900 !important;
+  }
+  #t73V131PickBtn {
+    display: inline-flex !important;
+    border: 1px solid rgba(127,232,160,.45) !important;
+    background: rgba(82,199,123,.10) !important;
+    color: #d8ffe4 !important;
+  }
+  #submitReportBtnV131 {
+    display: inline-flex !important;
+    margin-top: 1rem !important;
+    background: linear-gradient(135deg,#52c77b,#8fe0a8) !important;
+    color: #07110b !important;
+    border-color: #52c77b !important;
+  }
+  #t73V131UploadHint {
+    color: var(--color-text-muted);
+    font-size: .86rem;
+    line-height: 1.35;
+  }
+  #t73V131Preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+    gap: .7rem;
+  }
+  .t73-v131-file {
+    position: relative;
+    min-height: 118px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(0,0,0,.42);
+    border: 1px solid rgba(255,255,255,.16);
+  }
+  .t73-v131-file img {
+    width: 100%;
+    height: 92px;
+    object-fit: cover;
+    display: block;
+  }
+  .t73-v131-file-name {
+    padding: .35rem .45rem;
+    color: #fff;
+    font-size: .72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .t73-v131-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,59,96,.92);
+    color: #fff;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .t73-v131-review-card {
+    background: rgba(0,0,0,.32);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 18px;
+    padding: 1rem;
+    display: grid;
+    gap: .75rem;
+  }
+  .t73-v131-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(255,255,255,.06);
+    color: var(--color-text-muted);
+    padding: .32rem .6rem;
+    font-size: .78rem;
+    font-weight: 800;
+  }
+  .t73-v131-proof-grid {
+    display: flex;
+    gap: .55rem;
+    flex-wrap: wrap;
+  }
+  .t73-v131-proof-img {
+    width: 132px;
+    height: 92px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.16);
+    cursor: zoom-in;
+    background: rgba(255,255,255,.04);
+  }
+  .t73-v131-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+  }
+  .t73-v131-muted {
+    color: var(--color-text-muted);
+    font-size: .9rem;
+    line-height: 1.4;
+  }
+</style>
+<script id="t73-v131-mod-report-script">
+(function installT73V131ModReports(){
   'use strict';
+  if (window.__T73_V131_MOD_REPORTS__) return;
+  window.__T73_V131_MOD_REPORTS__ = true;
+
+  var SERVICE = new Set([
+    'ACCESS_KEY','ADMIN_ROLE','SHOP_MOD','SHOP_AP','ROULETTE_MOD','ROULETTE_AP','CUSTOM_MOD_MSG','CUSTOM_AP_MSG','HIDDEN_CHECK','USER_ROLE','USER_KIND','INACTIVE_REQ','SHOP_OVERRIDE','GAME_XP','MANUAL_XP','AP_POINTS','FSB_POINTS','FSB_SPEND','SHOP_FSB','ROULETTE_FSB','CUSTOM_FSB_MSG','REPORT_TABLE_MARK','REPORT_TABLE_MARK_V15','REPORT_TABLE_MEMBER_V15','SITE_SETTING','WEEKLY_QUIZ_DONE',
+    'GOSS_PROFILE','GOSS_USER_REPORT','GOSS_REPORT_CHECK','GOSS_REPORT_TABLE','GOSS_REPORT_TABLE_V13','GOSS_REPORT_TABLE_V15','GOSS_REPORT_TABLE_V16','GOSS_REPORT_TABLE_V19','GOSS_REPORT_MEMBER_V19','GOSS_REPORT_PROOF_V19','GOSS_POINTS_V19','GOSS_ORG_LOG','GOSS_ORG_LOG_V19','GOSS_ORG_LOG_V24','GOSS_SHOP_ITEMS_V13','GOSS_SHOP_ITEMS_V19','GOSS_SHOP_ITEMS_V24','GOSS_SHOP_ITEMS_V26','GOSS_SHOP_PURCHASE','FSB_SHOP_LOG'
+  ]);
+  var pickedFiles = [];
+  var leaderCache = null;
+  var leaderCacheAt = 0;
+  var busySubmit = false;
+  var busyReview = false;
+
   function $(id){ return document.getElementById(id); }
-  function ready(fn){ if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
-  function forceSinglePhotoInput(input){
-    if (!input || input.dataset.t73v131SinglePhoto === '1') return;
-    input.dataset.t73v131SinglePhoto = '1';
-    input.removeAttribute('multiple');
-    input.setAttribute('accept','image/*,.png,.jpg,.jpeg,.webp');
-    input.addEventListener('change', function(){
-      if (input.files && input.files.length > 1) {
-        var dt = new DataTransfer();
-        dt.items.add(input.files[0]);
-        input.files = dt.files;
-      }
-      var res = $('reportResultText');
-      if (res && input.files && input.files.length) {
-        res.style.color = 'var(--color-text-muted)';
-        res.textContent = 'Выбрано одно фото: ' + (input.files[0].name || 'файл');
-      }
-    }, true);
+  function str(v){ return String(v == null ? '' : v); }
+  function esc(v){ return str(v).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
+  function user(){ try { return (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null; } catch(e){ return null; } }
+  function client(){ try { return (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') ? supa : null; } catch(e){ return null; } }
+  function nick(){ try { return (typeof currentNickname !== 'undefined' && currentNickname) ? currentNickname : ''; } catch(e){ return ''; } }
+  function emailOf(v){ return str(v).trim().toLowerCase(); }
+  function myEmail(){ var u = user(); return emailOf(u && u.email); }
+  function makeId(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function nowRu(){ return new Date().toLocaleString('ru-RU'); }
+  function isServiceEmail(email){ return SERVICE.has(str(email)); }
+  function isStaticLeader(){
+    var u = user();
+    if (!u) return false;
+    try { if (typeof creatorEmail !== 'undefined' && u.email === creatorEmail) return true; } catch(e) {}
+    try { if (typeof adminEmails !== 'undefined' && Array.isArray(adminEmails) && adminEmails.indexOf(u.email) !== -1) return true; } catch(e) {}
+    try { if (typeof dynamicModLeaders !== 'undefined' && Array.isArray(dynamicModLeaders) && dynamicModLeaders.indexOf(u.id) !== -1) return true; } catch(e) {}
+    return false;
   }
-  function polishReportUpload(){
-    ['reportFileInput','reportFileInputV62','submitReportFileInput','reportFilesInput'].forEach(function(id){ forceSinglePhotoInput($(id)); });
-    var input = $('reportFileInput') || $('reportFileInputV62');
-    if (input) {
-      var label = input.closest('.admin-field')?.querySelector('label');
-      if (label) label.textContent = 'ИЛИ загрузите одно фото напрямую:';
-    }
-    var note = $('t73-v57-upload-note') || $('v16UploadNotice') || $('t73V15UploadTitle') || $('reportFileBoxV62');
-    if (note) {
-      var b = note.querySelector('b');
-      if (b) b.textContent = '📎 Прямая загрузка одного фото:';
-      var txt = note.childNodes;
-      if (note.id !== 'reportFileBoxV62') note.innerHTML = '<b>📎 Прямая загрузка одного фото:</b> выберите один скрин/фото с устройства. Если нужно несколько доказательств — оставьте дополнительные ссылки в поле выше.';
-      else if (!note.dataset.t73v131Text) { note.dataset.t73v131Text='1'; note.firstChild.textContent = ''; note.insertAdjacentHTML('afterbegin','<b>📎 Прямая загрузка одного фото:</b> выберите один скрин/фото с устройства. Если нужно несколько доказательств — добавьте ссылки выше. '); }
-    }
-    ['submitReportBtnV57','submitReportBtnV62'].forEach(function(id){ var btn=$(id); if(btn){ btn.style.setProperty('display','none','important'); btn.setAttribute('aria-hidden','true'); }});
-    var mainBtn = $('submitReportBtnV16') || $('submitReportBtn');
-    if (mainBtn) {
-      mainBtn.style.setProperty('display','inline-flex','important');
-      mainBtn.textContent = mainBtn.textContent.replace('файлами','одним фото');
-    }
+  async function isDbLeader(){
+    var u = user(), c = client();
+    if (!u || !c) return false;
+    try {
+      var r = await c.from('reports').select('id').eq('email','ADMIN_ROLE').eq('link',u.id).eq('status','leadership').limit(1);
+      return !!(r && r.data && r.data.length);
+    } catch(e) { return false; }
   }
-  ready(function(){
-    polishReportUpload();
-    [80,250,700,1500,3500].forEach(function(ms){ setTimeout(polishReportUpload, ms); });
-    try { new MutationObserver(function(){ clearTimeout(window.__T73_V131_UPLOAD_TIMER__); window.__T73_V131_UPLOAD_TIMER__ = setTimeout(polishReportUpload, 60); }).observe(document.body, {childList:true, subtree:true}); } catch(e) {}
-    var compHead = document.querySelector('#mode-complaints .section-head p');
-    if (compHead) compHead.textContent = 'Тренажёр построен на реальных форматах репортов: проверь отправителя, нарушителя, доказательства и выбери вердикт.';
-    try { if (typeof allComplaints !== 'undefined') allComplaints.forEach(function(c){ if(!c.verdict) c.verdict = c.type; }); } catch(e) {}
-    document.querySelectorAll('[data-comp-action]').forEach(function(btn){
-      btn.onclick = function(){ if (typeof judgeComplaint === 'function') judgeComplaint(btn.dataset.compAction); };
+  async function isLeader(){
+    if (isStaticLeader()) return true;
+    if (leaderCache !== null && Date.now() - leaderCacheAt < 10000) return leaderCache;
+    leaderCache = await isDbLeader();
+    leaderCacheAt = Date.now();
+    return leaderCache;
+  }
+  function hasReportAccess(){
+    var u = user();
+    if (!u) return false;
+    try { if (typeof isModerator !== 'undefined' && isModerator) return true; } catch(e) {}
+    if (isStaticLeader()) return true;
+    return false;
+  }
+  function setResult(text, ok){
+    var res = $('reportResultText');
+    if (res) { res.textContent = text; res.style.color = ok ? 'var(--color-success)' : 'var(--color-error)'; }
+    else alert(text);
+  }
+  function parsePayload(row){
+    var raw = str(row && row.date).trim();
+    if (raw.charAt(0) === '{') { try { return JSON.parse(raw); } catch(e) {} }
+    var m = raw.match(/JSON:\s*(\{[\s\S]*\})\s*$/i);
+    if (m) { try { return JSON.parse(m[1]); } catch(e) {} }
+    return {
+      legacyText: raw,
+      nick: ((raw.match(/Ник:\s*([^|]+)/i) || [,''])[1] || '').trim(),
+      date: ((raw.match(/Дата:\s*([\d.\/-]+)/i) || [,''])[1] || '').trim(),
+      work: ((raw.match(/Работа:\s*([^|]+)/i) || [,''])[1] || '').trim(),
+      quality: ((raw.match(/Тип сдачи:\s*([^|]+)/i) || [,''])[1] || '').trim()
+    };
+  }
+  function statusXp(status){
+    status = str(status).replace(/ё/g,'е');
+    if (/^Норма$/i.test(status)) return 15;
+    if (/^Перенорма$/i.test(status)) return 30;
+    if (/^Натяг$/i.test(status)) return 7;
+    if (/^Герой\s*дня$/i.test(status)) return 60;
+    return 0;
+  }
+  function normalizeStatus(status){
+    status = str(status || 'На проверке').trim();
+    if (!status || /^none|-$/i.test(status)) return 'На проверке';
+    if (/^отказ$/i.test(status)) return 'Не засчитано';
+    return status;
+  }
+  function isWaiting(status){
+    status = normalizeStatus(status).replace(/ё/g,'е');
+    return /^(На проверке|Ожидает)/i.test(status);
+  }
+  function isImageUrl(url){ return /^data:image\//i.test(url) || /\.(png|jpe?g|webp|gif|avif|bmp)(\?|#|$)/i.test(url); }
+  function collectProofs(row, p){
+    var out = [];
+    function add(x, name, kind){
+      if (!x) return;
+      if (Array.isArray(x)) { x.forEach(function(v, i){ add(v, name + ' ' + (i + 1), kind); }); return; }
+      if (typeof x === 'object') {
+        add(x.url || x.href || x.link || x.src || x.data || x.file || x.image, x.name || name, x.kind || x.type || kind);
+        return;
+      }
+      var url = str(x).trim();
+      if (!url) return;
+      if (!out.some(function(p){ return p.url === url; })) out.push({ url:url, name:name || 'Доказательство', kind:kind || '' });
+    }
+    add(p && p.proofs, 'Доказательство', 'file');
+    add(p && p.files, 'Файл', 'file');
+    add(p && p.screenshots, 'Скриншот', 'image');
+    add(p && p.photos, 'Фото', 'image');
+    add(p && p.link, 'Ссылка', 'link');
+    add(row && row.link, 'Доказательство', 'file');
+    return out;
+  }
+  function proofHtml(row, p){
+    var proofs = collectProofs(row, p);
+    if (!proofs.length) return '<span class="t73-v131-chip">Без вложения</span>';
+    return '<div class="t73-v131-proof-grid">' + proofs.map(function(proof, i){
+      var url = proof.url;
+      if (isImageUrl(url)) {
+        return '<img class="t73-v131-proof-img" src="' + esc(url) + '" alt="Фото ' + (i + 1) + '" data-t73-v131-zoom="' + esc(url) + '">';
+      }
+      return '<a class="btn btn-secondary" href="' + esc(url) + '" target="_blank" rel="noreferrer">📎 ' + esc(proof.name || ('Файл ' + (i + 1))) + '</a>';
+    }).join('') + '</div>';
+  }
+  function filePreviewUrl(file){ try { return URL.createObjectURL(file); } catch(e){ return ''; } }
+  function renderPicked(){
+    var box = $('t73V131Preview'), hint = $('t73V131UploadHint'), btn = $('t73V131PickBtn');
+    if (hint) hint.textContent = pickedFiles.length ? ('Выбрано файлов: ' + pickedFiles.length + '. Можно добавить ещё или удалить лишнее.') : 'Можно выбрать одно фото или сразу несколько. Фото попадут прямо в отчёт.';
+    if (btn) btn.textContent = pickedFiles.length > 1 ? '📎 Загрузить ещё фото' : '📎 Загрузить фото';
+    if (!box) return;
+    if (!pickedFiles.length) { box.innerHTML = '<div class="t73-v131-muted" style="grid-column:1/-1;">Фото пока не выбраны.</div>'; return; }
+    box.innerHTML = pickedFiles.map(function(file, i){
+      var isImg = /^image\//i.test(file.type || '') || /\.(png|jpe?g|webp|gif)$/i.test(file.name || '');
+      var url = isImg ? filePreviewUrl(file) : '';
+      return '<div class="t73-v131-file"><button class="t73-v131-remove" type="button" data-t73-v131-remove="' + i + '">×</button>' +
+        (url ? '<img src="' + esc(url) + '" alt="Фото ' + (i + 1) + '">' : '<div style="height:92px;display:grid;place-items:center;font-size:2rem;">📎</div>') +
+        '<div class="t73-v131-file-name">' + esc(file.name || ('file_' + (i + 1))) + '</div></div>';
+    }).join('');
+    box.querySelectorAll('[data-t73-v131-remove]').forEach(function(b){
+      b.onclick = function(){ pickedFiles.splice(Number(b.getAttribute('data-t73-v131-remove')), 1); renderPicked(); };
     });
-  });
+  }
+  function handleFileChange(e){
+    var input = e.target && e.target.closest ? e.target.closest('#reportFileInput,#reportFileInputV62') : null;
+    if (!input) return;
+    var incoming = Array.prototype.slice.call(input.files || []).filter(function(f){ return !!f; });
+    var limit = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 10 : 16;
+    pickedFiles = pickedFiles.concat(incoming).slice(0, limit);
+    try { input.value = ''; } catch(err) {}
+    renderPicked();
+    var res = $('reportResultText');
+    if (res && incoming.length) { res.textContent = 'Выбрано файлов: ' + pickedFiles.length; res.style.color = 'var(--color-text-muted)'; }
+  }
+  function ensureUploadUi(){
+    var input = $('reportFileInput') || $('reportFileInputV62');
+    if (!input) return;
+    input.setAttribute('multiple','multiple');
+    input.setAttribute('accept','image/*,.png,.jpg,.jpeg,.webp,.gif');
+    input.classList.add('t73-v131-hidden-input');
+    if (input.dataset.t73v131Bound !== '1') {
+      input.dataset.t73v131Bound = '1';
+      input.addEventListener('change', handleFileChange, true);
+    }
+    var label = input.closest('.admin-field') && input.closest('.admin-field').querySelector('label');
+    if (label) label.textContent = 'Фото / скриншоты отчёта:';
+    var place = input.closest('.admin-field') || input.parentElement;
+    if (place && !$('t73V131UploadBox')) {
+      place.insertAdjacentHTML('beforeend', '<div id="t73V131UploadBox"><button id="t73V131PickBtn" class="btn btn-secondary" type="button">📎 Загрузить фото</button><div id="t73V131UploadHint">Можно выбрать одно фото или сразу несколько. Фото попадут прямо в отчёт.</div><div id="t73V131Preview"></div></div>');
+    }
+    var pick = $('t73V131PickBtn');
+    if (pick && pick.dataset.t73v131Bound !== '1') {
+      pick.dataset.t73v131Bound = '1';
+      pick.addEventListener('click', function(e){ e.preventDefault(); input.click(); return false; }, true);
+    }
+    var oldBtn = $('submitReportBtn') || $('submitReportBtnV16') || $('submitReportBtnV57') || $('submitReportBtnV62');
+    if (oldBtn && !$('submitReportBtnV131')) oldBtn.insertAdjacentHTML('afterend', '<button class="support-check-btn" type="button" id="submitReportBtnV131">📤 Отправить отчёт</button>');
+    var send = $('submitReportBtnV131');
+    if (send && send.dataset.t73v131Bound !== '1') {
+      send.dataset.t73v131Bound = '1';
+      send.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); submitReport(); return false; }, true);
+    }
+    renderPicked();
+  }
+  function readAsDataUrl(file){
+    return new Promise(function(resolve){
+      var reader = new FileReader();
+      reader.onload = function(e){ resolve(str(e.target && e.target.result)); };
+      reader.onerror = function(){ resolve(''); };
+      reader.readAsDataURL(file);
+    });
+  }
+  function imageFromData(url){
+    return new Promise(function(resolve, reject){
+      var img = new Image();
+      img.onload = function(){ resolve(img); };
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+  async function prepareFile(file, i){
+    var isImg = /^image\//i.test(file.type || '') || /\.(png|jpe?g|webp|gif)$/i.test(file.name || '');
+    var data = await readAsDataUrl(file);
+    if (isImg && data) {
+      try {
+        var img = await imageFromData(data);
+        var maxSide = /iPhone|Android|Mobile/i.test(navigator.userAgent) ? 1000 : 1200;
+        var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+        var ratio = Math.min(1, maxSide / Math.max(w, h));
+        var canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(w * ratio));
+        canvas.height = Math.max(1, Math.round(h * ratio));
+        var ctx = canvas.getContext('2d', { alpha:false });
+        ctx.fillStyle = '#111'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        var q = 0.72, out = canvas.toDataURL('image/jpeg', q);
+        while (out.length > 520000 && q > 0.42) { q -= 0.08; out = canvas.toDataURL('image/jpeg', q); }
+        data = out;
+      } catch(e) {}
+    }
+    return { url:data, name:file.name || ('Фото ' + (i + 1)), kind:isImg ? 'image' : 'file', size:file.size || 0 };
+  }
+  function gatherFiles(){ return pickedFiles.slice(0, 16); }
+  async function submitReport(){
+    ensureUploadUi();
+    if (busySubmit) return;
+    var u = user(), c = client();
+    if (!u) return setResult('Войдите в аккаунт, чтобы отправить отчёт.', false);
+    if (!hasReportAccess()) return setResult('Отчётность доступна только модераторам, руководству и создателю.', false);
+    if (!c) return setResult('База данных ещё не загрузилась.', false);
+    var nickValue = str(($('reportNickInput') && $('reportNickInput').value) || nick() || u.email).trim();
+    var work = str(($('reportWorkInput') && $('reportWorkInput').value) || '').trim();
+    var day = str(($('reportDateInput') && $('reportDateInput').value) || '').trim();
+    var link = str(($('reportLinkInput') && $('reportLinkInput').value) || '').trim();
+    var quality = str(($('reportQualityInput') && $('reportQualityInput').value) || 'Норма').trim();
+    var files = gatherFiles();
+    if (!nickValue || !work || !day) return setResult('Заполните ник, работу и дату.', false);
+    if (!link && !files.length) return setResult('Прикрепите ссылку или нажмите «Загрузить фото».', false);
+    busySubmit = true;
+    var btn = $('submitReportBtnV131');
+    if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
+    var res = $('reportResultText');
+    if (res) { res.textContent = 'Готовлю доказательства...'; res.style.color = 'var(--color-text-muted)'; }
+    try {
+      var proofs = [];
+      if (link) link.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean).forEach(function(url, i){ proofs.push({ url:url, name:'Ссылка ' + (i + 1), kind:'link' }); });
+      for (var i=0; i<files.length; i++) {
+        if (res) res.textContent = 'Обрабатываю фото ' + (i + 1) + ' из ' + files.length + '...';
+        var proof = await prepareFile(files[i], i);
+        if (proof.url) proofs.push(proof);
+      }
+      var payload = {
+        version:'v131-mod-report', nick:nickValue, work:work, date:day, day:day, quality:quality, requestedStatus:quality,
+        proofs:proofs, files:proofs.map(function(p){ return p.url; }), userId:u.id, email:u.email,
+        createdAt:nowRu(), checkedAt:'', checkedBy:'', checkedById:''
+      };
+      var combined = 'Ник: ' + nickValue + ' | Дата: ' + day + ' | Работа: ' + work + ' | Тип сдачи: ' + quality + ' | Доказательства: ' + proofs.length + ' | JSON: ' + JSON.stringify(payload);
+      var r = await c.from('reports').insert([{ id:makeId('rep'), email:u.email, link:(proofs[0] && proofs[0].url) || '', date:combined, status:'На проверке', xp:0 }]);
+      if (r && r.error) throw r.error;
+      setResult('✅ Отчёт отправлен. Фото/доказательств: ' + proofs.length + '.', true);
+      ['reportWorkInput','reportLinkInput'].forEach(function(id){ var el=$(id); if (el) el.value=''; });
+      pickedFiles = []; renderPicked();
+      try { if (typeof playSound === 'function') playSound('win'); } catch(e) {}
+    } catch(err) {
+      setResult('Ошибка отправки: ' + ((err && err.message) || err), false);
+    } finally {
+      busySubmit = false;
+      if (btn) { btn.disabled = false; btn.textContent = '📤 Отправить отчёт'; }
+    }
+  }
+  async function showReportsReview(){
+    if (busyReview) return;
+    if (!(await isLeader())) { alert('Проверить отчётность может только пользователь со статусом «Руководство».'); applyAccess(); return; }
+    var area = $('reportsListArea');
+    if (!area) return;
+    if (area.dataset.t73v131Open === '1') { area.dataset.t73v131Open = '0'; area.style.display = 'none'; return; }
+    area.dataset.t73v131Open = '1'; area.style.display = 'grid'; area.style.gap = '1rem'; area.innerHTML = '<div class="message-text">⏳ Загружаю отчёты...</div>';
+    var c = client(); if (!c) { area.innerHTML = '<div class="t73-v131-review-card">База данных ещё не загрузилась.</div>'; return; }
+    busyReview = true;
+    try {
+      var q = await c.from('reports').select('*').order('id', { ascending:false }).limit(160);
+      if (q && q.error) throw q.error;
+      var rows = (q.data || []).filter(function(r){ return r && !isServiceEmail(r.email); });
+      if (!rows.length) { area.innerHTML = '<div class="t73-v131-review-card">Отчётов пока нет.</div>'; return; }
+      area.innerHTML = rows.map(function(row){
+        var p = parsePayload(row);
+        var st = normalizeStatus(row.status || p.reviewStatus || p.result || 'На проверке');
+        var waiting = isWaiting(st);
+        var checker = p.checkedBy || p.reviewedBy || '';
+        var checkedAt = p.checkedAt || p.reviewedAt || '';
+        var person = p.nick || p.nickname || row.email || 'Модератор';
+        var day = p.day || p.date || 'дата не указана';
+        var work = p.work || p.comment || p.legacyText || 'Без описания';
+        var quality = p.quality || p.requestedStatus || 'не выбрано';
+        var checkedLine = checker ? '<div class="t73-v131-muted">Проверил: <b>' + esc(checker) + '</b>' + (checkedAt ? ' · ' + esc(checkedAt) : '') + '</div>' : '';
+        return '<article class="t73-v131-review-card"><div style="display:flex;justify-content:space-between;gap:.7rem;flex-wrap:wrap;"><div><strong style="color:#fff;">' + esc(person) + '</strong><div class="t73-v131-muted">' + esc(day) + ' · ' + esc(row.email || '') + '</div></div><span class="t73-v131-chip">Выбрал: ' + esc(quality) + '</span></div><div class="t73-v131-muted">' + esc(work) + '</div>' + proofHtml(row, p) + '<div><span class="t73-v131-chip">' + esc(st) + ' · ' + Number(row.xp || p.reviewPoints || 0) + ' XP</span></div>' + checkedLine + (waiting ? '<div class="t73-v131-actions"><button class="btn btn-secondary" style="border-color:#52c77b;color:#52c77b" data-v131-check="' + esc(row.id) + '" data-status="Норма" data-xp="15">Норма</button><button class="btn btn-secondary" style="border-color:#3dd68c;color:#3dd68c" data-v131-check="' + esc(row.id) + '" data-status="Перенорма" data-xp="30">Перенорма</button><button class="btn btn-secondary" style="border-color:#a855f7;color:#c084fc" data-v131-check="' + esc(row.id) + '" data-status="Натяг" data-xp="7">Натяг</button><button class="btn btn-secondary" style="border-color:#3b82f6;color:#60a5fa" data-v131-check="' + esc(row.id) + '" data-status="Герой дня" data-xp="60">Герой дня</button><button class="btn btn-secondary" style="border-color:var(--color-error);color:var(--color-error)" data-v131-check="' + esc(row.id) + '" data-status="Не засчитано" data-xp="0">Отказ</button></div>' : '') + '</article>';
+      }).join('');
+      area.querySelectorAll('[data-v131-check]').forEach(function(b){
+        b.onclick = function(){ processReport(b.getAttribute('data-v131-check'), b.getAttribute('data-status'), Number(b.getAttribute('data-xp') || 0)); };
+      });
+    } catch(err) {
+      area.innerHTML = '<div class="t73-v131-review-card" style="color:var(--color-error);">Ошибка загрузки: ' + esc((err && err.message) || err) + '</div>';
+    } finally { busyReview = false; }
+  }
+  async function processReport(id, status, xp){
+    if (!(await isLeader())) { alert('Проверять отчёты может только пользователь со статусом «Руководство».'); applyAccess(); return; }
+    var c = client(); if (!c) return alert('База данных ещё не загрузилась.');
+    try {
+      var got = await c.from('reports').select('*').eq('id', id).limit(1);
+      if (got && got.error) throw got.error;
+      var row = got.data && got.data[0];
+      if (!row) return alert('Отчёт не найден.');
+      if (!isServiceEmail(row.email) && myEmail() && emailOf(row.email) === myEmail()) return alert('Нельзя проверять свой собственный отчёт. Попросите другое руководство.');
+      var p = parsePayload(row);
+      p.version = p.version || 'v131-mod-report-reviewed';
+      p.reviewStatus = normalizeStatus(status);
+      p.result = p.reviewStatus;
+      p.reviewPoints = Number.isFinite(Number(xp)) ? Number(xp) : statusXp(p.reviewStatus);
+      p.checkedAt = nowRu();
+      p.checkedBy = nick() || (user() && user().email) || 'Руководство';
+      p.checkedById = (user() && user().id) || '';
+      var upd = await c.from('reports').update({ status:p.reviewStatus, xp:p.reviewPoints, date:JSON.stringify(p) }).eq('id', id);
+      if (upd && upd.error) throw upd.error;
+      try { await c.from('reports').insert([{ id:makeId('mod_report_check'), email:'REPORT_CHECK_MOD', link:id, status:p.checkedById || 'leader', date:p.checkedBy + ' проверил отчёт ' + (p.nick || row.email || '') + ': ' + p.reviewStatus + ' · ' + p.checkedAt, xp:p.reviewPoints }]); } catch(e) {}
+      var area = $('reportsListArea'); if (area) area.dataset.t73v131Open = '0';
+      setTimeout(showReportsReview, 80);
+      try { if (typeof loadReportsTable === 'function') setTimeout(loadReportsTable, 250); } catch(e) {}
+    } catch(err) { alert('Ошибка проверки отчёта: ' + ((err && err.message) || err)); }
+  }
+  function bindReviewButton(){
+    ['viewReportsBtn','viewReportsBtnV63'].forEach(function(id){
+      var btn = $(id);
+      if (!btn) return;
+      btn.textContent = '✅ Проверить отчётность';
+      if (btn.dataset.t73v131Bound !== '1') {
+        btn.dataset.t73v131Bound = '1';
+        btn.addEventListener('click', function(e){ e.preventDefault(); e.stopImmediatePropagation(); showReportsReview(); return false; }, true);
+      }
+    });
+  }
+  async function applyAccess(){
+    var leader = await isLeader();
+    document.body.classList.toggle('t73-v131-mod-leader', !!leader);
+    var panel = $('adminPanelArea');
+    if (panel) panel.style.setProperty('display', leader ? 'block' : 'none', 'important');
+    ['viewReportsBtn','viewReportsBtnV63'].forEach(function(id){ var b=$(id); if (b) b.style.setProperty('display', leader ? 'inline-flex' : 'none', 'important'); });
+  }
+  function boot(){ ensureUploadUi(); bindReviewButton(); applyAccess(); }
+  document.addEventListener('click', function(e){
+    var z = e.target && e.target.closest && e.target.closest('[data-t73-v131-zoom]');
+    if (z) {
+      var src = z.getAttribute('data-t73-v131-zoom');
+      var modal = $('imageModal'), img = $('imageModalSrc');
+      if (modal && img) { modal.style.display = 'flex'; img.src = src; }
+      else window.open(src, '_blank');
+    }
+  }, true);
+  document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('#reportTabBtn,[data-mode="report"],#viewReportsBtn,#viewReportsBtnV63')) setTimeout(boot, 60); }, true);
+  window.processReport = processReport;
+  window.t73SubmitReportV131 = submitReport;
+  window.t73ShowReportsV131 = showReportsReview;
+  window.t73ApplyAccessV131 = applyAccess;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [80,250,700,1400,3000,6000].forEach(function(ms){ setTimeout(boot, ms); });
+  setInterval(function(){ ensureUploadUi(); bindReviewButton(); applyAccess(); }, 2500);
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V131_TIMER__); window.__T73_V131_TIMER__ = setTimeout(boot, 80); }).observe(document.documentElement,{childList:true,subtree:true}); } catch(e) {}
 })();
 </script>
 <!-- === /T73 V131 === -->
