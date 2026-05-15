@@ -1354,6 +1354,47 @@
           <div id="creatorGeminiKeyStatus" class="t73-v156-creator-gemini-status">Ключ не показывается модераторам в форме отчёта. После сохранения они смогут запускать автопроверку.</div>
         </div>
 
+        <div id="t73CreatorDeepSeekSettings" class="t73-v167-creator-deepseek-card">
+          <div class="t73-v167-creator-deepseek-head">
+            <div>
+              <h3>🔍 DeepSeek API для AI-чата</h3>
+              <p>Вторая менюшка для ключа AI-помощника в разделе «Инструкция». Модераторы ключ не вводят — чат берёт общий ключ отсюда.</p>
+            </div>
+            <span class="t73-v167-creator-deepseek-pill" id="creatorDeepSeekModelPill">deepseek-v4-pro + thinking</span>
+          </div>
+
+          <div class="t73-v167-creator-deepseek-grid">
+            <div class="admin-field">
+              <label>DeepSeek API key</label>
+              <input id="creatorDeepSeekApiKeyInput" class="support-input" type="password" placeholder="sk-..." autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
+            </div>
+            <div class="admin-field">
+              <label>Модель для чата</label>
+              <select id="creatorDeepSeekModelSelect" class="support-input">
+                <option value="deepseek-v4-pro">DeepSeek V4 Pro — лучший ответ</option>
+                <option value="deepseek-v4-flash">DeepSeek V4 Flash — быстрее</option>
+                <option value="deepseek-reasoner">DeepSeek R1 Reasoner — совместимость</option>
+              </select>
+            </div>
+            <div class="admin-field">
+              <label>DeepSeek endpoint</label>
+              <input id="creatorDeepSeekEndpointInput" class="support-input" type="text" value="https://api.deepseek.com/chat/completions" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+            </div>
+            <label class="t73-v167-creator-deepseek-check">
+              <input id="creatorDeepSeekThinkingToggle" type="checkbox" checked>
+              <span>Включить режим рассуждения / R1 thinking</span>
+            </label>
+          </div>
+
+          <div class="t73-v167-creator-deepseek-actions">
+            <button class="btn btn-secondary" type="button" id="creatorPasteDeepSeekKeyBtn">📋 Вставить ключ</button>
+            <button class="btn btn-secondary" type="button" id="creatorToggleDeepSeekKeyBtn">👁 Показать</button>
+            <button class="btn btn-secondary" type="button" id="creatorClearDeepSeekKeyBtn">🧹 Очистить</button>
+            <button class="btn btn-primary" type="button" id="creatorSaveDeepSeekKeyBtn">💾 Сохранить DeepSeek</button>
+          </div>
+          <div id="creatorDeepSeekKeyStatus" class="t73-v167-creator-deepseek-status">Ключ нужен только для AI-чата в инструкции. Автопроверка отчётов может продолжать использовать Gemini.</div>
+        </div>
+
         <div style="background: rgba(28, 10, 20, 0.6); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255, 107, 136, 0.5); margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 0.5rem; font-size: var(--text-base); color: var(--color-error);">Панель Троллинга 🤡</h3>
           <input type="text" id="trollCustomNick" class="support-input" placeholder="Свой ник (оставь пустым для рандома)" style="margin-bottom: 1rem; width: 100%;">
@@ -1932,8 +1973,39 @@
             <button type="button" data-guide-jump="guide-reports">Отчёты</button>
             <button type="button" data-guide-jump="guide-orgs">Организации</button>
             <button type="button" data-guide-jump="guide-checklist">Чек‑лист</button>
+            <button type="button" data-guide-jump="guide-ai-chat">AI‑чат</button>
           </div>
         </div>
+
+
+
+        <article class="t73-ai-chat-card" id="guide-ai-chat" aria-label="AI чат по правилам модерации">
+          <div class="t73-ai-chat-head">
+            <div>
+              <span class="t73-ai-chat-kicker">🔍 DeepSeek AI</span>
+              <h3>Чат с ИИ по правилам модерации</h3>
+              <p>Пиши ситуацию своими словами — помощник подберёт пункт правил, наказание и объяснит логику решения.</p>
+            </div>
+            <span class="t73-ai-chat-model">deepseek-v4-pro</span>
+          </div>
+          <div class="t73-ai-chat-examples" aria-label="Быстрые вопросы">
+            <button type="button" data-ai-example="Игрок рекламирует другой Discord сервер. Что выдать?">Реклама</button>
+            <button type="button" data-ai-example="Пользователь многократно тегает другого человека без текста. Какое наказание?">Много тегов</button>
+            <button type="button" data-ai-example="Игрок спорит про политику в общем чате. Как действовать?">Политика</button>
+            <button type="button" data-ai-example="Модератор хочет снять наказание другого модератора. Можно?">Правила модераторов</button>
+          </div>
+          <div class="t73-ai-chat-messages" id="t73AiChatMessages" role="log" aria-live="polite">
+            <div class="t73-ai-msg bot"><b>AI помощник:</b><br>Задай вопрос по правилам модерации. Я отвечу кратко: пункт, нарушение, наказание и что проверить перед выдачей.</div>
+          </div>
+          <div class="t73-ai-chat-input-row">
+            <textarea id="t73AiChatInput" class="support-input" rows="3" placeholder="Например: игрок написал ссылку на сторонний проект и зовёт туда людей. Что выдавать?"></textarea>
+            <div class="t73-ai-chat-actions">
+              <button class="btn btn-primary" type="button" id="t73AiChatSendBtn">Отправить</button>
+              <button class="btn btn-secondary" type="button" id="t73AiChatClearBtn">Очистить</button>
+            </div>
+          </div>
+          <div class="t73-ai-chat-status" id="t73AiChatStatus">Ключ DeepSeek берётся из панели создателя. Модераторам его вводить не нужно.</div>
+        </article>
 
         <div class="t73-v152-guide-layout">
           <aside class="t73-v152-guide-index">
@@ -1947,6 +2019,7 @@
             <a href="#guide-orgs">7. Организации / ГОСС</a>
             <a href="#guide-shop">8. Магазины и логи</a>
             <a href="#guide-checklist">9. Чек‑лист перед решением</a>
+            <a href="#guide-ai-chat">10. AI‑чат по правилам</a>
           </aside>
 
           <div class="t73-v152-guide-content">
@@ -26962,5 +27035,634 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 })();
 </script>
 <!-- === /T73 V163 === -->
+
+<!-- === T73 V165: stable GOCC leadership report review, no grey infinite loader === -->
+<style id="t73-v165-goss-review-style">
+  #gossV4Content.t73-v165-review-root {
+    display: grid !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+  .t73-v165-card {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 107, 136, .28);
+    background: radial-gradient(circle at top left, rgba(255,107,136,.14), transparent 42%), linear-gradient(145deg, rgba(13,16,32,.96), rgba(7,9,18,.98));
+    box-shadow: 0 14px 34px rgba(0,0,0,.32);
+    padding: 1rem;
+    overflow: hidden;
+  }
+  .t73-v165-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+  .t73-v165-head h3 { margin: 0; color: #ff6b88; font-size: 1.08rem; }
+  .t73-v165-muted { color: var(--color-text-muted, #9da3b8); font-size: .9rem; line-height: 1.38; overflow-wrap: anywhere; }
+  .t73-v165-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1rem; align-items: start; }
+  .t73-v165-report {
+    display: grid;
+    gap: .75rem;
+    min-width: 0;
+    border-radius: 18px;
+    border: 1px solid rgba(191,198,255,.22);
+    background: linear-gradient(145deg, rgba(13,16,32,.94), rgba(5,7,14,.96));
+    padding: .95rem;
+    box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  }
+  .t73-v165-row { display: flex; justify-content: space-between; align-items: flex-start; gap: .7rem; flex-wrap: wrap; }
+  .t73-v165-name { color: #fff; font-weight: 950; overflow-wrap: anywhere; }
+  .t73-v165-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    border-radius: 999px;
+    border: 1px solid rgba(191,198,255,.24);
+    background: rgba(255,255,255,.055);
+    color: var(--color-text-muted, #9da3b8);
+    padding: .25rem .62rem;
+    font-size: .78rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .t73-v165-comment {
+    max-height: 8.4em;
+    overflow: auto;
+    padding: .7rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(0,0,0,.18);
+    color: var(--color-text-muted, #b8bfd2);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    line-height: 1.38;
+  }
+  .t73-v165-proofs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+  .t73-v165-proof {
+    width: 100%;
+    min-height: 120px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(191,198,255,.26);
+    background: rgba(0,0,0,.34);
+    cursor: zoom-in;
+    padding: 0;
+  }
+  .t73-v165-proof img { display: block; width: 100%; height: 100%; min-height: 120px; max-height: 180px; object-fit: cover; }
+  .t73-v165-file { min-height: 44px; border-radius: 12px; border: 1px dashed rgba(191,198,255,.26); display: flex; align-items: center; justify-content: center; padding: .6rem; color: var(--color-text-muted,#b8bfd2); text-decoration: none; background: rgba(255,255,255,.04); overflow-wrap: anywhere; text-align: center; }
+  .t73-v165-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .45rem; }
+  .t73-v165-actions .btn { min-width: 0 !important; white-space: normal !important; padding: .55rem .45rem !important; font-size: .8rem !important; }
+  .t73-v165-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: .7rem; }
+  .t73-v165-stat { border-radius: 15px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.055); padding: .75rem; }
+  .t73-v165-stat b { display: block; color: #fff; font-size: 1.55rem; line-height: 1; }
+  .t73-v165-stat span { display: block; color: var(--color-text-muted,#9da3b8); margin-top: .32rem; font-size: .78rem; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
+  .t73-v165-state { border-radius: 18px; border: 1px solid rgba(191,198,255,.22); background: rgba(13,16,32,.72); padding: 1rem; color: var(--color-text-muted,#b8bfd2); }
+  .t73-v165-state.bad { border-color: rgba(255,107,136,.48); color: #ffb1c1; }
+  .t73-v165-state.warn { border-color: rgba(255,191,71,.45); color: #ffe1a3; }
+  .t73-v165-loader { display: grid; gap: .8rem; place-items: center; text-align: center; min-height: 132px; }
+  .t73-v165-spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid rgba(255,255,255,.18); border-top-color: #ff6b88; animation: t73v165spin .8s linear infinite; }
+  @keyframes t73v165spin { to { transform: rotate(360deg); } }
+  @media (max-width: 760px) {
+    .t73-v165-card { padding: .85rem; border-radius: 17px; }
+    .t73-v165-grid { grid-template-columns: 1fr; }
+    .t73-v165-proofs { grid-template-columns: 1fr; }
+    .t73-v165-proof img { max-height: none; aspect-ratio: 16 / 9; }
+    .t73-v165-actions { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+<script id="t73-v165-goss-review-script">
+(function(){
+  'use strict';
+  if (window.__T73_V165_GOSS_REVIEW_FIXED__) return;
+  window.__T73_V165_GOSS_REVIEW_FIXED__ = true;
+
+  var REPORT_EMAIL = 'GOSS_USER_REPORT';
+  var ACCESS_EMAIL = 'ADMIN_ROLE';
+  var POINTS_EMAIL = 'GOSS_POINTS_V19';
+  var CHECK_EMAIL = 'GOSS_REPORT_CHECK';
+  var lastRenderToken = 0;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function client(){ try { return window.supa || (typeof supa !== 'undefined' ? supa : null) || window.__T73_SUPA || window.supabaseClient || null; } catch(e){ return window.supa || window.__T73_SUPA || window.supabaseClient || null; } }
+  function creator(){ try { if (typeof creatorEmail !== 'undefined' && creatorEmail) return creatorEmail; } catch(e){} return 'daniiltimosin72@gmail.com'; }
+  function nowRu(){ return new Date().toLocaleString('ru-RU'); }
+  function id(prefix){ return prefix + '_' + Date.now() + '_' + Math.random().toString(16).slice(2); }
+  function parse(v){
+    if (!v) return {};
+    if (typeof v === 'object') return v;
+    var s = String(v).trim();
+    if (!s) return {};
+    try { return JSON.parse(s); } catch(e) {}
+    var json = s.indexOf('JSON:');
+    if (json !== -1) { try { return JSON.parse(s.slice(json + 5).trim()); } catch(e) {} }
+    var m = s.match(/\{[\s\S]*\}/);
+    if (m) { try { return JSON.parse(m[0]); } catch(e) {} }
+    return { comment: s };
+  }
+  function withTimeout(promiseLike, ms, label){
+    return Promise.race([
+      Promise.resolve(promiseLike),
+      new Promise(function(_, reject){ setTimeout(function(){ reject(new Error(label || ('Операция заняла больше ' + ms + ' мс'))); }, ms); })
+    ]);
+  }
+  async function getUser(){
+    try { if (typeof currentUser !== 'undefined' && currentUser) return currentUser; } catch(e) {}
+    if (window.currentUser) return window.currentUser;
+    var c = client();
+    if (c && c.auth && typeof c.auth.getUser === 'function') {
+      try { var r = await withTimeout(c.auth.getUser(), 5000, 'Не удалось получить текущего пользователя'); if (r && r.data && r.data.user) { window.currentUser = r.data.user; return r.data.user; } } catch(e) {}
+    }
+    return null;
+  }
+  function orgs(){
+    try { if (typeof GOSS_ORGS !== 'undefined' && Array.isArray(GOSS_ORGS) && GOSS_ORGS.length) return GOSS_ORGS; } catch(e) {}
+    if (Array.isArray(window.GOSS_ORGS) && window.GOSS_ORGS.length) return window.GOSS_ORGS;
+    return [
+      {id:'prav', short:'Правительство', icon:'🏛️'}, {id:'fsb', short:'ФСБ', icon:'🛡️'}, {id:'gibdd', short:'ГИБДД', icon:'🚓'},
+      {id:'umvd', short:'УМВД', icon:'👮'}, {id:'army', short:'Армия', icon:'🎖️'}, {id:'hospital', short:'Больница', icon:'🏥'},
+      {id:'smi', short:'СМИ', icon:'🎙️'}, {id:'fsin', short:'ФСИН', icon:'⛓️'}
+    ];
+  }
+  function activeOrg(){
+    var btn = document.querySelector('#subNavOrganizations .gov-org-switch-v4.active[data-org-id], #subNavOrganizations .gov-org-switch-v3.active[data-org-id], #subNavOrganizations .gov-org-switch.active[data-org-id], .gov-org-switch-v4.active[data-org-id], .gov-org-switch-v3.active[data-org-id]');
+    var oid = btn && btn.dataset ? btn.dataset.orgId : '';
+    if (!oid) oid = 'fsb';
+    var found = orgs().find(function(o){ return String(o.id) === String(oid); });
+    return found || { id: oid, short: (btn && btn.textContent ? btn.textContent.replace(/\s+/g,' ').trim() : oid), icon:'🏛️' };
+  }
+  async function canLead(orgId){
+    var u = await getUser();
+    if (!u) return false;
+    if (u.email && String(u.email).toLowerCase() === String(creator()).toLowerCase()) return true;
+    var c = client(); if (!c) return false;
+    try {
+      var res = await withTimeout(c.from('reports').select('status').eq('email', ACCESS_EMAIL).eq('link', u.id).limit(1000), 8000, 'Не удалось проверить права руководства');
+      if (res.error) throw res.error;
+      var list = res.data || [];
+      return list.some(function(r){ return ['goss_admin_all','goss_senior_all','goss_lead_' + orgId,'goss_senior_' + orgId].indexOf(String(r.status || '')) !== -1; });
+    } catch(e) { return false; }
+  }
+  function statusFrom(row, p){
+    var s = String(p.reviewStatus || p.result || '').trim();
+    if (!s && ['Натяг','Норма','Перенорма','Отказ','Перенорма','Герой дня'].indexOf(String(row.status || '')) !== -1) s = row.status;
+    if (!s && p.checkedAt) s = 'Норма';
+    return s || 'На проверке';
+  }
+  function isChecked(row, p){ var s = statusFrom(row, p); return !!p.checkedAt || ['Натяг','Норма','Перенорма','Отказ','Герой дня'].indexOf(s) !== -1; }
+  function pointsFor(status){ return status === 'Натяг' ? 7 : status === 'Норма' ? 15 : status === 'Перенорма' ? 30 : status === 'Герой дня' ? 60 : 0; }
+  function colorFor(status){ return status === 'Натяг' ? '#ffbf47' : status === 'Норма' ? '#52c77b' : status === 'Перенорма' ? '#3dd68c' : status === 'Герой дня' ? '#ffbf47' : status === 'Отказ' ? 'var(--color-error,#ff6b88)' : '#ffbf47'; }
+  function userKey(row, p){
+    var status = String(row.status || '');
+    var isStatus = ['Натяг','Норма','Перенорма','Отказ','Герой дня','На проверке'].indexOf(status) !== -1;
+    return String(p.userId || p.user_id || p.uid || (!isStatus ? status : '') || p.email || '').trim();
+  }
+  function displayName(row, p){ return String(p.nick || p.nickname || p.name || p.email || userKey(row,p) || 'Сотрудник'); }
+  function reportDate(row, p){
+    var raw = String(p.day || p.date || p.createdIso || p.created || row.created_at || row.id || '');
+    var iso = raw.match(/(20\d{2})[-.](\d{2})[-.](\d{2})/);
+    if (iso) return iso[1] + '-' + iso[2] + '-' + iso[3];
+    return new Date().toISOString().slice(0,10);
+  }
+  function ruDate(s){ var m = String(s||'').match(/(20\d{2})-(\d{2})-(\d{2})/); return m ? (m[3] + '.' + m[2] + '.' + m[1]) : (s || 'Без даты'); }
+  function addProof(out, seen, val){
+    if (!val) return;
+    if (Array.isArray(val)) { val.forEach(function(x){ addProof(out, seen, x); }); return; }
+    if (typeof val === 'object') { addProof(out, seen, val.url || val.src || val.href || val.link || val.publicUrl || val.data || val.base64); return; }
+    var s = String(val).trim();
+    if (!s || s === 'undefined' || s === 'null') return;
+    if (s.indexOf('T73V16:') === 0) { try { addProof(out, seen, JSON.parse(s.slice(7))); } catch(e) {} return; }
+    if (s.indexOf('T73_PROOFS:') === 0) { try { addProof(out, seen, JSON.parse(s.slice(11))); } catch(e) {} return; }
+    if (s[0] === '[') { try { addProof(out, seen, JSON.parse(s)); return; } catch(e) {} }
+    s.split('\n').map(function(x){ return x.trim(); }).filter(Boolean).forEach(function(x){
+      if (!/^data:image\//i.test(x) && !/^https?:\/\//i.test(x) && !/^blob:/i.test(x)) return;
+      if (seen.has(x)) return;
+      seen.add(x); out.push(x);
+    });
+  }
+  function proofs(row, p){
+    var out = [], seen = new Set();
+    addProof(out, seen, p.files); addProof(out, seen, p.proofs); addProof(out, seen, p.attachments); addProof(out, seen, p.screenshots); addProof(out, seen, p.images); addProof(out, seen, p.link);
+    return out;
+  }
+  function proofsHtml(list){
+    if (!list || !list.length) return '<div class="t73-v165-muted">Доказательства не прикреплены.</div>';
+    return '<div class="t73-v165-proofs">' + list.slice(0,12).map(function(url, i){
+      var safe = esc(url);
+      if (/^data:image\//i.test(url) || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(url)) return '<button class="t73-v165-proof" type="button" data-v165-img="' + safe + '" title="Открыть скриншот"><img src="' + safe + '" alt="Скриншот ' + (i+1) + '"></button>';
+      return '<a class="t73-v165-file" href="' + safe + '" target="_blank" rel="noreferrer">📎 Доказательство ' + (i+1) + '</a>';
+    }).join('') + '</div>';
+  }
+  function card(item){
+    var row = item.row, p = item.p, st = statusFrom(row,p), checked = isChecked(row,p), pts = Number(p.reviewPoints != null ? p.reviewPoints : (row.xp || p.xp || pointsFor(st))) || 0;
+    var metaDate = reportDate(row,p);
+    var comment = String(p.comment || p.work || p.text || 'Без комментария');
+    var proofList = proofs(row,p);
+    return '<article class="t73-v165-report" data-v165-report-id="' + esc(row.id) + '">'
+      + '<div class="t73-v165-row"><div><div class="t73-v165-name">' + esc(displayName(row,p)) + '</div><div class="t73-v165-muted">' + esc(userKey(row,p) || p.email || '') + '</div></div><span class="t73-v165-pill" style="border-color:' + colorFor(st) + ';color:' + colorFor(st) + ';">' + esc(st) + (checked ? ' · ' + pts + ' балл.' : '') + '</span></div>'
+      + '<div style="display:flex;gap:.35rem;flex-wrap:wrap;"><span class="t73-v165-pill">📅 ' + esc(ruDate(metaDate)) + '</span><span class="t73-v165-pill">🧾 ' + esc(p.type || 'ГОСС отчёт') + '</span><span class="t73-v165-pill">📎 ' + proofList.length + '</span></div>'
+      + '<div class="t73-v165-comment">' + esc(comment) + '</div>' + proofsHtml(proofList)
+      + (p.checkedAt ? '<div class="t73-v165-muted">Проверил: ' + esc(p.checkedBy || '—') + ' · ' + esc(p.checkedAt) + '</div>' : '')
+      + (!checked ? '<div class="t73-v165-actions"><button class="btn btn-secondary" data-v165-verdict="1" data-id="' + esc(row.id) + '" data-status="Натяг" data-points="7" style="border-color:#ffbf47;color:#ffbf47;" type="button">Натяг</button><button class="btn btn-secondary" data-v165-verdict="1" data-id="' + esc(row.id) + '" data-status="Норма" data-points="15" style="border-color:#52c77b;color:#52c77b;" type="button">Норма</button><button class="btn btn-secondary" data-v165-verdict="1" data-id="' + esc(row.id) + '" data-status="Перенорма" data-points="30" style="border-color:#3dd68c;color:#3dd68c;" type="button">Перенорма</button><button class="btn btn-secondary" data-v165-verdict="1" data-id="' + esc(row.id) + '" data-status="Отказ" data-points="0" style="border-color:var(--color-error,#ff6b88);color:var(--color-error,#ff6b88);" type="button">Отказ</button></div>' : '')
+      + '</article>';
+  }
+  async function renderReview(){
+    var token = ++lastRenderToken;
+    var root = $('gossV4Content');
+    var c = client();
+    var org = activeOrg();
+    if (!root) return;
+    root.classList.add('t73-v165-review-root');
+    root.innerHTML = '<div class="t73-v165-card t73-v165-loader"><div class="t73-v165-spinner"></div><div><h3>✅ Проверить отчётность — ' + esc(org.short || org.id) + '</h3><div class="t73-v165-muted">Загружаю отчёты. Если база не ответит, вместо серого пустого блока появится понятная ошибка.</div></div></div>';
+    if (!c) { root.innerHTML = '<div class="t73-v165-state bad">Supabase ещё не загрузился. Обновите страницу и нажмите кнопку ещё раз.</div>'; return; }
+    var safety = setTimeout(function(){
+      if (token === lastRenderToken && root && /Загружаю отчёты/i.test(root.textContent || '')) {
+        root.innerHTML = '<div class="t73-v165-state warn">База слишком долго отвечает. Нажмите «Проверить отчётность» ещё раз. Серый бесконечный экран больше не оставляется.</div>';
+      }
+    }, 15000);
+    try {
+      var allowed = await canLead(org.id);
+      if (!allowed) { root.innerHTML = '<div class="t73-v165-state bad">Проверка отчётности доступна только руководству этой организации.</div>'; return; }
+      var res = await withTimeout(c.from('reports').select('*').eq('email', REPORT_EMAIL).eq('link', org.id).order('id', { ascending:false }).limit(350), 12000, 'База не отдала отчёты за 12 секунд');
+      if (res.error) throw res.error;
+      if (token !== lastRenderToken) return;
+      var rows = (res.data || []).map(function(row){ return { row: row, p: parse(row.date) }; });
+      var waiting = rows.filter(function(x){ return !isChecked(x.row, x.p); });
+      var checked = rows.filter(function(x){ return isChecked(x.row, x.p); });
+      var totalProofs = rows.reduce(function(n,x){ return n + proofs(x.row,x.p).length; }, 0);
+      var header = '<div class="t73-v165-card"><div class="t73-v165-head"><div><h3>✅ Проверить отчётность — ' + esc(org.short || org.id) + '</h3><div class="t73-v165-muted">Карточки загружаются строго по выбранной организации. Старый серый загрузчик отключён.</div></div><button class="btn btn-secondary" id="t73V165RefreshReports" type="button">🔄 Обновить</button></div></div>';
+      var stats = '<div class="t73-v165-card"><div class="t73-v165-stats"><div class="t73-v165-stat"><b>' + waiting.length + '</b><span>на проверке</span></div><div class="t73-v165-stat"><b>' + rows.length + '</b><span>всего отчётов</span></div><div class="t73-v165-stat"><b>' + totalProofs + '</b><span>фото/файлов</span></div></div></div>';
+      if (!rows.length) {
+        root.innerHTML = header + stats + '<div class="t73-v165-state warn">Отправленных отчётов пока нет. Если сотрудник только что отправил отчёт, обновите список через пару секунд.</div>';
+      } else {
+        root.innerHTML = header + stats
+          + (waiting.length ? '<div class="t73-v165-card"><h3 style="margin:0 0 .85rem;color:#fff;">Ожидают проверки</h3><div class="t73-v165-grid">' + waiting.map(card).join('') + '</div></div>' : '<div class="t73-v165-state warn">Новых отчётов на проверку нет.</div>')
+          + (checked.length ? '<div class="t73-v165-card"><h3 style="margin:0 0 .85rem;color:#fff;">Последние проверенные</h3><div class="t73-v165-grid">' + checked.slice(0,80).map(card).join('') + '</div></div>' : '');
+      }
+      var refresh = $('t73V165RefreshReports'); if (refresh) refresh.addEventListener('click', function(e){ e.preventDefault(); renderReview(); });
+    } catch(err) {
+      if (token !== lastRenderToken) return;
+      root.innerHTML = '<div class="t73-v165-state bad">Ошибка проверки отчётности: ' + esc(err && err.message ? err.message : err) + '</div>';
+    } finally { clearTimeout(safety); }
+  }
+  async function processVerdict(btn){
+    var c = client(); if (!c || !btn) return;
+    var org = activeOrg();
+    var allowed = await canLead(org.id);
+    if (!allowed) return alert('Проверять отчёты может только руководство этой организации.');
+    btn.disabled = true;
+    var reportId = btn.dataset.id, status = btn.dataset.status, points = Number(btn.dataset.points || pointsFor(status) || 0);
+    try {
+      var found = await withTimeout(c.from('reports').select('*').eq('id', reportId).limit(1), 9000, 'Не удалось получить отчёт для проверки');
+      if (found.error) throw found.error;
+      var row = found.data && found.data[0];
+      if (!row) throw new Error('Отчёт не найден. Обновите список.');
+      var p = parse(row.date);
+      var reportOrg = p.org || row.link || org.id;
+      if (String(reportOrg) !== String(org.id)) throw new Error('Этот отчёт относится к другой организации.');
+      var u = await getUser();
+      var key = userKey(row,p);
+      var oldPoints = Number(p.reviewPoints != null ? p.reviewPoints : (row.xp || p.xp || 0)) || 0;
+      var delta = points - oldPoints;
+      p.reviewStatus = status; p.result = status; p.reviewPoints = points; p.xp = points; p.checkedAt = nowRu();
+      p.checkedBy = (typeof currentNickname !== 'undefined' && currentNickname) ? currentNickname : (window.currentNickname || (u && u.email) || 'Руководство');
+      p.checkedById = (u && u.id) || '';
+      if (key) p.userId = key;
+      var upd = await withTimeout(c.from('reports').update({ date: JSON.stringify(p), xp: points }).eq('id', reportId), 9000, 'Не удалось сохранить результат проверки');
+      if (upd.error) throw upd.error;
+      if (key && delta !== 0) {
+        try { await c.from('reports').insert([{ id:id('goss_points_report'), email:POINTS_EMAIL, link:key, status:reportOrg, date:'ГОСС отчёт: ' + status + ' (' + (delta > 0 ? '+' : '') + delta + ') · ' + p.checkedBy + ' · ' + nowRu(), xp:delta }]); } catch(e) {}
+      }
+      try { await c.from('reports').insert([{ id:id('goss_report_check'), email:CHECK_EMAIL, link:reportOrg, status:(u && u.id) || 'leader', date:p.checkedBy + ' выставил ' + status + ' для ' + (p.nick || p.nickname || key || 'сотрудника') + ' · ' + p.checkedAt, xp:points }]); } catch(e) {}
+      await renderReview();
+    } catch(err) {
+      alert('Не удалось проверить отчёт: ' + (err && err.message ? err.message : err));
+      btn.disabled = false;
+    }
+  }
+  function isReviewButton(target){
+    if (!target || !target.closest) return false;
+    var btn = target.closest('button,.mode-btn,.btn');
+    if (!btn) return false;
+    var inOrg = !!btn.closest('#gossOrgActionNavV4,#gossV4Content');
+    if (!inOrg) return false;
+    var text = String(btn.textContent || '').replace(/ё/g,'е').toLowerCase();
+    return btn.id === 'govV4CheckReportsBtn' || btn.dataset.view === 'reports' || (text.indexOf('провер') !== -1 && text.indexOf('отчет') !== -1);
+  }
+  function clickHandler(e){
+    var target = e.target;
+    var verdict = target && target.closest && target.closest('[data-v165-verdict]');
+    if (verdict) { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); processVerdict(verdict); return false; }
+    var img = target && target.closest && target.closest('[data-v165-img]');
+    if (img) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      var src = img.getAttribute('data-v165-img') || '';
+      var modal = $('imageModal'), modalImg = $('imageModalSrc');
+      if (modal && modalImg) { modal.style.display = 'flex'; modalImg.src = src; }
+      else { window.open(src, '_blank'); }
+      return false;
+    }
+    if (isReviewButton(target)) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      renderReview();
+      return false;
+    }
+  }
+  window.addEventListener('click', clickHandler, true);
+  document.addEventListener('click', function(e){ if (e.target && e.target.closest && e.target.closest('[data-v165-verdict],[data-v165-img]')) return clickHandler(e); }, true);
+  function boot(){
+    var btns = document.querySelectorAll('#govV4CheckReportsBtn,#gossOrgActionNavV4 [data-view="reports"]');
+    btns.forEach(function(b){ b.type = 'button'; b.textContent = b.textContent || '✅ Проверить отчётность'; });
+    var root = $('gossV4Content');
+    if (root && /Загружаю отч[её]ты/i.test(root.textContent || '') && !root.querySelector('.t73-v165-grid,.t73-v165-state.bad,.t73-v165-state.warn')) {
+      setTimeout(function(){ if (/Загружаю отч[её]ты/i.test(root.textContent || '')) renderReview(); }, 1200);
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [150,600,1500,3000,6000].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V165_BOOT__); window.__T73_V165_BOOT__ = setTimeout(boot, 120); }).observe(document.documentElement, { childList:true, subtree:true }); } catch(e) {}
+  window.T73_V165_GOSS_REPORT_REVIEW = { render: renderReview, process: processVerdict };
+})();
+</script>
+<!-- === /T73 V165 === -->
+
+
+
+
+<!-- === T73 V167: DeepSeek key for instruction AI chat === -->
+<style id="t73-v167-deepseek-creator-style">
+  #t73CreatorDeepSeekSettings.t73-v167-creator-deepseek-card {
+    display:grid;
+    gap:1rem;
+    padding:1.35rem;
+    border-radius:18px;
+    border:1px solid rgba(80,190,255,.42);
+    background: radial-gradient(circle at top left, rgba(80,190,255,.18), transparent 55%), rgba(4, 13, 24, .74);
+    box-shadow: inset 0 0 22px rgba(0,0,0,.24), 0 18px 42px rgba(0,0,0,.20);
+    margin-bottom:1.5rem;
+  }
+  .t73-v167-creator-deepseek-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .t73-v167-creator-deepseek-head h3 { margin:0 0 .35rem; color:#bdeaff; font-size:var(--text-base); }
+  .t73-v167-creator-deepseek-head p { margin:0; color:var(--color-text-muted); font-size:.9rem; line-height:1.45; max-width:820px; }
+  .t73-v167-creator-deepseek-pill { display:inline-flex; align-items:center; padding:.34rem .7rem; border-radius:999px; border:1px solid rgba(80,190,255,.35); background:rgba(80,190,255,.12); color:#d9f5ff; font-weight:950; font-size:.78rem; white-space:nowrap; }
+  .t73-v167-creator-deepseek-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(210px,.7fr); gap:.75rem; align-items:end; }
+  .t73-v167-creator-deepseek-check { display:flex; align-items:center; gap:.65rem; min-height:46px; padding:.75rem .9rem; border-radius:14px; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.34); color:#edf7ff; font-weight:850; cursor:pointer; user-select:none; }
+  .t73-v167-creator-deepseek-check input { width:20px; height:20px; accent-color:#50beff; flex:0 0 auto; }
+  .t73-v167-creator-deepseek-actions { display:flex; gap:.55rem; flex-wrap:wrap; justify-content:flex-end; }
+  .t73-v167-creator-deepseek-status { min-height:1.15rem; color:var(--color-text-muted); font-size:.88rem; line-height:1.45; }
+  .t73-v167-creator-deepseek-status.ok { color:var(--color-success); font-weight:800; }
+  .t73-v167-creator-deepseek-status.bad { color:var(--color-error); font-weight:800; }
+  #creatorDeepSeekApiKeyInput, #creatorDeepSeekEndpointInput { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing:.01em; }
+  @media (max-width:760px){
+    .t73-v167-creator-deepseek-grid { grid-template-columns:1fr; }
+    .t73-v167-creator-deepseek-actions { display:grid; grid-template-columns:1fr; }
+    .t73-v167-creator-deepseek-pill { white-space:normal; }
+  }
+</style>
+<script id="t73-v167-deepseek-creator-script">
+(function(){
+  'use strict';
+  if (window.__T73_V167_DEEPSEEK_CREATOR__) return;
+  window.__T73_V167_DEEPSEEK_CREATOR__ = true;
+
+  var STORAGE_KEY = 't73_deepseek_ai_config_v167';
+  var ROW_ID = 't73_deepseek_ai_config_v167';
+  var EMAIL = 'ACCESS_KEY';
+  var LINK = 'DEEPSEEK_AI_CONFIG';
+  var DEFAULTS = { apiKey: '', endpoint: 'https://api.deepseek.com/chat/completions', model: 'deepseek-v4-pro', thinking: true };
+
+  function $(id){ return document.getElementById(id); }
+  function client(){
+    try { if (typeof supa !== 'undefined' && supa && typeof supa.from === 'function') return supa; } catch(e) {}
+    if (window.supa && typeof window.supa.from === 'function') return window.supa;
+    if (window.__T73_SUPA && typeof window.__T73_SUPA.from === 'function') return window.__T73_SUPA;
+    if (window.t73Supa && typeof window.t73Supa.from === 'function') return window.t73Supa;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    return null;
+  }
+  function normalize(raw){
+    var cfg = {};
+    if (raw && typeof raw === 'object') cfg = raw;
+    else if (typeof raw === 'string' && raw.trim()) { try { cfg = JSON.parse(raw); } catch(e) { cfg = { apiKey: raw.trim() }; } }
+    return {
+      apiKey: String(cfg.apiKey || cfg.key || '').trim(),
+      endpoint: String(cfg.endpoint || DEFAULTS.endpoint).trim() || DEFAULTS.endpoint,
+      model: String(cfg.model || DEFAULTS.model).trim() || DEFAULTS.model,
+      thinking: cfg.thinking === false ? false : true
+    };
+  }
+  function localConfig(){ return normalize(localStorage.getItem(STORAGE_KEY) || ''); }
+  function setLocalConfig(cfg){ localStorage.setItem(STORAGE_KEY, JSON.stringify(normalize(cfg))); }
+  function setStatus(text, ok){
+    var el = $('creatorDeepSeekKeyStatus'); if (!el) return;
+    el.classList.remove('ok','bad');
+    if (ok === true) el.classList.add('ok');
+    if (ok === false) el.classList.add('bad');
+    el.textContent = text || '';
+  }
+  function updatePill(cfg){ cfg = normalize(cfg || readForm()); var pill = $('creatorDeepSeekModelPill'); if (pill) pill.textContent = cfg.model + (cfg.thinking ? ' + thinking' : ''); }
+  function readForm(){ return normalize({ apiKey: $('creatorDeepSeekApiKeyInput') ? $('creatorDeepSeekApiKeyInput').value : '', endpoint: $('creatorDeepSeekEndpointInput') ? $('creatorDeepSeekEndpointInput').value : DEFAULTS.endpoint, model: $('creatorDeepSeekModelSelect') ? $('creatorDeepSeekModelSelect').value : DEFAULTS.model, thinking: $('creatorDeepSeekThinkingToggle') ? !!$('creatorDeepSeekThinkingToggle').checked : true }); }
+  function fillForm(cfg){
+    cfg = normalize(cfg);
+    var key = $('creatorDeepSeekApiKeyInput'); if (key && !key.value) key.value = cfg.apiKey || '';
+    var ep = $('creatorDeepSeekEndpointInput'); if (ep) ep.value = cfg.endpoint || DEFAULTS.endpoint;
+    var model = $('creatorDeepSeekModelSelect'); if (model) model.value = cfg.model || DEFAULTS.model;
+    var thinking = $('creatorDeepSeekThinkingToggle'); if (thinking) thinking.checked = cfg.thinking !== false;
+    updatePill(cfg);
+  }
+  async function loadSharedConfig(){ var c = client(); if (!c) return null; try { var r = await c.from('reports').select('date').eq('id', ROW_ID).limit(1); var row = r && r.data && r.data[0]; return row && row.date ? normalize(row.date) : null; } catch(e) { return null; } }
+  async function saveSharedConfig(cfg){
+    var c = client(); if (!c) throw new Error('Supabase не загрузился — общий ключ DeepSeek не сохранён для модераторов.');
+    cfg = normalize(cfg);
+    var row = { id: ROW_ID, email: EMAIL, link: LINK, date: JSON.stringify(cfg), status: 'deepseek_ai_config', xp: 0 };
+    var res = await c.from('reports').upsert([row], { onConflict: 'id' });
+    if (res && res.error) { await c.from('reports').delete().eq('id', ROW_ID); res = await c.from('reports').insert([row]); }
+    if (res && res.error) throw res.error;
+    return true;
+  }
+  async function getConfig(){ var local = localConfig(); if (local.apiKey) return local; var shared = await loadSharedConfig(); if (shared && shared.apiKey) { setLocalConfig(shared); return shared; } return normalize(local || DEFAULTS); }
+  async function save(){
+    var cfg = readForm();
+    if (!cfg.apiKey) { setStatus('Вставьте DeepSeek API key.', false); return; }
+    try { setLocalConfig(cfg); updatePill(cfg); await saveSharedConfig(cfg); setStatus('DeepSeek API сохранён. AI-чат в инструкции будет использовать ' + cfg.model + '.', true); }
+    catch(e) { setStatus('Ключ сохранён локально, но не записался в общую базу: ' + (e && e.message ? e.message : e), false); }
+  }
+  async function boot(){
+    var box = $('t73CreatorDeepSeekSettings'); if (!box) return;
+    try { fillForm(await getConfig()); } catch(e) { fillForm(localConfig()); }
+    var saveBtn = $('creatorSaveDeepSeekKeyBtn'), pasteBtn = $('creatorPasteDeepSeekKeyBtn'), toggleBtn = $('creatorToggleDeepSeekKeyBtn'), clearBtn = $('creatorClearDeepSeekKeyBtn'), model = $('creatorDeepSeekModelSelect'), thinking = $('creatorDeepSeekThinkingToggle');
+    if (saveBtn && saveBtn.dataset.v167Bound !== '1') { saveBtn.dataset.v167Bound='1'; saveBtn.addEventListener('click', save); }
+    if (pasteBtn && pasteBtn.dataset.v167Bound !== '1') { pasteBtn.dataset.v167Bound='1'; pasteBtn.addEventListener('click', async function(){ try { var text = await navigator.clipboard.readText(); var input = $('creatorDeepSeekApiKeyInput'); if (input) { input.value = String(text || '').trim(); input.focus(); } setStatus('Ключ вставлен. Нажмите «Сохранить DeepSeek».', true); } catch(e) { setStatus('Браузер не дал доступ к буферу. Вставьте ключ через Ctrl+V.', false); } }); }
+    if (toggleBtn && toggleBtn.dataset.v167Bound !== '1') { toggleBtn.dataset.v167Bound='1'; toggleBtn.addEventListener('click', function(){ var input = $('creatorDeepSeekApiKeyInput'); if (!input) return; input.type = input.type === 'password' ? 'text' : 'password'; toggleBtn.textContent = input.type === 'password' ? '👁 Показать' : '🙈 Скрыть'; }); }
+    if (clearBtn && clearBtn.dataset.v167Bound !== '1') { clearBtn.dataset.v167Bound='1'; clearBtn.addEventListener('click', function(){ var input = $('creatorDeepSeekApiKeyInput'); if (input) input.value = ''; localStorage.removeItem(STORAGE_KEY); setStatus('Локальный ключ очищен. Чтобы заменить общий ключ — вставьте новый и сохраните.', true); }); }
+    [model, thinking].forEach(function(el){ if (el && el.dataset.v167Bound !== '1') { el.dataset.v167Bound='1'; el.addEventListener('change', function(){ updatePill(readForm()); }); } });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [300, 1000, 2500].forEach(function(ms){ setTimeout(boot, ms); });
+  window.T73_V167_DEEPSEEK_CONFIG = { get: getConfig, save: saveSharedConfig, defaults: DEFAULTS };
+})();
+</script>
+<!-- === /T73 V167 DeepSeek config === -->
+
+<!-- === T73 V167: AI chat inside Instruction with DeepSeek === -->
+<style id="t73-v166-ai-chat-style">
+  #mode-instructia .t73-ai-chat-card {
+    margin: 1.15rem 0 1.35rem;
+    padding: clamp(1rem, 2vw, 1.35rem);
+    border-radius: 24px;
+    border: 1px solid rgba(133, 224, 166, .28);
+    background:
+      radial-gradient(circle at 8% 0%, rgba(88, 210, 134, .16), transparent 34%),
+      radial-gradient(circle at 100% 20%, rgba(108, 140, 255, .13), transparent 34%),
+      rgba(7, 10, 22, .76);
+    box-shadow: 0 22px 55px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+    scroll-margin-top: 1.2rem;
+  }
+  .t73-ai-chat-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:.9rem; }
+  .t73-ai-chat-head h3 { margin:.15rem 0 .35rem; color:#fff; font-size:clamp(1.15rem, 2.8vw, 1.55rem); line-height:1.1; }
+  .t73-ai-chat-head p { margin:0; color:var(--color-text-muted); font-weight:650; line-height:1.45; }
+  .t73-ai-chat-kicker { display:inline-flex; width:max-content; align-items:center; gap:.35rem; font-weight:900; letter-spacing:.04em; text-transform:uppercase; color:#8ff0b0; font-size:.78rem; }
+  .t73-ai-chat-model { white-space:nowrap; padding:.5rem .72rem; border-radius:999px; background:rgba(133,224,166,.13); border:1px solid rgba(133,224,166,.35); color:#b9ffd0; font-weight:900; font-size:.78rem; }
+  .t73-ai-chat-examples { display:flex; gap:.55rem; overflow-x:auto; padding:.1rem 0 .8rem; scrollbar-width:thin; }
+  .t73-ai-chat-examples button { flex:0 0 auto; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.065); color:#fff; border-radius:999px; padding:.58rem .78rem; cursor:pointer; font-weight:850; }
+  .t73-ai-chat-examples button:hover { border-color:rgba(133,224,166,.5); background:rgba(133,224,166,.13); }
+  .t73-ai-chat-messages { min-height:168px; max-height:420px; overflow:auto; display:flex; flex-direction:column; gap:.72rem; padding:.78rem; border-radius:18px; background:rgba(0,0,0,.33); border:1px solid rgba(255,255,255,.08); }
+  .t73-ai-msg { width:fit-content; max-width:min(860px, 92%); padding:.82rem .92rem; border-radius:16px; line-height:1.52; font-weight:650; white-space:pre-wrap; word-break:break-word; box-shadow:0 10px 22px rgba(0,0,0,.18); }
+  .t73-ai-msg.user { margin-left:auto; background:linear-gradient(135deg, rgba(88,210,134,.22), rgba(108,140,255,.18)); border:1px solid rgba(133,224,166,.32); color:#fff; }
+  .t73-ai-msg.bot { background:rgba(255,255,255,.075); border:1px solid rgba(255,255,255,.11); color:#edf3ff; }
+  .t73-ai-msg.loading { color:#b9ffd0; border-color:rgba(133,224,166,.32); }
+  .t73-ai-chat-input-row { margin-top:.9rem; display:grid; grid-template-columns:1fr auto; gap:.75rem; align-items:stretch; }
+  #t73AiChatInput { min-height:92px; resize:vertical; }
+  .t73-ai-chat-actions { display:flex; flex-direction:column; gap:.55rem; min-width:145px; }
+  .t73-ai-chat-actions .btn { width:100%; height:100%; min-height:44px; }
+  .t73-ai-chat-status { margin-top:.65rem; color:var(--color-text-muted); font-weight:750; font-size:.9rem; }
+  .t73-ai-chat-status.ok { color:var(--color-success); }
+  .t73-ai-chat-status.bad { color:var(--color-error); }
+  @media (max-width: 720px) {
+    #mode-instructia .t73-ai-chat-card { border-radius:18px; margin: .9rem 0 1.1rem; }
+    .t73-ai-chat-head { flex-direction:column; }
+    .t73-ai-chat-model { white-space:normal; }
+    .t73-ai-chat-messages { max-height:56vh; padding:.58rem; }
+    .t73-ai-msg { max-width:96%; font-size:.95rem; }
+    .t73-ai-chat-input-row { grid-template-columns:1fr; }
+    .t73-ai-chat-actions { display:grid; grid-template-columns:1fr 1fr; min-width:0; }
+  }
+</style>
+
+<script id="t73-v167-ai-chat-script">
+(function(){
+  'use strict';
+  if (window.__T73_V167_AI_CHAT__) return;
+  window.__T73_V167_AI_CHAT__ = true;
+
+  var DEFAULT_MODEL = 'deepseek-v4-pro';
+  var RULES = "Терминология наказаний\nУстное предупреждение — это предупреждение в устном формате со стороны модератора или администратора, чтобы игрок обратил внимание на допущенное нарушение.\nПредупреждение — это системное наказание с выдачей специальной роли. При получении двух обычных предупреждений они заменяются на одно строгое.\nСтрогое предупреждение — это системное наказание с выдачей специальной роли. При получении трех строгих предупреждений они заменяются на бан сроком 7 дней.\nМут — это блокировка доступа к текстовым каналам и возможности говорить в голосовых каналах на определенный срок.\nБан — это блокировка доступа к использованию возможностей Discord сервера на определенный срок.\nОбнуление — это сброс статистики и баланса Discord аккаунта.\nПерманентная блокировка — это блокировка доступа к использованию возможностей Discord сервера навсегда.\nБлокировка приватных комнат — это блокировка доступа к созданию приватных комнат Discord сервера на определенный срок.\nГлобальная блокировка — это блокировка доступа к использованию возможностей всех Discord серверов проекта на определенный срок.\n\nОбщая информация\n1.1. BLACK RUSSIA — это мобильная игра с картой России, в которой каждый может выбрать подходящую себе роль и наслаждаться игровым процессом вместе с тысячами других игроков. Основная цель — создание максимально комфортных игровых условий для всех пользователей.\n1.2. Пользователь автоматически соглашается со всеми установленными правилами и обязуется их соблюдать при входе в Discord сервер проекта.\n1.3. Правила действуют на всех пользователей независимо от статуса на проекте.\n1.4. Правила могут подвергаться изменениям и корректировкам ответственным лицом.\n1.5. Незнание правил не освобождает пользователя от ответственности.\n1.6. В зависимости от размера и серьезности нарушения пользователь может понести дополнительное внутриигровое наказание.\n1.7. Руководство в лице команды проекта, руководителя модераторов и его заместителей, главного администратора имеют право выдавать наказание пользователю на своё усмотрение, если его действия негативно влияют на проект.\n1.8. Правила могут распространяться на личные сообщения пользователей, если действия пользователя негативно сказываются на проекте.\n\nОбщие правила\n2.1. Запрещено неадекватное поведение в любой форме, завуалированные и саркастичные сообщения и действия, созданные в целях оскорбления пользователя или для провокации и дальнейшего розжига конфликта. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут / Бан 7-15 дней.\n2.2. Запрещен трансфер Discord валюты между серверами проекта. Наказание: Перманентная блокировка / Обнуление.\n2.3. Запрещена реклама любого направления за исключением официальных ресурсов проекта. Примечание: реклама других игровых проектов и вещей, связанных с реальными средствами, наказывается глобальной блокировкой. Наказание: Мут 90 минут / Бан 7-15 дней / Перманентная блокировка / Глобальная блокировка.\n2.4. Запрещено размещение и показ любого возрастного контента интимного или насильственного характера, а также фотографий с шок-контентом. Наказание: Мут 90 минут / Бан 7-15 дней / Перманентная блокировка.\n2.5. Запрещено распространение любой персональной информации пользователя без его согласия. Наказание: Бан 7-15 дней / Перманентная блокировка.\n2.6. Запрещены любые попытки обмана пользователя или введение его в заблуждение / замешательство. Наказание: Мут 90 минут / Бан 7-15 дней / Перманентная блокировка.\n2.7. Запрещены абсолютно любые споры на тему политики и религии. Наказание: Устное предупреждение / Мут 90 минут / Бан 7-15 дней.\n2.8. Запрещены прямые и косвенные обсуждения продажи, передачи или обмена чего-либо за реальные денежные средства. Наказание: Бан 7-15 дней / Перманентная блокировка / Глобальная блокировка.\n2.9. Запрещено пользоваться уязвимостями правил, недоработками или багами систем и плагинами, дающими преимущества перед другими пользователями. Примечание: игрок объясняет невиновность тем, что пункт правил недостаточно расписан, но вина очевидна. Наказание: Бан 7-15 дней / Перманентная блокировка / Глобальная блокировка / Обнуление.\n2.10. Запрещено вымогательство и попрошайничество при общении в Discord серверах проекта во всех возможных проявлениях. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n2.11. Запрещены любые деструктивные действия по отношению к проекту: неконструктивная критика, призывы покинуть проект, попытки нарушить развитие проекта или иные действия с негативным влиянием. Наказание: Бан 7-15 дней / Перманентная блокировка / Глобальная блокировка.\n2.12. Запрещено любым способом обходить выданные или находящиеся на рассмотрении наказания. Наказание: Перманентная блокировка.\n2.13. Запрещены прямые или косвенные упоминания либо оскорбления родных пользователя. Наказание: Мут 90 минут / Бан 7-15 дней.\n2.14. Запрещено распространение сторонних файлов в любом формате. Наказание: Бан 7-15 дней / Перманентная блокировка / Глобальная блокировка.\n2.15. Запрещена любая пропаганда наркотиков, терроризма и других вещей, нарушающих законы. Наказание: Перманентная блокировка / Глобальная блокировка.\n2.16. Запрещены любые формы расизма, сексизма, нацизма, пропагандирование запрещенных движений и дискриминация пользователей по различным признакам. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут / Бан 7-15 дней.\n2.17. Запрещены любые попытки помехи в работе модерации или администрации проекта. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n2.18. Запрещена провокация или побуждение пользователей к нарушению любых действующих правил проекта. Наказание: Мут 90 минут / Бан 7-15 дней.\n2.19. Запрещены прямые или косвенные угрозы в адрес пользователей. Наказание: Мут 90 минут / Бан 7-15 дней.\n2.20. Запрещено многократное нарушение правил Discord сервера. Примечание: более пяти блокировок чатов / трех строгих предупреждений за прошедшие 7 дней. Наказание: Бан 7-15 дней / Перманентная блокировка.\n2.21. Запрещено создание приватных комнат с названием, нарушающим правила Discord серверов и проекта. Наказание: Бан создания приватных комнат 3-7 дней.\n\nПравила текстовых каналов\n3.1. Запрещено флудить, спамить и писать не по теме в каналах с определенным назначением. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n3.2. Запрещено упоминать пользователей в текстовых каналах общения без сопровождающего сообщения, просто упоминая человека в чате. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n3.3. Запрещено чрезмерное использование верхнего регистра (CapsLock) при написании любого сообщения. Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n3.4. Запрещено злоупотребление знаками препинания и прочих символов. Пример: «Как дела ??????» Наказание: Устное предупреждение / Предупреждение / Мут 90 минут.\n3.5. Запрещено многократное упоминание пользователя. Наказание: Мут 90 минут.\n\nПравила голосовых каналов\n4.1. Запрещено целенаправленное создание помехи общению пользователей любыми доступными способами. Наказание: Устное предупреждение / Мут 90 минут.\n4.2. Запрещено использование сторонних программ для воспроизведения звуков через микрофон. Наказание: Устное предупреждение / Мут 90 минут.\n4.3. Запрещено использование неправильно настроенного микрофона с чрезмерным усилением, фоном или шипением. Наказание: Устное предупреждение / Мут 90 минут.\n4.4. Запрещено использование программ для изменения голоса. Наказание: Устное предупреждение / Мут 90 минут.\n\nПравила учетных записей\n5.1. Запрещено копирование чужих профилей. Наказание: Устное предупреждение / Предупреждение / Бан 7-15 дней / Перманентная блокировка.\n5.2. Запрещено использование оскорбительных и провокационных никнеймов или оформлений профиля. Наказание: Устное предупреждение / Бан 7-15 дней.\n5.3. Запрещено использовать в никнейме теги и префиксы любой должности, не имея к ним отношения, а также не относящиеся к официальным должностям проекта. Примечание: на фракционные должности правило не распространяется. Наказание: Устное предупреждение / Предупреждение / Бан 7-15 дней.\n\nПравила модераторов — общая информация\n1.01. Модератор — представитель Discord-сервера, помогающий пользователям в решении вопросов и следящий за порядком и соблюдением правил.\n1.02. Обязанности модератора: контроль порядка в текстовых и голосовых каналах; модерация жалоб; своевременная помощь пользователям; повышение уровня досуга пользователей.\n1.03. Каждый модератор имеет право на выходные дни с одобрения главного модератора / заместителя главного модератора.\n1.04. У модераторов работает система выговоров, препятствующая повышению и пребыванию в статусе модератора.\n1.05. Выговор снимается по решению главного модератора / заместителя главного модератора по итогам активности и выполненного объема работы.\n1.06. Модерация сервера никогда не запрашивает личные данные игроков. При подобном запросе нужно незамедлительно сообщить главному модератору или заместителю.\n1.07. Иерархия прав модераторов: 1) младший модератор; 2) модератор; 3) старший модератор; 4) куратор модерации; 5) заместитель главного модератора; 6) главный модератор; 7) заместитель руководителя модераторов; 8) руководитель модераторов.\n\nПравила модераторов — основные правила\n2.01. Запрещено выдавать наказания по доказательствам, которые предоставили в ЛС и т.д.\n2.02. Запрещено снимать или заменять наказания, выданные другим модератором. Исключение: главный модератор, заместитель главного модератора и руководство проекта при наличии причины.\n2.03. Все наказания обязательно должны выдаваться строго по регламенту сервера.\n2.04. Запрещено занимать должности на проектах со схожей тематикой.\n2.05. Модератор обязан соблюдать субординацию по отношению к пользователям или коллегам.\n2.06. Модератор обязан своевременно предоставлять руководству доказательства на выданные наказания.\n2.07. Запрещено показывать свое преимущество над другими пользователями.\n2.08. Модератор обязан выдавать наказания беспристрастно.\n2.09. Модератор может занимать должность только на одном сервере проекта.\n2.10. Модератор обязан знать все актуальные правила сервера.\n2.11. Модератору запрещено распространять информацию, касающуюся его деятельности.\n2.12. Если младший модератор не достиг должности модератора и покидает пост по собственному желанию либо снят по причинам, он может быть занесен в черный список модераторов сроком до 90 дней.\n2.13. Главный модератор несет ответственность за команду, имеет право формировать команду, назначать на должности и снимать модератора по утрате доверия.";
+  var busy = false;
+  var history = [];
+
+  function $(id){ return document.getElementById(id); }
+  function esc(value){ return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
+  function setStatus(text, state){
+    var el = $('t73AiChatStatus'); if (!el) return;
+    el.classList.remove('ok','bad');
+    if (state === 'ok') el.classList.add('ok');
+    if (state === 'bad') el.classList.add('bad');
+    el.textContent = text || '';
+  }
+  function messagesBox(){ return $('t73AiChatMessages'); }
+  function scrollDown(){ var box = messagesBox(); if (box) box.scrollTop = box.scrollHeight + 1000; }
+  function addMessage(role, text, loading){
+    var box = messagesBox(); if (!box) return null;
+    var div = document.createElement('div');
+    div.className = 't73-ai-msg ' + (role === 'user' ? 'user' : 'bot') + (loading ? ' loading' : '');
+    div.innerHTML = (role === 'user' ? '<b>Вы:</b><br>' : '<b>DeepSeek помощник:</b><br>') + esc(text || '');
+    box.appendChild(div); scrollDown(); return div;
+  }
+  function systemPrompt(){
+    return 'Ты — внутренний AI-помощник модераторов Discord сервера BLACK RUSSIA Tambov 73. ' +
+      'Отвечай только по теме модерации, правил Discord сервера, наказаний, жалоб, доказательств, субординации и работы модераторов. ' +
+      'Твоя база правил приведена ниже. Не выдумывай пункты. Если информации недостаточно, скажи, что нужно уточнить. ' +
+      'В каждом практическом ответе дай: 1) подходящий пункт правил; 2) почему подходит; 3) допустимое наказание; 4) что проверить перед выдачей. ' +
+      'Пиши по-русски, кратко, уверенно, без markdown-таблиц и без технических объяснений про API. ' +
+      'Если наказание указано диапазоном, не выбирай максимальное без причины: напомни, что итог зависит от тяжести, повторности и контекста.\n\n' +
+      'АКТУАЛЬНЫЕ ПРАВИЛА TAMBOV 73:\n' + RULES;
+  }
+  function normalizeConfig(cfg){
+    cfg = cfg || {};
+    return { apiKey: String(cfg.apiKey || cfg.key || '').trim(), endpoint: String(cfg.endpoint || 'https://api.deepseek.com/chat/completions').trim() || 'https://api.deepseek.com/chat/completions', model: String(cfg.model || DEFAULT_MODEL).trim() || DEFAULT_MODEL, thinking: cfg.thinking === false ? false : true };
+  }
+  async function getConfig(){
+    try { if (window.T73_V167_DEEPSEEK_CONFIG && typeof window.T73_V167_DEEPSEEK_CONFIG.get === 'function') { var shared = await window.T73_V167_DEEPSEEK_CONFIG.get(); if (shared && shared.apiKey) return normalizeConfig(shared); } } catch(e) {}
+    try { return normalizeConfig(JSON.parse(localStorage.getItem('t73_deepseek_ai_config_v167') || '{}')); } catch(e) { return normalizeConfig({}); }
+  }
+  function buildMessages(question){
+    var messages = [{ role: 'system', content: systemPrompt() }];
+    history.slice(-10).forEach(function(m){ messages.push({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.text || '') }); });
+    messages.push({ role: 'user', content: question });
+    return messages;
+  }
+  async function callDeepSeek(question){
+    var cfg = await getConfig();
+    if (!cfg.apiKey) throw new Error('DeepSeek API key не настроен. Зайдите в Панель Создателя и сохраните ключ во второй менюшке DeepSeek.');
+    var payload = { model: cfg.model || DEFAULT_MODEL, messages: buildMessages(question), temperature: 0.18, max_tokens: 1200, stream: false };
+    if (/^deepseek-v4-/i.test(payload.model)) { payload.thinking = { type: cfg.thinking ? 'enabled' : 'disabled' }; if (cfg.thinking) payload.thinking.reasoning_effort = 'high'; }
+    var response = await fetch(cfg.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey }, body: JSON.stringify(payload) });
+    var data = await response.json().catch(function(){ return null; });
+    if (!response.ok) { var msg = data && data.error && (data.error.message || data.error) ? (data.error.message || data.error) : ('HTTP ' + response.status); throw new Error('DeepSeek API: ' + msg); }
+    var choice = data && data.choices && data.choices[0];
+    var text = choice && choice.message && (choice.message.content || choice.message.reasoning_content);
+    text = String(text || '').trim();
+    if (!text) throw new Error('DeepSeek вернул пустой ответ. Попробуйте переформулировать вопрос.');
+    return text;
+  }
+  async function send(){
+    if (busy) return;
+    var input = $('t73AiChatInput'); if (!input) return;
+    var question = String(input.value || '').trim();
+    if (!question) { setStatus('Напишите вопрос по правилам модерации.', 'bad'); return; }
+    busy = true;
+    var btn = $('t73AiChatSendBtn'); var old = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Думаю...'; }
+    input.value = '';
+    addMessage('user', question);
+    var loading = addMessage('assistant', 'Проверяю правила и подбираю ответ...', true);
+    setStatus('DeepSeek анализирует вопрос по встроенной базе правил...', 'ok');
+    try {
+      var answer = await callDeepSeek(question);
+      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + esc(answer); }
+      history.push({ role:'user', text: question });
+      history.push({ role:'assistant', text: answer });
+      if (history.length > 20) history = history.slice(-20);
+      setStatus('Ответ готов. Для спорных ситуаций всё равно сверяйте доказательства и контекст.', 'ok');
+    } catch(err) {
+      var msg = err && err.message ? err.message : String(err || 'неизвестная ошибка');
+      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + esc('Не удалось получить ответ: ' + msg); }
+      setStatus('Ошибка AI-чата: ' + msg, 'bad');
+    } finally {
+      busy = false;
+      if (btn) { btn.disabled = false; btn.textContent = old || 'Отправить'; }
+      scrollDown();
+    }
+  }
+  function clearChat(){
+    history = [];
+    var box = messagesBox();
+    if (box) box.innerHTML = '<div class="t73-ai-msg bot"><b>DeepSeek помощник:</b><br>Чат очищен. Задай новый вопрос по правилам модерации.</div>';
+    setStatus('Чат очищен.', 'ok');
+  }
+  function bind(){
+    var sendBtn = $('t73AiChatSendBtn'), clearBtn = $('t73AiChatClearBtn'), input = $('t73AiChatInput');
+    if (sendBtn && sendBtn.dataset.v167Bound !== '1') { sendBtn.dataset.v167Bound = '1'; sendBtn.addEventListener('click', send); }
+    if (clearBtn && clearBtn.dataset.v167Bound !== '1') { clearBtn.dataset.v167Bound = '1'; clearBtn.addEventListener('click', clearChat); }
+    if (input && input.dataset.v167Bound !== '1') { input.dataset.v167Bound = '1'; input.addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); send(); } }); }
+    document.querySelectorAll('[data-ai-example]').forEach(function(btn){ if (btn.dataset.v167Bound === '1') return; btn.dataset.v167Bound = '1'; btn.addEventListener('click', function(){ var inp = $('t73AiChatInput'); if (inp) { inp.value = btn.getAttribute('data-ai-example') || ''; inp.focus(); } }); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+  [300, 1000, 2500].forEach(function(ms){ setTimeout(bind, ms); });
+  window.T73_V167_AI_CHAT = { send: send, clear: clearChat, model: DEFAULT_MODEL };
+})();
+</script>
+<!-- === /T73 V167 === -->
+
 </body>
 </html>
