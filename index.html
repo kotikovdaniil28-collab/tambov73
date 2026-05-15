@@ -27504,7 +27504,7 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 </script>
 <!-- === /T73 V167 DeepSeek config === -->
 
-<!-- === T73 V167: AI chat inside Instruction with DeepSeek === -->
+<!-- === T73 V169: pretty clean AI chat answers inside Instruction with DeepSeek === -->
 <style id="t73-v166-ai-chat-style">
   #mode-instructia .t73-ai-chat-card {
     margin: 1.15rem 0 1.35rem;
@@ -27531,6 +27531,41 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
   .t73-ai-msg.user { margin-left:auto; background:linear-gradient(135deg, rgba(88,210,134,.22), rgba(108,140,255,.18)); border:1px solid rgba(133,224,166,.32); color:#fff; }
   .t73-ai-msg.bot { background:rgba(255,255,255,.075); border:1px solid rgba(255,255,255,.11); color:#edf3ff; }
   .t73-ai-msg.loading { color:#b9ffd0; border-color:rgba(133,224,166,.32); }
+  .t73-ai-answer-label { display:inline-block; margin:.18rem 0 .08rem; color:#b9ffd0; font-weight:950; }
+  .t73-ai-answer-card { display:grid; gap:.62rem; min-width:min(680px, 100%); }
+  .t73-ai-answer-title {
+    display:flex; align-items:center; justify-content:space-between; gap:.7rem;
+    padding:.55rem .68rem; border-radius:14px;
+    background:linear-gradient(135deg, rgba(133,224,166,.16), rgba(108,140,255,.12));
+    border:1px solid rgba(133,224,166,.24);
+    color:#f4fff7; font-weight:950; letter-spacing:.01em;
+  }
+  .t73-ai-answer-title small { color:#b7c4d9; font-weight:850; font-size:.76rem; }
+  .t73-ai-answer-sections { display:grid; gap:.52rem; }
+  .t73-ai-answer-section {
+    padding:.68rem .74rem; border-radius:15px;
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.095);
+    border-left:3px solid rgba(133,224,166,.78);
+  }
+  .t73-ai-answer-section-title {
+    display:block; margin-bottom:.28rem;
+    color:#b9ffd0; font-weight:950; font-size:.86rem; letter-spacing:.015em;
+  }
+  .t73-ai-answer-section-text { color:#edf3ff; font-weight:680; line-height:1.55; }
+  .t73-ai-rule-chip {
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:.08rem .36rem; margin:0 .08rem;
+    border-radius:999px; background:rgba(133,224,166,.14);
+    border:1px solid rgba(133,224,166,.26);
+    color:#caffe0; font-weight:950; white-space:nowrap;
+  }
+  .t73-ai-answer-free {
+    padding:.68rem .74rem; border-radius:15px;
+    background:rgba(255,255,255,.052);
+    border:1px solid rgba(255,255,255,.095);
+    color:#edf3ff; line-height:1.58; font-weight:680;
+  }
   .t73-ai-chat-input-row { margin-top:.9rem; display:grid; grid-template-columns:1fr auto; gap:.75rem; align-items:stretch; }
   #t73AiChatInput { min-height:92px; resize:vertical; }
   .t73-ai-chat-actions { display:flex; flex-direction:column; gap:.55rem; min-width:145px; }
@@ -27562,6 +27597,65 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 
   function $(id){ return document.getElementById(id); }
   function esc(value){ return String(value == null ? '' : value).replace(/[&<>"']/g, function(ch){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]; }); }
+  function cleanAiText(value){
+    var text = String(value == null ? '' : value);
+    text = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+    text = text.replace(/```[\s\S]*?```/g, function(block){ return block.replace(/```/g, ''); });
+    text = text.replace(/`([^`]*)`/g, '$1');
+    text = text.replace(/[\*#`_>]+/g, '');
+    text = text.replace(/^\s*[-–—•]+\s*/gm, '');
+    text = text.replace(/^\s*\d+[\.)]\s+(?=(Пункт|Нарушение|Почему|Наказание|Перед|Что|Доказательства|Итог|Вердикт|Рекомендация|Важно|Действие))/gim, '');
+    text = text.replace(/^\s*={3,}\s*$/gm, '').replace(/^\s*-{3,}\s*$/gm, '');
+    text = text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    return text;
+  }
+  function aiLabels(){
+    return ['Пункт правил','Пункт','Нарушение','Почему подходит','Почему это подходит','Наказание','Перед выдачей проверить','Что проверить','Доказательства','Итог','Вердикт','Рекомендация','Важно','Действие'];
+  }
+  function normalizeAiLabel(label){
+    label = String(label || '').trim();
+    if (/^пункт$/i.test(label)) return 'Пункт правил';
+    if (/^почему это подходит$/i.test(label)) return 'Почему подходит';
+    if (/^что проверить$/i.test(label)) return 'Перед выдачей проверить';
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+  function highlightAiContent(value){
+    var safe = esc(String(value || '').trim());
+    safe = safe.replace(/\b(\d+\.\d+)\b/g, '<span class="t73-ai-rule-chip">$1</span>');
+    safe = safe.replace(/\n/g, '<br>');
+    return safe || 'Не указано';
+  }
+  function parseAiSections(text){
+    var labels = aiLabels().map(function(x){ return x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|');
+    var re = new RegExp('^(?:\\d+[\\.)]\\s*)?(' + labels + ')\\s*[:：–—-]\\s*(.*)$', 'i');
+    var sections = [];
+    var current = null;
+    cleanAiText(text).split(/\n+/).map(function(line){ return line.trim(); }).filter(Boolean).forEach(function(line){
+      var m = line.match(re);
+      if (m) {
+        current = { title: normalizeAiLabel(m[1]), text: (m[2] || '').trim() };
+        sections.push(current);
+      } else if (current) {
+        current.text += (current.text ? '\n' : '') + line;
+      } else {
+        current = { title: 'Ответ', text: line };
+        sections.push(current);
+      }
+    });
+    return sections.filter(function(s){ return s && (s.title || s.text); });
+  }
+  function formatAiAnswer(value){
+    var text = cleanAiText(value);
+    var sections = parseAiSections(text);
+    if (!sections.length) return '<div class="t73-ai-answer-free">' + highlightAiContent(text || 'Ответ пустой.') + '</div>';
+    var hasStructured = sections.some(function(s){ return /^(Пункт правил|Нарушение|Почему подходит|Наказание|Перед выдачей проверить|Доказательства|Итог|Вердикт|Рекомендация|Важно|Действие)$/i.test(s.title); });
+    if (!hasStructured && sections.length === 1) return '<div class="t73-ai-answer-free">' + highlightAiContent(sections[0].text) + '</div>';
+    return '<div class="t73-ai-answer-card">'
+      + '<div class="t73-ai-answer-title"><span>Разбор ситуации</span><small>по правилам Tambov 73</small></div>'
+      + '<div class="t73-ai-answer-sections">'
+      + sections.map(function(s){ return '<div class="t73-ai-answer-section"><span class="t73-ai-answer-section-title">' + esc(s.title) + '</span><div class="t73-ai-answer-section-text">' + highlightAiContent(s.text) + '</div></div>'; }).join('')
+      + '</div></div>';
+  }
   function setStatus(text, state){
     var el = $('t73AiChatStatus'); if (!el) return;
     el.classList.remove('ok','bad');
@@ -27575,7 +27669,7 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
     var box = messagesBox(); if (!box) return null;
     var div = document.createElement('div');
     div.className = 't73-ai-msg ' + (role === 'user' ? 'user' : 'bot') + (loading ? ' loading' : '');
-    div.innerHTML = (role === 'user' ? '<b>Вы:</b><br>' : '<b>DeepSeek помощник:</b><br>') + esc(text || '');
+    div.innerHTML = role === 'user' ? ('<b>Вы:</b><br>' + esc(text || '')) : ('<b>DeepSeek помощник:</b><br>' + formatAiAnswer(text || ''));
     box.appendChild(div); scrollDown(); return div;
   }
   function systemPrompt(){
@@ -27583,7 +27677,8 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
       'Отвечай только по теме модерации, правил Discord сервера, наказаний, жалоб, доказательств, субординации и работы модераторов. ' +
       'Твоя база правил приведена ниже. Не выдумывай пункты. Если информации недостаточно, скажи, что нужно уточнить. ' +
       'В каждом практическом ответе дай: 1) подходящий пункт правил; 2) почему подходит; 3) допустимое наказание; 4) что проверить перед выдачей. ' +
-      'Пиши по-русски, кратко, уверенно, без markdown-таблиц и без технических объяснений про API. ' +
+      'Пиши по-русски, кратко и уверенно. Не используй Markdown и служебные символы: звездочки, решетки, подчеркивания, обратные кавычки, markdown-таблицы, декоративные маркеры, пункты через дефис или нумерованные списки. ' +
+      'Структуру делай чистыми строками с такими подписями: Пункт правил:, Почему подходит:, Наказание:, Перед выдачей проверить:. После каждой подписи сразу пиши содержание. Сайт сам красиво выделит эти части. ' +
       'Если наказание указано диапазоном, не выбирай максимальное без причины: напомни, что итог зависит от тяжести, повторности и контекста.\n\n' +
       'АКТУАЛЬНЫЕ ПРАВИЛА TAMBOV 73:\n' + RULES;
   }
@@ -27613,7 +27708,7 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
     var text = choice && choice.message && (choice.message.content || choice.message.reasoning_content);
     text = String(text || '').trim();
     if (!text) throw new Error('DeepSeek вернул пустой ответ. Попробуйте переформулировать вопрос.');
-    return text;
+    return cleanAiText(text);
   }
   async function send(){
     if (busy) return;
@@ -27629,14 +27724,14 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
     setStatus('DeepSeek анализирует вопрос по встроенной базе правил...', 'ok');
     try {
       var answer = await callDeepSeek(question);
-      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + esc(answer); }
+      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + formatAiAnswer(answer); }
       history.push({ role:'user', text: question });
       history.push({ role:'assistant', text: answer });
       if (history.length > 20) history = history.slice(-20);
       setStatus('Ответ готов. Для спорных ситуаций всё равно сверяйте доказательства и контекст.', 'ok');
     } catch(err) {
       var msg = err && err.message ? err.message : String(err || 'неизвестная ошибка');
-      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + esc('Не удалось получить ответ: ' + msg); }
+      if (loading) { loading.classList.remove('loading'); loading.innerHTML = '<b>DeepSeek помощник:</b><br>' + formatAiAnswer('Не удалось получить ответ: ' + msg); }
       setStatus('Ошибка AI-чата: ' + msg, 'bad');
     } finally {
       busy = false;
@@ -27662,7 +27757,7 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
   window.T73_V167_AI_CHAT = { send: send, clear: clearChat, model: DEFAULT_MODEL };
 })();
 </script>
-<!-- === /T73 V167 === -->
+<!-- === /T73 V169 === -->
 
 </body>
 </html>
