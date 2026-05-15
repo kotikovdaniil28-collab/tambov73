@@ -26323,8 +26323,16 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 
 
 
-<!-- === T73 V162: compact AI report log + fixed instruction opening === -->
-<style id="t73-v162-final-fixes-style">
+<!-- === T73 V164: mobile layout + reliable instruction overlay/navigation === -->
+<style id="t73-v164-mobile-instruction-style">
+  /* Базовая защита от горизонтального развала на телефонах */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  img, video, canvas, svg { max-width: 100%; height: auto; }
+  .page, .topbar, .hero, .game-wrap, .panel, .message-card, .feed { min-width: 0; }
+  .message-text, .log-item, .rule-item, .stat, .admin-field, .support-result { overflow-wrap: anywhere; word-break: break-word; }
+
+  /* Инструкция: всегда существует как отдельный экран и не зависит от скрытия #game */
   body.t73-route-instructia #game {
     display: block !important;
     visibility: visible !important;
@@ -26341,7 +26349,7 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
     margin: 0 auto 2rem !important;
     pointer-events: auto !important;
   }
-  body.t73-route-instructia #game > :not(#mode-instructia):not(script):not(style) {
+  body.t73-route-instructia #game > :not(script):not(style) {
     display: none !important;
   }
   body.t73-route-instructia #mode-instructia,
@@ -26360,89 +26368,560 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
   body.t73-route-instructia #mode-instructia .t73-hover-fx::before,
   body.t73-route-instructia #mode-instructia .t73-hover-fx::after,
   body.t73-route-instructia #mode-instructia .panel::before,
-  body.t73-route-instructia #mode-instructia .panel::after {
+  body.t73-route-instructia #mode-instructia .panel::after,
+  body.t73-route-instructia #mode-instructia .btn::after,
+  body.t73-route-instructia #mode-instructia button::after {
+    display: none !important;
     transform: none !important;
     animation: none !important;
+  }
+  .t73-v152-guide-tabs button.t73-v164-guide-active,
+  .t73-v152-guide-index a.t73-v164-guide-active {
+    color: #fff !important;
+    border-color: rgba(255,107,136,.64) !important;
+    background: rgba(255,107,136,.18) !important;
   }
   .t73-v162-compact-report-note {
     color: var(--color-text-muted);
     font-size: .84rem;
     line-height: 1.35;
   }
+
+  @media (max-width: 900px) {
+    .page {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: .8rem .7rem 1.6rem !important;
+    }
+    .topbar {
+      width: 100% !important;
+      padding: .9rem !important;
+      border-radius: 20px !important;
+      gap: .85rem !important;
+    }
+    .brand {
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      align-items: center !important;
+      justify-content: start !important;
+      text-align: left !important;
+    }
+    .brand-title { font-size: clamp(1.05rem, 5vw, 1.35rem) !important; }
+    .brand-sub { max-width: 100% !important; font-size: .78rem !important; }
+    .topbar > div:last-child {
+      width: 100% !important;
+      justify-content: space-between !important;
+      gap: .65rem !important;
+    }
+    #authStatus {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      padding: .55rem .7rem !important;
+      border-radius: 14px !important;
+    }
+    #userEmailDisplay {
+      max-width: min(48vw, 240px) !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+      font-size: .78rem !important;
+    }
+    .icon-btn { min-width: 42px !important; min-height: 42px !important; }
+
+    .hero,
+    .game-wrap {
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: 1rem !important;
+    }
+    .panel,
+    .hero-card,
+    .rules,
+    .game-card,
+    .side {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      padding: 1rem !important;
+      border-radius: 20px !important;
+    }
+    .hero h1 {
+      text-align: left !important;
+      font-size: clamp(1.9rem, 8.8vw, 3.05rem) !important;
+      line-height: .98 !important;
+    }
+    .hero p { text-align: left !important; font-size: .98rem !important; }
+    .hero-actions,
+    .badge-row { justify-content: flex-start !important; }
+
+    .nav-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+    }
+    .main-nav,
+    .sub-nav {
+      width: 100% !important;
+      max-width: 100% !important;
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      justify-content: flex-start !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      scroll-snap-type: x proximity;
+      gap: .45rem !important;
+      padding: .45rem !important;
+      border-radius: 18px !important;
+    }
+    .main-nav::-webkit-scrollbar,
+    .sub-nav::-webkit-scrollbar,
+    .t73-v152-guide-tabs::-webkit-scrollbar { display: none; }
+    .main-cat-btn,
+    .mode-btn {
+      flex: 0 0 auto !important;
+      width: auto !important;
+      min-width: max-content !important;
+      min-height: 44px !important;
+      justify-content: center !important;
+      white-space: nowrap !important;
+      font-size: .84rem !important;
+      line-height: 1.12 !important;
+      padding: .68rem .85rem !important;
+      border-radius: 14px !important;
+      scroll-snap-align: start;
+    }
+
+    .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+    .controls,
+    .admin-action-grid,
+    .shop-grid,
+    .t73-v99-form,
+    .t73-v152-grid-two,
+    .t73-v152-grid-three,
+    .support-answer-row-inner,
+    div[style*="grid-template-columns: 1fr 1fr"] {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+    .support-answer-row-inner { flex-direction: column !important; }
+    .support-check-btn,
+    .action-btn,
+    .btn,
+    button { min-height: 44px; }
+    input,
+    select,
+    textarea,
+    .support-input {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      font-size: 16px !important;
+    }
+    textarea.support-input { min-height: 108px !important; }
+    .feed { gap: .9rem !important; }
+    .message-card { gap: .9rem !important; }
+    .author-row { align-items: flex-start !important; }
+    .timer-display { font-size: clamp(2.7rem, 14vw, 4.2rem) !important; }
+    .slots-container { gap: .65rem !important; padding: .9rem !important; }
+    .slot-item { width: 64px !important; height: 64px !important; font-size: 2.25rem !important; }
+    .rocket-multiplier { font-size: clamp(2.6rem, 14vw, 4rem) !important; }
+    .gg-btn { min-width: 0 !important; font-size: 2.4rem !important; padding: 1rem !important; }
+    table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  }
+
+  @media (max-width: 768px) {
+    body.t73-route-instructia {
+      overflow: hidden !important;
+      touch-action: none;
+    }
+    body.t73-route-instructia #mode-instructia {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100500 !important;
+      display: block !important;
+      width: 100vw !important;
+      max-width: none !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      margin: 0 !important;
+      padding: max(.75rem, env(safe-area-inset-top)) .65rem max(1rem, env(safe-area-inset-bottom)) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      -webkit-overflow-scrolling: touch !important;
+      overscroll-behavior: contain !important;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,107,136,.18), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(108,140,255,.18), transparent 48%),
+        #050817 !important;
+      touch-action: pan-y;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-panel {
+      width: 100% !important;
+      min-height: calc(100dvh - 1.5rem) !important;
+      padding: .75rem !important;
+      border-radius: 22px !important;
+      overflow: visible !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-hero {
+      position: relative !important;
+      padding: .9rem !important;
+      border-radius: 20px !important;
+      gap: .85rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-hero h2 {
+      font-size: clamp(1.45rem, 7vw, 2.05rem) !important;
+      line-height: 1.05 !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-actions {
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: .55rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-actions .btn { width: 100% !important; }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-toolbar {
+      position: sticky !important;
+      top: .35rem !important;
+      z-index: 5 !important;
+      margin: .75rem 0 !important;
+      padding: .65rem !important;
+      border-radius: 18px !important;
+      background: rgba(7, 9, 18, .96) !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-tabs {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      gap: .45rem !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: .1rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-tabs button {
+      flex: 0 0 auto !important;
+      min-height: 42px !important;
+      white-space: nowrap !important;
+      padding: .54rem .75rem !important;
+      font-size: .82rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-layout {
+      display: block !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-index {
+      display: none !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-content {
+      gap: .85rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-block {
+      scroll-margin-top: 118px !important;
+      padding: .9rem !important;
+      border-radius: 20px !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-block-head {
+      display: grid !important;
+      grid-template-columns: auto minmax(0,1fr) !important;
+      gap: .65rem !important;
+    }
+    body.t73-route-instructia #mode-instructia .t73-v152-verdicts div,
+    body.t73-route-instructia #mode-instructia .t73-v152-steps div {
+      grid-template-columns: minmax(0,1fr) !important;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .page { padding-left: .55rem !important; padding-right: .55rem !important; }
+    .topbar > div:last-child { display: grid !important; grid-template-columns: 1fr auto !important; align-items: center !important; }
+    #authStatus { width: 100% !important; }
+    #userEmailDisplay { max-width: 42vw !important; }
+    .stats-grid { grid-template-columns: minmax(0, 1fr) !important; }
+    .main-cat-btn,
+    .mode-btn { font-size: .8rem !important; padding: .62rem .76rem !important; }
+    .badge { max-width: 100%; overflow-wrap: anywhere; }
+    .avatar { width: 42px !important; height: 42px !important; }
+    .slot-item { width: 54px !important; height: 54px !important; font-size: 2rem !important; }
+    .dice-box { width: 76px !important; height: 76px !important; }
+    .mine-cell { height: 64px !important; }
+    body.t73-route-instructia #mode-instructia .t73-v152-guide-actions { grid-template-columns: 1fr !important; }
+  }
 </style>
-<script id="t73-v162-final-fixes-script">
+<script id="t73-v164-mobile-instruction-script">
 (function(){
   'use strict';
-  if (window.__T73_V162_FINAL_FIXES__) return;
-  window.__T73_V162_FINAL_FIXES__ = true;
+  if (window.__T73_V164_MOBILE_INSTRUCTION__) return;
+  window.__T73_V164_MOBILE_INSTRUCTION__ = true;
+
   function $(id){ return document.getElementById(id); }
   function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function openInstruction(push){
-    var sec = $('mode-instructia');
-    var game = $('game');
+  function isPhone(){
+    var w = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    return w <= 768 || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+  }
+  function instructionRoot(){ return $('mode-instructia'); }
+  function isInstructionOpen(){ return !!(document.body && document.body.classList.contains('t73-route-instructia')); }
+  function isOverlayMode(){
+    var sec = instructionRoot();
     if (!sec) return false;
+    try { return isPhone() || getComputedStyle(sec).position === 'fixed'; } catch(e) { return isPhone(); }
+  }
+
+  var lastScrollY = 0;
+  var previousUi = { main: '', mode: '', subnav: '', modePanel: '', gameDisplay: '' };
+  function rememberUiBeforeInstruction(){
+    var main = document.querySelector('.main-cat-btn.active[data-cat]');
+    var mode = document.querySelector('.mode-btn.active[data-mode]');
+    var sub = qsa('.sub-nav').find(function(el){ return getComputedStyle(el).display !== 'none'; });
+    var panel = qsa('[id^="mode-"]').find(function(el){
+      if (el.id === 'mode-instructia') return false;
+      return getComputedStyle(el).display !== 'none';
+    });
+    var game = $('game');
+    previousUi = {
+      main: main && main.dataset ? main.dataset.cat || '' : '',
+      mode: mode && mode.dataset ? mode.dataset.mode || '' : '',
+      subnav: sub ? sub.id : '',
+      modePanel: panel ? panel.id : '',
+      gameDisplay: game ? (game.style.display || '') : ''
+    };
+  }
+  function restoreUiAfterInstruction(){
+    qsa('.main-cat-btn,.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (previousUi.main) {
+      var main = document.querySelector('.main-cat-btn[data-cat="' + previousUi.main + '"]');
+      if (main) main.classList.add('active');
+    }
+    if (previousUi.mode) {
+      var mode = document.querySelector('.mode-btn[data-mode="' + previousUi.mode + '"]');
+      if (mode) mode.classList.add('active');
+    }
+    qsa('.sub-nav').forEach(function(el){ el.style.setProperty('display', el.id === previousUi.subnav ? 'flex' : 'none', 'important'); });
+    qsa('[id^="mode-"]').forEach(function(panel){
+      if (panel.id === 'mode-instructia') return;
+      if (panel.id === previousUi.modePanel) {
+        panel.style.removeProperty('display');
+        panel.style.setProperty('display','block','important');
+        panel.removeAttribute('aria-hidden');
+      } else {
+        panel.style.setProperty('display','none','important');
+        panel.setAttribute('aria-hidden','true');
+      }
+    });
+    if (!previousUi.modePanel) {
+      var mod = $('mode-moderation');
+      if (mod) { mod.style.setProperty('display','block','important'); mod.removeAttribute('aria-hidden'); }
+      var sub = $('subNavModeration');
+      if (sub) sub.style.setProperty('display','flex','important');
+      var mb = document.querySelector('.main-cat-btn[data-cat="moderation"]');
+      var btn = document.querySelector('.mode-btn[data-mode="moderation"]');
+      if (mb) mb.classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+  }
+  function freezeInstructionMotion(){
+    var sec = instructionRoot();
+    if (!sec) return;
+    sec.style.setProperty('transform','none','important');
+    sec.style.setProperty('translate','none','important');
+    qsa('.panel,.game-card,.message-card,.rule-item,.stat,.btn,button,.t73-hover-fx,.t73-fx-live', sec).forEach(function(el){
+      el.classList.remove('t73-fx-live');
+      el.style.setProperty('transform','none','important');
+      el.style.setProperty('translate','none','important');
+      el.style.setProperty('will-change','auto','important');
+      el.style.removeProperty('--t73-x');
+      el.style.removeProperty('--t73-y');
+      el.style.removeProperty('--t73-rx');
+      el.style.removeProperty('--t73-ry');
+      el.style.removeProperty('--t73-lift');
+    });
+  }
+
+  function showOnlyInstructionPanels(){
+    qsa('[id^="mode-"]').forEach(function(panel){
+      if (!panel || panel.id === 'mode-instructia') return;
+      panel.style.setProperty('display','none','important');
+      panel.setAttribute('aria-hidden','true');
+    });
+  }
+
+  function openInstruction(){
+    var sec = instructionRoot();
+    var game = $('game');
+    if (!sec) {
+      if (document.body) document.body.classList.remove('t73-route-instructia');
+      return false;
+    }
+    lastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    if (!isInstructionOpen()) rememberUiBeforeInstruction();
     if (document.body) document.body.classList.add('t73-route-instructia');
     if (game) {
       game.style.setProperty('display','block','important');
       game.style.setProperty('visibility','visible','important');
     }
-    qsa('[id^="mode-"]').forEach(function(panel){
-      panel.style.setProperty('display', panel.id === 'mode-instructia' ? 'block' : 'none', 'important');
-      panel.style.setProperty('transform','none','important');
-    });
+    showOnlyInstructionPanels();
     sec.style.setProperty('display','block','important');
     sec.style.setProperty('visibility','visible','important');
     sec.style.setProperty('opacity','1','important');
+    sec.style.setProperty('pointer-events','auto','important');
     sec.style.setProperty('transform','none','important');
-    try { qsa('.main-cat-btn,.mode-btn').forEach(function(b){ b.classList.remove('active'); }); } catch(e) {}
+    sec.removeAttribute('aria-hidden');
+    qsa('.main-cat-btn,.mode-btn').forEach(function(b){ b.classList.remove('active'); });
     var b = $('openInstructiaBtn') || document.querySelector('.instructia-nav-btn,[data-route="instructia"]');
     if (b) b.classList.add('active');
-    try { if (push && location.pathname.replace(/\/+$/,'') !== '/instructia') history.pushState({page:'instructia'}, '', '/instructia'); } catch(e) {}
-    setTimeout(function(){ try { sec.scrollIntoView({behavior:'smooth', block:'start'}); } catch(e) {} }, 30);
+    freezeInstructionMotion();
+    setTimeout(function(){
+      try {
+        if (isOverlayMode()) sec.scrollTo({ top: 0, behavior: 'auto' });
+        else window.scrollTo({ top: Math.max(0, sec.getBoundingClientRect().top + window.pageYOffset - 10), behavior: 'smooth' });
+      } catch(e) {}
+    }, 20);
     return false;
   }
-  function closeInstruction(push){
+
+  function closeInstruction(){
+    var sec = instructionRoot();
     if (document.body) document.body.classList.remove('t73-route-instructia');
-    var sec = $('mode-instructia');
-    if (sec) sec.style.setProperty('display','none','important');
+    if (sec) {
+      sec.style.setProperty('display','none','important');
+      sec.setAttribute('aria-hidden','true');
+    }
     var game = $('game');
-    if (game) game.style.setProperty('display','block','important');
-    var home = $('home') || $('mode-moderation') || document.querySelector('.mode-section');
-    if (home) home.style.removeProperty('display');
-    try { if (push) history.pushState({page:'home'}, '', location.pathname.replace(/\/instructia\/?$/,'/') || '/'); } catch(e) {}
+    if (game) {
+      game.style.setProperty('display','grid','important');
+      game.style.setProperty('visibility','visible','important');
+    }
+    restoreUiAfterInstruction();
+    try { window.scrollTo({ top: Math.max(0, lastScrollY), behavior: isPhone() ? 'auto' : 'smooth' }); } catch(e) {}
     return false;
   }
-  function freezeInstructionMotion(){
-    var sec = $('mode-instructia');
-    if (!sec) return;
-    sec.style.setProperty('transform','none','important');
-    qsa('.panel,.game-card,.message-card,.rule-item,.stat,.btn,button,.t73-hover-fx,.t73-fx-live', sec).forEach(function(el){
-      el.style.setProperty('transform','none','important');
-      el.style.setProperty('translate','none','important');
-      el.style.setProperty('will-change','auto','important');
-    });
+
+  function clearGuideSearchIfNeeded(target){
+    if (!target) return;
+    if (target.classList.contains('t73-v152-hidden')) {
+      var input = $('t73GuideSearch');
+      if (input) input.value = '';
+      qsa('[data-guide-card]', instructionRoot()).forEach(function(card){ card.classList.remove('t73-v152-hidden'); });
+    }
   }
+
+  function setActiveGuide(id){
+    var sec = instructionRoot();
+    if (!sec) return;
+    qsa('[data-guide-jump]', sec).forEach(function(btn){ btn.classList.toggle('t73-v164-guide-active', btn.dataset.guideJump === id); });
+    qsa('.t73-v152-guide-index a[href^="#"]', sec).forEach(function(a){ a.classList.toggle('t73-v164-guide-active', (a.getAttribute('href') || '').slice(1) === id); });
+  }
+
+  function guideOffset(){
+    var sec = instructionRoot();
+    var toolbar = sec && sec.querySelector('.t73-v152-guide-toolbar');
+    var h = toolbar ? Math.ceil(toolbar.getBoundingClientRect().height || toolbar.offsetHeight || 0) : 0;
+    return Math.max(72, h + 18);
+  }
+
+  function scrollGuideTo(id){
+    var sec = instructionRoot();
+    var target = $(id);
+    if (!sec || !target) return false;
+    clearGuideSearchIfNeeded(target);
+    setActiveGuide(id);
+    freezeInstructionMotion();
+    var offset = guideOffset();
+    try {
+      if (isOverlayMode()) {
+        var secRect = sec.getBoundingClientRect();
+        var targetRect = target.getBoundingClientRect();
+        var top = sec.scrollTop + targetRect.top - secRect.top - offset;
+        sec.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      } else {
+        var y = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    } catch(e) {
+      try { target.scrollIntoView({ behavior:'smooth', block:'start' }); } catch(_) {}
+    }
+    return false;
+  }
+
+  function guideTop(){
+    var sec = instructionRoot();
+    if (!sec) return false;
+    setActiveGuide('');
+    try {
+      if (isOverlayMode()) sec.scrollTo({ top: 0, behavior: 'smooth' });
+      else window.scrollTo({ top: Math.max(0, sec.getBoundingClientRect().top + window.pageYOffset - 10), behavior: 'smooth' });
+    } catch(e) {}
+    return false;
+  }
+
   document.addEventListener('click', function(e){
-    var open = e.target && e.target.closest && e.target.closest('#openInstructiaBtn,.instructia-nav-btn,[data-route="instructia"]');
-    if (open) { e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); return openInstruction(true); }
-    var back = e.target && e.target.closest && e.target.closest('#instructiaBackBtn,[data-route-back="home"]');
-    if (back) { e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); return closeInstruction(true); }
+    var target = e.target;
+    if (!target || !target.closest) return;
+
+    var open = target.closest('#openInstructiaBtn,.instructia-nav-btn,[data-route="instructia"]');
+    if (open) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      return openInstruction();
+    }
+
+    var back = target.closest('#instructiaBackBtn,[data-route-back="home"]');
+    if (back) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      return closeInstruction();
+    }
+
+    var top = target.closest('#t73GuideTopBtn');
+    if (top) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      return guideTop();
+    }
+
+    var jump = target.closest('[data-guide-jump]');
+    if (jump && instructionRoot() && instructionRoot().contains(jump)) {
+      e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+      return scrollGuideTo(jump.dataset.guideJump);
+    }
+
+    var link = target.closest('.t73-v152-guide-index a[href^="#"]');
+    if (link && instructionRoot() && instructionRoot().contains(link)) {
+      var id = (link.getAttribute('href') || '').slice(1);
+      if (id) {
+        e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        return scrollGuideTo(id);
+      }
+    }
   }, true);
-  document.addEventListener('mousemove', function(){ if (document.body && document.body.classList.contains('t73-route-instructia')) freezeInstructionMotion(); }, true);
-  window.addEventListener('popstate', function(){ if (location.pathname.replace(/\/+$/,'') === '/instructia') openInstruction(false); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && isInstructionOpen()) {
+      e.preventDefault();
+      closeInstruction();
+    }
+  }, true);
+
+  document.addEventListener('mousemove', function(){ if (isInstructionOpen()) freezeInstructionMotion(); }, true);
+  window.addEventListener('resize', function(){ if (isInstructionOpen()) setTimeout(freezeInstructionMotion, 60); });
+
   function boot(){
     freezeInstructionMotion();
-    if (location.pathname.replace(/\/+$/,'') === '/instructia') openInstruction(false);
     var b = $('openInstructiaBtn') || document.querySelector('.instructia-nav-btn,[data-route="instructia"]');
     if (b) { b.type = 'button'; b.dataset.route = 'instructia'; }
+    var sec = instructionRoot();
+    if (sec && !isInstructionOpen()) sec.setAttribute('aria-hidden','true');
+    if (location.pathname.replace(/\/+$/,'') === '/instructia') {
+      try { history.replaceState({page:'home'}, '', '/'); } catch(e) {}
+      openInstruction();
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   [80,250,700,1500,3000,6000].forEach(function(ms){ setTimeout(boot, ms); });
-  try { new MutationObserver(function(){ clearTimeout(window.__T73_V162_TIMER__); window.__T73_V162_TIMER__ = setTimeout(boot, 80); }).observe(document.documentElement, {childList:true, subtree:true}); } catch(e) {}
-  window.T73_V162_FINAL_FIXES = { openInstruction: openInstruction, closeInstruction: closeInstruction, freezeInstructionMotion: freezeInstructionMotion };
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V164_TIMER__); window.__T73_V164_TIMER__ = setTimeout(boot, 80); }).observe(document.documentElement, {childList:true, subtree:true}); } catch(e) {}
+
+  window.T73_V162_FINAL_FIXES = { openInstruction: openInstruction, closeInstruction: closeInstruction, freezeInstructionMotion: freezeInstructionMotion, scrollGuideTo: scrollGuideTo };
+  window.T73_V164_MOBILE_INSTRUCTION = window.T73_V162_FINAL_FIXES;
 })();
 </script>
-<!-- === /T73 V162 === -->
+<!-- === /T73 V164 === -->
 
 
 
