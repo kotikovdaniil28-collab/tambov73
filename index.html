@@ -3833,20 +3833,25 @@
             return document.getElementById(mode === 'ap_shop' ? 'apShopItemsContainer' : mode === 'fsb_shop' ? 'fsbShopItemsContainer' : 'shopItemsContainer');
         }
         function t73ShowShopLoader(mode) {
+            // v163: никаких искусственных «Загружаю магазин…».
+            // Разделы модерации не должны получать магазинную заглушку, а магазин должен
+            // сразу рендерить товары обычной логикой updateShopStats().
             const box = t73ShopContainerFor(mode);
             if (!box) return;
-            if (!box.children.length || box.dataset.t73Loading === '1') {
-                box.dataset.t73Loading = '1';
-                box.innerHTML = '<div class="t73-v151-loader"><span class="t73-v151-spinner"></span><b>Загружаю магазин…</b><small>Раздел уже открыт. Товары и балансы появятся без блокировки интерфейса.</small></div>';
-            }
+            delete box.dataset.t73Loading;
+            const loader = box.querySelector && box.querySelector('.t73-v151-loader');
+            if (loader) loader.remove();
         }
         function t73DeferredShopRefresh(mode) {
-            t73ShowShopLoader(mode);
             t73FastModePaint(() => {
-                try { updateShopStats(); } finally {
-                    const box = t73ShopContainerFor(mode);
-                    if (box) delete box.dataset.t73Loading;
+                const box = t73ShopContainerFor(mode);
+                if (box) {
+                    delete box.dataset.t73Loading;
+                    const loader = box.querySelector && box.querySelector('.t73-v151-loader');
+                    if (loader) loader.remove();
                 }
+                try { updateShopStats(); }
+                catch (e) { console.warn('T73 shop refresh failed', e); }
             });
         }
         function switchMode(mode, btn) {
@@ -24507,111 +24512,10 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 
 
 
-<!-- === T73 V151: instant shop + native instruction, no GitBook iframe === -->
-<style id="t73-v151-instant-shop-native-instruction-style">
-  #mode-instructia { display: none !important; }
-  body.t73-route-instructia #mode-instructia { display: block !important; }
-  body.t73-route-instructia #game > .panel:not(#mode-instructia),
-  body.t73-route-instructia #game > section:not(#mode-instructia),
-  body.t73-route-instructia .hero,
-  body.t73-route-instructia #infoBanner { display: none !important; }
-  .t73-v151-visible { opacity: 1 !important; }
-  .t73-v151-loader { min-height: 190px; display: grid; place-items: center; gap: .5rem; text-align: center; padding: 1.25rem; border-radius: 18px; border: 1px dashed rgba(255,255,255,.18); background: rgba(255,255,255,.035); color: var(--color-text-muted); }
-  .t73-v151-loader b { color: #fff; }
-  .t73-v151-loader small { color: var(--color-text-faint); }
-  .t73-v151-spinner { width: 30px; height: 30px; border-radius: 50%; border: 3px solid rgba(255,255,255,.16); border-top-color: var(--color-primary, #ff6b88); animation: t73-v151-spin .75s linear infinite; }
-  @keyframes t73-v151-spin { to { transform: rotate(360deg); } }
-  .t73-v151-instruction-panel { padding: clamp(1rem, 2vw, 1.4rem); min-height: 70vh; }
-  .t73-v151-instruction-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.2rem; }
-  .t73-v151-instruction-head h2 { margin:.45rem 0 .3rem; color:#ff6b88; font-size:clamp(1.45rem, 3vw, 2.25rem); }
-  .t73-v151-instruction-head p { margin:0; color:var(--color-text-muted); max-width:760px; line-height:1.55; }
-  .t73-v151-instruction-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem; }
-  .t73-v151-instruction-card { border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025)); border-radius:20px; padding:1rem; box-shadow:0 16px 40px rgba(0,0,0,.16); }
-  .t73-v151-instruction-card h3 { margin:0 0 .55rem; color:#fff; font-size:1rem; }
-  .t73-v151-instruction-card p { margin:0 0 .65rem; color:var(--color-text-muted); line-height:1.55; }
-  .t73-v151-instruction-card ul { margin:.4rem 0 0; padding-left:1.1rem; color:var(--color-text-muted); line-height:1.5; }
-  .t73-v151-instruction-card li + li { margin-top:.3rem; }
-  .t73-v151-instruction-note { margin-top:1rem; border:1px solid rgba(255,191,71,.25); background:rgba(255,191,71,.08); border-radius:18px; padding:1rem; color:var(--color-text-muted); line-height:1.55; }
-  .t73-v151-instruction-note strong { color:#ffbf47; }
-</style>
-<script id="t73-v151-instant-shop-native-instruction-script">
-(function(){
-  'use strict';
-  if (window.__T73_V151_INSTANT_SHOP_NATIVE_INSTRUCTION__) return;
-  window.__T73_V151_INSTANT_SHOP_NATIVE_INSTRUCTION__ = true;
-  var SHOP_MODES = { shop:1, ap_shop:1, fsb_shop:1 };
-  function $(id){ return document.getElementById(id); }
-  function qsa(sel, root){ return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
-  function raf(fn){ if (typeof requestAnimationFrame === 'function') requestAnimationFrame(function(){ setTimeout(fn, 0); }); else setTimeout(fn, 0); }
-  function ensureInstructionButton(){
-    var nav = document.querySelector('.main-nav');
-    if (!nav) return;
-    var btn = $('openInstructiaBtn') || document.querySelector('.instructia-nav-btn,[data-route="instructia"]');
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.className = 'main-cat-btn instructia-nav-btn';
-      btn.id = 'openInstructiaBtn';
-      btn.type = 'button';
-      btn.dataset.route = 'instructia';
-      btn.textContent = '📖 Инструкция';
-      nav.appendChild(btn);
-    }
-  }
-  function openInstruction(push){
-    ensureInstructionButton();
-    document.body.classList.add('t73-route-instructia');
-    qsa('.main-cat-btn,.mode-btn').forEach(function(b){ b.classList.remove('active'); });
-    var b = $('openInstructiaBtn') || document.querySelector('.instructia-nav-btn');
-    if (b) b.classList.add('active');
-    qsa('[id^="mode-"]').forEach(function(panel){ panel.style.display = panel.id === 'mode-instructia' ? 'block' : 'none'; });
-    document.documentElement.setAttribute('data-site-theme','guide');
-    document.title = 'Инструкция модерации — Tambov 73';
-    if (push && location.pathname.replace(/\/+$/,'') !== '/instructia') history.pushState({ page:'instructia' }, '', '/instructia');
-    raf(function(){ var sec = $('mode-instructia'); if (sec) sec.scrollIntoView({ block:'start' }); });
-  }
-  function closeInstruction(push){
-    document.body.classList.remove('t73-route-instructia');
-    if (push) history.pushState({ page:'home' }, '', '/');
-    var btn = document.querySelector('#subNavModeration .mode-btn[data-mode="moderation"]') || document.querySelector('.mode-btn[data-mode="moderation"]');
-    if (btn) btn.click();
-  }
-  function shopBox(mode){ return $(mode === 'ap_shop' ? 'apShopItemsContainer' : mode === 'fsb_shop' ? 'fsbShopItemsContainer' : 'shopItemsContainer'); }
-  function showShopShell(mode, btn){
-    document.body.classList.remove('t73-route-instructia');
-    qsa('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
-    if (btn) btn.classList.add('active');
-    qsa('[id^="mode-"]').forEach(function(panel){
-      var visible = panel.id === 'mode-' + mode;
-      panel.style.display = visible ? '' : 'none';
-      panel.classList.toggle('t73-v151-visible', visible);
-    });
-    document.documentElement.setAttribute('data-site-theme', mode === 'ap_shop' ? 'support' : mode === 'fsb_shop' ? 'quests' : 'shop');
-    var box = shopBox(mode);
-    if (box && !box.children.length) box.innerHTML = '<div class="t73-v151-loader"><span class="t73-v151-spinner"></span><b>Загружаю магазин…</b><small>Экран уже открыт. Данные подтянутся следом.</small></div>';
-  }
-  function interceptShop(ev){
-    var btn = ev.target && ev.target.closest && ev.target.closest('.mode-btn[data-mode="shop"],.mode-btn[data-mode="ap_shop"],.mode-btn[data-mode="fsb_shop"]');
-    if (!btn || !SHOP_MODES[btn.dataset.mode]) return;
-    if (ev.cancelable) ev.preventDefault();
-    ev.stopPropagation();
-    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-    showShopShell(btn.dataset.mode, btn);
-    // Не вызываем старый click повторно: он как раз мог запускать тяжёлую синхронную цепочку.
-    return false;
-  }
-  ['pointerdown','pointerup','touchstart','mousedown','click'].forEach(function(type){ document.addEventListener(type, interceptShop, true); });
-  document.addEventListener('click', function(e){
-    var open = e.target && e.target.closest && e.target.closest('#openInstructiaBtn,.instructia-nav-btn,[data-route="instructia"]');
-    if (open) { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); openInstruction(true); return false; }
-    var back = e.target && e.target.closest && e.target.closest('#instructiaBackBtn,[data-route-back="home"]');
-    if (back) { e.preventDefault(); e.stopPropagation(); if (e.stopImmediatePropagation) e.stopImmediatePropagation(); closeInstruction(true); return false; }
-  }, true);
-  window.addEventListener('popstate', function(){ if (location.pathname.replace(/\/+$/,'') === '/instructia') openInstruction(false); });
-  function boot(){ ensureInstructionButton(); if (location.pathname.replace(/\/+$/,'') === '/instructia') openInstruction(false); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-})();
-</script>
-<!-- === /T73 V151 === -->
+<!-- === T73 V151 removed in v163 ===
+Причина: блок перехватывал клики по магазинам и мог оставлять бесконечную карточку
+«Загружаю магазин…». Инструкция обслуживается отдельными блоками V155/V162.
+=== /T73 V151 removed === -->
 
 
 
@@ -26540,5 +26444,44 @@ html[data-site-theme="creator"] .info-banner     { border-left-color: rgba(255,1
 </script>
 <!-- === /T73 V162 === -->
 
+
+
+<!-- === T73 V163: remove accidental shop loader from moderation/shop === -->
+<style id="t73-v163-no-shop-loader-style">
+  .t73-v151-loader { display: none !important; }
+</style>
+<script id="t73-v163-no-shop-loader-script">
+(function(){
+  'use strict';
+  if (window.__T73_V163_NO_SHOP_LOADER__) return;
+  window.__T73_V163_NO_SHOP_LOADER__ = true;
+  function $(id){ return document.getElementById(id); }
+  function clearLoaders(){
+    document.querySelectorAll('.t73-v151-loader').forEach(function(el){
+      var box = el.parentElement;
+      el.remove();
+      if (box && /^(shopItemsContainer|apShopItemsContainer|fsbShopItemsContainer)$/.test(box.id || '')) {
+        try { if (typeof window.updateShopStats === 'function') window.updateShopStats(); } catch(e) {}
+        try { if (typeof updateShopStats === 'function') updateShopStats(); } catch(e) {}
+      }
+    });
+  }
+  function normalizeModePanels(){
+    // Если пользователь находится в обычном тренажёре модерации, магазинные панели принудительно скрыты.
+    var active = document.querySelector('.mode-btn.active[data-mode]');
+    var mode = active && active.dataset ? active.dataset.mode : (document.body && document.body.dataset ? document.body.dataset.activeMode : '');
+    if (mode === 'moderation') {
+      ['mode-shop','mode-ap_shop','mode-fsb_shop'].forEach(function(id){ var p=$(id); if (p) p.style.display='none'; });
+      var mod = $('mode-moderation'); if (mod) mod.style.display='';
+    }
+  }
+  document.addEventListener('click', function(){ setTimeout(function(){ clearLoaders(); normalizeModePanels(); }, 30); }, true);
+  function boot(){ clearLoaders(); normalizeModePanels(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  [80,250,700,1500,3000].forEach(function(ms){ setTimeout(boot, ms); });
+  try { new MutationObserver(function(){ clearTimeout(window.__T73_V163_TIMER__); window.__T73_V163_TIMER__ = setTimeout(boot, 60); }).observe(document.documentElement, {childList:true, subtree:true}); } catch(e) {}
+})();
+</script>
+<!-- === /T73 V163 === -->
 </body>
 </html>
