@@ -21,20 +21,10 @@ export type RoulettePrize = {
 
 // Дефолтные товары — 1:1 из legacy
 export const DEFAULT_MOD_SHOP: ShopItem[] = [
-  { id: "mm_1", title: "ММ: Скидка -1 день", desc: "Ускоряет повышение Младшего Модератора (ММ → М).", price: 200, icon: "⏳" },
-  { id: "m_1", title: "М: Скидка -1 день", desc: "Ускоряет повышение Модератора (М → СМ).", price: 250, icon: "⏳" },
-  { id: "sm_1", title: "СМ: Скидка -1 день", desc: "Ускоряет повышение Старшего Модератора (СМ → ЗГМ).", price: 300, icon: "⏳" },
   { id: "bonus_1", title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 200, icon: "🛡️" },
   { id: "bonus_2", title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 400, icon: "🔥" },
   { id: "bonus_3", title: "Иммунитет на предупреждение", desc: "Защищает от 1 предупреждения в будущем.", price: 300, icon: "🛡️" },
   { id: "bonus_4", title: "Иммунитет на выговор", desc: "Защищает от 1 выговора в будущем.", price: 500, icon: "👑" },
-];
-
-export const DEFAULT_AP_SHOP: ShopItem[] = [
-  { id: "ap_1", title: "Снятие предупреждения", desc: "Снимает 1 активное предупреждение.", price: 15, icon: "🛡️" },
-  { id: "ap_2", title: "Снятие выговора", desc: "Снимает 1 активный выговор.", price: 25, icon: "🔥" },
-  { id: "ap_3", title: "Иммунитет на выговор", desc: "Защищает от получения 1 выговора.", price: 40, icon: "👑" },
-  { id: "ap_4", title: "Неактив (1 день)", desc: "Взять неактив без потери нормы.", price: 10, icon: "🛌" },
 ];
 
 export const DEFAULT_FSB_SHOP: ShopItem[] = [
@@ -59,14 +49,7 @@ export const MOD_ROULETTE_PRIZES: RoulettePrize[] = [
   { id: "fine", icon: "📉", text: "Штраф -100 XP", val: -100 },
 ];
 
-export const AP_ROULETTE_PRIZES: RoulettePrize[] = [
-  { id: "leg", icon: "🏆", text: "50 Баллов", val: 50 },
-  { id: "rare", icon: "💎", text: "30 Баллов", val: 30 },
-  { id: "fail", icon: "💀", text: "Ничего", val: 0 },
-  { id: "fine", icon: "📉", text: "Штраф -10 Баллов", val: -10 },
-];
-
-// Кастомные товары: SHOP_MOD / SHOP_AP — { date: title, status: desc, xp: price, link: icon }
+// Кастомные товары: SHOP_MOD — { date: title, status: desc, xp: price, link: icon }
 export async function loadCustomShop(supa: SupabaseClient, sentinel: string): Promise<ShopItem[]> {
   const { data } = await supa.from("reports").select("*").eq("email", sentinel);
   return ((data || []) as ReportRow[]).map((r) => ({
@@ -108,27 +91,6 @@ export async function grantModXp(supa: SupabaseClient, userId: string, amount: n
   if (error) throw error;
 }
 
-// Баллы АП: AP_POINTS дельты (могут быть отрицательными при покупке)
-export async function computeApPoints(supa: SupabaseClient, userId: string) {
-  const { data } = await supa.from("reports").select("xp").eq("email", "AP_POINTS").eq("link", userId);
-  return (data || []).reduce((s, r) => s + (Number(r.xp) || 0), 0);
-}
-
-export async function spendApPoints(supa: SupabaseClient, userId: string, amount: number, note: string) {
-  const { error } = await supa.from("reports").insert([
-    { id: makeId("app_"), email: "AP_POINTS", link: userId, xp: -Math.abs(amount), status: "ap", date: note },
-  ]);
-  if (error) throw error;
-}
-
-export async function grantApPoints(supa: SupabaseClient, userId: string, amount: number, note: string) {
-  if (amount === 0) return;
-  const { error } = await supa.from("reports").insert([
-    { id: makeId("app_"), email: "AP_POINTS", link: userId, xp: amount, status: "ap", date: note },
-  ]);
-  if (error) throw error;
-}
-
 // Баллы ФСБ: FSB_POINTS дельты минус FSB_SPEND расходы
 export async function computeFsbPoints(supa: SupabaseClient, userId: string) {
   const [ptsRes, spendRes] = await Promise.all([
@@ -155,7 +117,7 @@ export async function logPurchase(
     nickname: string;
     itemName: string;
     cost: number;
-    kind: "mod" | "ap" | "fsb";
+    kind: "mod" | "fsb";
     autoIssued?: boolean;
   }
 ) {
@@ -165,7 +127,7 @@ export async function logPurchase(
       nickname: params.nickname,
       item_name: params.itemName,
       cost: params.cost,
-      type: params.kind === "ap" ? "ap_shop" : "mod_shop",
+      type: "mod_shop",
       status: params.autoIssued ? "Автоматически зачислено" : "Ожидает выдачи",
     },
   ]);

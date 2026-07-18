@@ -4,9 +4,8 @@ import { CREATOR_EMAIL, LEADERSHIP_EMAILS, KV, type AdminRole, type UserKind } f
 export type RoleInfo = {
   isCreator: boolean;
   isLeadership: boolean; // руководство модерации
-  isApAdmin: boolean; // руководство АП
   isFsbAdmin: boolean; // руководство ФСБ
-  kinds: Set<UserKind>; // moderator | ap | fsb
+  kinds: Set<UserKind>; // moderator | fsb
   adminRoles: Set<AdminRole>;
 };
 
@@ -14,7 +13,6 @@ export function emptyRoleInfo(): RoleInfo {
   return {
     isCreator: false,
     isLeadership: false,
-    isApAdmin: false,
     isFsbAdmin: false,
     kinds: new Set(),
     adminRoles: new Set(),
@@ -35,25 +33,23 @@ export async function resolveRoles(supa: SupabaseClient, user: User): Promise<Ro
   for (const row of adminRes.data || []) {
     const s = String(row.status || "");
     if (s === "leadership") info.isLeadership = true;
-    if (s === "ap_admin") info.isApAdmin = true;
     if (s === "fsb_admin") info.isFsbAdmin = true;
-    if (s === "leadership" || s === "ap_admin" || s === "fsb_admin") info.adminRoles.add(s as AdminRole);
+    if (s === "leadership" || s === "fsb_admin") info.adminRoles.add(s as AdminRole);
   }
   for (const row of kindRes.data || []) {
     const s = String(row.status || "");
-    if (s === "moderator" || s === "ap" || s === "fsb") info.kinds.add(s as UserKind);
+    if (s === "moderator" || s === "fsb") info.kinds.add(s as UserKind);
   }
   // Создатель имеет все права
   if (info.isCreator) {
     info.isLeadership = true;
-    info.isApAdmin = true;
     info.isFsbAdmin = true;
   }
   return info;
 }
 
 export function isAnyAdmin(info: RoleInfo) {
-  return info.isCreator || info.isLeadership || info.isApAdmin || info.isFsbAdmin;
+  return info.isCreator || info.isLeadership || info.isFsbAdmin;
 }
 
 /**

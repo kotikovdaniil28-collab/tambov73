@@ -31,19 +31,16 @@ export const REJECT_REASONS: Record<string, string> = {
 
 // Sentinel-emails: таблица reports используется как KV-хранилище
 export const KV = {
-  ADMIN_ROLE: "ADMIN_ROLE", // status: leadership | ap_admin | fsb_admin, link = user_id
-  USER_ROLE: "USER_ROLE", // status: moderator | ap | fsb, link = user_id
+  ADMIN_ROLE: "ADMIN_ROLE", // status: leadership | fsb_admin, link = user_id
+  USER_ROLE: "USER_ROLE", // status: moderator | fsb, link = user_id
   USER_KIND: "USER_KIND",
   GAME_XP: "GAME_XP", // link = user_id, xp = дельта
   INACTIVE_REQ: "INACTIVE_REQ",
   ROULETTE_MOD: "ROULETTE_MOD",
-  ROULETTE_AP: "ROULETTE_AP",
   ROULETTE_FSB: "ROULETTE_FSB",
   SHOP_MOD: "SHOP_MOD",
-  SHOP_AP: "SHOP_AP",
   SHOP_OVERRIDE: "SHOP_OVERRIDE",
   CUSTOM_MOD_MSG: "CUSTOM_MOD_MSG",
-  CUSTOM_AP_MSG: "CUSTOM_AP_MSG",
   HIDDEN_CHECK: "HIDDEN_CHECK",
   SITE_SETTING: "SITE_SETTING",
   TROLL_EFFECT: "TROLL_EFFECT",
@@ -98,5 +95,5 @@ export const RANKS: Record<string, { short: string; title: string; next?: string
   kgm: { short: "КГМ", title: "Куратор главных модераторов" },
 };
 
-export type AdminRole = "leadership" | "ap_admin" | "fsb_admin";
-export type UserKind = "moderator" | "ap" | "fsb";
+export type AdminRole = "leadership" | "fsb_admin";
+export type UserKind = "moderator" | "fsb";
