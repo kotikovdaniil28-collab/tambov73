@@ -142,6 +142,7 @@ export function DashboardClient() {
   const lvl = levelFromXp(xp.total);
   const rank = career?.rank ? RANKS[career.rank] : null;
   const displayName = nickname || user?.email?.split("@")[0] || "Модератор";
+  const avatarUrl = (user?.user_metadata?.avatar_url as string) || "";
   const daysOnRank = career?.rank_started_at
     ? Math.max(0, Math.floor((Date.now() - new Date(career.rank_started_at).getTime()) / DAY))
     : null;
@@ -227,20 +228,30 @@ export function DashboardClient() {
       {/* Hero профиля */}
       <Reveal i={1}>
         <div className="hero-surface relative overflow-hidden rounded-3xl p-5 md:p-8">
-          {/* 3D-декор в правой части hero — только на десктопе */}
+          {/* 3D-декор в правой части hero — только на десктопе.
+              Кристалл сдвинут за правый край и приглушён, чтобы не мешать тексту. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 hidden w-[46%] opacity-70 lg:block"
+            className="pointer-events-none absolute inset-y-0 -right-[8%] hidden w-[42%] opacity-50 lg:block"
           >
             <NeonScene compact className="size-full" />
-            <div className="absolute inset-0 bg-linear-to-r from-[oklch(0.24_0.05_152)] via-transparent to-transparent" />
           </div>
+          {/* Плотная маска-переход: слева фон hero держится дольше, текст остаётся читаемым */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden bg-linear-to-r from-[oklch(0.24_0.05_152)] from-45% via-[oklch(0.24_0.05_152/0.55)] via-70% to-transparent lg:block"
+          />
           <div className="relative flex flex-wrap items-start gap-5">
             <motion.div
               whileHover={{ rotate: -4, scale: 1.04 }}
-              className="from-green-bright to-green-deep font-display text-primary-foreground flex size-16 items-center justify-center rounded-2xl bg-linear-to-br text-2xl font-extrabold md:size-[72px]"
+              className="from-green-bright to-green-deep font-display text-primary-foreground flex size-16 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br text-2xl font-extrabold md:size-[72px]"
             >
-              {displayName.slice(0, 1).toUpperCase()}
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="" className="size-full object-cover" />
+              ) : (
+                displayName.slice(0, 1).toUpperCase()
+              )}
             </motion.div>
             <div className="min-w-0 flex-1">
               <span className="bg-green-bright/16 text-green-bright mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.14em] uppercase">
@@ -259,7 +270,7 @@ export function DashboardClient() {
                 {lvl.intoLevel}/{lvl.needed} XP до следующего
               </p>
             </div>
-            <div className="text-left sm:ml-auto sm:text-right">
+            <div className="bg-[oklch(0.2_0.04_152/0.55)] rounded-2xl px-4 py-2.5 text-left backdrop-blur-sm sm:ml-auto sm:text-right lg:bg-[oklch(0.2_0.04_152/0.7)]">
               <div className="font-display text-3xl font-extrabold tabular-nums">
                 <CountUp value={xp.modXp} className="text-green-bright text-glow" />
               </div>

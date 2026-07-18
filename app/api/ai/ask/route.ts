@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 import { getAnonServerClient } from "@/lib/supabase/admin";
-import { INSTRUCTION_ROW, loadInstruction } from "@/lib/instructions";
-import { FULL_MODERATION_RULES } from "@/lib/data/moderation-rules";
 
 /**
  * AI-помощник по инструкции модерации (DeepSeek).
@@ -80,21 +78,7 @@ export async function POST(req: Request) {
   if (!question) {
     return NextResponse.json({ error: "Пустой вопрос" }, { status: 400 });
   }
-
-  // Инструкцию загружаем на сервере из базы; клиентская версия — лишь запасной вариант.
-  // Если в базе лежит укороченный текст — используем полную встроенную редакцию правил.
-  let instruction = "";
-  try {
-    instruction = (await loadInstruction(supa, INSTRUCTION_ROW)).trim();
-  } catch {
-    instruction = "";
-  }
-  const clientInstruction = String(body.instruction || "").trim();
-  if (clientInstruction.length > instruction.length) instruction = clientInstruction;
-  if (FULL_MODERATION_RULES.trim().length > instruction.length) {
-    instruction = FULL_MODERATION_RULES.trim();
-  }
-  instruction = instruction.slice(0, 60000);
+  const instruction = String(body.instruction || "").trim().slice(0, 24000);
 
   // 1) env-ключ приоритетнее; 2) иначе общий ключ из KV (панель создателя)
   let cfg: AiConfig | null = process.env.DEEPSEEK_API_KEY
@@ -121,14 +105,9 @@ export async function POST(req: Request) {
       role: "system",
       content:
         "Ты — помощник модератора Discord-сервера TAMBOV (сервер проекта BLACK RUSSIA). " +
-        "Отвечай на русском, кратко и по делу. Тебе дана ПОЛНАЯ инструкция модерации ниже — это единственный источник истины. " +
-        "Правила отвечов:\n" +
-        "1. Всегда ссылайся на конкретный раздел или пункт инструкции, из которого взят ответ (например: «Раздел \u00abНорматив и отчёты\u00bb: ...»).\n" +
-        "2. Если спрашивают про наказание — назови точную меру (мут/варн/бан) и длительность из инструкции.\n" +
-        "3. Если вопрос про XP, нормы или смены — приведи точные цифры из инструкции.\n" +
-        "4. Если ответа в инструкции действительно нет — прямо скажи это и предложи уточнить у руководства. Не выдумывай правила.\n" +
-        "5. Можно цитировать инструкцию дословно, если это помогает." +
-        (instruction ? `\n\nИНСТРУКЦИЯ МОДЕРАЦИИ (полный текст):\n${instruction}` : ""),
+        "Отвечай кратко и по делу на русском. Опирайся на инструкцию модерации ниже. " +
+        "Если ответа в инструкции нет — скажи об этом и предложи спросить руководство." +
+        (instruction ? `\n\nИНСТРУКЦИЯ МОДЕРАЦИИ:\n${instruction}` : ""),
     },
     { role: "user", content: question },
   ];
@@ -140,7 +119,7 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${cfg.apiKey}`,
       },
-      body: JSON.stringify({ model: cfg.model, messages, max_tokens: 1400, temperature: 0.2 }),
+      body: JSON.stringify({ model: cfg.model, messages, max_tokens: 900, temperature: 0.3 }),
     });
     if (!res.ok) {
       const errText = (await res.text()).slice(0, 300);

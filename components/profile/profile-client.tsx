@@ -1,8 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Award, Zap, FileText, Flame, Pencil, Check, Star, UserRound } from "lucide-react";
+import {
+  Award,
+  Zap,
+  FileText,
+  Flame,
+  Pencil,
+  Check,
+  Star,
+  UserRound,
+  Camera,
+  Loader2,
+  KeyRound,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
@@ -49,6 +61,12 @@ export function ProfileClient() {
   const [editingNick, setEditingNick] = useState(false);
   const [nickDraft, setNickDraft] = useState("");
   const [loading, setLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [pwd, setPwd] = useState("");
+  const [pwd2, setPwd2] = useState("");
+  const [pwdSaving, setPwdSaving] = useState(false);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -69,6 +87,68 @@ export function ProfileClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Аватар хранится в метаданных auth — подтягиваем при загрузке пользователя
+  useEffect(() => {
+    setAvatarUrl(String(user?.user_metadata?.avatar_url || ""));
+  }, [user]);
+
+  const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // позволяем выбрать тот же файл повторно
+    if (!file || !user) return;
+    if (file.size > 4 * 1024 * 1024) {
+      toast.error("Файл больше 4 МБ");
+      return;
+    }
+    setAvatarUploading(true);
+    try {
+      const supa = getSupabase();
+      const { data: sessionData } = await supa.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/profile/avatar", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const json = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok || !json.url) throw new Error(json.error || "upload failed");
+      // Сохраняем ссылку в метаданные auth, чтобы аватар был виден на всех устройствах
+      const { error: metaErr } = await supa.auth.updateUser({ data: { avatar_url: json.url } });
+      if (metaErr) throw metaErr;
+      setAvatarUrl(json.url);
+      toast.success("Аватар обновлён");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Не удалось загрузить аватар");
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const changePassword = async () => {
+    if (pwd.length < 6) {
+      toast.error("Пароль должен быть не короче 6 символов");
+      return;
+    }
+    if (pwd !== pwd2) {
+      toast.error("Пароли не совпадают");
+      return;
+    }
+    setPwdSaving(true);
+    try {
+      const { error } = await getSupabase().auth.updateUser({ password: pwd });
+      if (error) throw error;
+      setPwd("");
+      setPwd2("");
+      toast.success("Пароль изменён");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Не удалось изменить пароль");
+    } finally {
+      setPwdSaving(false);
+    }
+  };
 
   const saveNick = async () => {
     if (!user || !nickDraft.trim()) return;
@@ -111,9 +191,7 @@ export function ProfileClient() {
   if (roles.isCreator) roleBadges.push("Создатель");
   else if (roles.isLeadership) roleBadges.push("Руководство");
   if (roles.kinds.has("moderator")) roleBadges.push("Модератор");
-  if (roles.kinds.has("ap")) roleBadges.push("АП");
   if (roles.kinds.has("fsb")) roleBadges.push("ФСБ");
-  if (roles.isApAdmin) roleBadges.push("Рук. АП");
   if (roles.isFsbAdmin) roleBadges.push("Рук. ФСБ");
 
   return (
@@ -122,12 +200,35 @@ export function ProfileClient() {
       <Reveal i={0}>
         <div className="hero-surface rounded-3xl p-5 md:p-8">
           <div className="flex flex-wrap items-start gap-5">
-            <motion.div
+            <motion.button
+              type="button"
               whileHover={{ rotate: -4, scale: 1.04 }}
-              className="from-green-bright to-green-deep font-display text-primary-foreground flex size-16 items-center justify-center rounded-2xl bg-linear-to-br text-2xl font-extrabold md:size-[72px]"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={avatarUploading}
+              aria-label="Изменить аватар"
+              className="group from-green-bright to-green-deep font-display text-primary-foreground relative flex size-16 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br text-2xl font-extrabold md:size-[72px]"
             >
-              {displayName.slice(0, 1).toUpperCase()}
-            </motion.div>
+              {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={avatarUrl} alt="Аватар" className="size-full object-cover" />
+              ) : (
+                displayName.slice(0, 1).toUpperCase()
+              )}
+              <span className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover:opacity-100">
+                {avatarUploading ? (
+                  <Loader2 className="size-5 animate-spin" />
+                ) : (
+                  <Camera className="size-5" />
+                )}
+              </span>
+            </motion.button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="hidden"
+              onChange={onPickAvatar}
+            />
             <div className="min-w-0 flex-1">
               <span className="bg-green-bright/16 text-green-bright mb-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.14em] uppercase">
                 <Star className="size-3" /> {rank?.title || roleBadges[0] || "Модератор"}
@@ -264,8 +365,37 @@ export function ProfileClient() {
           )}
         </Reveal>
 
+        {/* Смена пароля */}
+        <Reveal i={3} className="bg-card rounded-2xl border p-5">
+          <h3 className="font-display mb-4 flex items-center gap-2 text-sm font-semibold">
+            <KeyRound className="text-muted-foreground size-4" /> Смена пароля
+          </h3>
+          <div className="flex flex-col gap-2.5">
+            <Input
+              type="password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              placeholder="Новый пароль"
+              autoComplete="new-password"
+              aria-label="Новый пароль"
+            />
+            <Input
+              type="password"
+              value={pwd2}
+              onChange={(e) => setPwd2(e.target.value)}
+              placeholder="Повторите пароль"
+              autoComplete="new-password"
+              aria-label="Повторите пароль"
+            />
+            <Button onClick={changePassword} disabled={pwdSaving || !pwd}>
+              {pwdSaving ? <Loader2 className="size-4 animate-spin" /> : "Изменить пароль"}
+            </Button>
+            <p className="text-muted-foreground text-xs">Минимум 6 символов.</p>
+          </div>
+        </Reveal>
+
         {/* VK-бот */}
-        <Reveal i={3}>
+        <Reveal i={4}>
           <VkLinkCard />
         </Reveal>
       </div>

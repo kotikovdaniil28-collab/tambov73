@@ -150,13 +150,9 @@ export function ShopEditorPanel() {
     <Tabs defaultValue="mod">
       <TabsList>
         <TabsTrigger value="mod">Магазин модерации</TabsTrigger>
-        <TabsTrigger value="ap">Магазин АП</TabsTrigger>
       </TabsList>
       <TabsContent value="mod">
         <CustomShopEditor sentinel={KV.SHOP_MOD} currency="XP" />
-      </TabsContent>
-      <TabsContent value="ap">
-        <CustomShopEditor sentinel={KV.SHOP_AP} currency="баллов" />
       </TabsContent>
     </Tabs>
   );

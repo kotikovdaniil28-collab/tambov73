@@ -6,9 +6,11 @@ import { History, CheckCircle2, XCircle, ShoppingBag, MessageCircle } from "luci
 import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
 import { isAnyAdmin } from "@/lib/roles";
+import { parseReportPayload, type ReportRow } from "@/lib/reports";
 import { Reveal } from "@/components/ui/reveal";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
 
 type TimelineEntry = {
   id: string;
@@ -18,6 +20,7 @@ type TimelineEntry = {
   status: string;
   positive: boolean;
   vkSent?: boolean;
+  proofs?: string[];
   ts: number;
 };
 
@@ -54,9 +57,25 @@ export function ActionsClient() {
         .limit(40),
     ]);
 
+    const reviews = reviewsRes.data || [];
+
+    // Подтягиваем сами отчёты, чтобы достать ссылки на доказательства (доква).
+    const reportIds = reviews.map((r) => r.report_id).filter(Boolean) as string[];
+    const proofsById = new Map<string, string[]>();
+    if (reportIds.length) {
+      const { data: reportRows } = await supa
+        .from("reports")
+        .select("id, email, link, date, status, xp")
+        .in("id", reportIds);
+      for (const row of reportRows || []) {
+        const proofs = parseReportPayload(row as ReportRow).proofs;
+        if (proofs.length) proofsById.set(String((row as ReportRow).id), proofs);
+      }
+    }
+
     const list: TimelineEntry[] = [];
 
-    for (const r of reviewsRes.data || []) {
+    for (const r of reviews) {
       const positive = r.verdict !== "rejected";
       list.push({
         id: `rev_${r.report_id}`,
@@ -68,6 +87,7 @@ export function ActionsClient() {
         status: String(r.final_status || ""),
         positive,
         vkSent: r.notification_status === "sent",
+        proofs: proofsById.get(String(r.report_id)) || [],
         ts: r.reviewed_at ? new Date(String(r.reviewed_at)).getTime() : 0,
       });
     }
@@ -77,7 +97,7 @@ export function ActionsClient() {
         id: `log_${l.id}`,
         kind: "purchase",
         title: String(l.nickname || l.user_email || "Модератор"),
-        detail: `${l.item_name} · ${l.cost} ${l.type === "ap_shop" ? "AP" : "XP"} · ${l.status}`,
+        detail: `${l.item_name} · ${l.cost} XP · ${l.status}`,
         status: String(l.status || ""),
         positive: true,
         ts: l.created_at ? new Date(String(l.created_at)).getTime() : 0,
@@ -200,6 +220,21 @@ export function ActionsClient() {
                       </Badge>
                     )}
                   </div>
+                  {e.kind === "verdict" && e.proofs && e.proofs.length > 0 && (
+                    <div className="mt-1.5 flex flex-wrap gap-2">
+                      {e.proofs.map((url, j) => (
+                        <a
+                          key={j}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:bg-primary/10 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold transition-colors"
+                        >
+                          <ExternalLink className="size-3" /> Доказательство {j + 1}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>

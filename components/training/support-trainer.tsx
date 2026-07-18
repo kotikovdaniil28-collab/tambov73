@@ -6,13 +6,13 @@ import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
-import { grantApPoints } from "@/lib/shop";
+import { addGameXp } from "@/lib/xp";
 import { SUP_QUESTIONS, type SupQuestion } from "@/lib/data/trainer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-// Тренажёр поддержки: как в legacy — 15 баллов АП за каждые 10 правильных ответов
+// Тренажёр поддержки: 15 игровых XP за каждые 10 правильных ответов
 const PTS_PER_10 = 15;
 
 export function SupportTrainer({ onResolved }: { onResolved: () => void }) {
@@ -52,10 +52,10 @@ export function SupportTrainer({ onResolved }: { onResolved: () => void }) {
         const delta = earned - grantedRef.current;
         grantedRef.current = earned;
         try {
-          await grantApPoints(getSupabase(), user.id, delta, "Тренажёр поддержки");
-          toast.success(`+${delta} баллов АП`);
+          await addGameXp(getSupabase(), user.id, delta, "Тренажёр поддержки");
+          toast.success(`+${delta} игровых XP`);
         } catch {
-          toast.error("Не удалось начислить баллы");
+          toast.error("Не удалось начислить XP");
         }
       }
     } else {

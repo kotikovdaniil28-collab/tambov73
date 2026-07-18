@@ -21,7 +21,7 @@ type LogRow = {
   created_at: string;
 };
 
-function LogList({ type }: { type: "mod_shop" | "ap_shop" }) {
+function LogList({ type }: { type: "mod_shop" }) {
   const [rows, setRows] = useState<LogRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -71,7 +71,7 @@ function LogList({ type }: { type: "mod_shop" | "ap_shop" }) {
                 <div className="min-w-0">
                   <div className="text-sm font-semibold">{r.item_name}</div>
                   <div className="text-muted-foreground text-xs">
-                    {r.nickname} · {r.cost} {type === "ap_shop" ? "баллов" : "XP"} ·{" "}
+                    {r.nickname} · {r.cost} XP ·{" "}
                     {r.created_at ? new Date(r.created_at).toLocaleString("ru-RU") : ""}
                   </div>
                 </div>
@@ -103,13 +103,9 @@ export function PurchaseLogsPanel() {
     <Tabs defaultValue="mod_shop">
       <TabsList>
         <TabsTrigger value="mod_shop">Магазин модерации</TabsTrigger>
-        <TabsTrigger value="ap_shop">Магазин АП</TabsTrigger>
       </TabsList>
       <TabsContent value="mod_shop">
         <LogList type="mod_shop" />
-      </TabsContent>
-      <TabsContent value="ap_shop">
-        <LogList type="ap_shop" />
       </TabsContent>
     </Tabs>
   );

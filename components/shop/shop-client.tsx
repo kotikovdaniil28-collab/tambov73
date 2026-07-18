@@ -2,20 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag, Zap, Coins, ShieldHalf } from "lucide-react";
+import { ShoppingBag, Zap, ShieldHalf } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
 import { KV } from "@/lib/constants";
 import {
   DEFAULT_MOD_SHOP,
-  DEFAULT_AP_SHOP,
   DEFAULT_FSB_SHOP,
   loadCustomShop,
   loadPriceOverrides,
   spendModXp,
-  computeApPoints,
-  spendApPoints,
   computeFsbPoints,
   spendFsbPoints,
   logPurchase,
@@ -80,24 +77,19 @@ function ItemCard({
 export function ShopClient() {
   const { user, roles, xp, refreshXp } = useAuth();
   const [modItems, setModItems] = useState<ShopItem[]>(DEFAULT_MOD_SHOP);
-  const [apItems, setApItems] = useState<ShopItem[]>(DEFAULT_AP_SHOP);
   const [fsbItems] = useState<ShopItem[]>(DEFAULT_FSB_SHOP);
-  const [apPoints, setApPoints] = useState(0);
   const [fsbPoints, setFsbPoints] = useState(0);
   const [nickname, setNickname] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const showAp = roles.kinds.has("ap") || roles.isApAdmin || roles.isCreator;
   const showFsb = roles.kinds.has("fsb") || roles.isFsbAdmin || roles.isCreator;
 
   const load = useCallback(async () => {
     if (!user) return;
     const supa = getSupabase();
-    const [customMod, customAp, overrides, ap, fsb, nickRes] = await Promise.all([
+    const [customMod, overrides, fsb, nickRes] = await Promise.all([
       loadCustomShop(supa, KV.SHOP_MOD),
-      loadCustomShop(supa, KV.SHOP_AP),
       loadPriceOverrides(supa),
-      computeApPoints(supa, user.id),
       computeFsbPoints(supa, user.id),
       supa.from("user_stats").select("nickname").eq("user_id", user.id).maybeSingle(),
     ]);
@@ -106,8 +98,6 @@ export function ShopClient() {
     const withOverrides = (items: ShopItem[]) =>
       items.map((i) => (overrides.has(i.id) ? { ...i, price: overrides.get(i.id)! } : i));
     setModItems(withOverrides([...DEFAULT_MOD_SHOP, ...customMod]));
-    setApItems(withOverrides([...DEFAULT_AP_SHOP, ...customAp]));
-    setApPoints(ap);
     setFsbPoints(fsb);
   }, [user]);
 
@@ -115,7 +105,7 @@ export function ShopClient() {
     load();
   }, [load]);
 
-  const buy = async (item: ShopItem, kind: "mod" | "ap" | "fsb") => {
+  const buy = async (item: ShopItem, kind: "mod" | "fsb") => {
     if (!user) return;
     setBusy(true);
     try {
@@ -124,9 +114,6 @@ export function ShopClient() {
       if (kind === "mod") {
         await spendModXp(supa, user.id, item.price, note);
         await refreshXp();
-      } else if (kind === "ap") {
-        await spendApPoints(supa, user.id, item.price, note);
-        setApPoints((p) => p - item.price);
       } else {
         await spendFsbPoints(supa, user.id, item.price, note);
         setFsbPoints((p) => p - item.price);
@@ -181,11 +168,6 @@ export function ShopClient() {
             <TabsTrigger value="mod">
               <Zap className="size-4" /> Модерация · {xp.modXp} XP
             </TabsTrigger>
-            {showAp && (
-              <TabsTrigger value="ap">
-                <Coins className="size-4" /> АП · {apPoints} баллов
-              </TabsTrigger>
-            )}
             {showFsb && (
               <TabsTrigger value="fsb">
                 <ShieldHalf className="size-4" /> ФСБ · {fsbPoints} баллов
@@ -208,24 +190,6 @@ export function ShopClient() {
               ))}
             </div>
           </TabsContent>
-
-          {showAp && (
-            <TabsContent value="ap">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {apItems.map((item, i) => (
-                  <ItemCard
-                    key={item.id}
-                    item={item}
-                    index={i}
-                    balance={apPoints}
-                    busy={busy}
-                    currency="��аллов"
-                    onBuy={(it) => buy(it, "ap")}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-          )}
 
           {showFsb && (
             <TabsContent value="fsb">

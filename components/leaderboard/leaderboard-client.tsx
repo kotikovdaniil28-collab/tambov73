@@ -7,7 +7,6 @@ import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
 import { computeLeaderboard } from "@/lib/xp";
 import { levelFromXp } from "@/lib/level";
-import { KV, LEADERSHIP_EMAILS } from "@/lib/constants";
 import { Reveal } from "@/components/ui/reveal";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -28,28 +27,17 @@ export function LeaderboardClient() {
     let mounted = true;
     (async () => {
       const supa = getSupabase();
-      const [{ byEmail, byUserId }, statsRes, adminRes] = await Promise.all([
+      const [{ byEmail, byUserId }, statsRes] = await Promise.all([
         computeLeaderboard(supa),
         supa.from("user_stats").select("email,nickname,user_id"),
-        supa.from("reports").select("link,status").eq("email", KV.ADMIN_ROLE),
       ]);
       if (!mounted) return;
       const stats = statsRes.data || [];
-      // Руководство (leadership / ap_admin / fsb_admin) не участвует в лидерборде
-      const adminUserIds = new Set(
-        (adminRes.data || [])
-          .filter((r) => ["leadership", "ap_admin", "fsb_admin"].includes(String(r.status || "")))
-          .map((r) => String(r.link || ""))
-      );
       const emailByUserId = new Map<string, string>();
       const nickByEmail = new Map<string, string>();
       for (const s of stats) {
         if (s.user_id && s.email) emailByUserId.set(String(s.user_id), String(s.email));
         if (s.email && s.nickname) nickByEmail.set(String(s.email).toLowerCase(), String(s.nickname));
-      }
-      const excludedEmails = new Set<string>(Array.from(LEADERSHIP_EMAILS, (e) => e.toLowerCase()));
-      for (const [uid, email] of emailByUserId) {
-        if (adminUserIds.has(uid)) excludedEmails.add(email.toLowerCase());
       }
       const total = new Map<string, number>(byEmail);
       for (const [uid, xp] of byUserId) {
@@ -63,7 +51,7 @@ export function LeaderboardClient() {
           xp,
           rank: 0,
         }))
-        .filter((e) => e.xp > 0 && !excludedEmails.has(e.email.toLowerCase()))
+        .filter((e) => e.xp > 0)
         .sort((a, b) => b.xp - a.xp)
         .map((e, i) => ({ ...e, rank: i + 1 }));
       setEntries(list);
